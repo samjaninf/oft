@@ -48,6 +48,44 @@
 		remove_action( 'storefront_footer', 'storefront_credit', 20 );
 	}
 
+	// Creëer een custom hiërarchische taxonomie op producten om partner/landinfo in op te slaan
+	add_action( 'init', 'register_partner_taxonomy', 0 );
+	
+	function register_partner_taxonomy() {
+		$taxonomy_name = 'product_partner';
+		
+		$labels = array(
+			'name' => 'Partners',
+			'singular_name' => 'Partner',
+			'all_items' => 'Alle partners',
+			'parent_item' => 'Land',
+			'parent_item_colon' => 'Land:',
+			'new_item_name' => 'Nieuwe partner',
+			'add_new_item' => 'Voeg nieuwe partner toe',
+		);
+
+		$args = array(
+			'labels' => $labels,
+			'description' => 'Ken het product toe aan een partner/land',
+			'public' => true,
+			'publicly_queryable' => true,
+			'hierarchical' => true,
+			'show_ui' => true,
+			'show_in_menu' => true,
+			'show_in_nav_menus' => true,
+			'show_in_rest' => true,
+			'show_tagcloud' => true,
+			'show_in_quick_edit' => true,
+			'show_admin_column' => true,
+			'query_var' => true,
+			'capabilities' => array( 'manage_terms' => 'manage_options', 'edit_terms' => 'manage_options', 'delete_terms' => 'manage_options', 'assign_terms' => 'edit_products' ),
+			'rewrite' => array( 'slug' => 'partner', 'with_front' => false, 'ep_mask' => 'test' ),
+		);
+
+		register_taxonomy( $taxonomy_name, 'product', $args );
+		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
+	}
+
 	function create_product_pdf( $product ) {
 		require_once WP_CONTENT_DIR.'/plugins/html2pdf/html2pdf.class.php';
 		
