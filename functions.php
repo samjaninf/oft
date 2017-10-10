@@ -49,7 +49,7 @@
 	}
 
 	function create_product_pdf( $product ) {
-		require_once plugins_url('/html2pdf/html2pdf.class.php');
+		require_once WP_CONTENT_DIR.'/plugins/html2pdf/html2pdf.class.php';
 		
 		$templatelocatie = get_stylesheet_directory('/productfiche.html');
 		$templatefile = fopen( $templatelocatie, 'r' );
