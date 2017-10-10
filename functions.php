@@ -48,6 +48,25 @@
 		remove_action( 'storefront_footer', 'storefront_credit', 20 );
 	}
 
+	function create_product_pdf( $product ) {
+		require_once plugins_url('/html2pdf/html2pdf.class.php');
+		
+		$templatelocatie = get_stylesheet_directory('/productfiche.html');
+		$templatefile = fopen( $templatelocatie, 'r' );
+		$templatecontent = fread( $templatefile, filesize($templatelocatie) );
+		
+		$sku = $product->get_sku();
+		$templatecontent = str_replace("#artikel", $sku, $templatecontent);
+		$templatecontent = str_replace("#prijs", wc_price( $product->get_price() ), $templatecontent);
+		$templatecontent = str_replace("#merk", $product->get_attribute('pa_merk'), $templatecontent);
+		
+		$pdffile = new HTML2PDF("P", "A4", "nl");
+		$pdffile->pdf->SetAuthor("Oxfam Fair Trade cvba");
+		$pdffile->pdf->SetTitle("Productfiche ".$sku);
+		$pdffile->WriteHTML($templatecontent);
+		$pdffile->Output(WP_CONTENT_DIR."/".$sku.".pdf", "F");
+	}
+
 	// Print variabelen op een overzichtelijke manier naar debug.log
 	if ( ! function_exists( 'write_log' ) ) {
 		function write_log ( $log )  {
