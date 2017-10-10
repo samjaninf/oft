@@ -78,8 +78,46 @@
 			'show_in_quick_edit' => true,
 			'show_admin_column' => true,
 			'query_var' => true,
-			'capabilities' => array( 'manage_terms' => 'manage_options', 'edit_terms' => 'manage_options', 'delete_terms' => 'manage_options', 'assign_terms' => 'edit_products' ),
+			'capabilities' => array( 'assign_terms' => 'edit_products', 'manage_terms' => 'manage_options', 'edit_terms' => 'manage_options', 'delete_terms' => 'manage_options' ),
 			'rewrite' => array( 'slug' => 'partner', 'with_front' => false, 'ep_mask' => 'test' ),
+		);
+
+		register_taxonomy( $taxonomy_name, 'product', $args );
+		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
+	}
+
+	// Creëer een custom hiërarchische taxonomie op producten om allergeneninfo in op te slaan
+	add_action( 'init', 'register_allergen_taxonomy', 0 );
+
+	function register_allergen_taxonomy() {
+		$taxonomy_name = 'product_allergen';
+		
+		$labels = array(
+			'name' => __( 'Allergenen', 'oft' ),
+			'singular_name' => __( 'Allergeen', 'oft' ),
+			'all_items' => __( 'Alle allergenen', 'oft' ),
+			'parent_item' => __( 'Allergeen', 'oft' ),
+			'parent_item_colon' => __( 'Allergeen:', 'oft' ),
+			'new_item_name' => __( 'Nieuw allergeen', 'oft' ),
+			'add_new_item' => __( 'Voeg nieuw allergeen toe', 'oft' ),
+		);
+
+		$args = array(
+			'labels' => $labels,
+			'description' => __( 'Markeer dat het product dit allergeen bevat', 'oft' ),
+			'public' => true,
+			'publicly_queryable' => true,
+			'hierarchical' => true,
+			'show_ui' => true,
+			'show_in_menu' => true,
+			'show_in_nav_menus' => true,
+			'show_in_rest' => true,
+			'show_tagcloud' => true,
+			'show_in_quick_edit' => true,
+			'show_admin_column' => true,
+			'query_var' => true,
+			'capabilities' => array( 'assign_terms' => 'edit_products', 'manage_terms' => 'manage_options', 'edit_terms' => 'manage_options','delete_terms' => 'manage_options' ),
+			'rewrite' => array( 'slug' => 'allergen', 'with_front' => false ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -94,15 +132,15 @@
 		$templatecontent = fread( $templatefile, filesize($templatelocatie) );
 		
 		$sku = $product->get_sku();
-		$templatecontent = str_replace("#artikel", $sku, $templatecontent);
-		$templatecontent = str_replace("#prijs", wc_price( $product->get_price() ), $templatecontent);
-		$templatecontent = str_replace("#merk", $product->get_attribute('pa_merk'), $templatecontent);
+		$templatecontent = str_replace( "#artikel", $sku, $templatecontent );
+		$templatecontent = str_replace( "#prijs", wc_price( $product->get_price() ), $templatecontent );
+		$templatecontent = str_replace( "#merk", $product->get_attribute('pa_merk'), $templatecontent );
 		
-		$pdffile = new HTML2PDF("P", "A4", "nl");
-		$pdffile->pdf->SetAuthor("Oxfam Fair Trade cvba");
-		$pdffile->pdf->SetTitle("Productfiche ".$sku);
+		$pdffile = new HTML2PDF( "P", "A4", "nl" );
+		$pdffile->pdf->SetAuthor( "Oxfam Fair Trade cvba" );
+		$pdffile->pdf->SetTitle( "Productfiche ".$sku );
 		$pdffile->WriteHTML($templatecontent);
-		$pdffile->Output(WP_CONTENT_DIR."/".$sku.".pdf", "F");
+		$pdffile->Output( WP_CONTENT_DIR."/".$sku.".pdf", "F" );
 	}
 
 	// Print variabelen op een overzichtelijke manier naar debug.log
