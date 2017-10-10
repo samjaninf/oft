@@ -55,18 +55,18 @@
 		$taxonomy_name = 'product_partner';
 		
 		$labels = array(
-			'name' => 'Partners',
-			'singular_name' => 'Partner',
-			'all_items' => 'Alle partners',
-			'parent_item' => 'Land',
-			'parent_item_colon' => 'Land:',
-			'new_item_name' => 'Nieuwe partner',
-			'add_new_item' => 'Voeg nieuwe partner toe',
+			'name' => __( 'Partners', 'oft' ),
+			'singular_name' => __( 'Partner', 'oft' ),
+			'all_items' => __( 'Alle partners', 'oft' ),
+			'parent_item' => __( 'Land', 'oft' ),
+			'parent_item_colon' => __( 'Land:', 'oft' ),
+			'new_item_name' => __( 'Nieuwe partner', 'oft' ),
+			'add_new_item' => __( 'Voeg nieuwe partner toe', 'oft' ),
 		);
 
 		$args = array(
 			'labels' => $labels,
-			'description' => 'Ken het product toe aan een partner/land',
+			'description' => __( 'Ken het product toe aan een partner/land', 'oft' ),
 			'public' => true,
 			'publicly_queryable' => true,
 			'hierarchical' => true,
