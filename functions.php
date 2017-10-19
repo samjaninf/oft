@@ -220,6 +220,16 @@
 		return $register;
 	}
 
+	// Vermijd dat geselecteerde termen in hiërarchische taxonomieën naar boven springen
+	add_filter( 'wp_terms_checklist_args', 'do_not_jump_to_top', 10, 2 );
+
+	function do_not_jump_to_top( $args, $post_id ) {
+		if ( is_admin() ) {
+			$args['checked_ontop'] = false;
+		}
+		return $args;
+	}
+
 	// Verhinder bepaalde selecties in de back-end AAN TE PASSEN NAAR DE NIEUWE ID'S
 	add_action( 'admin_footer', 'disable_custom_checkboxes' );
 
@@ -227,17 +237,17 @@
 		?>
 		<script>
 			/* Disable hoofdcategorieën */
-			jQuery( '#in-product_cat-200' ).prop( 'disabled', true );
+			jQuery( '#in-product_cat-93' ).prop( 'disabled', true );
+			jQuery( '#in-product_cat-133' ).prop( 'disabled', true );
+			jQuery( '#in-product_cat-63' ).prop( 'disabled', true );
 			jQuery( '#in-product_cat-204' ).prop( 'disabled', true );
-			jQuery( '#in-product_cat-210' ).prop( 'disabled', true );
-			jQuery( '#in-product_cat-213' ).prop( 'disabled', true );
-			jQuery( '#in-product_cat-224' ).prop( 'disabled', true );
+			jQuery( '#in-product_cat-28' ).prop( 'disabled', true );
 			
 			/* Disable continenten */
-			jQuery( '#in-product_partner-162' ).prop( 'disabled', true );
-			jQuery( '#in-product_partner-163' ).prop( 'disabled', true );
-			jQuery( '#in-product_partner-164' ).prop( 'disabled', true );
-			jQuery( '#in-product_partner-165' ).prop( 'disabled', true );
+			jQuery( '#in-product_partner-252' ).prop( 'disabled', true );
+			jQuery( '#in-product_partner-277' ).prop( 'disabled', true );
+			jQuery( '#in-product_partner-249' ).prop( 'disabled', true );
+			jQuery( '#in-product_partner-265' ).prop( 'disabled', true );
 			
 			/* Disable bovenliggende landen/continenten van alle aangevinkte partners/landen */
 			jQuery( '#taxonomy-product_partner' ).find( 'input[type=checkbox]:checked' ).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'disabled', true );
