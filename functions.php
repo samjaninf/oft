@@ -91,44 +91,6 @@
 		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
 	}
 
-	// Creëer een custom hiërarchische taxonomie op producten om allergeneninfo in op te slaan
-	add_action( 'init', 'register_allergen_taxonomy', 0 );
-
-	function register_allergen_taxonomy() {
-		$taxonomy_name = 'product_allergen';
-		
-		$labels = array(
-			'name' => __( 'Allergenen', 'oft' ),
-			'singular_name' => __( 'Allergeen', 'oft' ),
-			'all_items' => __( 'Alle allergenen', 'oft' ),
-			'parent_item' => __( 'Allergeen', 'oft' ),
-			'parent_item_colon' => __( 'Allergeen:', 'oft' ),
-			'new_item_name' => __( 'Nieuw allergeen', 'oft' ),
-			'add_new_item' => __( 'Voeg nieuw allergeen toe', 'oft' ),
-		);
-
-		$args = array(
-			'labels' => $labels,
-			'description' => __( 'Markeer dat het product dit allergeen bevat', 'oft' ),
-			'public' => true,
-			'publicly_queryable' => true,
-			'hierarchical' => true,
-			'show_ui' => true,
-			'show_in_menu' => true,
-			'show_in_nav_menus' => true,
-			'show_in_rest' => true,
-			'show_tagcloud' => true,
-			'show_in_quick_edit' => true,
-			'show_admin_column' => true,
-			'query_var' => true,
-			'capabilities' => array( 'assign_terms' => 'edit_products', 'manage_terms' => 'manage_options', 'edit_terms' => 'manage_options','delete_terms' => 'manage_options' ),
-			'rewrite' => array( 'slug' => 'allergen', 'with_front' => false ),
-		);
-
-		register_taxonomy( $taxonomy_name, 'product', $args );
-		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
-	}
-
 	// Creëer drie custom hiërarchische taxonomieën op producten om wijninfo in op te slaan
 	add_action( 'init', 'register_wine_taxonomy', 0 );
 	
@@ -183,7 +145,7 @@
 		);
 
 		$args['labels'] = $labels;
-		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft' ), $name ),
+		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft' ), $name );
 		$args['rewrite']['slug'] = $name;
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -204,7 +166,7 @@
 		);
 
 		$args['labels'] = $labels;
-		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft' ), $name ),
+		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft' ), $name );
 		$args['rewrite']['slug'] = $name;
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -229,7 +191,7 @@
 
 		$args = array(
 			'labels' => $labels,
-			'description' => 'Markeer dat het product dit allergeen bevat',
+			'description' => __( 'Geef aan dat het product dit bevat', 'oft' ),
 			'public' => true,
 			'publicly_queryable' => true,
 			'hierarchical' => true,
