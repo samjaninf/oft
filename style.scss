@@ -77,6 +77,11 @@ div.nm-single-product.product_tag-promo figure.woocommerce-product-gallery__wrap
 	background-position: center center;
 }
 
+img.organic {
+	@include icon();
+	background-image: url('images/icon-organic.png');
+}
+
 img.veggie {
 	@include icon();
 	background-image: url('images/icon-veggie.png');

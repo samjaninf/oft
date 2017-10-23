@@ -352,20 +352,34 @@
 
 	function show_hipster_icons() {
 		global $product, $sitepress;
-		$veggie = get_term_by( 'slug', 'veggie', 'product_tag' );
-		$vegan = get_term_by( 'slug', 'vegan', 'product_tag' );
-		$gluten = get_term_by( 'slug', 'gluten-free', 'product_tag' );
-		var_dump_pre($veggie->term_id);
-		if ( in_array( intval( apply_filters( 'wpml_object_id', $veggie->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
+		// var_dump_pre( $veggie->term_id );
+		if ( in_array( intval( apply_filters( 'wpml_object_id', get_term_by( 'slug', 'veggie', 'product_tag' )->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
 			echo "<img class='veggie'>";
 		}
-		if ( in_array( intval( apply_filters( 'wpml_object_id', $vegan->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
+		if ( in_array( intval( apply_filters( 'wpml_object_id', get_term_by( 'slug', 'vegan', 'product_tag' )->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
 			echo "<img class='vegan'>";
 		}
-		if ( in_array( intval( apply_filters( 'wpml_object_id', $gluten->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
+		if ( in_array( intval( apply_filters( 'wpml_object_id', get_term_by( 'slug', 'gluten-free', 'product_tag' )->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
 			echo "<img class='gluten-free'>";
 		}
+		var_dump_pre( $product->get_attribute('biocertificatie') );
+		$yes = array( 'nl' => 'Ja', 'en' => 'Yes', 'fr' => 'Oui' );
+		// SLUGS VAN ATTRIBUTEN WORDEN NIET VERTAALD, ENKEL DE TERMEN
+		// TAGS ZIJN A.H.W. TERMEN VAN EEN WELBEPAALD ATTRIBUUT EN WORDEN DUS OOK VERTAALD
+		if ( $product->get_attribute('biocertificatie') === $yes[$sitepress->get_current_language()] ) {
+			echo "<img class='organic'>";
+		}
 	}
+
+	// Aantal gerelateerde producten wijzigen
+	// add_filter( 'woocommerce_output_related_products_args', 'alter_related_products_args', 20 );
+
+	function alter_related_products_args( $args ) {
+		$args['posts_per_page'] = 3;
+		$args['columns'] = 3;
+		return $args;
+	}
+
 
 
 	###########
