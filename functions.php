@@ -295,30 +295,20 @@
 	add_action( 'save_post', 'oft_post_to_product_save' );
 
 	function register_custom_meta_boxes() {
-		add_meta_box( 'oft_post_to_product', __( 'Gelinkt product', 'oft' ), 'oft_post_to_product_callback', 'post', 'advanced', 100 );
+		add_meta_box( 'oft_post_to_product', __( 'Gelinkt product', 'oft' ), 'oft_post_to_product_callback', 'post', 'advanced', 'high' );
 	}
 
 	function oft_post_to_product_callback( $post ) {
 		wp_nonce_field( basename( __FILE__ ), 'oft_post_to_product_nonce' );
 		$prfx_stored_meta = get_post_meta( $post->ID );
 
-		$step = 50;
-
 		$query_args = array(
 			'post_type'			=> 'product',
 			'post_status'		=> array( 'publish', 'draft' ),
-			'posts_per_page'	=> $step,
-			'offset'			=> $step*$i,
+			'posts_per_page'	=> 500,
 			'meta_key'			=> '_sku',
 			'orderby'			=> 'meta_value_num',
 			'order'				=> 'ASC',
-			'meta_query'		=> array(
-				'relation' => 'AND',
-				array(
-					'key'		=> '_thumbnail_id',
-					'compare'	=> 'EXISTS',
-				),
-			),
 		);
 
 		$current_products = new WP_Query( $query_args );
@@ -334,10 +324,10 @@
 
 		?>
 			<p>
-				<label for="meta-select" class=""><?php _e( 'Selecteer artikelnummer', 'oft' ); ?></label>
-				<select name="meta-select" id="meta-select">
+				<label for="oft-post-product" class=""><?php printf( __( 'Selecteer 1 van de %d actuele producten waarover dit bericht gaat:', 'oft' ), count($list) ); ?></label>
+				<select name="oft-post-product" id="oft-post-product">
 					<?php foreach ( $list as $sku => $title ) : ?>
-						<option value="<?php echo $sku; ?>" <?php if ( isset ( $prfx_stored_meta['meta-select'] ) ) selected( $prfx_stored_meta['meta-select'][0], $sku ); ?>><?php echo $title; ?></option>';
+						<option value="<?php echo $sku; ?>" <?php if ( isset ( $prfx_stored_meta['oft-post-product'] ) ) selected( $prfx_stored_meta['oft-post-product'][0], $sku ); ?>><?php echo $sku.': '.$title; ?></option>';
 					<?php endforeach; ?>
 				</select>
 			</p>
@@ -353,15 +343,28 @@
 			return;
 		}
 	 
-		if( isset( $_POST[ 'meta-select' ] ) ) {
-			update_post_meta( $post_id, 'meta-select', sanitize_text_field( $_POST[ 'meta-select' ] ) );
+		if( isset( $_POST[ 'oft-post-product' ] ) ) {
+			update_post_meta( $post_id, 'oft-post-product', sanitize_text_field( $_POST[ 'oft-post-product' ] ) );
 		}
 	}
 
 	add_action( 'woocommerce_single_product_summary', 'show_hipster_icons', 75 );
 
 	function show_hipster_icons() {
-		return "HALLO";
+		global $product, $sitepress;
+		$veggie = get_term_by( 'slug', 'veggie', 'product_tag' );
+		$vegan = get_term_by( 'slug', 'vegan', 'product_tag' );
+		$gluten = get_term_by( 'slug', 'gluten-free', 'product_tag' );
+		var_dump_pre($veggie->term_id);
+		if ( in_array( intval( apply_filters( 'wpml_object_id', $veggie->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
+			echo "<img class='veggie'>";
+		}
+		if ( in_array( intval( apply_filters( 'wpml_object_id', $vegan->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
+			echo "<img class='vegan'>";
+		}
+		if ( in_array( intval( apply_filters( 'wpml_object_id', $gluten->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
+			echo "<img class='gluten-free'>";
+		}
 	}
 
 
