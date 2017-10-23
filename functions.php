@@ -14,8 +14,8 @@
 	add_action( 'init', 'allow_target_tag', 20 );
 
 	function allow_target_tag() { 
-	    global $allowedtags;
-	    $allowedtags['a']['target'] = 1;
+		global $allowedtags;
+		$allowedtags['a']['target'] = 1;
 	}
 
 	// Fixes i.v.m. cURL
@@ -23,7 +23,7 @@
 	
 	function custom_curl_timeout( $handle, $r, $url ) {
 		// Fix error 28 - Operation timed out after 10000 milliseconds with 0 bytes received (bij het connecteren van Jetpack met Wordpress.com)
-		curl_setopt( $handle, CURLOPT_TIMEOUT, 30 );
+		curl_setopt( $handle, CURLOPT_TIMEOUT, 180 );
 		// Fix error 60 - SSL certificate problem: unable to get local issuer certificate (bij het downloaden van een CSV in WP All Import)
 		curl_setopt( $handle, CURLOPT_SSL_VERIFYPEER, false );
 	}
@@ -289,6 +289,79 @@
 				}
 			}
 		}
+	}
+
+	add_action( 'add_meta_boxes', 'register_custom_meta_boxes' );
+	add_action( 'save_post', 'oft_post_to_product_save' );
+
+	function register_custom_meta_boxes() {
+		add_meta_box( 'oft_post_to_product', __( 'Gelinkt product', 'oft' ), 'oft_post_to_product_callback', 'post', 'advanced', 100 );
+	}
+
+	function oft_post_to_product_callback( $post ) {
+		wp_nonce_field( basename( __FILE__ ), 'oft_post_to_product_nonce' );
+		$prfx_stored_meta = get_post_meta( $post->ID );
+
+		$step = 50;
+
+		$query_args = array(
+			'post_type'			=> 'product',
+			'post_status'		=> array( 'publish', 'draft' ),
+			'posts_per_page'	=> $step,
+			'offset'			=> $step*$i,
+			'meta_key'			=> '_sku',
+			'orderby'			=> 'meta_value_num',
+			'order'				=> 'ASC',
+			'meta_query'		=> array(
+				'relation' => 'AND',
+				array(
+					'key'		=> '_thumbnail_id',
+					'compare'	=> 'EXISTS',
+				),
+			),
+		);
+
+		$current_products = new WP_Query( $query_args );
+		
+		if ( $current_products->have_posts() ) {
+			while ( $current_products->have_posts() ) {
+				$current_products->the_post();
+				$sku = get_post_meta( get_the_ID(), '_sku', true );
+				$list[$sku] = get_the_title();
+			}
+			wp_reset_postdata();
+		}
+
+		?>
+			<p>
+				<label for="meta-select" class=""><?php _e( 'Selecteer artikelnummer', 'oft' ); ?></label>
+				<select name="meta-select" id="meta-select">
+					<?php foreach ( $list as $sku => $title ) : ?>
+						<option value="<?php echo $sku; ?>" <?php if ( isset ( $prfx_stored_meta['meta-select'] ) ) selected( $prfx_stored_meta['meta-select'][0], $sku ); ?>><?php echo $title; ?></option>';
+					<?php endforeach; ?>
+				</select>
+			</p>
+		<?php
+	}
+
+	function oft_post_to_product_save( $post_id ) {
+		$is_autosave = wp_is_post_autosave( $post_id );
+		$is_revision = wp_is_post_revision( $post_id );
+		$is_valid_nonce = ( isset( $_POST[ 'oft_post_to_product_nonce' ] ) && wp_verify_nonce( $_POST[ 'oft_post_to_product_nonce' ], basename( __FILE__ ) ) ) ? 'true' : 'false';
+		
+		if ( $is_autosave or $is_revision or ! $is_valid_nonce ) {
+			return;
+		}
+	 
+		if( isset( $_POST[ 'meta-select' ] ) ) {
+			update_post_meta( $post_id, 'meta-select', sanitize_text_field( $_POST[ 'meta-select' ] ) );
+		}
+	}
+
+	add_action( 'woocommerce_single_product_summary', 'show_hipster_icons', 75 );
+
+	function show_hipster_icons() {
+		return "HALLO";
 	}
 
 
