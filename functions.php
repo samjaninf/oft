@@ -459,18 +459,24 @@
 		<?php
 	}
 
-	function output_latest_post() {
+	function output_latest_post( $atts ) {
 		// Geef de gewenste SLUG van de categorie in
 		$args = shortcode_atts( array(
 			'category' => 'productnieuws',
 		), $atts );
-		$myposts = get_posts( array( 'numberposts' => 1, 'category_name' => $args['category'] ) );
+		$my_posts = get_posts( array( 'numberposts' => 1, 'category_name' => $args['category'] ) );
 		
-		$msg = "";
-		foreach ( $my_posts as $post ) {
-			setup_postdata( $post );
-			$msg .= "<div class='latest-news'><h1>".apply_filters( 'the_title', get_the_content( $post->ID ) )."</h1>".apply_filters( 'the_content', get_the_content( $post->ID ) )."</div>";
+		// var_dump_pre($my_posts);
+
+		if ( count($my_posts) > 0 ) {
+			foreach ( $my_posts as $post ) {
+				setup_postdata( $post );
+				$msg .= "<div class='latest-news'><h1>".get_the_title( $post->ID )."</h1>".apply_filters( 'the_content', get_the_content( $post->ID ) )."</div>";
+			}
+		} else {
+			$msg .= "<p>Geen berichten gevonden in de categorie '".$atts['category']."'.</p>";
 		}
+
 		wp_reset_postdata();
 
 		return $msg;
