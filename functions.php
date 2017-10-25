@@ -2,12 +2,21 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
-	// Laad het child theme NIET MEER NODIG BIJ STOREFRONT MAAR MISSCHIEN NUTTIG VOOR VERTALINGEN
-	// add_action( 'wp_enqueue_scripts', 'load_child_theme' );
+	// Laad het child theme NIET MEER NODIG BIJ STOREFRONT MAAR NUTTIG VOOR VERTALINGEN EN BOOTSTRAP
+	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
+		wp_enqueue_style( 'bootstrap_css', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css' );
+		wp_enqueue_style( 'main_css', get_template_directory_uri() . '/style.css' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oft', get_stylesheet_directory().'/languages' );
+	}
+
+	add_action( 'wp_enqueue_scripts', 'load_extra_js');
+
+	function load_extra_js() {
+		global $wp_scripts;
+		wp_enqueue_script( 'bootstrap_js', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js');
 	}
 
 	// Sta HTML-attribuut 'target' toe in beschrijvingen van taxonomieën
@@ -415,43 +424,41 @@
 	// Voer de shortcodes uit
 	add_shortcode( 'mailchimp_subscribe', 'output_mailchimp_form' );
 	add_shortcode( 'latest_post', 'output_latest_post' );
-	// add_shortcode( 'latest_testimonial', 'output_latest_post' );
-	// add_shortcode( 'latest_campaign_news', 'output_latest_campaign_post' );
 
 	function output_mailchimp_form() {
 		?>
-		<form>
-			<div class="form-row justify-content-center">
-				<div class="col-md-4 m-2">
+		<form class="rounded p-3" novalidate>
+			<div class="form-row">
+				<div class="col-md-6">
 					<input type="text" class="form-control" name="fname" id="fname" placeholder="Voornaam" value="" maxlength="35" autocomplete="off" required>
 					<div class="feedback">Gelieve je voornaam in te geven</div>
 				</div>
-				<div class="col-md-4 m-2">
+				<div class="col-md-6">
 					<input type="text" class="form-control" name="lname" id="lname" placeholder="Familienaam" value="" maxlength="35" autocomplete="off" required>
 					<div class="feedback">Gelieve je familienaam in te geven</div>
 				</div>
 			</div>
-			<div class="form-row justify-content-center">
-				<div class="col-md-4 m-2">
+			<div class="form-row">
+				<div class="col-md-6">
 					<input type="email" class="form-control" name="email" id="email" placeholder="E-mailadres" maxlength="50" autocomplete="off" required>
 					<div class="feedback">Geef een geldig e-mailadres in</div>
 				</div>
-				<div class="col-md-4 m-2">
+				<div class="col-md-6">
 					<input type="tel" class="form-control" name="zip" id="zip" placeholder="Postcode" maxlength="4" autocomplete="off" required>
 					<div class="feedback">Geef een geldige postcode in</div>
 				</div>
 			</div>
-			<div class="row mt-4 mb-2 mx-2 align-items-center">
-				<div class="col-md-8 p-2 text-center">
+			<div class="row">
+				<div class="col-md-8">
 					<small><span id="info">Je hebt nog niet alle vereiste velden ingevuld. Nog even volhouden!</span></small>
 				</div>
-				<div class="col-md-4 p-2 text-center">
+				<div class="col-md-4">
 					<button type="submit" class="btn btn-primary" disabled>Hou me op de hoogte</button>
 					<div class="fa fa-spinner fa-spin"></div>
 				</div>
 			</div>
-			<div class="row mb-4 mx-2 align-items-center result-row">
-				<div class="col text-center">
+			<div class="row result-row">
+				<div class="col">
 					<div class="result"></div>
 				</div>
 			</div>
