@@ -49,6 +49,7 @@
 	}
 
 
+
 	################
 	#  TAXONOMIES  #
 	################
@@ -404,6 +405,135 @@
 		$pdffile->WriteHTML($templatecontent);
 		$pdffile->Output( WP_CONTENT_DIR."/".$sku.".pdf", "F" );
 	}
+
+
+
+	###############
+	#  MAILCHIMP  #
+	###############
+
+	// Voer de shortcodes uit
+	add_shortcode( 'mailchimp_subscribe', 'output_mailchimp_form' );
+	add_shortcode( 'latest_post', 'output_latest_post' );
+	// add_shortcode( 'latest_testimonial', 'output_latest_post' );
+	// add_shortcode( 'latest_campaign_news', 'output_latest_campaign_post' );
+
+	function output_mailchimp_form() {
+		?>
+		<form>
+			<div class="form-row justify-content-center">
+				<div class="col-md-4 m-2">
+					<input type="text" class="form-control" name="fname" id="fname" placeholder="Voornaam" value="" maxlength="35" autocomplete="off" required>
+					<div class="feedback">Gelieve je voornaam in te geven</div>
+				</div>
+				<div class="col-md-4 m-2">
+					<input type="text" class="form-control" name="lname" id="lname" placeholder="Familienaam" value="" maxlength="35" autocomplete="off" required>
+					<div class="feedback">Gelieve je familienaam in te geven</div>
+				</div>
+			</div>
+			<div class="form-row justify-content-center">
+				<div class="col-md-4 m-2">
+					<input type="email" class="form-control" name="email" id="email" placeholder="E-mailadres" maxlength="50" autocomplete="off" required>
+					<div class="feedback">Geef een geldig e-mailadres in</div>
+				</div>
+				<div class="col-md-4 m-2">
+					<input type="tel" class="form-control" name="zip" id="zip" placeholder="Postcode" maxlength="4" autocomplete="off" required>
+					<div class="feedback">Geef een geldige postcode in</div>
+				</div>
+			</div>
+			<div class="row mt-4 mb-2 mx-2 align-items-center">
+				<div class="col-md-8 p-2 text-center">
+					<small><span id="info">Je hebt nog niet alle vereiste velden ingevuld. Nog even volhouden!</span></small>
+				</div>
+				<div class="col-md-4 p-2 text-center">
+					<button type="submit" class="btn btn-primary" disabled>Hou me op de hoogte</button>
+					<div class="fa fa-spinner fa-spin"></div>
+				</div>
+			</div>
+			<div class="row mb-4 mx-2 align-items-center result-row">
+				<div class="col text-center">
+					<div class="result"></div>
+				</div>
+			</div>
+		</form>
+		<?php
+	}
+
+	function output_latest_post() {
+		// Geef de gewenste SLUG van de categorie in
+		$args = shortcode_atts( array(
+			'category' => 'productnieuws',
+		), $atts );
+		$myposts = get_posts( array( 'numberposts' => 1, 'category_name' => $args['category'] ) );
+		
+		$msg = "";
+		foreach ( $my_posts as $post ) {
+			setup_postdata( $post );
+			$msg .= "<div class='latest-news'><h1>".apply_filters( 'the_title', get_the_content( $post->ID ) )."</h1>".apply_filters( 'the_content', get_the_content( $post->ID ) )."</div>";
+		}
+		wp_reset_postdata();
+
+		return $msg;
+	}
+
+	function get_latest_newsletters() {
+		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
+		$folder_id = 'd302e08412';
+
+		$args = array(
+			'headers' => array(
+				'Authorization' => 'Basic ' .base64_encode('user:'.MC_APIKEY)
+			)
+		);
+
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date_i18n( 'Y-m-d', strtotime('-3 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=ASC', $args );
+		
+		$mailings = "";
+		if ( $response['response']['code'] == 200 ) {
+			$body = json_decode($response['body']);
+			$mailings .= "<p>Dit zijn de nieuwsbrieven van de afgelopen drie maanden:</p><ul>";
+
+			foreach ( array_reverse($body->campaigns) as $campaign ) {
+				$mailings .= '<li><a href="'.$campaign->long_archive_url.'" target="_blank">'.$campaign->settings->subject_line.'</a> ('.trim( date_i18n( 'j F Y', strtotime($campaign->send_time) ) ).')</li>';
+			}
+
+			$mailings .= "</ul>";
+		}		
+
+		return $mailings;
+	}
+
+	function subscribe_to_mailchimp_list( $email, $list_id = MC_LIST_ID ) {
+		global $sitepress;
+		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
+		$language = $sitepress->get_current_language();
+		$member = md5( strtolower( $email ) );
+		
+		$args = array(
+			'headers' => array(
+				'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
+			)
+		);
+
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members/'.$member, $args );
+		 
+		$msg = "";
+		if ( $response['response']['code'] == 200 ) {
+			$body = json_decode($response['body']);
+
+			if ( $body->status === "subscribed" ) {
+				// INGESCHREVEN
+			} else {
+				// NIET MEER INGESCHREVEN
+			}
+		} else {
+			// NOG NOOIT INGESCHREVEN
+		}
+
+		return "<p>".__( 'U bent vanaf nu geabonneerd op de OFT-nieuwsbrief.', 'oft' )."</p>";
+	}
+
+
 
 
 	###############
