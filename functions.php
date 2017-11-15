@@ -417,6 +417,23 @@
 		$pdffile->Output( WP_CONTENT_DIR."/".$sku.".pdf", "F" );
 	}
 
+	// Voeg een bericht toe bovenaan alle adminpagina's
+	add_action( 'admin_notices', 'oxfam_admin_notices' );
+
+	function oxfam_admin_notices() {
+		global $pagenow, $post_type;
+		$screen = get_current_screen();
+		// var_dump($screen);
+
+		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
+			if ( $pagenow === 'edit.php' and $post_type === 'product' and current_user_can( 'edit_products' ) ) {
+				echo '<div class="notice notice-warning">';
+					echo '<p>Hou er rekening mee dat alle volumes in g / ml ingegeven worden, zonder eenheid!</p>';
+				echo '</div>';
+			}
+		}
+	}
+
 
 
 	###############
