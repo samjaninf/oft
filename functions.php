@@ -406,9 +406,12 @@
 		$templatecontent = fread( $templatefile, filesize($templatelocatie) );
 		
 		$sku = $product->get_sku();
-		$templatecontent = str_replace( "#artikel", $sku, $templatecontent );
-		$templatecontent = str_replace( "#prijs", wc_price( $product->get_price() ), $templatecontent );
-		$templatecontent = str_replace( "#merk", $product->get_attribute('pa_merk'), $templatecontent );
+		$templatecontent = str_replace( "###SKU###", $sku, $templatecontent );
+		$templatecontent = str_replace( "###DESCRIPTION###", wc_price( $product->get_description() ), $templatecontent );
+		// $templatecontent = str_replace( "###BRAND###", $product->get_attribute('pa_merk'), $templatecontent );
+		$templatecontent = str_replace( "###EAN###", $product->get_attribute('pa_ean'), $templatecontent );
+		$templatecontent = str_replace( "###OMPAK###", $product->get_attribute('pa_ompakhoeveelheid'), $templatecontent );
+		$templatecontent = str_replace( "###LABELS###", $product->get_attribute('pa_biocertificatie'), $templatecontent );
 		
 		$pdffile = new HTML2PDF( "P", "A4", "nl" );
 		$pdffile->pdf->SetAuthor( "Oxfam Fair Trade cvba" );
