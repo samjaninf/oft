@@ -19,6 +19,28 @@ $see-through-red: rgba(250, 22, 50, 0.9);
 /*  CONTENT  */
 /*************/
 
+@font-face {
+	font-family: Oxfam;
+	src: url('assets/oxfam.ttf');
+}
+
+h1, h2 {
+	font-family: Oxfam;
+}
+
+.error404 {
+	background-image: url('assets/background-404.jpeg');
+}
+
+.bt-section-space {
+	padding-top: 2em;
+	padding-bottom: 2em;
+}
+
+.widget_search .search-field {
+	font-family: Arial;
+}
+
 .latest-news {
 	text-align: center;
 }
@@ -27,7 +49,6 @@ $see-through-red: rgba(250, 22, 50, 0.9);
 .fa-spinner {
 	display: none;
 }
-
 
 
 /*************/
@@ -92,20 +113,20 @@ div.nm-single-product.product_tag-promo figure.woocommerce-product-gallery__wrap
 
 img.organic {
 	@include icon();
-	background-image: url('images/icon-organic.png');
+	background-image: url('assets/icon-organic.png');
 }
 
 img.veggie {
 	@include icon();
-	background-image: url('images/icon-veggie.png');
+	background-image: url('assets/icon-veggie.png');
 }
 
 img.vegan {
 	@include icon();
-	background-image: url('images/icon-vegan.png');
+	background-image: url('assets/icon-vegan.png');
 }
 
 img.gluten-free {
 	@include icon();
-	background-image: url('images/icon-gluten-free.png');
+	background-image: url('assets/icon-gluten-free.png');
 }

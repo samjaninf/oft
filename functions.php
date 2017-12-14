@@ -40,9 +40,9 @@
 	}
 	
 	// Allerhande tweaks na het initialiseren van WordPress
-	add_action( 'init', 'remove_unnecessary_actions', 20 );
+	// add_action( 'init', 'remove_storefront_actions', 20 );
 	
-	function remove_unnecessary_actions() {
+	function remove_storefront_actions() {
 		// Verwijder de productzoeker en de mini-cart in de header rechtsboven
 		remove_action( 'storefront_header', 'storefront_product_search', 40 );
 		remove_action( 'storefront_header', 'storefront_header_cart', 60 );
@@ -57,6 +57,16 @@
 		
 		// Verwijder de default credits in de footer
 		remove_action( 'storefront_footer', 'storefront_credit', 20 );
+	}
+
+	// Allerhande tweaks na het initialiseren van WordPress
+	add_action( 'init', 'remove_alone_actions', 20 );
+
+	function remove_alone_actions() {
+		// Verwijder alle buttons om te kopen BEARS THEMES HEEFT ZE AL VERWIJDERD, PAK DE CUSTOM GEDEFINIEERDE ACTIONS
+		remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', 'woocommerce_template_loop_add_to_cart', 10 );
+		remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', '_bearsthemes_yith_add_compare_button', 10 );
+		// remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
 	}
 
 
