@@ -2,12 +2,12 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
-	// Laad het child theme NIET MEER NODIG BIJ STOREFRONT MAAR NUTTIG VOOR VERTALINGEN EN BOOTSTRAP
+	// Laad het child theme NIET MEER NODIG BIJ STOREFRONT MAAR NUTTIG VOOR VERTALINGEN EN ANDERE THEMA'S
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		// VERSTOORT LAYOUT
-		// wp_enqueue_style( 'bootstrap_css', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css' );
+		// BOOTSTRAP REEDS INGELADEN DOOR ALONE
+		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.0.0' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oft', get_stylesheet_directory().'/languages' );
 	}

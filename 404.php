@@ -1,8 +1,3 @@
-<?php
-/**
- * The template for displaying 404 pages (Not Found)
- */
-?>
 <?php get_header(); ?>
 <?php $alone_sidebar_position = function_exists( 'fw_ext_sidebars_get_current_position' ) ? fw_ext_sidebars_get_current_position() : 'right'; ?>
 <div class="no-header-image"></div>
@@ -17,8 +12,9 @@
 					<div class="page-content">
 						<p><?php esc_html_e( 'It looks like nothing was found at this location. Maybe try a search?', 'alone' ); ?></p>
 						<?php get_search_form(); ?>
-						<p><?php esc_html_e('Or go back to', 'alone') ?> <a href="<?php echo esc_attr(get_home_url()); ?>"><?php esc_html_e('Homepage', 'alone') ?>.</a></p>
-						<p><?php esc_html_e( 'Do you have a question? Please ask us using this form.', 'alone' ); ?></p>
+						<p><?php esc_html_e('Or go back to', 'alone') ?> <a href="<?php echo esc_attr(get_home_url()); ?>"><?php esc_html_e('the homepage', 'alone') ?></a>.</p>
+						<?php $page = get_page_by_title('Contact'); ?>
+						<p><?php esc_html_e( 'Do you have a question? Feel free to ask us using', 'alone' ) ?> <a href="<?php echo esc_attr(get_permalink($page->ID)); ?>"><?php esc_html_e('the homepage', 'alone') ?></a>.</p>
 					</div><!-- .page-content -->
 				</div>
 			</div><!-- /.content-area-->
