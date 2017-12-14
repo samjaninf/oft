@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: alone\n"
-"POT-Creation-Date: 2017-12-14 16:18+0100\n"
-"PO-Revision-Date: 2017-12-14 16:18+0100\n"
+"POT-Creation-Date: 2017-12-14 18:38+0100\n"
+"PO-Revision-Date: 2017-12-14 18:38+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language: nl_NL\n"
@@ -21,31 +21,35 @@ msgstr ""
 "X-Poedit-SearchPath-0: 404.php\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: 404.php:15
+#: 404.php:10
 msgid "404"
 msgstr ""
 
-#: 404.php:16
+#: 404.php:11
 msgid "Ohh! Page not found"
 msgstr "Oeps! Hier liep iets mis."
 
-#: 404.php:18
+#: 404.php:13
 msgid "It looks like nothing was found at this location. Maybe try a search?"
 msgstr ""
 "We konden de pagina die je opvroeg niet vinden. Misschien kan een kleine "
 "zoektocht raad brengen?"
 
-#: 404.php:20
+#: 404.php:15
 msgid "Or go back to"
 msgstr "Of keer terug naar"
 
-#: 404.php:20
-msgid "Homepage"
+#: 404.php:15
+msgid "the homepage"
 msgstr "de startpagina"
 
-#: 404.php:21
-msgid "Do you have a question? Please ask us using this form."
-msgstr "Heb je een vraag voor ons? Stel die dan gerust via ons formulier."
+#: 404.php:17
+msgid "Do you have a question? Feel free to ask us using"
+msgstr "Heb je een vraag voor ons? Stel die dan gerust via"
+
+#: 404.php:17
+msgid "our form"
+msgstr "ons formulier"
 
 #. Theme Name of the plugin/theme
 msgid "Oxfam Fair Trade"
@@ -56,8 +60,8 @@ msgid "https://github.com/OxfamFairTrade/oft"
 msgstr ""
 
 #. Description of the plugin/theme
-msgid "Tweaked theme based on Storefront. Also includes all custom functions!"
-msgstr ""
+msgid "Tweaked theme based on Alone. Also includes all custom functions!"
+msgstr "Aangepast thema gebaseerd op Alone. Bevat ook alle custom functies!"
 
 #. Author of the plugin/theme
 msgid "Frederik Neirynck"

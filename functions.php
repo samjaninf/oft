@@ -2,14 +2,15 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
-	// Laad het child theme NIET MEER NODIG BIJ STOREFRONT MAAR NUTTIG VOOR VERTALINGEN EN ANDERE THEMA'S
+	// Laad het child theme
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		// BOOTSTRAP REEDS INGELADEN DOOR ALONE
+		// Zorgt ervoor dat de stylesheet van het child theme zeker na alone.css ingeladen wordt
 		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.0.0' );
+		// BOOTSTRAP REEDS INGELADEN DOOR ALONE
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
-		load_child_theme_textdomain( 'oft', get_stylesheet_directory().'/languages' );
+		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
 	}
 
 	// Laad custom JS-files
@@ -17,7 +18,6 @@
 
 	function load_extra_js() {
 		global $wp_scripts;
-		// DOET NIKS?
 		// wp_enqueue_script( 'bootstrap_js', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js');
 	}
 
@@ -48,8 +48,8 @@
 		remove_action( 'storefront_header', 'storefront_header_cart', 60 );
 
 		// Laat de categorie- en auteurinfo vallen bij blogposts
-		// remove_action( 'storefront_loop_post', 'storefront_post_meta', 20 );
-		// remove_action( 'storefront_single_post', 'storefront_post_meta', 20 );
+		remove_action( 'storefront_loop_post', 'storefront_post_meta', 20 );
+		remove_action( 'storefront_single_post', 'storefront_post_meta', 20 );
 
 		// Verwijder alle buttons om te kopen
 		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
@@ -66,7 +66,6 @@
 		// Verwijder alle buttons om te kopen BEARS THEMES HEEFT ZE AL VERWIJDERD, PAK DE CUSTOM GEDEFINIEERDE ACTIONS
 		remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', 'woocommerce_template_loop_add_to_cart', 10 );
 		remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', '_bearsthemes_yith_add_compare_button', 10 );
-		// remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
 	}
 
 
