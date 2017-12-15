@@ -1618,7 +1618,8 @@ if(! function_exists('_bearsthemes_change_excerpt_more')) :
 	 return '… <a href="'. get_permalink($post->ID) . '">' . __('more', 'alone') . '</a>';
 	}
 endif;
-add_filter('excerpt_more', '_bearsthemes_change_excerpt_more');
+// GEWIJZIGD: Extra link uitgeschakeld, is dubbelop met button
+// add_filter('excerpt_more', '_bearsthemes_change_excerpt_more');
 
 if(! function_exists('_alone_admin_notice_page_builder_conflict')) :
 	function _alone_admin_notice_page_builder_conflict() {

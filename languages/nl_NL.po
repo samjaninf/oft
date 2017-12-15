@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: alone\n"
 "POT-Creation-Date: 2017-12-14 18:38+0100\n"
-"PO-Revision-Date: 2017-12-14 18:38+0100\n"
+"PO-Revision-Date: 2017-12-15 13:09+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language: nl_NL\n"
@@ -23,7 +23,7 @@ msgstr ""
 
 #: 404.php:10
 msgid "404"
-msgstr ""
+msgstr "Error 404"
 
 #: 404.php:11
 msgid "Ohh! Page not found"
