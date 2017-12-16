@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: alone\n"
-"POT-Creation-Date: 2017-12-16 18:12+0100\n"
-"PO-Revision-Date: 2017-12-16 18:12+0100\n"
+"POT-Creation-Date: 2017-12-16 18:27+0100\n"
+"PO-Revision-Date: 2017-12-16 18:27+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language: nl_NL\n"
@@ -21,6 +21,7 @@ msgstr ""
 "X-Poedit-SearchPath-0: 404.php\n"
 "X-Poedit-SearchPath-1: post-navigation.php\n"
 "X-Poedit-SearchPath-2: templates\n"
+"X-Poedit-SearchPath-3: woocommerce\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
 #: 404.php:10
@@ -64,6 +65,10 @@ msgstr "Volgende bericht"
 #: templates/related-articles/related-articles-1.php:13
 msgid "Related Articles"
 msgstr "Gerelateerde berichten"
+
+#: woocommerce/single-product/related.php:27
+msgid "Related products"
+msgstr "Gerelateerde producten"
 
 #. Theme Name of the plugin/theme
 msgid "Oxfam Fair Trade"
