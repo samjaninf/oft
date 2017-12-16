@@ -2,8 +2,8 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
-	// Laad het child theme
-	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
+	// Laad het child theme na het hoofdthema
+	add_action( 'wp_enqueue_scripts', 'load_child_theme', 999 );
 
 	function load_child_theme() {
 		// Zorgt ervoor dat de stylesheet van het child theme zeker na alone.css ingeladen wordt
