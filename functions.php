@@ -369,7 +369,7 @@
 		}
 	}
 
-	add_action( 'woocommerce_single_product_summary', 'show_hipster_icons', 75 );
+	// add_action( 'woocommerce_single_product_summary', 'show_hipster_icons', 75 );
 
 	function show_hipster_icons() {
 		global $product, $sitepress;
@@ -444,6 +444,13 @@
 				echo '</div>';
 			}
 		}
+	}
+
+	// Wijzig het gebruikte datumformaat in widgets
+	add_filter( '_filter_widget_time_format', 'get_belgian_date_format' );
+
+	function get_belgian_date_format( $date_format ) {
+		return 'l j F Y';
 	}
 
 

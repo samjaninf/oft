@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: alone\n"
-"POT-Creation-Date: 2017-12-14 18:38+0100\n"
-"PO-Revision-Date: 2017-12-15 13:09+0100\n"
+"POT-Creation-Date: 2017-12-16 18:12+0100\n"
+"PO-Revision-Date: 2017-12-16 18:12+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language: nl_NL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.5\n"
+"X-Generator: Poedit 2.0.4\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
@@ -19,6 +19,8 @@ msgstr ""
 "esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
 "_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: 404.php\n"
+"X-Poedit-SearchPath-1: post-navigation.php\n"
+"X-Poedit-SearchPath-2: templates\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
 #: 404.php:10
@@ -35,21 +37,33 @@ msgstr ""
 "We konden de pagina die je opvroeg niet vinden. Misschien kan een kleine "
 "zoektocht raad brengen?"
 
-#: 404.php:15
-msgid "Or go back to"
-msgstr "Of keer terug naar"
-
-#: 404.php:15
-msgid "the homepage"
-msgstr "de startpagina"
-
-#: 404.php:17
+#: 404.php:16
 msgid "Do you have a question? Feel free to ask us using"
 msgstr "Heb je een vraag voor ons? Stel die dan gerust via"
 
-#: 404.php:17
+#: 404.php:16
 msgid "our form"
 msgstr "ons formulier"
+
+#: 404.php:17
+msgid "Or go back to"
+msgstr "Of keer terug naar"
+
+#: 404.php:17
+msgid "the homepage"
+msgstr "de startpagina"
+
+#: post-navigation.php:13
+msgid "Previous Story"
+msgstr "Vorige bericht"
+
+#: post-navigation.php:14
+msgid "Next Story"
+msgstr "Volgende bericht"
+
+#: templates/related-articles/related-articles-1.php:13
+msgid "Related Articles"
+msgstr "Gerelateerde berichten"
 
 #. Theme Name of the plugin/theme
 msgid "Oxfam Fair Trade"
