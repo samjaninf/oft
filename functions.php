@@ -627,6 +627,82 @@
 	#  MAILCHIMP  #
 	###############
 
+	add_filter( 'wpcf7_posted_data', 'handle_mc_subsribe', 5, 1 );
+	add_filter( 'wpcf7_validate_email*', 'check_mc_status', 20, 2 );
+ 
+	function check_mc_status( $result, $tag ) {
+		if ( $tag->name === 'newsletter-email' ) {
+			$list_id = MC_LIST_ID;
+			$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
+			$member = md5( strtolower( $_POST['newsletter-email'] ) );
+			
+			$args = array(
+				'headers' => array(
+					'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
+				)
+			);
+			$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members/'.$member, $args );
+
+			if ( $response['response']['code'] == 200 ) {
+				$body = json_decode($response['body']);
+				if ( $body->status === "subscribed" ) {
+					// AL INGESCHREVEN, GEEF FOUTMELDING
+					$result->invalidate( $tag, __( 'Dit e-mailadres is reeds ingeschreven!', 'oft' ) );
+				} else {
+					// NIET LANGER INGESCHREVEN, STUUR CONFIRMATION
+					$result->invalidate( $tag, __( 'U was ooit reeds geabonneerd met dit e-mailadres.', 'oft' ) );
+				}
+			}
+		}
+		return $result;
+	}
+
+	function handle_mc_subsribe( $posted_data ) {
+		// Nederlandstalige inschrijvingsformulier
+		if ( $posted_data['_wpcf7'] == 1054 and isset( $posted_data['newsletter-email'] ) ) {
+			$list_id = MC_LIST_ID;
+			$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
+			$member = md5( strtolower( $posted_data['newsletter-email'] ) );
+			
+			$args = array(
+				'headers' => array(
+					'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
+				)
+			);
+
+			$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members/'.$member, $args );
+			 
+			if ( $response['response']['code'] == 200 ) {
+				$body = json_decode($response['body']);
+
+				if ( $body->status === "subscribed" ) {
+					// REEDS INGESCHREVEN, GEEF FOUTMELDING
+					$posted_data['newsletter-email'] = "";
+					$posted_data['error'] = __( 'U was reeds ingeschreven! Gelieve <a href="https://www.mailchimp.com" target="_blank">hier</a> uw profiel te bekijken.', 'oft' );
+				} else {
+					// NIET MEER INGESCHREVEN, GEEF FOUTMELDING
+					$posted_data['newsletter-email'] = "";
+					$posted_data['error'] = __( 'Gelieve op de speciale link in de bevestigingsmail te klikken om uw hernieuwde interesse te bevestigen.', 'oft' );
+				}
+			} else {
+				// NOG NOOIT INGESCHREVEN, VOER INSCHRIJVING UIT
+				$posted_data['success'] = __( 'U bent vanaf nu geabonneerd op de OFT-nieuwsbrief.', 'oft' );
+			}
+		} else {
+			# Werp een verzenderror op door de bestemmeling te verwijderen
+			$posted_data['newsletter-email'] = "";
+		}
+		// write_log($posted_data);
+		return $posted_data;
+	}
+
+	add_filter( 'wpcf7_display_message', 'decode_html_characters', 10, 2 );
+	
+	function decode_html_characters( $message, $status ){
+		write_log($message);
+		return htmlspecialchars_decode($message);
+	}
+
 	// Voer de shortcodes uit
 	add_shortcode( 'mailchimp_subscribe', 'output_mailchimp_form' );
 	add_shortcode( 'latest_post', 'output_latest_post' );
@@ -747,7 +823,6 @@
 
 		return "<p>".__( 'U bent vanaf nu geabonneerd op de OFT-nieuwsbrief.', 'oft' )."</p>";
 	}
-
 
 
 
