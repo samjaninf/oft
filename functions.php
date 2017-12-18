@@ -113,6 +113,45 @@
 		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
 	}
 
+	// Extra metadata definiëren en bewaren op partnertaxonomie
+	add_action( 'product_partner_add_form_fields', 'add_partner_node_field', 10, 2 );
+	add_action( 'partner_node_edit_form_fields', 'edit_partner_node_field', 10, 2 );
+	add_action( 'created_product_partner', 'save_partner_node_meta', 10, 2 );
+	add_action( 'edited_product_partner', 'update_product_partner_meta', 10, 2 );
+
+	function add_partner_node_field( $taxonomy ) {
+		?>
+			<div class="form-field term-group">
+			<label for="partner-node"><?php _e( 'Node van partner op OWW-site', 'oft' ); ?></label>
+			<input type="number" min="1" max="99999" class="postform" id="partner-node" name="partner-node">
+			</div>
+		<?php
+	}
+
+	function edit_partner_node_field( $term, $taxonomy ) {
+		$partner_node = get_term_meta( $term->term_id, 'partner_node', true );
+		?>
+			<tr class="form-field term-group-wrap">
+				<th scope="row"><label for="partner-node"><?php _e( 'Node van partner op OWW-site', 'oft' ); ?></label></th>
+				<td><input type="number" min="1" max="99999" class="postform" id="partner-node" name="partner-node"></td>
+			</tr>
+		<?php
+	}
+
+	function save_partner_node_meta( $term_id, $tt_id ) {
+		if( isset( $_POST['partner-node'] ) && '' !== $_POST['partner-node'] ) {
+			$group = sanitize_title( $_POST['partner-node'] );
+			add_term_meta( $term_id, 'partner-node', $group, true );
+		}
+	}
+
+	function update_product_partner_meta( $term_id, $tt_id ) {
+		if( isset( $_POST['partner-node'] ) && '' !== $_POST['partner-node'] ) {
+			$group = sanitize_title( $_POST['partner-node'] );
+			update_term_meta( $term_id, 'partner-node', $group );
+		}
+	}
+
 	// Creëer drie custom hiërarchische taxonomieën op producten om wijninfo in op te slaan
 	add_action( 'init', 'register_wine_taxonomy', 0 );
 	
@@ -348,6 +387,7 @@
 			<p>
 				<label for="oft-post-product" class=""><?php printf( __( 'Selecteer 1 van de %d actuele producten waarover dit bericht gaat:', 'oft' ), count($list) ); ?></label>
 				<select name="oft-post-product" id="oft-post-product">
+					<option value="EMPTY"><?php _e( '(geen)', 'oft' ); ?></option>
 					<?php foreach ( $list as $sku => $title ) : ?>
 						<option value="<?php echo $sku; ?>" <?php if ( isset ( $prfx_stored_meta['oft-post-product'] ) ) selected( $prfx_stored_meta['oft-post-product'][0], $sku ); ?>><?php echo $sku.': '.$title; ?></option>';
 					<?php endforeach; ?>
