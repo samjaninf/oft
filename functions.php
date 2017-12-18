@@ -89,6 +89,9 @@
 			'parent_item_colon' => __( 'Land:', 'oft' ),
 			'new_item_name' => __( 'Nieuwe partner', 'oft' ),
 			'add_new_item' => __( 'Voeg nieuwe partner toe', 'oft' ),
+			'view_item' => __( 'Partner bekijken', 'oft' ),
+			'edit_item' => __( 'Partner bewerken', 'oft' ),
+			'search_items' => __( 'Partners doorzoeken', 'oft' ),
 		);
 
 		$args = array(
@@ -114,42 +117,123 @@
 	}
 
 	// Extra metadata definiëren en bewaren op partnertaxonomie
-	add_action( 'product_partner_add_form_fields', 'add_partner_node_field', 10, 2 );
-	add_action( 'partner_node_edit_form_fields', 'edit_partner_node_field', 10, 2 );
-	add_action( 'created_product_partner', 'save_partner_node_meta', 10, 2 );
-	add_action( 'edited_product_partner', 'update_product_partner_meta', 10, 2 );
+	// add_action( 'product_partner_add_form_fields', 'add_partner_node_field', 10, 2 );
+	// add_action( 'created_product_partner', 'save_partner_node_meta', 10, 2 );
+	add_action( 'product_partner_edit_form_fields', 'edit_partner_node_field', 10, 2 );
+	add_action( 'edited_product_partner', 'update_partner_node_meta', 10, 2 );
+	add_action( 'admin_enqueue_scripts', 'load_wp_media' );
+	add_action( 'admin_footer', 'add_media_library_script' );
 
 	function add_partner_node_field( $taxonomy ) {
 		?>
 			<div class="form-field term-group">
-			<label for="partner-node"><?php _e( 'Node van partner op OWW-site', 'oft' ); ?></label>
-			<input type="number" min="1" max="99999" class="postform" id="partner-node" name="partner-node">
+			<label for="partner_node"><?php _e( 'Partnernode OWW-site', 'oft' ); ?></label>
+			<input type="number" min="1" max="99999" class="postform" id="partner_node" name="partner_node">
 			</div>
 		<?php
 	}
 
+	function save_partner_node_meta( $term_id, $tt_id ) {
+		if ( isset($_POST['partner_node']) && '' !== $_POST['partner_node'] ) {
+			add_term_meta( $term_id, 'partner_node', absint($_POST['partner_node']), true );
+		}
+		if( isset($_POST['partner_image_id']) && '' !== $_POST['partner_image_id'] ) {
+			update_term_meta( $term_id, 'partner_image_id', absint($_POST['partner_image_id']) );
+		}
+	}
+
 	function edit_partner_node_field( $term, $taxonomy ) {
-		$partner_node = get_term_meta( $term->term_id, 'partner_node', true );
 		?>
 			<tr class="form-field term-group-wrap">
-				<th scope="row"><label for="partner-node"><?php _e( 'Node van partner op OWW-site', 'oft' ); ?></label></th>
-				<td><input type="number" min="1" max="99999" class="postform" id="partner-node" name="partner-node"></td>
+				<th scope="row"><label for="partner_node"><?php _e( 'Partnernode OWW-site', 'oft' ); ?></label></th>
+				<td>
+					<?php $partner_node = get_term_meta( $term->term_id, 'partner_node', true ); ?>
+					<input type="number" min="1" max="99999" class="postform" id="partner_node" name="partner_node" value="<?php if ($partner_node) echo esc_attr($partner_node); ?>">
+				</td>
+			</tr>
+			 <tr class="form-field term-group-wrap">
+				<th scope="row"><label for="partner_image_id"><?php _e( 'Beeld', 'oft' ); ?></label></th>
+				<td>
+					<?php $image_id = get_term_meta( $term->term_id, 'partner_image_id', true ); ?>
+					<input type="hidden" id="partner_image_id" name="partner_image_id" value="<?php if ($image_id) echo esc_attr($image_id); ?>">
+					<div id="partner-image-wrapper">
+						<?php if ($image_id) echo wp_get_attachment_image( $image_id, 'thumbnail' ); ?>
+					</div>
+					<p>
+						<input type="button" class="button button-secondary showcase_tax_media_button" id="showcase_tax_media_button" name="showcase_tax_media_button" value="<?php _e( 'Kies foto', 'oft' ); ?>" />
+						<input type="button" class="button button-secondary showcase_tax_media_remove" id="showcase_tax_media_remove" name="showcase_tax_media_remove" value="<?php _e( 'Verwijder foto', 'oft' ); ?>" />
+					</p>
+				</td>
 			</tr>
 		<?php
 	}
 
-	function save_partner_node_meta( $term_id, $tt_id ) {
-		if( isset( $_POST['partner-node'] ) && '' !== $_POST['partner-node'] ) {
-			$group = sanitize_title( $_POST['partner-node'] );
-			add_term_meta( $term_id, 'partner-node', $group, true );
+	function update_partner_node_meta( $term_id, $tt_id ) {
+		if ( isset($_POST['partner_node']) && '' !== $_POST['partner_node'] ) {
+			add_term_meta( $term_id, 'partner_node', absint($_POST['partner_node']), true );
+		} else {
+			delete_term_meta( $term_id, 'partner_node' );
+		}
+		if( isset($_POST['partner_image_id']) && '' !== $_POST['partner_image_id'] ) {
+			update_term_meta( $term_id, 'partner_image_id', absint($_POST['partner_image_id']) );
+		} else {
+			delete_term_meta( $term_id, 'partner_image_id' );
 		}
 	}
 
-	function update_product_partner_meta( $term_id, $tt_id ) {
-		if( isset( $_POST['partner-node'] ) && '' !== $_POST['partner-node'] ) {
-			$group = sanitize_title( $_POST['partner-node'] );
-			update_term_meta( $term_id, 'partner-node', $group );
+	function load_wp_media() {
+		if( ! isset( $_GET['taxonomy'] ) || $_GET['taxonomy'] != 'product_partner' ) {
+			return;
 		}
+		wp_enqueue_media();
+	}
+
+	function add_media_library_script() {
+		if( ! isset( $_GET['taxonomy'] ) || $_GET['taxonomy'] != 'product_partner' ) {
+			return;
+		}
+		?>
+		<script>
+			jQuery(document).ready( function($) {
+				_wpMediaViewsL10n.insertIntoPost = '<?php _e( 'Stel in', 'oft' ); ?>';
+				function ct_media_upload(button_class) {
+					var _custom_media = true, _orig_send_attachment = wp.media.editor.send.attachment;
+					$('body').on('click', button_class, function(e) {
+						var button_id = '#'+$(this).attr('id');
+						var send_attachment_bkp = wp.media.editor.send.attachment;
+						var button = $(button_id);
+						_custom_media = true;
+						wp.media.editor.send.attachment = function(props, attachment){
+							if( _custom_media ) {
+								$('#partner_image_id').val(attachment.id);
+								$('#partner-image-wrapper').html('<img class="custom_media_image" src="" style="margin:0;padding:0;max-height:100px;float:none;" />');
+								$( '#partner-image-wrapper .custom_media_image' ).attr( 'src',attachment.url ).css( 'display','block' );
+							} else {
+								return _orig_send_attachment.apply( button_id, [props, attachment] );
+							}
+						}
+						wp.media.editor.open(button); return false;
+					});
+				}
+				ct_media_upload('.showcase_tax_media_button.button');
+				$('body').on('click','.showcase_tax_media_remove',function(){
+					$('#partner_image_id').val('');
+					$('#partner-image-wrapper').html('<img class="custom_media_image" src="" style="margin:0;padding:0;max-height:100px;float:none;" />');
+				});
+				$(document).ajaxComplete(function(event, xhr, settings) {
+					var queryStringArr = settings.data.split('&');
+					if( $.inArray('action=add-tag', queryStringArr) !== -1 ){
+						var xml = xhr.responseXML;
+						$response = $(xml).find('term_id').text();
+						if($response!=""){
+							// Clear the thumb image
+							$('#partner-image-wrapper').html('');
+						}
+					}
+				});
+			});
+		</script>
+		<?php
 	}
 
 	// Creëer drie custom hiërarchische taxonomieën op producten om wijninfo in op te slaan
@@ -440,6 +524,49 @@
 		$args['posts_per_page'] = 3;
 		$args['columns'] = 3;
 		return $args;
+	}
+
+
+
+	#############
+	#  CONTENT  #
+	#############
+
+	remove_action( 'woocommerce_archive_description', 'woocommerce_taxonomy_archive_description', 10 );
+	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count', 20 );
+	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30 );
+	add_action( 'woocommerce_before_shop_loop', 'output_oft_partner_info', 10 );
+	
+	function output_oft_partner_info() {
+		if ( is_tax('product_partner') ) {
+			$term_id = get_queried_object()->term_id;
+			$parent_term_id = absint( get_term( $term_id, 'product_partner' )->parent );
+			if ( $parent_term_id > 0 ) {
+				$parent_term = get_term( $parent_term_id, 'product_partner' );
+				// Er is een parent dus het is een land of een partner
+				$grandparent_term_id = absint( get_term( $parent_term_id, 'product_partner' )->parent );
+				if ( $grandparent_term_id > 0 ) {
+					// Er is opnieuw een parent dus de oorspronkelijke term is een partner
+					$grandparent_term = get_term( $grandparent_term_id, 'product_partner' );
+					if ( strlen(term_description()) > 10 ) {
+						echo '<blockquote>'.wc_format_content( term_description() ).'</blockquote>';
+						echo '<h5 style="text-align: right;">'.single_term_title( '', false ).' &mdash; '.$parent_term->name.', '.$grandparent_term->name.'</h5>';
+						$image_id = get_term_meta( get_queried_object()->term_id, 'partner_image_id', true );
+						if ($image_id) {
+							echo wp_get_attachment_image( $image_id, array(300,300), false, array( 'class' => 'partner-quote-icon' ) );
+						}
+					}
+					$partner_node = get_term_meta( get_queried_object()->term_id, 'partner_node', true );
+					if ( $partner_node > 0 ) {
+						echo '<h4><a href="https://www.oxfamwereldwinkels.be/node/'.$partner_node.'" target="_blank">Lees meer over deze partner =></a></h4>';
+					}
+					global $wp_query;
+					echo '<h3>'.$wp_query->found_posts.' producten van deze partner ...</h3>';
+				} else {
+					// Er is geen parent dus de oorspronkelijke term is een land
+				}
+			}
+		}
 	}
 
 
