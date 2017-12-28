@@ -363,7 +363,7 @@
 			'query_var' => true,
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
-			'rewrite' => array( 'slug' => 'allergen', 'with_front' => false ),
+			'rewrite' => array( 'slug' => 'allergeen', 'with_front' => false ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -450,10 +450,10 @@
 	}
 
 	// Creëer een custom hiërarchische taxonomie op producten om allergeneninfo in op te slaan
-	add_action( 'init', 'register_eco_taxonomy', 0 );
+	add_action( 'init', 'register_hipster_taxonomy', 0 );
 
 	function register_eco_taxonomy() {
-		$taxonomy_name = 'product_eco';
+		$taxonomy_name = 'product_hipster';
 		
 		$labels = array(
 			'name' => __( 'Hipstertermen', 'oft' ),
@@ -484,7 +484,7 @@
 			'query_var' => true,
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
-			'rewrite' => array( 'slug' => 'allergen', 'with_front' => false ),
+			'rewrite' => array( 'slug' => 'eco', 'with_front' => false ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -687,25 +687,16 @@
 
 	function check_mailchimp_status( $result, $tag ) {
 		if ( $tag->name === 'newsletter-email' ) {
-			$list_id = MC_LIST_ID;
-			$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
-			$member = md5( strtolower( $_POST['newsletter-email'] ) );
-			
-			$args = array(
-				'headers' => array(
-					'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
-				)
-			);
-			$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members/'.$member, $args );
+			$response = get_status_in_mailchimp_list( $_POST['newsletter-email'] );
 
 			if ( $response['response']['code'] == 200 ) {
 				$body = json_decode($response['body']);
 				if ( $body->status === "subscribed" ) {
-					// AL INGESCHREVEN, GEEF FOUTMELDING
+					// REEDS INGESCHREVEN
 					$result->invalidate( $tag, __( 'Dit e-mailadres is reeds ingeschreven!', 'oft' ) );
 				} else {
-					// NIET LANGER INGESCHREVEN, STUUR CONFIRMATION
-					$result->invalidate( $tag, __( 'U was ooit reeds geabonneerd met dit e-mailadres.', 'oft' ) );
+					// NIET LANGER INGESCHREVEN
+					$result->invalidate( $tag, __( 'Dit e-mailadres was al eens ingeschreven!', 'oft' ) );
 				}
 			}
 		}
@@ -718,27 +709,36 @@
 	function handle_mailchimp_subscribe( $posted_data ) {
 		// Nederlandstalige inschrijvingsformulier
 		if ( $posted_data['_wpcf7'] == 1054 and isset( $posted_data['newsletter-email'] ) ) {
-			$response = subscribe_to_mailchimp_list( $posted_data['newsletter-email'] );
+			$status = get_status_in_mailchimp_list( $_POST['newsletter-email'] );
 
-			if ( $response['response']['code'] == 200 ) {
-				$body = json_decode($response['body']);
+			if ( $status['response']['code'] == 200 ) {
+				$body = json_decode($status['body']);
 
 				if ( $body->status === "subscribed" ) {
-					// REEDS INGESCHREVEN, GEEF FOUTMELDING
-					$posted_data['newsletter-email'] = "";
-					$posted_data['error'] = __( 'U was reeds ingeschreven! Gelieve <a href="https://www.mailchimp.com" target="_blank">hier</a> uw profiel te bekijken.', 'oft' );
+					// REEDS INGESCHREVEN, TOON LINK OM PROFIEL TE BEKIJKEN
+					// $posted_data['newsletter-email'] = "";
+					$posted_data['validation_error'] = __( 'U was reeds ingeschreven! Gelieve <a href="https://www.mailchimp.com" target="_blank">hier</a> uw profiel te bekijken.', 'oft' );
 				} else {
-					// NIET MEER INGESCHREVEN, GEEF FOUTMELDING
-					$posted_data['newsletter-email'] = "";
-					$posted_data['error'] = __( 'Gelieve op de speciale link in de bevestigingsmail te klikken om uw hernieuwde interesse te bevestigen.', 'oft' );
+					// NIET LANGER INGESCHREVEN, VERSTUUR EXPLICIETE OPT-IN
+					// $posted_data['newsletter-email'] = "";
+					$posted_data['validation_error'] = __( 'Gelieve op de speciale link in de bevestigingsmail te klikken om uw hernieuwde interesse te bevestigen.', 'oft' );
 				}
 			} else {
 				// NOG NOOIT INGESCHREVEN, VOER INSCHRIJVING UIT
-				$posted_data['success'] = __( 'U bent vanaf nu geabonneerd op de OFT-nieuwsbrief.', 'oft' );
+				// Probleem: naam zit hier nog in 1 veld, moeten er 2 worden
+				$subscription = subscribe_to_mailchimp_list( $posted_data['newsletter-email'], $posted_data['newsletter-name'] );
+				
+				if ( $subscription['response']['code'] == 200 ) {
+					$body = json_decode($subscription['body']);
+					if ( $body->status === "subscribed" ) {
+						$posted_data['success'] = __( 'U bent vanaf nu geabonneerd op de OFT-nieuwsbrief.', 'oft' );
+					}
+				} else {
+					$posted_data['success'] = __( 'Er was een probleem!', 'oft' );
+				}
 			}
 		} else {
-			# Werp een verzenderror op door de bestemmeling te verwijderen
-			$posted_data['newsletter-email'] = "";
+			$posted_data['send_error'] = "TEST";
 		}
 		// write_log($posted_data);
 		return $posted_data;
@@ -754,7 +754,6 @@
 	function get_status_in_mailchimp_list( $email, $list_id = MC_LIST_ID ) {
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
 		$member = md5( strtolower( $email ) );
-		
 		$args = array(
 			'headers' => array(
 				'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
@@ -765,12 +764,21 @@
 		return $response;
 	}
 
-	function subscribe_to_mailchimp_list( $email, $list_id = MC_LIST_ID ) {
+	function subscribe_to_mailchimp_list( $email, $fname = '', $lname = '', $company = '', $list_id = MC_LIST_ID ) {
 		// global $sitepress;
 		// $language = $sitepress->get_current_language();
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
 		$member = md5( strtolower( $email ) );
-		$merge_fields = array( 'FNAME' => $first_name, 'LNAME' => $last_name, 'COMPANY' => 'Le Couperet', 'LANGUAGE' => 'Nederlands', 'SOURCE' => 'OFT-site', );
+		$merge_fields = array( 'LANGUAGE' => 'Nederlands', 'SOURCE' => 'OFT-site', );
+		if ( strlen($fname) > 2 ) {
+			$merge_fields['FNAME'] = $fname;
+		}
+		if ( strlen($lname) > 2 ) {
+			$merge_fields['LNAME'] = $lname;
+		}
+		if ( strlen($company) > 2 ) {
+			$merge_fields['COMPANY'] = $company;
+		}
 		
 		$args = array(
 			'headers' => array(
