@@ -108,7 +108,8 @@
 			'show_in_quick_edit' => true,
 			'show_admin_column' => true,
 			'query_var' => true,
-			'capabilities' => array( 'assign_terms' => 'edit_products', 'manage_terms' => 'manage_options', 'edit_terms' => 'manage_options', 'delete_terms' => 'manage_options' ),
+			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
+			'capabilities' => array( 'assign_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'partner', 'with_front' => false, 'ep_mask' => 'test' ),
 		);
 
@@ -251,6 +252,9 @@
 			'parent_item_colon' => __( 'Druif:', 'oft' ),
 			'new_item_name' => __( 'Nieuwe druivensoort', 'oft' ),
 			'add_new_item' => __( 'Voeg nieuwe druivensoort toe', 'oft' ),
+			'view_item' => __( 'Druivensoort bekijken', 'oft' ),
+			'edit_item' => __( 'Druivensoort bewerken', 'oft' ),
+			'search_items' => __( 'Druivensoorten doorzoeken', 'oft' ),
 		);
 
 		$args = array(
@@ -266,8 +270,8 @@
 			'show_tagcloud' => true,
 			'show_in_quick_edit' => false,
 			'show_admin_column' => false,
-			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen
-			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'create_sites' ),
+			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
+			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
 			// In de praktijk niet bereikbaar op deze URL want niet publiek!
 			'rewrite' => array( 'slug' => $name, 'with_front' => false, 'hierarchical' => false ),
 		);
@@ -287,6 +291,9 @@
 			'parent_item_colon' => __( 'Gerecht:', 'oft' ),
 			'new_item_name' => __( 'Nieuw gerecht', 'oft' ),
 			'add_new_item' => __( 'Voeg nieuw gerecht toe', 'oft' ),
+			'view_item' => __( 'Gerecht bekijken', 'oft' ),
+			'edit_item' => __( 'Gerecht bewerken', 'oft' ),
+			'search_items' => __( 'Gerechten doorzoeken', 'oft' ),
 		);
 
 		$args['labels'] = $labels;
@@ -308,6 +315,9 @@
 			'parent_item_colon' => __( 'Smaak:', 'oft' ),
 			'new_item_name' => __( 'Nieuwe smaak', 'oft' ),
 			'add_new_item' => __( 'Voeg nieuwe smaak toe', 'oft' ),
+			'view_item' => __( 'Smaak bekijken', 'oft' ),
+			'edit_item' => __( 'Smaak bewerken', 'oft' ),
+			'search_items' => __( 'Smaken doorzoeken', 'oft' ),
 		);
 
 		$args['labels'] = $labels;
@@ -332,6 +342,9 @@
 			'parent_item_colon' => __( 'Allergeen:', 'oft' ),
 			'new_item_name' => __( 'Nieuw allergeen', 'oft' ),
 			'add_new_item' => __( 'Voeg nieuw allergeen toe', 'oft' ),
+			'view_item' => __( 'Allergeen bekijken', 'oft' ),
+			'edit_item' => __( 'Allergeen bewerken', 'oft' ),
+			'search_items' => __( 'Allergenen doorzoeken', 'oft' ),
 		);
 
 		$args = array(
@@ -348,8 +361,8 @@
 			'show_in_quick_edit' => true,
 			'show_admin_column' => true,
 			'query_var' => true,
-			// Allergenen zullen in principe nooit meer toegevoegd moeten worden, dus catmans enkel rechten geven op toekenning
-			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'create_sites', 'manage_terms' => 'create_sites', 'delete_terms' => 'create_sites' ),
+			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
+			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'allergen', 'with_front' => false ),
 		);
 
@@ -434,6 +447,48 @@
 				}
 			}
 		}
+	}
+
+	// Creëer een custom hiërarchische taxonomie op producten om allergeneninfo in op te slaan
+	add_action( 'init', 'register_eco_taxonomy', 0 );
+
+	function register_eco_taxonomy() {
+		$taxonomy_name = 'product_eco';
+		
+		$labels = array(
+			'name' => __( 'Hipstertermen', 'oft' ),
+			'singular_name' => __( 'Hipsterterm', 'oft' ),
+			'all_items' => __( 'Alle hipstertermen', 'oft' ),
+			'parent_item' => __( 'Hipsterterm', 'oft' ),
+			'parent_item_colon' => __( 'Hipsterterm:', 'oft' ),
+			'new_item_name' => __( 'Nieuwe hipsterterm', 'oft' ),
+			'add_new_item' => __( 'Voeg nieuwe hipsterterm toe', 'oft' ),
+			'view_item' => __( 'Hipsterterm bekijken', 'oft' ),
+			'edit_item' => __( 'Hipsterterm bewerken', 'oft' ),
+			'search_items' => __( 'Hipstertermen doorzoeken', 'oft' ),
+		);
+
+		$args = array(
+			'labels' => $labels,
+			'description' => __( 'Duid de eigenschappen van het product aan', 'oft' ),
+			'public' => true,
+			'publicly_queryable' => true,
+			'hierarchical' => true,
+			'show_ui' => true,
+			'show_in_menu' => true,
+			'show_in_nav_menus' => true,
+			'show_in_rest' => true,
+			'show_tagcloud' => true,
+			'show_in_quick_edit' => true,
+			'show_admin_column' => true,
+			'query_var' => true,
+			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
+			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
+			'rewrite' => array( 'slug' => 'allergen', 'with_front' => false ),
+		);
+
+		register_taxonomy( $taxonomy_name, 'product', $args );
+		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
 	}
 
 	add_action( 'add_meta_boxes', 'register_custom_meta_boxes' );
@@ -627,10 +682,10 @@
 	#  MAILCHIMP  #
 	###############
 
-	add_filter( 'wpcf7_posted_data', 'handle_mc_subsribe', 5, 1 );
-	add_filter( 'wpcf7_validate_email*', 'check_mc_status', 20, 2 );
- 
-	function check_mc_status( $result, $tag ) {
+	// Controleer of het e-mailadres niet (ooit) geabonneerd was
+	add_filter( 'wpcf7_validate_email*', 'check_mailchimp_status', 20, 2 );
+
+	function check_mailchimp_status( $result, $tag ) {
 		if ( $tag->name === 'newsletter-email' ) {
 			$list_id = MC_LIST_ID;
 			$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
@@ -657,21 +712,14 @@
 		return $result;
 	}
 
-	function handle_mc_subsribe( $posted_data ) {
+	// Voer de effectieve inschrijving uit indien de validatie hierboven geen problemen gaf
+ 	add_filter( 'wpcf7_posted_data', 'handle_mailchimp_subscribe', 20, 1 );
+
+	function handle_mailchimp_subscribe( $posted_data ) {
 		// Nederlandstalige inschrijvingsformulier
 		if ( $posted_data['_wpcf7'] == 1054 and isset( $posted_data['newsletter-email'] ) ) {
-			$list_id = MC_LIST_ID;
-			$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
-			$member = md5( strtolower( $posted_data['newsletter-email'] ) );
-			
-			$args = array(
-				'headers' => array(
-					'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
-				)
-			);
+			$response = subscribe_to_mailchimp_list( $posted_data['newsletter-email'] );
 
-			$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members/'.$member, $args );
-			 
 			if ( $response['response']['code'] == 200 ) {
 				$body = json_decode($response['body']);
 
@@ -696,17 +744,77 @@
 		return $posted_data;
 	}
 
+	// Sta HTML-tags weer toe in resultaatboodschappen
 	add_filter( 'wpcf7_display_message', 'decode_html_characters', 10, 2 );
 	
-	function decode_html_characters( $message, $status ){
-		write_log($message);
+	function decode_html_characters( $message, $status ) {
 		return htmlspecialchars_decode($message);
 	}
 
-	// Voer de shortcodes uit
-	add_shortcode( 'mailchimp_subscribe', 'output_mailchimp_form' );
-	add_shortcode( 'latest_post', 'output_latest_post' );
+	function get_status_in_mailchimp_list( $email, $list_id = MC_LIST_ID ) {
+		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
+		$member = md5( strtolower( $email ) );
+		
+		$args = array(
+			'headers' => array(
+				'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
+			)
+		);
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members/'.$member, $args );
 
+		return $response;
+	}
+
+	function subscribe_to_mailchimp_list( $email, $list_id = MC_LIST_ID ) {
+		// global $sitepress;
+		// $language = $sitepress->get_current_language();
+		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
+		$member = md5( strtolower( $email ) );
+		$merge_fields = array( 'FNAME' => $first_name, 'LNAME' => $last_name, 'COMPANY' => 'Le Couperet', 'LANGUAGE' => 'Nederlands', 'SOURCE' => 'OFT-site', );
+		
+		$args = array(
+			'headers' => array(
+				'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
+			),
+			'body' => json_encode( array(
+				'email_address' => $email,
+				'status' => 'subscribed',
+				'merge_fields' => $merge_fields,
+			) ),
+		);
+		$response = wp_remote_post( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members', $args );
+
+		return $response;
+	}
+
+	function get_latest_newsletters() {
+		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
+		$folder_id = 'd302e08412';
+
+		$args = array(
+			'headers' => array(
+				'Authorization' => 'Basic ' .base64_encode('user:'.MC_APIKEY)
+			),
+		);
+
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date_i18n( 'Y-m-d', strtotime('-3 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=ASC', $args );
+		
+		$mailings = "";
+		if ( $response['response']['code'] == 200 ) {
+			$body = json_decode($response['body']);
+			$mailings .= "<p>Dit zijn de nieuwsbrieven van de afgelopen drie maanden:</p><ul>";
+
+			foreach ( array_reverse($body->campaigns) as $campaign ) {
+				$mailings .= '<li><a href="'.$campaign->long_archive_url.'" target="_blank">'.$campaign->settings->subject_line.'</a> ('.trim( date_i18n( 'j F Y', strtotime($campaign->send_time) ) ).')</li>';
+			}
+
+			$mailings .= "</ul>";
+		}		
+
+		return $mailings;
+	}
+
+	// add_shortcode( 'mailchimp_subscribe', 'output_mailchimp_form' );
 	function output_mailchimp_form() {
 		global $sitepress;
 		?>
@@ -744,14 +852,13 @@
 		<?php
 	}
 
+	// add_shortcode( 'latest_post', 'output_latest_post' );
 	function output_latest_post( $atts ) {
 		// Geef de gewenste SLUG van de categorie in
 		$args = shortcode_atts( array(
 			'category' => 'productnieuws',
 		), $atts );
 		$my_posts = get_posts( array( 'numberposts' => 1, 'category_name' => $args['category'] ) );
-		
-		// var_dump_pre($my_posts);
 
 		if ( count($my_posts) > 0 ) {
 			foreach ( $my_posts as $post ) {
@@ -765,63 +872,6 @@
 		wp_reset_postdata();
 
 		return $msg;
-	}
-
-	function get_latest_newsletters() {
-		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
-		$folder_id = 'd302e08412';
-
-		$args = array(
-			'headers' => array(
-				'Authorization' => 'Basic ' .base64_encode('user:'.MC_APIKEY)
-			)
-		);
-
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date_i18n( 'Y-m-d', strtotime('-3 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=ASC', $args );
-		
-		$mailings = "";
-		if ( $response['response']['code'] == 200 ) {
-			$body = json_decode($response['body']);
-			$mailings .= "<p>Dit zijn de nieuwsbrieven van de afgelopen drie maanden:</p><ul>";
-
-			foreach ( array_reverse($body->campaigns) as $campaign ) {
-				$mailings .= '<li><a href="'.$campaign->long_archive_url.'" target="_blank">'.$campaign->settings->subject_line.'</a> ('.trim( date_i18n( 'j F Y', strtotime($campaign->send_time) ) ).')</li>';
-			}
-
-			$mailings .= "</ul>";
-		}		
-
-		return $mailings;
-	}
-
-	function subscribe_to_mailchimp_list( $email, $list_id = MC_LIST_ID ) {
-		global $sitepress;
-		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
-		$language = $sitepress->get_current_language();
-		$member = md5( strtolower( $email ) );
-		
-		$args = array(
-			'headers' => array(
-				'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
-			)
-		);
-
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members/'.$member, $args );
-		 
-		$msg = "";
-		if ( $response['response']['code'] == 200 ) {
-			$body = json_decode($response['body']);
-
-			if ( $body->status === "subscribed" ) {
-				// INGESCHREVEN
-			} else {
-				// NIET MEER INGESCHREVEN
-			}
-		} else {
-			// NOG NOOIT INGESCHREVEN
-		}
-
-		return "<p>".__( 'U bent vanaf nu geabonneerd op de OFT-nieuwsbrief.', 'oft' )."</p>";
 	}
 
 
