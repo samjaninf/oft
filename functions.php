@@ -110,7 +110,7 @@
 			'query_var' => true,
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
-			'rewrite' => array( 'slug' => 'partner', 'with_front' => false, 'ep_mask' => 'test' ),
+			'rewrite' => array( 'slug' => 'partner', 'with_front' => false, 'hierarchical' => false ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -452,7 +452,7 @@
 	// Creëer een custom hiërarchische taxonomie op producten om allergeneninfo in op te slaan
 	add_action( 'init', 'register_hipster_taxonomy', 0 );
 
-	function register_eco_taxonomy() {
+	function register_hipster_taxonomy() {
 		$taxonomy_name = 'product_hipster';
 		
 		$labels = array(
@@ -640,10 +640,10 @@
 		$sku = $product->get_sku();
 		$templatecontent = str_replace( "###SKU###", $sku, $templatecontent );
 		$templatecontent = str_replace( "###DESCRIPTION###", wc_price( $product->get_description() ), $templatecontent );
-		// $templatecontent = str_replace( "###BRAND###", $product->get_attribute('pa_merk'), $templatecontent );
-		$templatecontent = str_replace( "###EAN###", $product->get_attribute('pa_ean'), $templatecontent );
-		$templatecontent = str_replace( "###OMPAK###", $product->get_attribute('pa_ompakhoeveelheid'), $templatecontent );
-		$templatecontent = str_replace( "###LABELS###", $product->get_attribute('pa_biocertificatie'), $templatecontent );
+		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('pa_brand'), $templatecontent );
+		$templatecontent = str_replace( "###EAN###", $product->get_meta('_ean_code'), $templatecontent );
+		$templatecontent = str_replace( "###OMPAK###", $product->get_meta('_order_unit'), $templatecontent );
+		$templatecontent = str_replace( "###LABELS###", $product->get_meta('_organic'), $templatecontent );
 		
 		$pdffile = new HTML2PDF( "P", "A4", "nl" );
 		$pdffile->pdf->SetAuthor( "Oxfam Fair Trade cvba" );
@@ -683,12 +683,11 @@
 	###############
 
 	// Controleer of het e-mailadres niet (ooit) geabonneerd was
-	add_filter( 'wpcf7_validate_email*', 'check_mailchimp_status', 20, 2 );
+	add_filter( 'wpcf7_validate_email*', 'check_mailchimp_status', 10, 2 );
 
 	function check_mailchimp_status( $result, $tag ) {
 		if ( $tag->name === 'newsletter-email' ) {
 			$response = get_status_in_mailchimp_list( $_POST['newsletter-email'] );
-
 			if ( $response['response']['code'] == 200 ) {
 				$body = json_decode($response['body']);
 				if ( $body->status === "subscribed" ) {
@@ -700,33 +699,62 @@
 				}
 			}
 		}
+		write_log($result);
 		return $result;
 	}
 
 	// Voer de effectieve inschrijving uit indien de validatie hierboven geen problemen gaf
- 	add_filter( 'wpcf7_posted_data', 'handle_mailchimp_subscribe', 20, 1 );
-
-	function handle_mailchimp_subscribe( $posted_data ) {
+ 	add_filter( 'wpcf7_posted_data', 'handle_validation_errors', 20, 1 );
+	
+	function handle_validation_errors( $posted_data ) {
 		// Nederlandstalige inschrijvingsformulier
-		if ( $posted_data['_wpcf7'] == 1054 and isset( $posted_data['newsletter-email'] ) ) {
-			$status = get_status_in_mailchimp_list( $_POST['newsletter-email'] );
+		if ( $posted_data['_wpcf7'] == 1054 ) {
+			$posted_data['validation_error'] = __( 'Gelieve de fouten op te lossen.', 'oft' );
 
+			$status = get_status_in_mailchimp_list( $_POST['newsletter-email'] );
+			
 			if ( $status['response']['code'] == 200 ) {
 				$body = json_decode($status['body']);
 
 				if ( $body->status === "subscribed" ) {
-					// REEDS INGESCHREVEN, TOON LINK OM PROFIEL TE BEKIJKEN
-					// $posted_data['newsletter-email'] = "";
-					$posted_data['validation_error'] = __( 'U was reeds ingeschreven! Gelieve <a href="https://www.mailchimp.com" target="_blank">hier</a> uw profiel te bekijken.', 'oft' );
+					// REEDS INGESCHREVEN
+					// TOON LINK OM PROFIEL TE BEKIJKEN
+					// PATCH BESTAANDE GEGEVENS?
+					$timestamp = strtotime($body->timestamp_signup);
+					if ( $timestamp !== false ) {
+						$signup_text = ' sinds '.date_i18n( 'j F Y', $timestamp );
+					} else {
+						$signup_text = '';
+					}
+					$id = $body->unique_email_id;
+					$posted_data['validation_error'] = sprintf( __( 'U bent%1$s reeds geabonneerd op onze nieuwsbrief! <a href="%2$s" target="_blank">Kijk hier uw profiel in.</a>', 'oft' ), $signup_text, 'http://oxfamwereldwinkels.us3.list-manage.com/profile?u=d66c099224e521aa1d87da403&id='.MC_LIST_ID.'&e='.$id );
 				} else {
-					// NIET LANGER INGESCHREVEN, VERSTUUR EXPLICIETE OPT-IN
-					// $posted_data['newsletter-email'] = "";
-					$posted_data['validation_error'] = __( 'Gelieve op de speciale link in de bevestigingsmail te klikken om uw hernieuwde interesse te bevestigen.', 'oft' );
+					// NIET LANGER INGESCHREVEN
+					// TOON LINK NAAR EXPLICIET INSCHRIJVINGSFORMULIER
+					// PATCH BESTAANDE MEMBER?
+					$posted_data['validation_error'] = sprintf( __( 'U was vroeger al eens geabonneerd op onze nieuwsbrief! Daarom dient u uw expliciete toestemming te geven. <a href="%s" target="_blank">Gelieve dit algemene inschrijvingsformulier te gebruiken.</a>', 'oft' ), 'http://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id='.MC_LIST_ID.'&FNAME='.$_POST['newsletter-name'].'&EMAIL='.$_POST['newsletter-email'] );
 				}
-			} else {
+			}
+		}
+		write_log("wpcf7_posted_data");
+		return $posted_data;
+	}
+
+ 	// BIJ HET AANROEPEN VAN DEZE FILTER ZIJN WE ZEKER DAT ALLES AL GEVALIDEERD IS
+ 	add_filter( 'wpcf7_before_send_mail', 'handle_mailchimp_subscribe', 20, 1 );
+
+	function handle_mailchimp_subscribe( $posted_data ) {
+		// Nederlandstalige inschrijvingsformulier
+		if ( $posted_data['_wpcf7'] == 1054 ) {
+			$posted_data['send_error'] = __( 'Er was een onbekend probleem met Contact Form 7!', 'oft' );
+			$status = get_status_in_mailchimp_list( $_POST['newsletter-email'] );
+			
+			if ( $status['response']['code'] !== 200 ) {
+				$body = json_decode($status['body']);
+
 				// NOG NOOIT INGESCHREVEN, VOER INSCHRIJVING UIT
 				// Probleem: naam zit hier nog in 1 veld, moeten er 2 worden
-				$subscription = subscribe_to_mailchimp_list( $posted_data['newsletter-email'], $posted_data['newsletter-name'] );
+				$subscription = subscribe_user_to_mailchimp_list( $posted_data['newsletter-email'], $posted_data['newsletter-name'] );
 				
 				if ( $subscription['response']['code'] == 200 ) {
 					$body = json_decode($subscription['body']);
@@ -734,13 +762,12 @@
 						$posted_data['success'] = __( 'U bent vanaf nu geabonneerd op de OFT-nieuwsbrief.', 'oft' );
 					}
 				} else {
-					$posted_data['success'] = __( 'Er was een probleem!', 'oft' );
+					$posted_data['success'] = __( 'Er was een onbekend probleem met MailChimp!', 'oft' );
 				}
 			}
-		} else {
-			$posted_data['send_error'] = "TEST";
 		}
-		// write_log($posted_data);
+		write_log("wpcf7_before_send_mail");
+		write_log($posted_data);
 		return $posted_data;
 	}
 
@@ -753,7 +780,7 @@
 
 	function get_status_in_mailchimp_list( $email, $list_id = MC_LIST_ID ) {
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
-		$member = md5( strtolower( $email ) );
+		$member = md5( strtolower( trim( $email ) ) );
 		$args = array(
 			'headers' => array(
 				'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
@@ -764,11 +791,11 @@
 		return $response;
 	}
 
-	function subscribe_to_mailchimp_list( $email, $fname = '', $lname = '', $company = '', $list_id = MC_LIST_ID ) {
+	function subscribe_user_to_mailchimp_list( $email, $fname = '', $lname = '', $company = '', $list_id = MC_LIST_ID ) {
 		// global $sitepress;
 		// $language = $sitepress->get_current_language();
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
-		$member = md5( strtolower( $email ) );
+		$member = md5( strtolower( trim( $email ) ) );
 		$merge_fields = array( 'LANGUAGE' => 'Nederlands', 'SOURCE' => 'OFT-site', );
 		if ( strlen($fname) > 2 ) {
 			$merge_fields['FNAME'] = $fname;
@@ -781,6 +808,42 @@
 		}
 		
 		$args = array(
+			'headers' => array(
+				'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
+			),
+			'body' => json_encode( array(
+				'email_address' => $email,
+				'status' => 'subscribed',
+				'merge_fields' => $merge_fields,
+			) ),
+		);
+		$response = wp_remote_post( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members', $args );
+
+		return $response;
+	}
+
+	function update_user_in_mailchimp_list( $email, $fname = '', $lname = '', $company = '', $list_id = MC_LIST_ID ) {
+		// global $sitepress;
+		// $language = $sitepress->get_current_language();
+		
+		// VERGELIJK MET BESTAANDE WAARDES
+		$member = get_status_in_mailchimp_list( $email );
+
+		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
+		$member = md5( strtolower( trim( $email ) ) );
+		$merge_fields = array( 'LANGUAGE' => 'Nederlands', 'SOURCE' => 'OFT-site', );
+		if ( strlen($fname) > 2 ) {
+			$merge_fields['FNAME'] = $fname;
+		}
+		if ( strlen($lname) > 2 ) {
+			$merge_fields['LNAME'] = $lname;
+		}
+		if ( strlen($company) > 2 ) {
+			$merge_fields['COMPANY'] = $company;
+		}
+		
+		$args = array(
+			'method' => 'PATCH',
 			'headers' => array(
 				'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
 			),
