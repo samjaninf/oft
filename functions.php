@@ -582,6 +582,27 @@
 			woocommerce_wp_text_input( $args );
 			woocommerce_wp_text_input( $args2 );
 
+			$args3 = array( 
+				'id' => '_shelf_life',
+				'label' => __( 'Houdbaarheid na productie (in dagen)', 'oft-admin' ),
+				'type' => 'number',
+				'custom_attributes' => array(
+					'step'	=> 'any',
+					'min'	=> '1',
+					'max'	=> '2000',
+					'readonly' => true,
+				),
+			);
+
+			woocommerce_wp_text_input( $args3 );
+
+			woocommerce_wp_checkbox( 
+				array( 
+					'id' => '_in_bestelweb',
+					'label' => __( 'Bestelbaar?', 'oft-admin' ),
+				)
+			);
+
 		echo '</div>';
 	}
 
@@ -607,9 +628,9 @@
 			// Toon het veld voor de netto-inhoud pas na het instellen van de eenheid!
 			if ( ! empty( get_post_meta( $post->ID, $key = '_unit', true ) ) ) {
 				if ( get_post_meta( $post->ID, $key = '_unit', true ) === 'KG' ) {
-					$label = __( 'Netto-inhoud (in gram)', 'oft-admin' );
+					$label = __( 'Netto-inhoud (in g)', 'oft-admin' );
 				} elseif ( get_post_meta( $post->ID, $key = '_unit', true ) === 'L' ) {
-					$label = __( 'Netto-inhoud (in centiliter)', 'oft-admin' );
+					$label = __( 'Netto-inhoud (in cl)', 'oft-admin' );
 				}
 
 				$args2 = array( 
@@ -631,6 +652,34 @@
 				woocommerce_wp_text_input( $args2 );
 			}
 
+			$args3 = array( 
+				'id' => '_multiple',
+				'label' => __( 'Ompakhoeveelheid', 'oft-admin' ),
+				'type' => 'number',
+				'custom_attributes' => array(
+					'step'	=> 'any',
+					'min'	=> '1',
+					'max'	=> '200',
+					'readonly' => true,
+				),
+			);
+
+			if ( post_language_equals_site_language() ) {
+				unset($args3['custom_attributes']['readonly']);
+			}
+
+			woocommerce_wp_text_input( $args3 );
+			
+			$args3['id'] = '_pal_number_of_layers';
+			$args3['label'] = __( 'Aantal palletlagen', 'oft-admin' );
+		
+			woocommerce_wp_text_input( $args3 );
+
+			$args3['id'] = '_pal_number_per_layer';
+			$args3['label'] = __( 'Aantal per palletlaag', 'oft-admin' );
+		
+			woocommerce_wp_text_input( $args3 );
+
 		echo '</div>';
 	}
 
@@ -647,7 +696,7 @@
 		} else {
 			$unit_price = '';
 			update_post_meta( $post_id, '_unit_price', $unit_price );
-			write_log("UNIT PRICE COULD NOT BE CALCULATED!");
+			write_log("UNIT PRICE WAS RESET");
 		}
 
 		if ( ! empty( $_POST['_cu_ean'] ) ) {
@@ -656,6 +705,14 @@
 
 		if ( ! empty( $_POST['_steh_ean'] ) ) {
 			update_post_meta( $post_id, '_steh_ean', esc_attr( $_POST['_steh_ean'] ) );
+		}
+
+		if ( ! empty( $_POST['_shelf_life'] ) ) {
+			update_post_meta( $post_id, '_shelf_life', esc_attr( $_POST['_shelf_life'] ) );
+		}
+
+		if ( ! empty( $_POST['_in_bestelweb'] ) ) {
+			update_post_meta( $post_id, '_in_bestelweb', esc_attr( $_POST['_in_bestelweb'] ) );
 		}
 
 		if ( ! empty( $_POST['_shopplus_sku'] ) ) {
@@ -672,6 +729,18 @@
 
 		if ( ! empty( $_POST['_net_content'] ) ) {
 			update_post_meta( $post_id, '_net_content', esc_attr( $_POST['_net_content'] ) );
+		}
+
+		if ( ! empty( $_POST['_multiple'] ) ) {
+			update_post_meta( $post_id, '_multiple', esc_attr( $_POST['_multiple'] ) );
+		}
+
+		if ( ! empty( $_POST['_pal_number_of_layers'] ) ) {
+			update_post_meta( $post_id, '_pal_number_of_layers', esc_attr( $_POST['_pal_number_of_layers'] ) );
+		}
+
+		if ( ! empty( $_POST['_pal_number_per_layer'] ) ) {
+			update_post_meta( $post_id, '_pal_number_per_layer', esc_attr( $_POST['_pal_number_per_layer'] ) );
 		}
 	}
 
