@@ -509,7 +509,7 @@
 		echo '<div class="options_group oft">';
 			$args = array( 
 				'id' => '_unit_price',
-				'label' => sprintf( __( 'Eenheidsprijs (&euro;/%s)', mb_strtolower( get_post_meta( $post->ID, $key = '_unit', true ) ) ), 'oft-admin' ),
+				'label' => sprintf( __( 'Eenheidsprijs (&euro;/%s)', 'oft-admin' ), mb_strtolower( get_post_meta( $post->ID, $key = '_unit', true ) ) ),
 				'data_type' => 'price',
 				// Wordt bij opslaan automatisch berekend op basis van prijs en netto-inhoud!
 				'custom_attributes' => array(
@@ -544,7 +544,7 @@
 		echo '<div class="options_group oft">';
 			$args = array( 
 				'id' => '_cu_ean',
-				'label' => __( 'EAN Consumenteneenheid', 'oft-admin' ),
+				'label' => __( 'EAN Consumenten', 'oft-admin' ),
 				'type' => 'number',
 				'custom_attributes' => array(
 					'step'	=> 'any',
@@ -568,12 +568,12 @@
 			}
 
 			woocommerce_wp_text_input( $args );
-			woocommerce_wp_text_input( $args2 );
-
+			
 			$args['id'] = '_steh_ean';
-			$args['label'] = __( 'EAN Ompakeenheid', 'oft-admin' );
+			$args['label'] = __( 'EAN Ompak', 'oft-admin' );
 
 			woocommerce_wp_text_input( $args );
+			woocommerce_wp_text_input( $args2 );
 
 		echo '</div>';
 	}
@@ -583,10 +583,11 @@
 		echo '<div class="options_group oft">';
 			$args = array( 
 				'id' => '_unit',
-				'label' => __( 'Eenheid', 'oft-admin' ),
+				'label' => __( 'Basiseenheid', 'oft-admin' ),
 				'options' => array(
-					'L' => __( 'Liter', 'oft-admin' ),
+					'' => __( '(selecteer)', 'oft-admin' ),
 					'KG' => __( 'Kilogram', 'oft-admin' ),
+					'L' => __( 'Liter', 'oft-admin' ),
 				),
 			);
 
@@ -598,9 +599,9 @@
 
 			// Toon het veld voor de netto-inhoud pas na het instellen van de eenheid!
 			if ( ! empty( get_post_meta( $post->ID, $key = '_unit', true ) ) ) {
-				if ( get_post_meta( $post->ID, $key = '_unit', true ) === 'L' ) {
+				if ( get_post_meta( $post->ID, $key = '_unit', true ) === 'KG' ) {
 					$label = __( 'Netto-inhoud (in gram)', 'oft-admin' );
-				} else {
+				} elseif ( get_post_meta( $post->ID, $key = '_unit', true ) === 'L' ) {
 					$label = __( 'Netto-inhoud (in centiliter)', 'oft-admin' );
 				}
 
@@ -629,10 +630,11 @@
 	function save_oft_fields( $post_id ) {
 		// BEREKEN DE EENHEIDSPRIJS A.D.H.V. PRIJS EN NETTO-INHOUD IN $_POST
 		if ( ! empty( $_POST['_price'] ) and ! empty( $_POST['_unit'] ) and ! empty( $_POST['_net_content'] ) ) {
-			if ( $_POST['_unit'] === 'L' ) {
-				$unit_price = floatval($_POST['_price']) / floatval($_POST['_net_content']) * 100;
-			} elseif ( $_POST['_unit'] === 'KG' ) {
+			write_log($_POST);
+			if ( $_POST['_unit'] === 'KG' ) {
 				$unit_price = floatval($_POST['_price']) / floatval($_POST['_net_content']) * 1000;
+			} elseif ( $_POST['_unit'] === 'L' ) {
+				$unit_price = floatval($_POST['_price']) / floatval($_POST['_net_content']) * 100;
 			}
 			update_post_meta( $post_id, '_unit_price', esc_attr( number_format( $unit_price, 2 ) ) );
 		} else {
