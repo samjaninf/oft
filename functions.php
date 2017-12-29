@@ -507,9 +507,15 @@
 	function add_oft_general_fields() {
 		global $post;
 		echo '<div class="options_group oft">';
+			if ( ! empty( get_post_meta( $post->ID, $key = '_unit', true ) ) ) {
+				$suffix = '/'.mb_strtolower( get_post_meta( $post->ID, $key = '_unit', true ) );
+			} else {
+				$suffix = '';
+			}
+
 			$args = array( 
 				'id' => '_unit_price',
-				'label' => sprintf( __( 'Eenheidsprijs (&euro;/%s)', 'oft-admin' ), mb_strtolower( get_post_meta( $post->ID, $key = '_unit', true ) ) ),
+				'label' => sprintf( __( 'Eenheidsprijs (&euro;%s)', 'oft-admin' ), $suffix ),
 				'placeholder' => __( '(wordt automatisch berekend bij het opslaan)', 'oft-admin' ),
 				'data_type' => 'price',
 				// Wordt bij opslaan automatisch berekend op basis van prijs en netto-inhoud!
@@ -521,7 +527,7 @@
 			woocommerce_wp_text_input( $args );
 
 			$args2 = array( 
-				'id' => '_ft_percentage',
+				'id' => '_fairtrade_percentage',
 				'label' => __( 'Fairtradepercentage', 'oft-admin' ),
 				'data_type' => 'price',
 				'type' => 'number',
@@ -629,9 +635,8 @@
 	}
 
 	function save_oft_fields( $post_id ) {
-		// BEREKEN DE EENHEIDSPRIJS A.D.H.V. PRIJS EN NETTO-INHOUD IN $_POST
+		// Bereken de eenheidsprijs a.d.h.v. prijs en netto-inhoud in $_POST
 		if ( ! empty( $_POST['_regular_price'] ) and ! empty( $_POST['_unit'] ) and ! empty( $_POST['_net_content'] ) ) {
-			write_log($_POST);
 			if ( $_POST['_unit'] === 'KG' ) {
 				$unit_price = floatval($_POST['_regular_price']) / floatval($_POST['_net_content']) * 1000;
 			} elseif ( $_POST['_unit'] === 'L' ) {
@@ -639,6 +644,8 @@
 			}
 			update_post_meta( $post_id, '_unit_price', esc_attr( number_format( $unit_price, 2 ) ) );
 		} else {
+			$unit_price = '';
+			update_post_meta( $post_id, '_unit_price', $unit_price );
 			write_log("UNIT PRICE COULD NOT BE CALCULATED!");
 		}
 
@@ -654,8 +661,8 @@
 			update_post_meta( $post_id, '_shopplus_sku', esc_attr( $_POST['_shopplus_sku'] ) );
 		}
 
-		if ( ! empty( $_POST['_ft_percentage'] ) ) {
-			update_post_meta( $post_id, '_ft_percentage', esc_attr( $_POST['_ft_percentage'] ) );
+		if ( ! empty( $_POST['_fairtrade_percentage'] ) ) {
+			update_post_meta( $post_id, '_fairtrade_percentage', esc_attr( $_POST['_fairtrade_percentage'] ) );
 		}
 
 		if ( ! empty( $_POST['_unit'] ) ) {
