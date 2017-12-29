@@ -586,7 +586,7 @@
 
 			$args3 = array( 
 				'id' => '_shelf_life',
-				'label' => __( 'Houdbaarheid na productie (in dagen)', 'oft-admin' ),
+				'label' => __( 'Houdbaarheid na productie (dagen)', 'oft-admin' ),
 				'type' => 'number',
 				'custom_attributes' => array(
 					'step'	=> 'any',
@@ -623,11 +623,11 @@
 		echo '<div class="options_group oft">';
 			$args = array( 
 				'id' => '_unit',
-				'label' => __( 'Basiseenheid', 'oft-admin' ),
+				'label' => __( 'Netto-eenheid', 'oft-admin' ),
 				'options' => array(
 					'' => __( '(selecteer)', 'oft-admin' ),
-					'KG' => __( 'Kilogram', 'oft-admin' ),
-					'L' => __( 'Liter', 'oft-admin' ),
+					'g' => __( 'gram (vast product)', 'oft-admin' ),
+					'cl' => __( 'centiliter (vloeibaar product)', 'oft-admin' ),
 				),
 			);
 
@@ -639,15 +639,9 @@
 
 			// Toon het veld voor de netto-inhoud pas na het instellen van de eenheid!
 			if ( ! empty( get_post_meta( $post->ID, $key = '_unit', true ) ) ) {
-				if ( get_post_meta( $post->ID, $key = '_unit', true ) === 'KG' ) {
-					$label = __( 'Netto-inhoud (in g)', 'oft-admin' );
-				} elseif ( get_post_meta( $post->ID, $key = '_unit', true ) === 'L' ) {
-					$label = __( 'Netto-inhoud (in cl)', 'oft-admin' );
-				}
-
 				$args2 = array( 
 					'id' => '_net_content',
-					'label' => $label,
+					'label' => sprintf( __( 'Netto-inhoud (%s)', 'oft-admin' ), get_post_meta( $post->ID, $key = '_unit', true ) ),
 					'type' => 'number',
 					'custom_attributes' => array(
 						'step'	=> 'any',
@@ -701,6 +695,8 @@
 			'target' => 'quality_product_data',
 			'class' => array( 'hide_if_virtual' ),
 		);
+		// Verwijder overbodig tabje
+		unset($product_data_tabs['advanced']);
 		return $product_data_tabs;
 	}
 
@@ -710,7 +706,7 @@
 			echo '<div class="options_group oft">';
 				$args = array( 
 					'id' => '_energy',
-					'label' => __( 'Energie (in kJ)', 'oft-admin' ),
+					'label' => __( 'Energie (kJ)', 'oft-admin' ),
 					'type' => 'number',
 					'custom_attributes' => array(
 						'step'	=> 'any',
@@ -733,9 +729,9 @@
 		if ( ! empty( $_POST['_regular_price'] ) and ! empty( $_POST['_unit'] ) and ! empty( $_POST['_net_content'] ) ) {
 			// Bereken de eenheidsprijs a.d.h.v. prijs en netto-inhoud in $_POST
 			$unit_price = floatval( str_replace( ',', '.', $_POST['_regular_price'] ) ) / floatval( str_replace( ',', '.', $_POST['_net_content'] ) );
-			if ( $_POST['_unit'] === 'KG' ) {
+			if ( $_POST['_unit'] === 'g' ) {
 				$unit_price *= 1000;
-			} elseif ( $_POST['_unit'] === 'L' ) {
+			} elseif ( $_POST['_unit'] === 'cl' ) {
 				$unit_price *= 100;
 			}
 			update_post_meta( $post_id, '_unit_price', esc_attr( number_format( $unit_price, 2 ) ) );
@@ -939,7 +935,7 @@
 		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
 			if ( $pagenow === 'edit.php' and $post_type === 'product' and current_user_can( 'edit_products' ) ) {
 				echo '<div class="notice notice-warning">';
-					echo '<p>Hou er rekening mee dat alle volumes in g / ml ingegeven worden, zonder eenheid!</p>';
+					echo '<p>Hou er rekening mee dat alle volumes in g / cl ingegeven worden, zonder eenheid!</p>';
 				echo '</div>';
 			}
 		}
