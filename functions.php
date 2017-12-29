@@ -509,18 +509,19 @@
 	function add_oft_general_fields() {
 		global $post;
 		echo '<div class="options_group oft">';
-			if ( ! empty( get_post_meta( $post->ID, $key = '_unit', true ) ) ) {
-				$suffix = '/'.mb_strtolower( get_post_meta( $post->ID, $key = '_unit', true ) );
-			} else {
-				$suffix = '';
+			$suffix = '&euro;';
+			if ( get_post_meta( $post->ID, $key = '_net_unit', true ) === 'cl' ) {
+				$suffix .= '/l';
+			} elseif( get_post_meta( $post->ID, $key = '_net_unit', true ) === 'g' ) {
+				$suffix .= '/kg';
 			}
 
 			$args = array( 
 				'id' => '_unit_price',
-				'label' => sprintf( __( 'Eenheidsprijs (&euro;%s)', 'oft-admin' ), $suffix ),
+				'label' => sprintf( __( 'Eenheidsprijs (%s)', 'oft-admin' ), $suffix ),
 				'placeholder' => __( '(wordt automatisch berekend bij het opslaan)', 'oft-admin' ),
 				'data_type' => 'price',
-				// Wordt bij opslaan automatisch berekend op basis van prijs en netto-inhoud!
+				// Nooit handmatig laten bewerken!
 				'custom_attributes' => array(
 					'readonly' => true,
 				),
@@ -622,8 +623,8 @@
 		global $post;
 		echo '<div class="options_group oft">';
 			$args = array( 
-				'id' => '_unit',
-				'label' => __( 'Netto-eenheid', 'oft-admin' ),
+				'id' => '_net_unit',
+				'label' => __( 'Inhoudsmaat', 'oft-admin' ),
 				'options' => array(
 					'' => __( '(selecteer)', 'oft-admin' ),
 					'g' => __( 'gram (vast product)', 'oft-admin' ),
@@ -638,10 +639,10 @@
 			woocommerce_wp_select( $args );
 
 			// Toon het veld voor de netto-inhoud pas na het instellen van de eenheid!
-			if ( ! empty( get_post_meta( $post->ID, $key = '_unit', true ) ) ) {
+			if ( ! empty( get_post_meta( $post->ID, $key = '_net_unit', true ) ) ) {
 				$args2 = array( 
 					'id' => '_net_content',
-					'label' => sprintf( __( 'Netto-inhoud (%s)', 'oft-admin' ), get_post_meta( $post->ID, $key = '_unit', true ) ),
+					'label' => sprintf( __( 'Netto-inhoud (%s)', 'oft-admin' ), get_post_meta( $post->ID, $key = '_net_unit', true ) ),
 					'type' => 'number',
 					'custom_attributes' => array(
 						'step'	=> 'any',
@@ -726,12 +727,12 @@
 	}
 
 	function save_oft_fields( $post_id ) {
-		if ( ! empty( $_POST['_regular_price'] ) and ! empty( $_POST['_unit'] ) and ! empty( $_POST['_net_content'] ) ) {
+		if ( ! empty( $_POST['_regular_price'] ) and ! empty( $_POST['_net_unit'] ) and ! empty( $_POST['_net_content'] ) ) {
 			// Bereken de eenheidsprijs a.d.h.v. prijs en netto-inhoud in $_POST
 			$unit_price = floatval( str_replace( ',', '.', $_POST['_regular_price'] ) ) / floatval( str_replace( ',', '.', $_POST['_net_content'] ) );
-			if ( $_POST['_unit'] === 'g' ) {
+			if ( $_POST['_net_unit'] === 'g' ) {
 				$unit_price *= 1000;
-			} elseif ( $_POST['_unit'] === 'cl' ) {
+			} elseif ( $_POST['_net_unit'] === 'cl' ) {
 				$unit_price *= 100;
 			}
 			update_post_meta( $post_id, '_unit_price', esc_attr( number_format( $unit_price, 2 ) ) );
@@ -748,7 +749,7 @@
 			'_in_bestelweb',
 			'_shopplus_sku',
 			'_fairtrade_percentage',
-			'_unit',
+			'_net_unit',
 			'_net_content',
 			'_multiple',
 			'_pal_number_per_layer',
@@ -912,10 +913,10 @@
 		$sku = $product->get_sku();
 		$templatecontent = str_replace( "###SKU###", $sku, $templatecontent );
 		$templatecontent = str_replace( "###DESCRIPTION###", wc_price( $product->get_description() ), $templatecontent );
-		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('pa_brand'), $templatecontent );
-		$templatecontent = str_replace( "###EAN###", $product->get_meta('_ean_code'), $templatecontent );
-		$templatecontent = str_replace( "###OMPAK###", $product->get_meta('_order_unit'), $templatecontent );
-		$templatecontent = str_replace( "###LABELS###", $product->get_meta('_organic'), $templatecontent );
+		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('pa_merk'), $templatecontent );
+		$templatecontent = str_replace( "###EAN###", $product->get_meta('_cu_ean'), $templatecontent );
+		$templatecontent = str_replace( "###OMPAK###", $product->get_meta('_multiple'), $templatecontent );
+		$templatecontent = str_replace( "###LABELS###", $product->get_attribute('pa_bio'), $templatecontent );
 		
 		$pdffile = new HTML2PDF( "P", "A4", "nl" );
 		$pdffile->pdf->SetAuthor( "Oxfam Fair Trade cvba" );
