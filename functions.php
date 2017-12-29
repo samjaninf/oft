@@ -431,6 +431,7 @@
 
 	function hide_wine_taxonomies() {
 		if ( isset($_GET['action']) and $_GET['action'] === 'edit' ) {
+			// SIMPELER VIA GLOBAL $POST?
 			$post_id = isset( $_GET['post'] ) ? $_GET['post'] : $_POST['post_ID'];
 			$categories = get_the_terms( $post_id, 'product_cat' );
 			if ( is_array( $categories ) ) {
@@ -500,14 +501,15 @@
 	// Toon metavelden netjes in de WooCommerce-tabbladen en werk ze bij tijdens het opslaan
 	add_action( 'woocommerce_product_options_general_product_data', 'add_oft_general_fields', 5 );
 	add_action( 'woocommerce_product_options_inventory_product_data', 'add_oft_inventory_fields', 5 );
-	add_action( 'woocommerce_product_options_shipping_product_data', 'add_oft_shipping_fields', 5 );
+	add_action( 'woocommerce_product_options_shipping', 'add_oft_shipping_fields', 5 );
 	add_action( 'woocommerce_process_product_meta', 'save_oft_fields' );
 	
 	function add_oft_general_fields() {
+		global $post;
 		echo '<div class="options_group oft">';
 			$args = array( 
 				'id' => '_unit_price',
-				'label' => __( 'Eenheidsprijs (&euro;)', 'oft-admin' ),
+				'label' => sprintf( __( 'Eenheidsprijs (&euro;/%s)', mb_strtolower( get_post_meta( $post->ID, $key = '_unit', true ) ) ), 'oft-admin' ),
 				'data_type' => 'price',
 				// Wordt bij opslaan automatisch berekend op basis van prijs en netto-inhoud!
 				'custom_attributes' => array(
@@ -577,6 +579,7 @@
 	}
 
 	function add_oft_shipping_fields() {
+		global $post;
 		echo '<div class="options_group oft">';
 			$args = array( 
 				'id' => '_unit',
@@ -587,40 +590,53 @@
 				),
 			);
 
-			if ( get_post_meta( $post_id, $key = '_unit', true ) === 'L' ) {
-				$label = __( 'Netto-inhoud (in gram)', 'oft-admin' );
-			} else {
-				$label = __( 'Netto-inhoud (in centiliter)', 'oft-admin' );
-			}
-
-			$args2 = array( 
-				'id' => '_net_content',
-				'label' => $label,
-				'type' => 'number',
-				'custom_attributes' => array(
-					'step'	=> 'any',
-					'min'	=> '1',
-					'max'	=> '10000',
-					'readonly' => true,
-				),
-			);
-
 			if ( post_language_equals_site_language() ) {
 				unset($args['custom_attributes']['readonly']);
-				unset($args2['custom_attributes']['readonly']);
 			}
 
 			woocommerce_wp_select( $args );
-			woocommerce_wp_text_input( $args2 );
+
+			// Toon het veld voor de netto-inhoud pas na het instellen van de eenheid!
+			if ( ! empty( get_post_meta( $post->ID, $key = '_unit', true ) ) ) {
+				if ( get_post_meta( $post->ID, $key = '_unit', true ) === 'L' ) {
+					$label = __( 'Netto-inhoud (in gram)', 'oft-admin' );
+				} else {
+					$label = __( 'Netto-inhoud (in centiliter)', 'oft-admin' );
+				}
+
+				$args2 = array( 
+					'id' => '_net_content',
+					'label' => $label,
+					'type' => 'number',
+					'custom_attributes' => array(
+						'step'	=> 'any',
+						'min'	=> '1',
+						'max'	=> '10000',
+						'readonly' => true,
+					),
+				);
+
+				if ( post_language_equals_site_language() ) {
+					unset($args2['custom_attributes']['readonly']);
+				}
+			
+				woocommerce_wp_text_input( $args2 );
+			}
 
 		echo '</div>';
 	}
 
 	function save_oft_fields( $post_id ) {
-		if ( ! empty( $_POST['_unit_price'] ) ) {
-			// BEREKEN DE EENHEIDSPRIJS A.D.H.V. PRIJS EN NETTO-INHOUD IN $_POST
-			// Sla de prijs op in het Britse formaat, zoals _regular_price en _sale_price WORDT DIT NIET AUTOMATISCH GEDAAN DOOR DATATYPE?
-			update_post_meta( $post_id, '_unit_price', esc_attr( number_format( str_replace( ',', '.', $_POST['_unit_price'] ), 2 ) ) );
+		// BEREKEN DE EENHEIDSPRIJS A.D.H.V. PRIJS EN NETTO-INHOUD IN $_POST
+		if ( ! empty( $_POST['_price'] ) and ! empty( $_POST['_unit'] ) and ! empty( $_POST['_net_content'] ) ) {
+			if ( $_POST['_unit'] === 'L' ) {
+				$unit_price = floatval($_POST['_price']) / floatval($_POST['_net_content']) * 100;
+			} elseif ( $_POST['_unit'] === 'KG' ) {
+				$unit_price = floatval($_POST['_price']) / floatval($_POST['_net_content']) * 1000;
+			}
+			update_post_meta( $post_id, '_unit_price', esc_attr( number_format( $unit_price, 2 ) ) );
+		} else {
+			write_log("UNIT PRICE COULD NOT BE CALCULATED!");
 		}
 
 		if ( ! empty( $_POST['_cu_ean'] ) ) {
