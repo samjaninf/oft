@@ -637,10 +637,11 @@
 	function save_oft_fields( $post_id ) {
 		// Bereken de eenheidsprijs a.d.h.v. prijs en netto-inhoud in $_POST
 		if ( ! empty( $_POST['_regular_price'] ) and ! empty( $_POST['_unit'] ) and ! empty( $_POST['_net_content'] ) ) {
+			$unit_price = floatval( str_replace( ',', '.', $_POST['_regular_price'] ) ) / floatval( str_replace( ',', '.', $_POST['_net_content'] ) );
 			if ( $_POST['_unit'] === 'KG' ) {
-				$unit_price = floatval($_POST['_regular_price']) / floatval($_POST['_net_content']) * 1000;
+				$unit_price *= 1000;
 			} elseif ( $_POST['_unit'] === 'L' ) {
-				$unit_price = floatval($_POST['_regular_price']) / floatval($_POST['_net_content']) * 100;
+				$unit_price *= 100;
 			}
 			update_post_meta( $post_id, '_unit_price', esc_attr( number_format( $unit_price, 2 ) ) );
 		} else {
