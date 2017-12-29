@@ -530,7 +530,7 @@
 			woocommerce_wp_text_input( $args );
 
 			$args2 = array( 
-				'id' => '_fairtrade_percentage',
+				'id' => '_fairtrade_share',
 				'label' => __( 'Fairtradepercentage', 'oft-admin' ),
 				'data_type' => 'price',
 				'type' => 'number',
@@ -748,13 +748,13 @@
 			'_shelf_life',
 			'_in_bestelweb',
 			'_shopplus_sku',
-			'_fairtrade_percentage',
+			'_fairtrade_share',
 			'_net_unit',
 			'_net_content',
 			'_multiple',
 			'_pal_number_per_layer',
 			'_pal_number_of_layers',
-			'_enery'
+			'_energy'
 		);
 
 		foreach( $regular_meta_keys as $meta_key ) {
@@ -897,12 +897,36 @@
 		}
 	}
 
+	add_shortcode( 'latest_post', 'output_latest_post' );
+	
+	function output_latest_post( $atts ) {
+		// Geef de gewenste SLUG van de categorie in
+		$args = shortcode_atts( array(
+			'category' => 'productnieuws',
+		), $atts );
+		$my_posts = get_posts( array( 'numberposts' => 1, 'category_name' => $args['category'] ) );
+
+		if ( count($my_posts) > 0 ) {
+			foreach ( $my_posts as $post ) {
+				setup_postdata( $post );
+				$msg .= "<div class='latest-news'><h1>".get_the_title( $post->ID )."</h1>".apply_filters( 'the_content', get_the_content( $post->ID ) )."</div>";
+			}
+		} else {
+			$msg .= "<p>Geen berichten gevonden in de categorie '".$atts['category']."'.</p>";
+		}
+
+		wp_reset_postdata();
+
+		return $msg;
+	}
+
 
 
 	###########
 	#  VARIA  #
 	###########
 
+	// Creëer een productfiche
 	function create_product_pdf( $product ) {
 		require_once WP_CONTENT_DIR.'/plugins/html2pdf/html2pdf.class.php';
 		
@@ -1167,66 +1191,6 @@
 		}		
 
 		return $mailings;
-	}
-
-	// add_shortcode( 'mailchimp_subscribe', 'output_mailchimp_form' );
-	function output_mailchimp_form() {
-		global $sitepress;
-		?>
-		<form novalidate>
-			<div class="form-row">
-				<div class="">
-					<input type="text" class="form-control" name="fname" id="fname" placeholder="Voornaam" value="" maxlength="35" autocomplete="off" required>
-					<div class="feedback">Gelieve je voornaam in te geven</div>
-				</div>
-				<div class="">
-					<input type="text" class="form-control" name="lname" id="lname" placeholder="Familienaam" value="" maxlength="35" autocomplete="off" required>
-					<div class="feedback">Gelieve je familienaam in te geven</div>
-				</div>
-				<div class="">
-					<input type="email" class="form-control" name="email" id="email" placeholder="E-mailadres" maxlength="50" autocomplete="off" required>
-					<div class="feedback">Geef een geldig e-mailadres in</div>
-				</div>
-				<div class="">
-					<input type="hidden" class="form-control" name="lang" id="lang" value="<?php echo $sitepress->get_current_language(); ?>">
-				</div>
-			</div>
-			<div class="form-row">
-				<div class="">
-					<small><span id="info">Je hebt nog niet alle vereiste velden ingevuld. Nog even volhouden!</span></small>
-				</div>
-				<div class="">
-					<button type="submit" class="btn btn-primary" disabled>Hou me op de hoogte</button>
-					<div class="fa fa-spinner fa-spin"></div>
-				</div>
-			</div>
-			<div class="form-row">
-				<div class="result"></div>
-			</div>
-		</form>
-		<?php
-	}
-
-	// add_shortcode( 'latest_post', 'output_latest_post' );
-	function output_latest_post( $atts ) {
-		// Geef de gewenste SLUG van de categorie in
-		$args = shortcode_atts( array(
-			'category' => 'productnieuws',
-		), $atts );
-		$my_posts = get_posts( array( 'numberposts' => 1, 'category_name' => $args['category'] ) );
-
-		if ( count($my_posts) > 0 ) {
-			foreach ( $my_posts as $post ) {
-				setup_postdata( $post );
-				$msg .= "<div class='latest-news'><h1>".get_the_title( $post->ID )."</h1>".apply_filters( 'the_content', get_the_content( $post->ID ) )."</div>";
-			}
-		} else {
-			$msg .= "<p>Geen berichten gevonden in de categorie '".$atts['category']."'.</p>";
-		}
-
-		wp_reset_postdata();
-
-		return $msg;
 	}
 
 
