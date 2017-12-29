@@ -491,6 +491,163 @@
 		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
 	}
 
+
+
+	#################
+	#  WOOCOMMERCE  #
+	#################
+
+	// Toon metavelden netjes in de WooCommerce-tabbladen en werk ze bij tijdens het opslaan
+	add_action( 'woocommerce_product_options_general_product_data', 'add_oft_general_fields', 5 );
+	add_action( 'woocommerce_product_options_inventory_product_data', 'add_oft_inventory_fields', 5 );
+	add_action( 'woocommerce_product_options_shipping_product_data', 'add_oft_shipping_fields', 5 );
+	add_action( 'woocommerce_process_product_meta', 'save_oft_fields' );
+	
+	function add_oft_general_fields() {
+		echo '<div class="options_group oft">';
+			$args = array( 
+				'id' => '_unit_price',
+				'label' => __( 'Eenheidsprijs (&euro;)', 'oft-admin' ),
+				'data_type' => 'price',
+				// Wordt bij opslaan automatisch berekend op basis van prijs en netto-inhoud!
+				'custom_attributes' => array(
+					'readonly' => true,
+				),
+			);
+
+			woocommerce_wp_text_input( $args );
+
+			$args2 = array( 
+				'id' => '_ft_percentage',
+				'label' => __( 'Fairtradepercentage', 'oft-admin' ),
+				'data_type' => 'price',
+				'type' => 'number',
+				'custom_attributes' => array(
+					'step'	=> 'any',
+					'min'	=> '25',
+					'max'	=> '100',
+					'readonly' => true,
+				),
+			);
+
+			if ( post_language_equals_site_language() ) {
+				unset($args2['custom_attributes']['readonly']);
+			}
+
+			woocommerce_wp_text_input( $args2 );
+		echo '</div>';
+	}
+	
+	function add_oft_inventory_fields() {
+		echo '<div class="options_group oft">';
+			$args = array( 
+				'id' => '_cu_ean',
+				'label' => __( 'EAN Consumenteneenheid', 'oft-admin' ),
+				'type' => 'number',
+				'custom_attributes' => array(
+					'step'	=> 'any',
+					'min'	=> '1000000000000',
+					'max'	=> '9999999999999',
+					'readonly' => true,
+				),
+			);
+
+			$args2 = array( 
+				'id' => '_shopplus_sku',
+				'label' => __( 'ShopPlus', 'oft-admin' ),
+				'custom_attributes' => array(
+					'readonly' => true,
+				),
+			);
+
+			if ( post_language_equals_site_language() ) {
+				unset($args['custom_attributes']['readonly']);
+				unset($args2['custom_attributes']['readonly']);
+			}
+
+			woocommerce_wp_text_input( $args );
+			woocommerce_wp_text_input( $args2 );
+
+			$args['id'] = '_steh_ean';
+			$args['label'] = __( 'EAN Ompakeenheid', 'oft-admin' );
+
+			woocommerce_wp_text_input( $args );
+
+		echo '</div>';
+	}
+
+	function add_oft_shipping_fields() {
+		echo '<div class="options_group oft">';
+			$args = array( 
+				'id' => '_unit',
+				'label' => __( 'Eenheid', 'oft-admin' ),
+				'options' => array(
+					'L' => __( 'Liter', 'oft-admin' ),
+					'KG' => __( 'Kilogram', 'oft-admin' ),
+				),
+			);
+
+			if ( get_post_meta( $post_id, $key = '_unit', true ) === 'L' ) {
+				$label = __( 'Netto-inhoud (in gram)', 'oft-admin' );
+			} else {
+				$label = __( 'Netto-inhoud (in centiliter)', 'oft-admin' );
+			}
+
+			$args2 = array( 
+				'id' => '_net_content',
+				'label' => $label,
+				'type' => 'number',
+				'custom_attributes' => array(
+					'step'	=> 'any',
+					'min'	=> '1',
+					'max'	=> '10000',
+					'readonly' => true,
+				),
+			);
+
+			if ( post_language_equals_site_language() ) {
+				unset($args['custom_attributes']['readonly']);
+				unset($args2['custom_attributes']['readonly']);
+			}
+
+			woocommerce_wp_select( $args );
+			woocommerce_wp_text_input( $args2 );
+
+		echo '</div>';
+	}
+
+	function save_oft_fields( $post_id ) {
+		if ( ! empty( $_POST['_unit_price'] ) ) {
+			// BEREKEN DE EENHEIDSPRIJS A.D.H.V. PRIJS EN NETTO-INHOUD IN $_POST
+			// Sla de prijs op in het Britse formaat, zoals _regular_price en _sale_price WORDT DIT NIET AUTOMATISCH GEDAAN DOOR DATATYPE?
+			update_post_meta( $post_id, '_unit_price', esc_attr( number_format( str_replace( ',', '.', $_POST['_unit_price'] ), 2 ) ) );
+		}
+
+		if ( ! empty( $_POST['_cu_ean'] ) ) {
+			update_post_meta( $post_id, '_cu_ean', esc_attr( $_POST['_cu_ean'] ) );
+		}
+
+		if ( ! empty( $_POST['_steh_ean'] ) ) {
+			update_post_meta( $post_id, '_steh_ean', esc_attr( $_POST['_steh_ean'] ) );
+		}
+
+		if ( ! empty( $_POST['_shopplus_sku'] ) ) {
+			update_post_meta( $post_id, '_shopplus_sku', esc_attr( $_POST['_shopplus_sku'] ) );
+		}
+
+		if ( ! empty( $_POST['_ft_percentage'] ) ) {
+			update_post_meta( $post_id, '_ft_percentage', esc_attr( $_POST['_ft_percentage'] ) );
+		}
+
+		if ( ! empty( $_POST['_unit'] ) ) {
+			update_post_meta( $post_id, '_unit', esc_attr( $_POST['_unit'] ) );
+		}
+
+		if ( ! empty( $_POST['_net_content'] ) ) {
+			update_post_meta( $post_id, '_net_content', esc_attr( $_POST['_net_content'] ) );
+		}
+	}
+
 	add_action( 'add_meta_boxes', 'register_custom_meta_boxes' );
 	add_action( 'save_post', 'oft_post_to_product_save' );
 
@@ -674,6 +831,17 @@
 
 	function get_belgian_date_format( $date_format ) {
 		return 'l j F Y';
+	}
+
+	// Bekijken we een post in de hoofdtaal?
+	function post_language_equals_site_language() {
+		$default_language = apply_filters( 'wpml_default_language', NULL );
+		$post_language = apply_filters( 'wpml_post_language_details', NULL );
+		if ( $post_language['language_code'] === $default_language ) {
+			return true;
+		} else {
+			return false;
+		}	
 	}
 
 
