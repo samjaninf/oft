@@ -502,7 +502,9 @@
 	add_action( 'woocommerce_product_options_general_product_data', 'add_oft_general_fields', 5 );
 	add_action( 'woocommerce_product_options_inventory_product_data', 'add_oft_inventory_fields', 5 );
 	add_action( 'woocommerce_product_options_shipping', 'add_oft_shipping_fields', 5 );
-	add_action( 'woocommerce_process_product_meta', 'save_oft_fields' );
+	add_filter( 'woocommerce_product_data_tabs', 'add_product_quality_tab' );
+	add_action( 'woocommerce_product_data_panels', 'add_oft_quality_fields' ); 
+	add_action( 'woocommerce_process_product_meta_simple', 'save_oft_fields' );
 	
 	function add_oft_general_fields() {
 		global $post;
@@ -589,12 +591,22 @@
 				'custom_attributes' => array(
 					'step'	=> 'any',
 					'min'	=> '1',
-					'max'	=> '2000',
+					'max'	=> '10000',
 					'readonly' => true,
 				),
 			);
 
 			woocommerce_wp_text_input( $args3 );
+
+			$args4 = array( 
+				'id' => '_intrastat',
+				'label' => __( 'Intrastatcode', 'oft-admin' ),
+				'custom_attributes' => array(
+					'readonly' => true,
+				),
+			);
+
+			woocommerce_wp_text_input( $args4 );
 
 			woocommerce_wp_checkbox( 
 				array( 
@@ -659,7 +671,7 @@
 				'custom_attributes' => array(
 					'step'	=> 'any',
 					'min'	=> '1',
-					'max'	=> '200',
+					'max'	=> '1000',
 					'readonly' => true,
 				),
 			);
@@ -683,9 +695,43 @@
 		echo '</div>';
 	}
 
+	function add_product_quality_tab( $product_data_tabs ) {
+		$product_data_tabs['quality-tab'] = array(
+			'label' => __( 'Voedingswaarden', 'oft-admin' ),
+			'target' => 'quality_product_data',
+			'class' => array( 'hide_if_virtual' ),
+		);
+		return $product_data_tabs;
+	}
+
+	function add_oft_quality_fields() {
+		global $post;
+		echo '<div id="quality_product_data" class="panel woocommerce_options_panel">';
+			echo '<div class="options_group oft">';
+				$args = array( 
+					'id' => '_energy',
+					'label' => __( 'Energie (in kJ)', 'oft-admin' ),
+					'type' => 'number',
+					'custom_attributes' => array(
+						'step'	=> 'any',
+						'min'	=> '1',
+						'max'	=> '10000',
+						'readonly' => true,
+					),
+				);
+
+				if ( post_language_equals_site_language() ) {
+					unset($args['custom_attributes']['readonly']);
+				}
+
+				woocommerce_wp_text_input( $args );
+			echo '</div>';
+		echo '</div>';
+	}
+
 	function save_oft_fields( $post_id ) {
-		// Bereken de eenheidsprijs a.d.h.v. prijs en netto-inhoud in $_POST
 		if ( ! empty( $_POST['_regular_price'] ) and ! empty( $_POST['_unit'] ) and ! empty( $_POST['_net_content'] ) ) {
+			// Bereken de eenheidsprijs a.d.h.v. prijs en netto-inhoud in $_POST
 			$unit_price = floatval( str_replace( ',', '.', $_POST['_regular_price'] ) ) / floatval( str_replace( ',', '.', $_POST['_net_content'] ) );
 			if ( $_POST['_unit'] === 'KG' ) {
 				$unit_price *= 1000;
@@ -694,53 +740,30 @@
 			}
 			update_post_meta( $post_id, '_unit_price', esc_attr( number_format( $unit_price, 2 ) ) );
 		} else {
-			$unit_price = '';
-			update_post_meta( $post_id, '_unit_price', $unit_price );
-			write_log("UNIT PRICE WAS RESET");
+			// Indien er een gegeven ontbreekt: verwijder voor alle zekerheid de oude waarde
+			delete_post_meta( $post_id, '_unit_price' );
+			write_log("UNIT PRICE WAS DELETED");
 		}
 
-		if ( ! empty( $_POST['_cu_ean'] ) ) {
-			update_post_meta( $post_id, '_cu_ean', esc_attr( $_POST['_cu_ean'] ) );
-		}
+		$regular_meta_keys = array(
+			'_cu_ean',
+			'_steh_ean',
+			'_shelf_life',
+			'_in_bestelweb',
+			'_shopplus_sku',
+			'_fairtrade_percentage',
+			'_unit',
+			'_net_content',
+			'_multiple',
+			'_pal_number_per_layer',
+			'_pal_number_of_layers',
+			'_enery'
+		);
 
-		if ( ! empty( $_POST['_steh_ean'] ) ) {
-			update_post_meta( $post_id, '_steh_ean', esc_attr( $_POST['_steh_ean'] ) );
-		}
-
-		if ( ! empty( $_POST['_shelf_life'] ) ) {
-			update_post_meta( $post_id, '_shelf_life', esc_attr( $_POST['_shelf_life'] ) );
-		}
-
-		if ( ! empty( $_POST['_in_bestelweb'] ) ) {
-			update_post_meta( $post_id, '_in_bestelweb', esc_attr( $_POST['_in_bestelweb'] ) );
-		}
-
-		if ( ! empty( $_POST['_shopplus_sku'] ) ) {
-			update_post_meta( $post_id, '_shopplus_sku', esc_attr( $_POST['_shopplus_sku'] ) );
-		}
-
-		if ( ! empty( $_POST['_fairtrade_percentage'] ) ) {
-			update_post_meta( $post_id, '_fairtrade_percentage', esc_attr( $_POST['_fairtrade_percentage'] ) );
-		}
-
-		if ( ! empty( $_POST['_unit'] ) ) {
-			update_post_meta( $post_id, '_unit', esc_attr( $_POST['_unit'] ) );
-		}
-
-		if ( ! empty( $_POST['_net_content'] ) ) {
-			update_post_meta( $post_id, '_net_content', esc_attr( $_POST['_net_content'] ) );
-		}
-
-		if ( ! empty( $_POST['_multiple'] ) ) {
-			update_post_meta( $post_id, '_multiple', esc_attr( $_POST['_multiple'] ) );
-		}
-
-		if ( ! empty( $_POST['_pal_number_of_layers'] ) ) {
-			update_post_meta( $post_id, '_pal_number_of_layers', esc_attr( $_POST['_pal_number_of_layers'] ) );
-		}
-
-		if ( ! empty( $_POST['_pal_number_per_layer'] ) ) {
-			update_post_meta( $post_id, '_pal_number_per_layer', esc_attr( $_POST['_pal_number_per_layer'] ) );
+		foreach( $regular_meta_keys as $meta_key ) {
+			if ( ! empty( $_POST[$meta_key] ) ) {
+				update_post_meta( $post_id, $meta_key, esc_attr( $_POST[$meta_key] ) );
+			}
 		}
 	}
 
