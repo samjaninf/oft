@@ -511,43 +511,75 @@
 		echo '<div class="options_group oft">';
 			
 			$suffix = '&euro;';
-			if ( get_post_meta( $post->ID, $key = '_net_unit', true ) === 'cl' ) {
+			if ( get_post_meta( $post->ID, '_net_unit', true ) === 'cl' ) {
 				$suffix .= '/l';
-			} elseif( get_post_meta( $post->ID, $key = '_net_unit', true ) === 'g' ) {
+			} elseif( get_post_meta( $post->ID, '_net_unit', true ) === 'g' ) {
 				$suffix .= '/kg';
 			}
 
-			$args = array( 
-				'id' => '_unit_price',
-				'label' => sprintf( __( 'Eenheidsprijs (%s)', 'oft-admin' ), $suffix ),
-				'placeholder' => __( '(wordt automatisch berekend bij het opslaan)', 'oft-admin' ),
-				'data_type' => 'price',
-				// Nooit handmatig laten bewerken!
-				'custom_attributes' => array(
-					'readonly' => true,
-				),
+			woocommerce_wp_text_input(
+				array( 
+					'id' => '_unit_price',
+					'label' => sprintf( __( 'Eenheidsprijs (%s)', 'oft-admin' ), $suffix ),
+					'placeholder' => __( 'nog niet berekenbaar', 'oft-admin' ),
+					'desc_tip' => true,
+					'description' => __( 'Deze waarde wordt automatisch berekend bij het opslaan, op voorwaarde dat zowel prijs, inhoudsmaat als netto-inhoud ingevuld zijn.', 'oft-admin' ),
+					'data_type' => 'price',
+					'custom_attributes' => array(
+						// Nooit handmatig laten bewerken!
+						'readonly' => true,
+					),
+				)
 			);
 
-			woocommerce_wp_text_input( $args );
-
-			$args2 = array( 
-				'id' => '_fairtrade_share',
-				'label' => __( 'Fairtradepercentage', 'oft-admin' ),
-				'data_type' => 'price',
-				'type' => 'number',
-				'custom_attributes' => array(
-					'step'	=> 'any',
-					'min'	=> '25',
-					'max'	=> '100',
-					'readonly' => true,
-				),
+			woocommerce_wp_select(
+				array( 
+					'id' => '_net_unit',
+					'label' => __( 'Inhoudsmaat', 'oft-admin' ),
+					'options' => array(
+						'' => __( '(selecteer)', 'oft-admin' ),
+						'g' => __( 'gram (vast product)', 'oft-admin' ),
+						'cl' => __( 'centiliter (vloeibaar product)', 'oft-admin' ),
+					),
+				)
 			);
 
-			if ( post_language_equals_site_language() ) {
-				unset($args2['custom_attributes']['readonly']);
+			if ( ! post_language_equals_site_language() ) {
+				$number_args['custom_attributes']['readonly'] = true;
 			}
 
-			woocommerce_wp_text_input( $args2 );
+			// Toon het veld voor de netto-inhoud pas na het instellen van de eenheid!
+			if ( ! empty( get_post_meta( $post->ID, '_net_unit', true ) ) ) {
+				$unit = get_post_meta( $post->ID, '_net_unit', true );
+			} else {
+				$unit = 'g of cl';
+			}
+
+			woocommerce_wp_text_input(
+				array( 
+					'id' => '_net_content',
+					'label' => sprintf( __( 'Netto-inhoud (%s)', 'oft-admin' ), $unit ),
+					'type' => 'number',
+					'custom_attributes' => array(
+						'step'	=> '1',
+						'min'	=> '1',
+						'max'	=> '10000',
+					),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array( 
+					'id' => '_fairtrade_share',
+					'label' => __( 'Aandeel fairtrade (%)', 'oft-admin' ),
+					'type' => 'number',
+					'custom_attributes' => array(
+						'step'	=> '1',
+						'min'	=> '25',
+						'max'	=> '100',
+					),
+				)
+			);
 
 		echo '</div>';
 	}
@@ -626,68 +658,37 @@
 		global $post;
 		echo '<div class="options_group oft">';
 			
-			$args = array( 
-				'id' => '_net_unit',
-				'label' => __( 'Inhoudsmaat', 'oft-admin' ),
-				'options' => array(
-					'' => __( '(selecteer)', 'oft-admin' ),
-					'g' => __( 'gram (vast product)', 'oft-admin' ),
-					'cl' => __( 'centiliter (vloeibaar product)', 'oft-admin' ),
-				),
-			);
-
-			if ( post_language_equals_site_language() ) {
-				unset($args['custom_attributes']['readonly']);
-			}
-
-			woocommerce_wp_select( $args );
-
-			// Toon het veld voor de netto-inhoud pas na het instellen van de eenheid!
-			if ( ! empty( get_post_meta( $post->ID, $key = '_net_unit', true ) ) ) {
-				$args2 = array( 
-					'id' => '_net_content',
-					'label' => sprintf( __( 'Netto-inhoud (%s)', 'oft-admin' ), get_post_meta( $post->ID, $key = '_net_unit', true ) ),
-					'type' => 'number',
-					'custom_attributes' => array(
-						'step'	=> 'any',
-						'min'	=> '1',
-						'max'	=> '10000',
-						'readonly' => true,
-					),
-				);
-
-				if ( post_language_equals_site_language() ) {
-					unset($args2['custom_attributes']['readonly']);
-				}
-			
-				woocommerce_wp_text_input( $args2 );
-			}
-
-			$args3 = array( 
-				'id' => '_multiple',
-				'label' => __( 'Ompakhoeveelheid', 'oft-admin' ),
+			$number_args = array( 
 				'type' => 'number',
 				'custom_attributes' => array(
 					'step'	=> 'any',
 					'min'	=> '1',
 					'max'	=> '1000',
-					'readonly' => true,
 				),
 			);
 
-			if ( post_language_equals_site_language() ) {
-				unset($args3['custom_attributes']['readonly']);
+			if ( ! post_language_equals_site_language() ) {
+				$number_args['custom_attributes']['readonly'] = true;
 			}
 
-			woocommerce_wp_text_input( $args3 );
-			
-			$args3['id'] = '_pal_number_of_layers';
-			$args3['label'] = __( 'Aantal palletlagen', 'oft-admin' );
-			woocommerce_wp_text_input( $args3 );
+			$multiple = array(
+				'id' => '_multiple',
+				'label' => __( 'Ompakhoeveelheid', 'oft-admin' ),
+			);
 
-			$args3['id'] = '_pal_number_per_layer';
-			$args3['label'] = __( 'Aantal per palletlaag', 'oft-admin' );
-			woocommerce_wp_text_input( $args3 );
+			$pal_number_of_layers = array(
+				'id' => '_pal_number_of_layers',
+				'label' => __( 'Aantal palletlagen', 'oft-admin' ),
+			);
+
+			$pal_number_per_layer = array(
+				'id' => '_pal_number_per_layer',
+				'label' => __( 'Aantal per palletlaag', 'oft-admin' ),
+			);
+			
+			woocommerce_wp_text_input( $multiple + $number_args );
+			woocommerce_wp_text_input( $pal_number_of_layers + $number_args );
+			woocommerce_wp_text_input( $pal_number_per_layer + $number_args );
 
 		echo '</div>';
 	}
@@ -708,55 +709,169 @@
 		echo '<div id="quality_product_data" class="panel woocommerce_options_panel">';
 			echo '<div class="options_group oft">';
 				
-				$args = array( 
-					'id' => '_energy',
-					'label' => __( 'Energie (kJ)', 'oft-admin' ),
+				$one_decimal_args = array( 
+					'data_type' => 'decimal',
 					'type' => 'number',
-					'custom_attributes' => array(
-						'step'	=> 'any',
-						'min'	=> '1',
-						'max'	=> '10000',
-						'readonly' => true,
-					),
-				);
-
-				$args2 = array( 
-					'id' => '_choavl',
-					'label' => __( 'Koolhydraten (g)', 'oft-admin' ),
-					'type' => 'decimal',
 					'custom_attributes' => array(
 						'step'	=> '0.1',
 						'min'	=> '0.1',
 						'max'	=> '100.0',
-						'readonly' => true,
 					),
 				);
 
-				if ( post_language_equals_site_language() ) {
-					unset($args['custom_attributes']['readonly']);
-					unset($args2['custom_attributes']['readonly']);
+				if ( ! post_language_equals_site_language() ) {
+					$one_decimal_args['custom_attributes']['readonly'] = true;
 				}
 
-				woocommerce_wp_text_input( $args );
-				woocommerce_wp_text_input( $args2 );
+				$secondary = array(
+					'wrapper_class' => 'secondary',
+				);
 
-				$args2['id'] = '_fat';
-				$args2['label'] = __( 'Vetten (g)', 'oft-admin' );
-				woocommerce_wp_text_input( $args2 );
+				$fat = array(
+					'id' => '_fat',
+					'label' => __( 'Vetten (g)', 'oft-admin' ),
+				);
+				
+				$fasat = array(
+					'id' => '_fasat',
+					'label' => __( 'waarvan verzadigde vetzuren (g)', 'oft-admin' ),
+				);
 
-				$args2['id'] = '_famscis';
-				$args2['label'] = __( 'Enkelvoudig onverzadigde vetzuren (g)', 'oft-admin' );
-				$args2['custom_attributes']['wrapper_class'] = 'secondary';
-				woocommerce_wp_text_input( $args2 );
+				$famscis = array(
+					'id' => '_famscis',
+					'label' => __( 'waarvan enkelvoudig onverzadigde vetzuren (g)', 'oft-admin' ),
+				);
+
+				$fapucis = array(
+					'id' => '_fapucis',
+					'label' => __( 'waarvan meervoudig onverzadigde vetzuren (g)', 'oft-admin' ),
+				);
+				
+				// Beter via JavaScript checken of de som van alle secondaries de primary niet overschrijdt!
+				if ( ! empty( get_post_meta( $post->ID, '_fat', true ) ) ) {
+					$fat_limit = array(
+						'custom_attributes' => array( 'max' => get_post_meta( $post->ID, '_fat', true ) ),
+					);
+				}
+
+				$choavl = array(
+					'id' => '_choavl',
+					'label' => __( 'Koolhydraten (g)', 'oft-admin' ),
+				);
+
+				$sugar = array(
+					'id' => '_sugar',
+					'label' => __( 'waarvan suikers (g)', 'oft-admin' ),
+				);
+
+				$polyl = array(
+					'id' => '_polyl',
+					'label' => __( 'waarvan polyolen (g)', 'oft-admin' ),
+				);
+
+				$starch = array(
+					'id' => '_starch',
+					'label' => __( 'waarvan zetmeel (g)', 'oft-admin' ),
+				);
+
+				// Beter via JavaScript checken of de som van alle secondaries de primary niet overschrijdt!
+				if ( ! empty( get_post_meta( $post->ID, '_choavl', true ) ) ) {
+					$choavl_limit = array(
+						'custom_attributes' => array( 'max' => get_post_meta( $post->ID, '_choavl', true ) ),
+					);
+				}
+				
+				$fibtg = array(
+					'id' => '_fibtg',
+					'label' => __( 'Vezels (g)', 'oft-admin' ),
+				);
+
+				$pro = array(
+					'id' => '_pro',
+					'label' => __( 'Eiwitten (g)', 'oft-admin' ),
+				);
+
+				woocommerce_wp_text_input(
+					array( 
+						'id' => '_energy',
+						'label' => __( 'Energie (kJ)', 'oft-admin' ),
+						'type' => 'number',
+						'custom_attributes' => array(
+							'step'	=> 'any',
+							'min'	=> '1',
+							'max'	=> '10000',
+						),
+					)
+				);
+
+				woocommerce_wp_text_input( $fat + $one_decimal_args );
+				woocommerce_wp_text_input( $fasat + $one_decimal_args + $secondary );
+				woocommerce_wp_text_input( $famscis + $one_decimal_args + $secondary );
+				woocommerce_wp_text_input( $fapucis + $one_decimal_args + $secondary );
+				woocommerce_wp_text_input( $choavl + $one_decimal_args );
+				woocommerce_wp_text_input( $sugar + $one_decimal_args + $secondary );
+				woocommerce_wp_text_input( $polyl + $one_decimal_args + $secondary );
+				woocommerce_wp_text_input( $starch + $one_decimal_args + $secondary );
+				woocommerce_wp_text_input( $fibtg + $one_decimal_args );
+				woocommerce_wp_text_input( $pro + $one_decimal_args );
+				
+				woocommerce_wp_text_input(
+					array( 
+						'id' => '_salteq',
+						'label' => __( 'Zout (g)', 'oft-admin' ),
+						'data_type' => 'decimal',
+						'type' => 'number',
+						'custom_attributes' => array(
+							'step'	=> '0.001',
+							'min'	=> '0.001',
+							'max'	=> '100.000',
+						),
+					)
+				);
 
 			echo '</div>';
 		echo '</div>';
 	}
 
+	// Voeg CSS toe aan adminomgeving in afwachting van style-admin.scss
+	add_action( 'admin_head', 'custom_admin_css' );
+
+	function custom_admin_css() {
+		?>
+		<style>
+			#woocommerce-product-data ul.wc-tabs li.quality-tab_options a:before {
+				font-family: FontAwesome;
+				content: '\f0c3';
+			}
+
+			div.options_group.oft > p.form-field.secondary > label {
+				padding-left: 30px;
+				font-style: italic;
+			}
+
+			#quality_product_data div.options_group.oft > p.form-field > label {
+				width: 90%;
+				max-width: 400px;
+			}
+
+			#quality_product_data div.options_group.oft > p.form-field:not(.secondary) > label {
+				padding-right: 30px;
+			}
+
+			div.options_group.oft > p.form-field > input[type=number] {
+				width: 10%;
+				max-width: 80px;
+				min-width: 60px;
+				text-align: right;
+			}
+		</style>
+		<?php
+	}
+
 	function save_oft_fields( $post_id ) {
 		if ( ! empty( $_POST['_regular_price'] ) and ! empty( $_POST['_net_unit'] ) and ! empty( $_POST['_net_content'] ) ) {
 			// Bereken de eenheidsprijs a.d.h.v. prijs en netto-inhoud in $_POST
-			$unit_price = floatval( str_replace( ',', '.', $_POST['_regular_price'] ) ) / floatval( str_replace( ',', '.', $_POST['_net_content'] ) );
+			$unit_price = wc_format_decimal( $_POST['_regular_price'] ) / floatval( $_POST['_net_content'] );
 			if ( $_POST['_net_unit'] === 'g' ) {
 				$unit_price *= 1000;
 			} elseif ( $_POST['_net_unit'] === 'cl' ) {
@@ -764,9 +879,8 @@
 			}
 			update_post_meta( $post_id, '_unit_price', esc_attr( number_format( $unit_price, 2 ) ) );
 		} else {
-			// Indien er een gegeven ontbreekt: verwijder voor alle zekerheid de oude waarde
+			// Indien er een gegeven ontbreekt: verwijder sowieso de oude waarde
 			delete_post_meta( $post_id, '_unit_price' );
-			write_log("UNIT PRICE WAS DELETED");
 		}
 
 		$regular_meta_keys = array(
@@ -782,15 +896,42 @@
 			'_pal_number_per_layer',
 			'_pal_number_of_layers',
 			'_energy',
-			'_choavl',
-			'_fat',
-			'_famscis',
 		);
 
 		foreach( $regular_meta_keys as $meta_key ) {
 			if ( ! empty( $_POST[$meta_key] ) ) {
 				update_post_meta( $post_id, $meta_key, esc_attr( $_POST[$meta_key] ) );
+			} else {
+				delete_post_meta( $post_id, $meta_key );
 			}
+		}
+
+		$decimal_meta_keys = array(
+			'_fat',
+			'_fasat',
+			'_famscis',
+			'_fapucis',
+			'_choavl',
+			'_sugar',
+			'_polyl',
+			'_starch',
+			'_fibtg',
+			'_pro',
+			
+		);
+
+		foreach( $decimal_meta_keys as $meta_key ) {
+			if ( ! empty( $_POST[$meta_key] ) ) {
+				update_post_meta( $post_id, $meta_key, esc_attr( number_format( $_POST[$meta_key], 1 ) ) );
+			} else {
+				delete_post_meta( $post_id, $meta_key );
+			}
+		}
+
+		if ( ! empty( $_POST['_salteq'] ) ) {
+			update_post_meta( $post_id, '_salteq', esc_attr( number_format( $_POST['_salteq'], 3 ) ) );
+		} else {
+			delete_post_meta( $post_id, '_salteq' );
 		}
 	}
 
@@ -1010,7 +1151,8 @@
 		if ( $post_language['language_code'] === $default_language ) {
 			return true;
 		} else {
-			return false;
+			// ALTIJD TRUE RETOURNEREN IN AFWACHTING ACTIVATIE WPML
+			return true;
 		}	
 	}
 
