@@ -509,6 +509,7 @@
 	function add_oft_general_fields() {
 		global $post;
 		echo '<div class="options_group oft">';
+			
 			$suffix = '&euro;';
 			if ( get_post_meta( $post->ID, $key = '_net_unit', true ) === 'cl' ) {
 				$suffix .= '/l';
@@ -547,11 +548,13 @@
 			}
 
 			woocommerce_wp_text_input( $args2 );
+
 		echo '</div>';
 	}
 	
 	function add_oft_inventory_fields() {
 		echo '<div class="options_group oft">';
+			
 			$args = array( 
 				'id' => '_cu_ean',
 				'label' => __( 'EAN Consument', 'oft-admin' ),
@@ -581,8 +584,8 @@
 			
 			$args['id'] = '_steh_ean';
 			$args['label'] = __( 'EAN Ompak', 'oft-admin' );
-
 			woocommerce_wp_text_input( $args );
+
 			woocommerce_wp_text_input( $args2 );
 
 			$args3 = array( 
@@ -622,6 +625,7 @@
 	function add_oft_shipping_fields() {
 		global $post;
 		echo '<div class="options_group oft">';
+			
 			$args = array( 
 				'id' => '_net_unit',
 				'label' => __( 'Inhoudsmaat', 'oft-admin' ),
@@ -679,12 +683,10 @@
 			
 			$args3['id'] = '_pal_number_of_layers';
 			$args3['label'] = __( 'Aantal palletlagen', 'oft-admin' );
-		
 			woocommerce_wp_text_input( $args3 );
 
 			$args3['id'] = '_pal_number_per_layer';
 			$args3['label'] = __( 'Aantal per palletlaag', 'oft-admin' );
-		
 			woocommerce_wp_text_input( $args3 );
 
 		echo '</div>';
@@ -705,6 +707,7 @@
 		global $post;
 		echo '<div id="quality_product_data" class="panel woocommerce_options_panel">';
 			echo '<div class="options_group oft">';
+				
 				$args = array( 
 					'id' => '_energy',
 					'label' => __( 'Energie (kJ)', 'oft-admin' ),
@@ -717,11 +720,35 @@
 					),
 				);
 
+				$args2 = array( 
+					'id' => '_choavl',
+					'label' => __( 'Koolhydraten (g)', 'oft-admin' ),
+					'type' => 'decimal',
+					'custom_attributes' => array(
+						'step'	=> '0.1',
+						'min'	=> '0.1',
+						'max'	=> '100.0',
+						'readonly' => true,
+					),
+				);
+
 				if ( post_language_equals_site_language() ) {
 					unset($args['custom_attributes']['readonly']);
+					unset($args2['custom_attributes']['readonly']);
 				}
 
 				woocommerce_wp_text_input( $args );
+				woocommerce_wp_text_input( $args2 );
+
+				$args2['id'] = '_fat';
+				$args2['label'] = __( 'Vetten (g)', 'oft-admin' );
+				woocommerce_wp_text_input( $args2 );
+
+				$args2['id'] = '_famscis';
+				$args2['label'] = __( 'Enkelvoudig onverzadigde vetzuren (g)', 'oft-admin' );
+				$args2['custom_attributes']['wrapper_class'] = 'secondary';
+				woocommerce_wp_text_input( $args2 );
+
 			echo '</div>';
 		echo '</div>';
 	}
@@ -754,7 +781,10 @@
 			'_multiple',
 			'_pal_number_per_layer',
 			'_pal_number_of_layers',
-			'_energy'
+			'_energy',
+			'_choavl',
+			'_fat',
+			'_famscis',
 		);
 
 		foreach( $regular_meta_keys as $meta_key ) {
