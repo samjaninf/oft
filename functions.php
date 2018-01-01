@@ -498,6 +498,38 @@
 	#  WOOCOMMERCE  #
 	#################
 
+	// 1ste mogelijkheid om niet-OFT-producten te verbergen: extra filter in algemene query
+	// add_action( 'woocommerce_product_query', 'so_20990199_product_query' );
+
+	function so_20990199_product_query( $q ){	
+		$tax_query = (array) $q->get('tax_query');
+		$tax_query[] = array(
+			'taxonomy' => 'pa_merk',
+			'field' => 'term_taxonomy_id',
+			'terms' => array( '273' ),
+			'operator' => 'IN',
+		);
+		$q->set( 'tax_query', $tax_query );
+	}
+
+	// 2de mogelijkheid om niet-OFT-producten te verbergen: visbiliteit wijzigen
+	// add_action( 'save_post', 'wpse1511_create_or_update_product', 10, 3 );
+
+	function wpse1511_create_or_update_product( $post_id, $post, $update ) {
+		if ( $post->post_status !== 'publish' || $post->post_type !== 'product' ) {
+			return;
+		}
+
+		if ( ! $product = wc_get_product( $post ) ) {
+			return;
+		}
+
+		if ( $product->get_attribute('merk') !== 'Oxfam Fair Trade' ) {
+			$product->set_catalog_visibility( 'hidden' );
+			$product->save();
+		}
+	}
+
 	// Toon metavelden netjes in de WooCommerce-tabbladen en werk ze bij tijdens het opslaan
 	add_action( 'woocommerce_product_options_general_product_data', 'add_oft_general_fields', 5 );
 	add_action( 'woocommerce_product_options_inventory_product_data', 'add_oft_inventory_fields', 5 );
