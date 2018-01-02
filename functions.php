@@ -498,6 +498,51 @@
 	#  WOOCOMMERCE  #
 	#################
 
+	// Voeg ook een kolom toe aan het besteloverzicht in de back-end
+	add_filter( 'manage_edit-product_columns', 'add_attribute_columns', 20, 1 );
+
+	// Maak sorteren op deze nieuwe kolom mogelijk
+	add_filter( 'manage_edit-product_sortable_columns', 'make_attribute_columns_sortable', 10, 1 );
+
+	// Toon de data van elk order in de kolom
+	add_action( 'manage_product_posts_custom_column' , 'get_attribute_column_value', 10, 2 );
+
+	// Voer de sortering uit tijdens het bekijken van orders in de admin (voor alle zekerheid NA filteren uitvoeren)
+	add_action( 'pre_get_posts', 'sort_products_on_custom_column', 20 );
+	
+	function sort_products_on_custom_column( $query ) {
+		global $pagenow, $post_type;
+		if ( $pagenow === 'edit.php' and $post_type === 'product' and $query->query['post_type'] === 'product' ) {
+			// Check of we moeten sorteren op één van onze custom kolommen
+			if ( $query->get( 'orderby' ) === 'brand' ) {
+				$query->set( 'meta_key', 'pa_brand' );
+				$query->set( 'orderby', 'meta_value_num' );
+			}
+		}
+	}
+
+	function add_attribute_columns( $columns ) {
+		$columns['brand'] = __( 'Merk', 'oft-admin' );
+		return $columns;
+	}
+
+	function make_attribute_columns_sortable( $columns ) {
+		$columns['brand'] = 'brand';
+		return $columns;
+	}
+
+	function get_attribute_column_value( $column, $post_id ) {
+		global $the_product;
+		
+		if ( $column === 'brand' ) {
+			if ( ! empty( $the_product->get_attribute('pa_brand') ) ) {
+				echo $the_product->get_attribute('pa_brand');
+			} else {
+				echo '<i>niet beschikbaar</i>';
+			}
+		}
+	}
+
 	// 1ste mogelijkheid om niet-OFT-producten te verbergen: extra filter in algemene query
 	// add_action( 'woocommerce_product_query', 'so_20990199_product_query' );
 
