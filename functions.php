@@ -13,47 +13,10 @@
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
 	}
 
-	add_filter( 'rest_authentication_errors', 'only_allow_administrator_rest_access' );
-
-	function only_allow_administrator_rest_access( $access ) {
-		if( ! is_user_logged_in() or ! current_user_can( 'update_core' ) ) {
-			return new WP_Error( 'rest_cannot_access', 'Access prohibited!', array( 'status' => rest_authorization_required_code() ) );
-		}
-		return $access;
-	}
-	
-	add_shortcode( 'wp-json', 'echo_js' );
-
-	function echo_js() {
-		?>
-		<script type="text/javascript">
-			function dump(obj) {
-				var out = '';
-				for (var i in obj) {
-					out += i + ": " + obj[i] + "\n";
-				}
-
-				var pre = document.createElement('pre');
-				pre.innerHTML = out;
-				document.body.appendChild(pre);
-			}
-
-			jQuery(document).ready( function() {
-				wp.api.loadPromise.done( function() {
-					var post = new wp.api.models.Post( { id : 1077 } );
-					post.fetch();
-					alert( post.attributes.title.rendered );
-				} );
-			} );
-		</script>
-		<?php
-	}
-
 	// Laad custom JS-files
 	add_action( 'wp_enqueue_scripts', 'load_extra_js' );
 
 	function load_extra_js() {
-		global $wp_scripts;
 		// Activeer WP API
 		wp_enqueue_script( 'wp-api' );
 		// wp_enqueue_script( 'bootstrap_js', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js');
@@ -478,6 +441,17 @@
 			jQuery( '#taxonomy-product_partner' ).find( 'input[type=checkbox]' ).on( 'change', function() {
 				jQuery(this).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', jQuery(this).is(":checked") );
 			});
+
+			jQuery( '#quality_product_data' ).find( 'p.primary' ).change( function() {
+				var max = jQuery(this).children( 'input' ).first().val();
+				alert(max);
+				
+				var sum = 0;
+				jQuery(this).siblings( 'p.secondary' ).each( function() {
+					sum += Number( jQuery(this).children( 'input' ).first().val() );
+				});
+				alert(sum);
+			});
 		</script>
 		<?php
 	}
@@ -619,7 +593,7 @@
 	// add_action( 'save_post', 'change_product_visibility_on_save', 10, 3 );
 
 	function change_product_visibility_on_save( $post_id, $post, $update ) {
-		if ( $post->post_status !== 'publish' || $post->post_type !== 'product' ) {
+		if ( $post->post_status !== 'publish' or $post->post_type !== 'product' ) {
 			return;
 		}
 
@@ -788,7 +762,7 @@
 
 		$steh_ean = array(
 			'id' => '_steh_ean',
-			'label' => __( 'EAN-code ompak', 'oft-admin' ),
+			'label' => __( 'EAN-code <u>ompak</u>', 'oft-admin' ),
 		);
 
 		$multiple = array(
@@ -826,7 +800,7 @@
 			woocommerce_wp_text_input(
 				array(
 					'id' => '_steh_weight',
-					'label' => __( 'Gewicht ompak (kg)', 'oft-admin' ),
+					'label' => __( 'Gewicht <u>ompak</u> (kg)', 'oft-admin' ),
 					'placeholder' => wc_format_localized_decimal( 0 ),
 					'desc_tip' => true,
 					'description' => __( 'Weight in decimal form', 'woocommerce' ),
@@ -836,7 +810,7 @@
 			?>
 			<!-- ZIE: woocommerce/includes/admin/meta-boxes/views/html-product-data-shipping.php -->
 			<p class="form-field dimensions_field">
-				<label for="box_length"><?php printf( __( 'Afmetingen ompak (%s)', 'oft-admin' ), get_option( 'woocommerce_dimension_unit' ) ); ?></label>
+				<label for="box_length"><?php printf( __( 'Afmetingen <u>ompak</u> (%s)', 'oft-admin' ), get_option( 'woocommerce_dimension_unit' ) ); ?></label>
 				<span class="wrap">
 					<input id="box_length" placeholder="<?php esc_attr_e( 'Length', 'woocommerce' ); ?>" class="input-text wc_input_decimal" size="6" type="text" name="_steh_length" value="<?php echo esc_attr( wc_format_localized_decimal( get_post_meta( $post->ID, '_steh_length', true ) ) ); ?>" />
 					<input placeholder="<?php esc_attr_e( 'Width', 'woocommerce' ); ?>" class="input-text wc_input_decimal" size="6" type="text" name="_steh_width" value="<?php echo esc_attr( wc_format_localized_decimal( get_post_meta( $post->ID, '_steh_width', true ) ) ); ?>" />
@@ -851,13 +825,13 @@
 
 	function add_product_quality_tab( $product_data_tabs ) {
 		$product_data_tabs['quality'] = array(
-			'label' => __( 'Kwaliteit', 'oft-admin' ),
+			'label' => __( 'Voedingsinfo', 'oft-admin' ),
 			'target' => 'quality_product_data',
 			'class' => array( 'hide_if_virtual' ),
 		);
 		// Herbenoem tabjes
 		$product_data_tabs['shipping']['label'] = __( 'Logistiek', 'oft-admin' );
-		$product_data_tabs['linked_product']['label'] = __( 'Gerelateerd', 'oft-admin' );
+		// $product_data_tabs['linked_product']['label'] = __( 'Gerelateerd', 'oft-admin' );
 		// Verwijder overbodig tabje
 		unset($product_data_tabs['advanced']);
 		return $product_data_tabs;
@@ -879,6 +853,10 @@
 		if ( ! post_language_equals_site_language() ) {
 			$one_decimal_args['custom_attributes']['readonly'] = true;
 		}
+
+		$primary = array(
+			'wrapper_class' => 'primary',
+		);
 
 		$secondary = array(
 			'wrapper_class' => 'secondary',
@@ -965,14 +943,14 @@
 			echo '</div>';
 		
 			echo '<div class="options_group oft">';
-				woocommerce_wp_text_input( $fat + $one_decimal_args );
+				woocommerce_wp_text_input( $fat + $one_decimal_args + $primary );
 				woocommerce_wp_text_input( $fasat + $one_decimal_args + $secondary );
 				woocommerce_wp_text_input( $famscis + $one_decimal_args + $secondary );
 				woocommerce_wp_text_input( $fapucis + $one_decimal_args + $secondary );
 			echo '</div>';
 		
 			echo '<div class="options_group oft">';
-				woocommerce_wp_text_input( $choavl + $one_decimal_args );
+				woocommerce_wp_text_input( $choavl + $one_decimal_args + $primary );
 				woocommerce_wp_text_input( $sugar + $one_decimal_args + $secondary );
 				woocommerce_wp_text_input( $polyl + $one_decimal_args + $secondary );
 				woocommerce_wp_text_input( $starch + $one_decimal_args + $secondary );
@@ -1036,20 +1014,10 @@
 	}
 
 	function save_oft_fields( $post_id ) {
-		if ( ! empty( $_POST['_regular_price'] ) and ! empty( $_POST['_net_unit'] ) and ! empty( $_POST['_net_content'] ) ) {
-			// Bereken de eenheidsprijs a.d.h.v. prijs en netto-inhoud in $_POST
-			$unit_price = wc_format_decimal( $_POST['_regular_price'] ) / floatval( $_POST['_net_content'] );
-			if ( $_POST['_net_unit'] === 'g' ) {
-				$unit_price *= 1000;
-			} elseif ( $_POST['_net_unit'] === 'cl' ) {
-				$unit_price *= 100;
-			}
-			update_post_meta( $post_id, '_unit_price', esc_attr( number_format( $unit_price, 2 ) ) );
-		} else {
-			// Indien er een gegeven ontbreekt: verwijder sowieso de oude waarde
-			delete_post_meta( $post_id, '_unit_price' );
-		}
-
+		// Bereken - indien mogelijk - de eenheidsprijs a.d.h.v. alle data in $_POST
+		// Laatste parameter: val expliciet niét terug op de (verouderde) databasewaarden!
+		update_unit_price( $_POST['_regular_price'], $_POST['_net_content'], $_POST['_net_unit'], false );
+		
 		$regular_meta_keys = array(
 			'_net_unit',
 			'_net_content',
@@ -1542,6 +1510,149 @@
 		}		
 
 		return $mailings;
+	}
+
+
+
+	###############
+	#  IMPORTING  #
+	###############
+
+	add_action( 'pmxi_before_xml_import', 'delete_in_bestelweb_keys', 10, 1 );
+
+	function delete_in_bestelweb_keys( $import_id ) {
+		if ( $import_id == 9 ) {
+			// Zet de key '_in_bestelweb' van alle producten af voor we beginnen
+			$args = array(
+				'post_type'			=> 'product',
+				'post_status'		=> array( 'publish', 'draft', 'trash' ),
+				'posts_per_page'	=> -1,
+			);
+
+			$to_remove = new WP_Query( $args );
+
+			if ( $to_remove->have_posts() ) {
+				while ( $to_remove->have_posts() ) {
+					$to_remove->the_post();
+					update_post_meta( get_the_ID(), '_in_bestelweb', 'no' );
+				}
+				wp_reset_postdata();
+			}
+		}
+	}
+
+	// Bereken - indien mogelijk - de eenheidsprijs tijdens de ERP-import
+	add_action( 'pmxi_saved_post', 'update_unit_price', 10, 4 );
+
+	function update_unit_price( $post_id, $price, $content, $unit, $from_database = true ) {
+		$product = wc_get_product( $post_id );
+		if ( $product->exists() ) {
+			if ( $from_database = true ) {
+				$price = $product->get_regular_price();
+				$content = $product->get_meta('_net_content');
+				$unit = $product->get_meta('_net_unit');
+			}
+			if ( ! empty( $price ) and ! empty( $content ) and ! empty( $unit ) ) {
+				$unit_price = calc_unit_price( $price, $content, $unit );
+				$product->update_meta_data( '_unit_price', number_format( $unit_price, 2 ) );
+			} else {
+				// Indien er een gegeven ontbreekt: verwijder sowieso de oude waarde
+				$product->delete_meta_data( '_unit_price' );
+			}
+			$product->save();
+		}
+	}
+
+	function calc_unit_price( $price, $content, $unit ) {
+		$unit_price = wc_format_decimal( $price ) / floatval( $content );
+		if ( $unit === 'g' ) {
+			$unit_price *= 1000;
+		} elseif ( $unit === 'cl' ) {
+			$unit_price *= 100;
+		}
+		return $unit_price;
+	}
+
+
+
+	############
+	#  WP API  #
+	############
+
+	// Verhinder het lekken van gegevens via de WP API
+	add_filter( 'rest_authentication_errors', 'only_allow_administrator_rest_access' );
+
+	function only_allow_administrator_rest_access( $access ) {
+		if( ! is_user_logged_in() or ! current_user_can( 'update_core' ) ) {
+			return new WP_Error( 'rest_cannot_access', 'Access prohibited!', array( 'status' => rest_authorization_required_code() ) );
+		}
+		return $access;
+	}
+
+	// Testje met het toevoegen van custom taxonomieën aan de WP API
+	add_filter( 'woocommerce_rest_prepare_product_object', 'add_custom_taxonomies_to_response', 10, 3 );
+
+	function add_custom_taxonomies_to_response( $response, $object, $request ) {
+		if ( empty( $response->data ) ) {
+			return $response;
+		}
+		
+		foreach ( wp_get_object_terms( $object->id, 'product_recipe' ) as $term ) {
+			$recipes[] = array(
+				'id'   => $term->term_id,
+				'name' => $term->name,
+				'slug' => $term->slug,
+			);
+		}
+		$response->data['recipes'] = $recipes;
+
+		foreach ( wp_get_object_terms( $object->id, 'product_grape' ) as $term ) {
+			$grapes[] = array(
+				'id'   => $term->term_id,
+				'name' => $term->name,
+				'slug' => $term->slug,
+			);
+		}
+		$response->data['grapes'] = $grapes;
+
+		foreach ( wp_get_object_terms( $object->id, 'product_taste' ) as $term ) {
+			$tastes[] = array(
+				'id'   => $term->term_id,
+				'name' => $term->name,
+				'slug' => $term->slug,
+			);
+		}
+		$response->data['tastes'] = $tastes;
+
+		return $response;
+	}
+	
+	// Lukt het intern wél via de JS-library?
+	add_shortcode( 'wp-json', 'echo_js' );
+
+	function echo_js() {
+		?>
+		<script type="text/javascript">
+			function dump(obj) {
+				var out = '';
+				for (var i in obj) {
+					out += i + ": " + obj[i] + "\n";
+				}
+
+				var pre = document.createElement('pre');
+				pre.innerHTML = out;
+				document.body.appendChild(pre);
+			}
+
+			jQuery(document).ready( function() {
+				wp.api.loadPromise.done( function() {
+					var post = new wp.api.models.Post( { id : 1077 } );
+					post.fetch();
+					alert( post.attributes.title.rendered );
+				} );
+			} );
+		</script>
+		<?php
 	}
 
 
