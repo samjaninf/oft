@@ -414,43 +414,44 @@
 		$grapes = get_terms($args);
 		?>
 		<script>
-			/* Disable hoofdcategorieën */
-			<?php foreach ( $categories as $id ) : ?>
-				jQuery( '#in-product_cat-<?php echo $id; ?>' ).prop( 'disabled', true );
-			<?php endforeach; ?>
-			
-			/* Disable continenten */
-			<?php foreach ( $continents as $id ) : ?>
-				jQuery( '#in-product_partner-<?php echo $id; ?>' ).prop( 'disabled', true );
-			<?php endforeach; ?>
-
-			/* Disable allergeenklasses */
-			<?php foreach ( $types as $id ) : ?>
-				jQuery( '#in-product_allergen-<?php echo $id; ?>' ).prop( 'disabled', true );
-			<?php endforeach; ?>
-
-			/* Disable rode en witte druiven */
-			<?php foreach ( $grapes as $id ) : ?>
-				jQuery( '#in-product_grape-<?php echo $id; ?>' ).prop( 'disabled', true );
-			<?php endforeach; ?>
-			
-			/* Disable bovenliggende landen/continenten van alle aangevinkte partners/landen */
-			jQuery( '#taxonomy-product_partner' ).find( 'input[type=checkbox]:checked' ).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'disabled', true );
-
-			/* Disable/enable het bovenliggende land bij aan/afvinken van een partner en rest de aanvinkstatus van de parent */
-			jQuery( '#taxonomy-product_partner' ).find( 'input[type=checkbox]' ).on( 'change', function() {
-				jQuery(this).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', jQuery(this).is(":checked") );
-			});
-
-			jQuery( '#quality_product_data' ).find( 'p.primary' ).change( function() {
-				var max = jQuery(this).children( 'input' ).first().val();
-				alert(max);
+			jQuery(document).ready( function() {
+				/* Disable hoofdcategorieën */
+				<?php foreach ( $categories as $id ) : ?>
+					jQuery( '#in-product_cat-<?php echo $id; ?>' ).prop( 'disabled', true );
+				<?php endforeach; ?>
 				
-				var sum = 0;
-				jQuery(this).siblings( 'p.secondary' ).each( function() {
-					sum += Number( jQuery(this).children( 'input' ).first().val() );
+				/* Disable continenten */
+				<?php foreach ( $continents as $id ) : ?>
+					jQuery( '#in-product_partner-<?php echo $id; ?>' ).prop( 'disabled', true );
+				<?php endforeach; ?>
+
+				/* Disable allergeenklasses */
+				<?php foreach ( $types as $id ) : ?>
+					jQuery( '#in-product_allergen-<?php echo $id; ?>' ).prop( 'disabled', true );
+				<?php endforeach; ?>
+
+				/* Disable rode en witte druiven */
+				<?php foreach ( $grapes as $id ) : ?>
+					jQuery( '#in-product_grape-<?php echo $id; ?>' ).prop( 'disabled', true );
+				<?php endforeach; ?>
+				
+				/* Disable bovenliggende landen/continenten van alle aangevinkte partners/landen */
+				jQuery( '#taxonomy-product_partner' ).find( 'input[type=checkbox]:checked' ).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'disabled', true );
+
+				/* Disable/enable het bovenliggende land bij aan/afvinken van een partner en rest de aanvinkstatus van de parent */
+				jQuery( '#taxonomy-product_partner' ).find( 'input[type=checkbox]' ).on( 'change', function() {
+					jQuery(this).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', jQuery(this).is(":checked") );
 				});
-				alert(sum);
+
+				/* Eventueel: checken of de som van alle secondaries de primary niet overschrijdt! */
+				jQuery( '#quality_product_data' ).find( 'p.primary' ).change( function() {
+					var max = jQuery(this).children( 'input' ).first().val();
+					var sum = 0;
+					jQuery(this).siblings( 'p.secondary' ).each( function() {
+						sum += Number( jQuery(this).children( 'input' ).first().val() );
+					});
+					// alert(sum);
+				});
 			});
 		</script>
 		<?php
@@ -1141,6 +1142,7 @@
 	}
 
 	// add_action( 'woocommerce_single_product_summary', 'show_hipster_icons', 75 );
+	add_action( 'woocommerce_single_product_summary', 'show_additional_information', 75 );
 
 	function show_hipster_icons() {
 		global $product, $sitepress;
@@ -1156,9 +1158,43 @@
 		}
 		var_dump_pre( $product->get_attribute('biocertificatie') );
 		$yes = array( 'nl' => 'Ja', 'en' => 'Yes', 'fr' => 'Oui' );
+		if ( $product->get_attribute('biocertificatie') === $yes[$sitepress->get_current_language()] ) {
+			echo "<img class='organic'>";
+		}
+	}
+
+	function show_additional_information() {
+		global $product;
+		
+		$partners = get_partner_terms_by_product($product);
+		if ( $partners !== false ) {
+			echo implode( ', ', $countries );
+		}
+
+		$countries = get_country_terms_by_product($product);
+		if ( $countries !== false ) {
+			echo implode( ', ', $countries );
+		}
+
+		$icons = array();
+		foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
+			$icons[] = $term->slug;
+		}
+		
+		if ( in_array( 'veganistisch', $icons ) ) {
+			echo "<img class='vegan'>";
+		}
+		if ( in_array( 'glutenvrij', $icons ) ) {
+			echo "<img class='gluten-free'>";
+		}
+		if ( in_array( 'lactosevrij', $icons ) ) {
+			echo "<img class='lactose-free'>";
+		}
+		
+		$yes = array( 'Ja', 'Yes', 'Oui' );
 		// SLUGS VAN ATTRIBUTEN WORDEN NIET VERTAALD, ENKEL DE TERMEN
 		// TAGS ZIJN A.H.W. TERMEN VAN EEN WELBEPAALD ATTRIBUUT EN WORDEN DUS OOK VERTAALD
-		if ( $product->get_attribute('biocertificatie') === $yes[$sitepress->get_current_language()] ) {
+		if ( in_array( $product->get_attribute('bio'), $yes ) ) {
 			echo "<img class='organic'>";
 		}
 	}
@@ -1571,6 +1607,97 @@
 			$unit_price *= 100;
 		}
 		return $unit_price;
+	}
+
+	// TE MOEILIJK, VOORLOPIG NIET GEBRUIKEN
+	function update_origin( $post_id, $partners, $from_database = true ) {
+		$product = wc_get_product( $post_id );
+		if ( $product->exists() ) {
+			if ( $from_database = true ) {
+				$partners = get_country_terms_by_product( $product );
+			}
+			if ( ! empty( $partners ) ) {
+				$term_taxonomy_ids = wp_set_object_terms( $post_id, array_keys($partners), 'pa_herkomst', true );
+				$data = $product->get_meta( '_product_attributes' );
+				unset($data['pa_herkomst']);
+				$data['pa_herkomst'] = array(
+					'name' => 'pa_herkomst',
+					'value' => '',
+					'position' => '0',
+					'is_visible' => '1',
+					'is_variation' => '0',
+					'is_taxonomy' => '1',
+				);
+				$product->update_meta_data( '_product_attributes', $data );
+			} else {
+				// Indien er geen partners zijn: verwijder het oude attribuut uit de array
+				$product->update_meta_data( '_product_attributes', $data );
+			}
+			$product->save();
+		}
+	}
+
+	// Retourneert een array term_id => name van landen waaruit dit product afkomstig is (en anders false)
+	function get_country_terms_by_product( $product ) {
+		// Producten worden door de import + checkboxlogica enkel aan de laagste hiërarchische term gelinkt, dus dit zijn per definitie landen of partners!
+		$terms = get_the_terms( $product->get_id(), 'product_partner' );
+		
+		// Vraag de term-ID's van de continenten op
+		$args = array( 'taxonomy' => 'product_partner', 'parent' => 0, 'hide_empty' => false, 'fields' => 'ids' );
+		$continents = get_terms( $args );
+		
+		$countries = array();
+		if ( is_array($terms) and count($terms) > 0 ) {
+			foreach ( $terms as $term ) {
+				if ( ! in_array( $term->parent, $continents, true ) ) {
+					// De bovenliggende term is geen continent, dus het is een partner!
+					$parent_term = get_term_by( 'id', $term->parent, 'product_partner' );
+					// Voeg de naam van de BOVENLIGGENDE term (= land) toe aan het lijstje
+					$countries[$parent_term->term_id] = $parent_term->name;
+				} else {
+					// In dit geval is het zeker een land (en sowieso geen continent, zie boven)
+					$countries[$term->term_id] = $term->name;
+				}
+			}
+			// Sorteer de landen alfabetisch maar bewaar de indices (parent_terms reeds automatisch ontdubbeld dankzij de unieke array_key = term_id)
+			asort( $countries );
+		}
+
+		if ( count($countries) < 1 ) {
+			// Fallback indien geen herkomstinfo bekend
+			$countries = false;
+		}
+		
+		return $countries;
+	}
+
+	// Retourneert een array term_id => name van de partners die bijdragen aan het product (en anders false)
+	function get_partner_terms_by_product( $product ) {
+		// Producten worden door de import + checkboxlogica enkel aan de laagste hiërarchische term gelinkt, dus dit zijn per definitie landen of partners!
+		$terms = get_the_terms( $product->get_id(), 'product_partner' );
+		
+		// Vraag de term-ID's van de continenten op
+		$args = array( 'taxonomy' => 'product_partner', 'parent' => 0, 'hide_empty' => false, 'fields' => 'ids' );
+		$continents = get_terms( $args );
+		
+		$partners = array();
+		if ( is_array($terms) and count($terms) > 0 ) {
+			foreach ( $terms as $term ) {
+				if ( ! in_array( $term->parent, $continents, true ) ) {
+					// De bovenliggende term is geen continent, dus het is een partner!
+					$partners[$term->term_id] = $term->name;
+				}
+			}
+			// Sorteer de partners alfabetisch maar bewaar de indices
+			asort( $partners );
+		}
+
+		if ( count($partners) < 1 ) {
+			// Fallback indien geen partnerinfo bekend
+			$partners = false;
+		}
+
+		return $partners;
 	}
 
 
