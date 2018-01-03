@@ -13,11 +13,49 @@
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
 	}
 
+	add_filter( 'rest_authentication_errors', 'only_allow_administrator_rest_access' );
+
+	function only_allow_administrator_rest_access( $access ) {
+		if( ! is_user_logged_in() or ! current_user_can( 'update_core' ) ) {
+			return new WP_Error( 'rest_cannot_access', 'Access prohibited!', array( 'status' => rest_authorization_required_code() ) );
+		}
+		return $access;
+	}
+	
+	add_shortcode( 'wp-json', 'echo_js' );
+
+	function echo_js() {
+		?>
+		<script type="text/javascript">
+			function dump(obj) {
+				var out = '';
+				for (var i in obj) {
+					out += i + ": " + obj[i] + "\n";
+				}
+
+				var pre = document.createElement('pre');
+				pre.innerHTML = out;
+				document.body.appendChild(pre);
+			}
+
+			jQuery(document).ready( function() {
+				wp.api.loadPromise.done( function() {
+					var post = new wp.api.models.Post( { id : 1077 } );
+					post.fetch();
+					alert( post.attributes.title.rendered );
+				} );
+			} );
+		</script>
+		<?php
+	}
+
 	// Laad custom JS-files
-	add_action( 'wp_enqueue_scripts', 'load_extra_js');
+	add_action( 'wp_enqueue_scripts', 'load_extra_js' );
 
 	function load_extra_js() {
 		global $wp_scripts;
+		// Activeer WP API
+		wp_enqueue_script( 'wp-api' );
 		// wp_enqueue_script( 'bootstrap_js', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js');
 	}
 
@@ -76,7 +114,7 @@
 	################
 
 	// Creëer een custom hiërarchische taxonomie op producten om partner/landinfo in op te slaan
-	add_action( 'init', 'register_partner_taxonomy', 0 );
+	add_action( 'init', 'register_partner_taxonomy', 2 );
 	
 	function register_partner_taxonomy() {
 		$taxonomy_name = 'product_partner';
@@ -85,21 +123,20 @@
 			'name' => __( 'Partners', 'oft' ),
 			'singular_name' => __( 'Partner', 'oft' ),
 			'all_items' => __( 'Alle partners', 'oft' ),
+			'edit_item' => __( 'Partner bewerken', 'oft' ),
+			'view_item' => __( 'Partner bekijken', 'oft' ),
+			'add_new_item' => __( 'Voeg nieuwe partner toe', 'oft' ),
+			'new_item_name' => __( 'Nieuwe partner', 'oft' ),
 			'parent_item' => __( 'Land', 'oft' ),
 			'parent_item_colon' => __( 'Land:', 'oft' ),
-			'new_item_name' => __( 'Nieuwe partner', 'oft' ),
-			'add_new_item' => __( 'Voeg nieuwe partner toe', 'oft' ),
-			'view_item' => __( 'Partner bekijken', 'oft' ),
-			'edit_item' => __( 'Partner bewerken', 'oft' ),
 			'search_items' => __( 'Partners doorzoeken', 'oft' ),
+			'not_found' => __( 'Geen partners gevonden!', 'oft' ),
 		);
 
 		$args = array(
 			'labels' => $labels,
-			'description' => __( 'Ken het product toe aan een partner/land', 'oft' ),
 			'public' => true,
 			'publicly_queryable' => true,
-			'hierarchical' => true,
 			'show_ui' => true,
 			'show_in_menu' => true,
 			'show_in_nav_menus' => true,
@@ -107,10 +144,12 @@
 			'show_tagcloud' => true,
 			'show_in_quick_edit' => true,
 			'show_admin_column' => true,
+			'description' => __( 'Ken het product toe aan een partner/land', 'oft' ),
+			'hierarchical' => true,
 			'query_var' => true,
+			'rewrite' => array( 'slug' => 'partner', 'with_front' => true, 'hierarchical' => false ),
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
-			'rewrite' => array( 'slug' => 'partner', 'with_front' => false, 'hierarchical' => false ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -237,8 +276,50 @@
 		<?php
 	}
 
+	// Creëer een custom hiërarchische taxonomie op producten om allergeneninfo in op te slaan
+	add_action( 'init', 'register_allergen_taxonomy', 4 );
+
+	function register_allergen_taxonomy() {
+		$taxonomy_name = 'product_allergen';
+		
+		$labels = array(
+			'name' => __( 'Allergenen', 'oft' ),
+			'singular_name' => __( 'Allergeen', 'oft' ),
+			'all_items' => __( 'Alle allergenen', 'oft' ),
+			'parent_item' => __( 'Allergeen', 'oft' ),
+			'parent_item_colon' => __( 'Allergeen:', 'oft' ),
+			'new_item_name' => __( 'Nieuw allergeen', 'oft' ),
+			'add_new_item' => __( 'Voeg nieuw allergeen toe', 'oft' ),
+			'view_item' => __( 'Allergeen bekijken', 'oft' ),
+			'edit_item' => __( 'Allergeen bewerken', 'oft' ),
+			'search_items' => __( 'Allergenen doorzoeken', 'oft' ),
+		);
+
+		$args = array(
+			'labels' => $labels,
+			'description' => __( 'Geef aan dat het product dit bevat', 'oft' ),
+			'public' => true,
+			'publicly_queryable' => true,
+			'hierarchical' => true,
+			'show_ui' => true,
+			'show_in_menu' => true,
+			'show_in_nav_menus' => true,
+			'show_in_rest' => true,
+			'show_tagcloud' => true,
+			'show_in_quick_edit' => true,
+			'show_admin_column' => true,
+			'query_var' => true,
+			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
+			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
+			'rewrite' => array( 'slug' => 'allergeen', 'with_front' => false, 'hierarchical' => false ),
+		);
+
+		register_taxonomy( $taxonomy_name, 'product', $args );
+		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
+	}
+
 	// Creëer drie custom hiërarchische taxonomieën op producten om wijninfo in op te slaan
-	add_action( 'init', 'register_wine_taxonomy', 0 );
+	add_action( 'init', 'register_wine_taxonomy', 100 );
 	
 	function register_wine_taxonomy() {
 		$name = 'druif';
@@ -264,7 +345,7 @@
 			'publicly_queryable' => true,
 			'hierarchical' => true,
 			'show_ui' => true,
-			'show_in_menu' => false,
+			'show_in_menu' => true,
 			'show_in_nav_menus' => false,
 			'show_in_rest' => true,
 			'show_tagcloud' => true,
@@ -328,50 +409,8 @@
 		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
 	}
 
-	// Creëer een custom hiërarchische taxonomie op producten om allergeneninfo in op te slaan
-	add_action( 'init', 'register_allergen_taxonomy', 0 );
-
-	function register_allergen_taxonomy() {
-		$taxonomy_name = 'product_allergen';
-		
-		$labels = array(
-			'name' => __( 'Allergenen', 'oft' ),
-			'singular_name' => __( 'Allergeen', 'oft' ),
-			'all_items' => __( 'Alle allergenen', 'oft' ),
-			'parent_item' => __( 'Allergeen', 'oft' ),
-			'parent_item_colon' => __( 'Allergeen:', 'oft' ),
-			'new_item_name' => __( 'Nieuw allergeen', 'oft' ),
-			'add_new_item' => __( 'Voeg nieuw allergeen toe', 'oft' ),
-			'view_item' => __( 'Allergeen bekijken', 'oft' ),
-			'edit_item' => __( 'Allergeen bewerken', 'oft' ),
-			'search_items' => __( 'Allergenen doorzoeken', 'oft' ),
-		);
-
-		$args = array(
-			'labels' => $labels,
-			'description' => __( 'Geef aan dat het product dit bevat', 'oft' ),
-			'public' => true,
-			'publicly_queryable' => true,
-			'hierarchical' => true,
-			'show_ui' => true,
-			'show_in_menu' => true,
-			'show_in_nav_menus' => true,
-			'show_in_rest' => true,
-			'show_tagcloud' => true,
-			'show_in_quick_edit' => true,
-			'show_admin_column' => true,
-			'query_var' => true,
-			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
-			'rewrite' => array( 'slug' => 'allergeen', 'with_front' => false ),
-		);
-
-		register_taxonomy( $taxonomy_name, 'product', $args );
-		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
-	}
-
 	// Maak onze custom taxonomiën beschikbaar in menu editor
-	add_filter('woocommerce_attribute_show_in_nav_menus', 'register_custom_taxonomies_for_menus', 1, 2 );
+	add_filter( 'woocommerce_attribute_show_in_nav_menus', 'register_custom_taxonomies_for_menus', 1, 2 );
 
 	function register_custom_taxonomies_for_menus( $register, $name = '' ) {
 		$register = true;
@@ -467,7 +506,7 @@
 	}
 
 	// Creëer een custom hiërarchische taxonomie op producten om allergeneninfo in op te slaan
-	add_action( 'init', 'register_hipster_taxonomy', 0 );
+	add_action( 'init', 'register_hipster_taxonomy', 50 );
 
 	function register_hipster_taxonomy() {
 		$taxonomy_name = 'product_hipster';
@@ -501,7 +540,7 @@
 			'query_var' => true,
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
-			'rewrite' => array( 'slug' => 'eco', 'with_front' => false ),
+			'rewrite' => array( 'slug' => 'eco', 'with_front' => false, 'hierarchical' => false ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -526,11 +565,14 @@
 	add_action( 'manage_product_posts_custom_column' , 'get_attribute_column_value', 10, 2 );
 	
 	function get_attribute_column_value( $column, $post_id ) {
-		global $the_product;
+		global $wp, $the_product;
 		
 		if ( $column === 'brand' ) {
 			if ( ! empty( $the_product->get_attribute('pa_merk') ) ) {
-				echo $the_product->get_attribute('pa_merk');
+				// OPGELET: Kan theoretisch meer dan één term bevatten!
+				$attribute = get_term_by( 'name', $the_product->get_attribute('pa_merk'), 'pa_merk' );
+				// Gebruik home_url( add_query_arg( 'pa_merk', $attribute->slug ) ) indien je de volledige huidige query-URL wil behouden
+				echo '<a href="/wp-admin/edit.php?post_type=product&pa_merk='.$attribute->slug.'">'.$attribute->name.'</a>';
 			} else {
 				echo '<span aria-hidden="true">&#8212;</span>';
 			}
@@ -680,67 +722,32 @@
 	function add_oft_inventory_fields() {
 		echo '<div class="options_group oft">';
 			
-			$args = array( 
-				'id' => '_cu_ean',
-				'label' => __( 'EAN Consument', 'oft-admin' ),
-				'type' => 'number',
-				'custom_attributes' => array(
-					'step'	=> 'any',
-					'min'	=> '1000000000000',
-					'max'	=> '9999999999999',
-					'readonly' => true,
-				),
+			// BLOKKEREN VAN NIET TE VERTALEN GETALVELDEN AUTOMATISCH DOOR WPML?
+
+			woocommerce_wp_text_input(
+				array( 
+					'id' => '_shopplus_sku',
+					'label' => __( 'ShopPlus', 'oft-admin' ),
+				)
 			);
 
-			$args2 = array( 
-				'id' => '_shopplus_sku',
-				'label' => __( 'ShopPlus', 'oft-admin' ),
-				'custom_attributes' => array(
-					'readonly' => true,
-				),
-			);
-
-			if ( post_language_equals_site_language() ) {
-				unset($args['custom_attributes']['readonly']);
-				unset($args2['custom_attributes']['readonly']);
-			}
-
-			woocommerce_wp_text_input( $args );
-			
-			$args['id'] = '_steh_ean';
-			$args['label'] = __( 'EAN Ompak', 'oft-admin' );
-			woocommerce_wp_text_input( $args );
-
-			woocommerce_wp_text_input( $args2 );
-
-			$args3 = array( 
-				'id' => '_shelf_life',
-				'label' => __( 'Houdbaarheid na productie (dagen)', 'oft-admin' ),
-				'type' => 'number',
-				'custom_attributes' => array(
-					'step'	=> 'any',
-					'min'	=> '1',
-					'max'	=> '10000',
-					'readonly' => true,
-				),
-			);
-
-			woocommerce_wp_text_input( $args3 );
-
-			$args4 = array( 
-				'id' => '_intrastat',
-				'label' => __( 'Intrastatcode', 'oft-admin' ),
-				'custom_attributes' => array(
-					'readonly' => true,
-				),
-			);
-
-			woocommerce_wp_text_input( $args4 );
+			woocommerce_wp_text_input(
+				array( 
+					'id' => '_shelf_life',
+					'label' => __( 'Houdbaarheid na productie (dagen)', 'oft-admin' ),
+					'type' => 'number',
+					'custom_attributes' => array(
+						'step'	=> '1',
+						'min'	=> '1',
+						'max'	=> '10000',
+					),
+				)
+			);			
 
 			woocommerce_wp_checkbox( 
 				array( 
 					'id' => '_in_bestelweb',
-					'label' => __( 'Bestelbaar?', 'oft-admin' ),
+					'label' => __( 'In BestelWeb?', 'oft-admin' ),
 				)
 			);
 
@@ -748,49 +755,109 @@
 	}
 
 	function add_oft_shipping_fields() {
+		global $post;
+
+		$barcode_args = array( 
+			'type' => 'number',
+			'wrapper_class' => 'wide',
+			'custom_attributes' => array(
+				'step'	=> '1',
+				'min'	=> '1000000000000',
+				'max'	=> '9999999999999',
+			),
+		);
+
+		$number_args = array( 
+			'type' => 'number',
+			'custom_attributes' => array(
+				'step'	=> '1',
+				'min'	=> '1',
+				'max'	=> '1000',
+			),
+		);
+
+		if ( ! post_language_equals_site_language() ) {
+			$barcode_args['custom_attributes']['readonly'] = true;
+			$number_args['custom_attributes']['readonly'] = true;
+		}
+
+		$cu_ean = array(
+			'id' => '_cu_ean',
+			'label' => __( 'EAN-code', 'oft-admin' ),
+		);
+
+		$steh_ean = array(
+			'id' => '_steh_ean',
+			'label' => __( 'EAN-code ompak', 'oft-admin' ),
+		);
+
+		$multiple = array(
+			'id' => '_multiple',
+			'label' => __( 'Aantal stuks per ompak', 'oft-admin' ),
+		);
+
+		$pal_number_per_layer = array(
+			'id' => '_pal_number_per_layer',
+			'label' => __( 'Aantal ompakken per laag', 'oft-admin' ),
+		);
+		
+		$pal_number_of_layers = array(
+			'id' => '_pal_number_of_layers',
+			'label' => __( 'Aantal lagen per pallet', 'oft-admin' ),
+		);
+
 		echo '<div class="options_group oft">';
-			
-			$number_args = array( 
-				'type' => 'number',
-				'custom_attributes' => array(
-					'step'	=> 'any',
-					'min'	=> '1',
-					'max'	=> '1000',
-				),
+			woocommerce_wp_text_input(
+				array( 
+					'id' => '_intrastat',
+					'label' => __( 'Intrastatcode', 'oft-admin' ),
+				)
 			);
-
-			if ( ! post_language_equals_site_language() ) {
-				$number_args['custom_attributes']['readonly'] = true;
-			}
-
-			$multiple = array(
-				'id' => '_multiple',
-				'label' => __( 'Ompakhoeveelheid', 'oft-admin' ),
-			);
-
-			$pal_number_of_layers = array(
-				'id' => '_pal_number_of_layers',
-				'label' => __( 'Aantal palletlagen', 'oft-admin' ),
-			);
-
-			$pal_number_per_layer = array(
-				'id' => '_pal_number_per_layer',
-				'label' => __( 'Aantal per palletlaag', 'oft-admin' ),
-			);
-			
+			woocommerce_wp_text_input( $cu_ean + $barcode_args );
+		echo '</div>';
+		
+		echo '<div class="options_group oft">';
 			woocommerce_wp_text_input( $multiple + $number_args );
-			woocommerce_wp_text_input( $pal_number_of_layers + $number_args );
 			woocommerce_wp_text_input( $pal_number_per_layer + $number_args );
+			woocommerce_wp_text_input( $pal_number_of_layers + $number_args );
+		echo '</div>';
 
+		echo '<div class="options_group oft">';
+			woocommerce_wp_text_input(
+				array(
+					'id' => '_steh_weight',
+					'label' => __( 'Gewicht ompak (kg)', 'oft-admin' ),
+					'placeholder' => wc_format_localized_decimal( 0 ),
+					'desc_tip' => true,
+					'description' => __( 'Weight in decimal form', 'woocommerce' ),
+					'data_type' => 'decimal',
+				)
+			);
+			?>
+			<!-- ZIE: woocommerce/includes/admin/meta-boxes/views/html-product-data-shipping.php -->
+			<p class="form-field dimensions_field">
+				<label for="box_length"><?php printf( __( 'Afmetingen ompak (%s)', 'oft-admin' ), get_option( 'woocommerce_dimension_unit' ) ); ?></label>
+				<span class="wrap">
+					<input id="box_length" placeholder="<?php esc_attr_e( 'Length', 'woocommerce' ); ?>" class="input-text wc_input_decimal" size="6" type="text" name="_steh_length" value="<?php echo esc_attr( wc_format_localized_decimal( get_post_meta( $post->ID, '_steh_length', true ) ) ); ?>" />
+					<input placeholder="<?php esc_attr_e( 'Width', 'woocommerce' ); ?>" class="input-text wc_input_decimal" size="6" type="text" name="_steh_width" value="<?php echo esc_attr( wc_format_localized_decimal( get_post_meta( $post->ID, '_steh_width', true ) ) ); ?>" />
+					<input placeholder="<?php esc_attr_e( 'Height', 'woocommerce' ); ?>" class="input-text wc_input_decimal last" size="6" type="text" name="_steh_height" value="<?php echo esc_attr( wc_format_localized_decimal( get_post_meta( $post->ID, '_steh_height', true ) ) ); ?>" />
+				</span>
+				<?php echo wc_help_tip( __( 'LxWxH in decimal form', 'woocommerce' ) ); ?>
+			</p>
+			<?php
+			woocommerce_wp_text_input( $steh_ean + $barcode_args );
 		echo '</div>';
 	}
 
 	function add_product_quality_tab( $product_data_tabs ) {
-		$product_data_tabs['quality-tab'] = array(
-			'label' => __( 'Voedingswaarden', 'oft-admin' ),
+		$product_data_tabs['quality'] = array(
+			'label' => __( 'Kwaliteit', 'oft-admin' ),
 			'target' => 'quality_product_data',
 			'class' => array( 'hide_if_virtual' ),
 		);
+		// Herbenoem tabjes
+		$product_data_tabs['shipping']['label'] = __( 'Logistiek', 'oft-admin' );
+		$product_data_tabs['linked_product']['label'] = __( 'Gerelateerd', 'oft-admin' );
 		// Verwijder overbodig tabje
 		unset($product_data_tabs['advanced']);
 		return $product_data_tabs;
@@ -798,91 +865,91 @@
 
 	function add_oft_quality_fields() {
 		global $post;
+		
+		$one_decimal_args = array( 
+			'data_type' => 'decimal',
+			'type' => 'number',
+			'custom_attributes' => array(
+				'step'	=> '0.1',
+				'min'	=> '0.1',
+				'max'	=> '100.0',
+			),
+		);
+
+		if ( ! post_language_equals_site_language() ) {
+			$one_decimal_args['custom_attributes']['readonly'] = true;
+		}
+
+		$secondary = array(
+			'wrapper_class' => 'secondary',
+		);
+
+		$fat = array(
+			'id' => '_fat',
+			'label' => __( 'Vetten (g)', 'oft-admin' ),
+		);
+		
+		$fasat = array(
+			'id' => '_fasat',
+			'label' => __( 'waarvan verzadigde vetzuren (g)', 'oft-admin' ),
+		);
+
+		$famscis = array(
+			'id' => '_famscis',
+			'label' => __( 'waarvan enkelvoudig onverzadigde vetzuren (g)', 'oft-admin' ),
+		);
+
+		$fapucis = array(
+			'id' => '_fapucis',
+			'label' => __( 'waarvan meervoudig onverzadigde vetzuren (g)', 'oft-admin' ),
+		);
+		
+		// Beter via JavaScript checken of de som van alle secondaries de primary niet overschrijdt!
+		if ( ! empty( get_post_meta( $post->ID, '_fat', true ) ) ) {
+			$fat_limit = array(
+				'custom_attributes' => array( 'max' => get_post_meta( $post->ID, '_fat', true ) ),
+			);
+		}
+
+		$choavl = array(
+			'id' => '_choavl',
+			'label' => __( 'Koolhydraten (g)', 'oft-admin' ),
+		);
+
+		$sugar = array(
+			'id' => '_sugar',
+			'label' => __( 'waarvan suikers (g)', 'oft-admin' ),
+		);
+
+		$polyl = array(
+			'id' => '_polyl',
+			'label' => __( 'waarvan polyolen (g)', 'oft-admin' ),
+		);
+
+		$starch = array(
+			'id' => '_starch',
+			'label' => __( 'waarvan zetmeel (g)', 'oft-admin' ),
+		);
+
+		// Beter via JavaScript checken of de som van alle secondaries de primary niet overschrijdt!
+		if ( ! empty( get_post_meta( $post->ID, '_choavl', true ) ) ) {
+			$choavl_limit = array(
+				'custom_attributes' => array( 'max' => get_post_meta( $post->ID, '_choavl', true ) ),
+			);
+		}
+		
+		$fibtg = array(
+			'id' => '_fibtg',
+			'label' => __( 'Vezels (g)', 'oft-admin' ),
+		);
+
+		$pro = array(
+			'id' => '_pro',
+			'label' => __( 'Eiwitten (g)', 'oft-admin' ),
+		);
+
 		echo '<div id="quality_product_data" class="panel woocommerce_options_panel">';
 			echo '<div class="options_group oft">';
-				
-				$one_decimal_args = array( 
-					'data_type' => 'decimal',
-					'type' => 'number',
-					'custom_attributes' => array(
-						'step'	=> '0.1',
-						'min'	=> '0.1',
-						'max'	=> '100.0',
-					),
-				);
-
-				if ( ! post_language_equals_site_language() ) {
-					$one_decimal_args['custom_attributes']['readonly'] = true;
-				}
-
-				$secondary = array(
-					'wrapper_class' => 'secondary',
-				);
-
-				$fat = array(
-					'id' => '_fat',
-					'label' => __( 'Vetten (g)', 'oft-admin' ),
-				);
-				
-				$fasat = array(
-					'id' => '_fasat',
-					'label' => __( 'waarvan verzadigde vetzuren (g)', 'oft-admin' ),
-				);
-
-				$famscis = array(
-					'id' => '_famscis',
-					'label' => __( 'waarvan enkelvoudig onverzadigde vetzuren (g)', 'oft-admin' ),
-				);
-
-				$fapucis = array(
-					'id' => '_fapucis',
-					'label' => __( 'waarvan meervoudig onverzadigde vetzuren (g)', 'oft-admin' ),
-				);
-				
-				// Beter via JavaScript checken of de som van alle secondaries de primary niet overschrijdt!
-				if ( ! empty( get_post_meta( $post->ID, '_fat', true ) ) ) {
-					$fat_limit = array(
-						'custom_attributes' => array( 'max' => get_post_meta( $post->ID, '_fat', true ) ),
-					);
-				}
-
-				$choavl = array(
-					'id' => '_choavl',
-					'label' => __( 'Koolhydraten (g)', 'oft-admin' ),
-				);
-
-				$sugar = array(
-					'id' => '_sugar',
-					'label' => __( 'waarvan suikers (g)', 'oft-admin' ),
-				);
-
-				$polyl = array(
-					'id' => '_polyl',
-					'label' => __( 'waarvan polyolen (g)', 'oft-admin' ),
-				);
-
-				$starch = array(
-					'id' => '_starch',
-					'label' => __( 'waarvan zetmeel (g)', 'oft-admin' ),
-				);
-
-				// Beter via JavaScript checken of de som van alle secondaries de primary niet overschrijdt!
-				if ( ! empty( get_post_meta( $post->ID, '_choavl', true ) ) ) {
-					$choavl_limit = array(
-						'custom_attributes' => array( 'max' => get_post_meta( $post->ID, '_choavl', true ) ),
-					);
-				}
-				
-				$fibtg = array(
-					'id' => '_fibtg',
-					'label' => __( 'Vezels (g)', 'oft-admin' ),
-				);
-
-				$pro = array(
-					'id' => '_pro',
-					'label' => __( 'Eiwitten (g)', 'oft-admin' ),
-				);
-
 				woocommerce_wp_text_input(
 					array( 
 						'id' => '_energy',
@@ -895,18 +962,25 @@
 						),
 					)
 				);
-
+			echo '</div>';
+		
+			echo '<div class="options_group oft">';
 				woocommerce_wp_text_input( $fat + $one_decimal_args );
 				woocommerce_wp_text_input( $fasat + $one_decimal_args + $secondary );
 				woocommerce_wp_text_input( $famscis + $one_decimal_args + $secondary );
 				woocommerce_wp_text_input( $fapucis + $one_decimal_args + $secondary );
+			echo '</div>';
+		
+			echo '<div class="options_group oft">';
 				woocommerce_wp_text_input( $choavl + $one_decimal_args );
 				woocommerce_wp_text_input( $sugar + $one_decimal_args + $secondary );
 				woocommerce_wp_text_input( $polyl + $one_decimal_args + $secondary );
 				woocommerce_wp_text_input( $starch + $one_decimal_args + $secondary );
+			echo '</div>';
+		
+			echo '<div class="options_group oft">';
 				woocommerce_wp_text_input( $fibtg + $one_decimal_args );
 				woocommerce_wp_text_input( $pro + $one_decimal_args );
-				
 				woocommerce_wp_text_input(
 					array( 
 						'id' => '_salteq',
@@ -920,7 +994,6 @@
 						),
 					)
 				);
-
 			echo '</div>';
 		echo '</div>';
 	}
@@ -931,7 +1004,7 @@
 	function custom_admin_css() {
 		?>
 		<style>
-			#woocommerce-product-data ul.wc-tabs li.quality-tab_options a:before {
+			#woocommerce-product-data ul.wc-tabs li.quality_options a:before {
 				font-family: FontAwesome;
 				content: '\f0c3';
 			}
@@ -951,10 +1024,12 @@
 			}
 
 			div.options_group.oft > p.form-field > input[type=number] {
-				width: 10%;
-				max-width: 80px;
-				min-width: 60px;
+				width: 75px;
 				text-align: right;
+			}
+
+			div.options_group.oft > p.form-field.wide > input[type=number] {
+				min-width: 150px;
 			}
 		</style>
 		<?php
@@ -976,17 +1051,21 @@
 		}
 
 		$regular_meta_keys = array(
-			'_cu_ean',
-			'_steh_ean',
-			'_shelf_life',
-			'_in_bestelweb',
-			'_shopplus_sku',
-			'_fairtrade_share',
 			'_net_unit',
 			'_net_content',
+			'_fairtrade_share',
+			'_shopplus_sku',
+			'_shelf_life',
+			'_in_bestelweb',
+			'_intrastat',
+			'_cu_ean',
+			'_steh_ean',
 			'_multiple',
 			'_pal_number_per_layer',
 			'_pal_number_of_layers',
+			'_steh_length',
+			'_steh_width',
+			'_steh_height',
 			'_energy',
 		);
 
@@ -1020,10 +1099,18 @@
 			}
 		}
 
-		if ( ! empty( $_POST['_salteq'] ) ) {
-			update_post_meta( $post_id, '_salteq', esc_attr( number_format( $_POST['_salteq'], 3 ) ) );
-		} else {
-			delete_post_meta( $post_id, '_salteq' );
+		$high_precision_meta_keys = array(
+			'_weight',
+			'_steh_weight',
+			'_salteq',	
+		);
+
+		foreach( $high_precision_meta_keys as $meta_key ) {
+			if ( ! empty( $_POST[$meta_key] ) ) {
+				update_post_meta( $post_id, $meta_key, esc_attr( number_format( $_POST[$meta_key], 3 ) ) );
+			} else {
+				delete_post_meta( $post_id, $meta_key );
+			}
 		}
 	}
 
