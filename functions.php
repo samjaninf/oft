@@ -1,6 +1,6 @@
 <?php
 
-	setlocale(LC_ALL, 'nl_NL');
+	setlocale( LC_ALL, 'nl_NL' );
 
 	if ( ! defined('ABSPATH') ) exit;
 
@@ -1020,7 +1020,7 @@
 	function save_oft_fields( $post_id ) {
 		// Bereken - indien mogelijk - de eenheidsprijs a.d.h.v. alle data in $_POST
 		// Laatste parameter: val expliciet niét terug op de (verouderde) databasewaarden!
-		update_unit_price( $_POST['_regular_price'], $_POST['_net_content'], $_POST['_net_unit'], false );
+		update_unit_price( $post_id, $_POST['_regular_price'], $_POST['_net_content'], $_POST['_net_unit'], false );
 		
 		$regular_meta_keys = array(
 			'_net_unit',
@@ -1065,7 +1065,7 @@
 
 		foreach( $decimal_meta_keys as $meta_key ) {
 			if ( ! empty( $_POST[$meta_key] ) ) {
-				update_post_meta( $post_id, $meta_key, esc_attr( number_format( $_POST[$meta_key], 1 ) ) );
+				update_post_meta( $post_id, $meta_key, esc_attr( number_format( str_replace( ',', '.', $_POST[$meta_key] ), 1 ) ) );
 			} else {
 				delete_post_meta( $post_id, $meta_key );
 			}
@@ -1079,7 +1079,7 @@
 
 		foreach( $high_precision_meta_keys as $meta_key ) {
 			if ( ! empty( $_POST[$meta_key] ) ) {
-				update_post_meta( $post_id, $meta_key, esc_attr( number_format( $_POST[$meta_key], 3 ) ) );
+				update_post_meta( $post_id, $meta_key, esc_attr( number_format( str_replace( ',', '.', $_POST[$meta_key] ), 3 ) ) );
 			} else {
 				delete_post_meta( $post_id, $meta_key );
 			}
