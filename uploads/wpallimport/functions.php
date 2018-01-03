@@ -46,7 +46,7 @@
 			$numerator = floatval( str_replace( ',', '.', $cp ) );
 			if ( $numerator > 0 ) {
 				$calc = $numerator / $denominator;
-				$eprice = number_format( $calc, 2 );
+				$eprice = number_format( $calc, 2, '.', '' );
 			}
 		}
 		return $eprice;
@@ -61,7 +61,7 @@
 
 	function seperator_comma_to_point( $string ) {
 		$float = floatval( str_replace( ',', '.', $string ) );
-		return number_format( $float, 3 );
+		return number_format( $float, 3, '.', '' );
 	}
 
 	function get_unit( $value ) {

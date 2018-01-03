@@ -1065,7 +1065,7 @@
 
 		foreach( $decimal_meta_keys as $meta_key ) {
 			if ( ! empty( $_POST[$meta_key] ) ) {
-				update_post_meta( $post_id, $meta_key, esc_attr( number_format( str_replace( ',', '.', $_POST[$meta_key] ), 1 ) ) );
+				update_post_meta( $post_id, $meta_key, esc_attr( number_format( str_replace( ',', '.', $_POST[$meta_key] ), 1, '.', '' ) ) );
 			} else {
 				delete_post_meta( $post_id, $meta_key );
 			}
@@ -1079,7 +1079,7 @@
 
 		foreach( $high_precision_meta_keys as $meta_key ) {
 			if ( ! empty( $_POST[$meta_key] ) ) {
-				update_post_meta( $post_id, $meta_key, esc_attr( number_format( str_replace( ',', '.', $_POST[$meta_key] ), 3 ) ) );
+				update_post_meta( $post_id, $meta_key, esc_attr( number_format( str_replace( ',', '.', $_POST[$meta_key] ), 3, '.', '' ) ) );
 			} else {
 				delete_post_meta( $post_id, $meta_key );
 			}
@@ -1593,7 +1593,7 @@
 			}
 			if ( ! empty( $price ) and ! empty( $content ) and ! empty( $unit ) ) {
 				$unit_price = calc_unit_price( $price, $content, $unit );
-				$product->update_meta_data( '_unit_price', number_format( $unit_price, 2 ) );
+				$product->update_meta_data( '_unit_price', number_format( $unit_price, 2, '.', '' ) );
 			} else {
 				// Indien er een gegeven ontbreekt: verwijder sowieso de oude waarde
 				$product->delete_meta_data( '_unit_price' );
