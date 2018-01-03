@@ -1585,7 +1585,7 @@
 
 	function update_unit_price( $post_id, $price, $content, $unit, $from_database = true ) {
 		$product = wc_get_product( $post_id );
-		if ( $product->exists() ) {
+		if ( $product !== false ) {
 			if ( $from_database = true ) {
 				$price = $product->get_regular_price();
 				$content = $product->get_meta('_net_content');
@@ -1615,7 +1615,7 @@
 	// TE MOEILIJK, VOORLOPIG NIET GEBRUIKEN
 	function update_origin( $post_id, $partners, $from_database = true ) {
 		$product = wc_get_product( $post_id );
-		if ( $product->exists() ) {
+		if ( $product !== false ) {
 			if ( $from_database = true ) {
 				$partners = get_country_terms_by_product( $product );
 			}
