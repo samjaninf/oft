@@ -1,5 +1,7 @@
 <?php
 
+	setlocale(LC_ALL, 'nl_NL');
+
 	if ( ! defined('ABSPATH') ) exit;
 
 	// Laad het child theme na het hoofdthema
@@ -732,13 +734,14 @@
 	function add_oft_shipping_fields() {
 		global $post;
 
+		// Kan een 14de controlecijfer als voorvoegsel bevatten!
 		$barcode_args = array( 
 			'type' => 'number',
 			'wrapper_class' => 'wide',
 			'custom_attributes' => array(
 				'step'	=> '1',
 				'min'	=> '1000000000000',
-				'max'	=> '9999999999999',
+				'max'	=> '99999999999999',
 			),
 		);
 
