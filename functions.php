@@ -1603,7 +1603,7 @@
 	}
 
 	function calc_unit_price( $price, $content, $unit ) {
-		$unit_price = wc_format_decimal( $price ) / floatval( $content );
+		$unit_price = floatval( str_replace( ',', '.', $price ) ) / floatval( $content );
 		if ( $unit === 'g' ) {
 			$unit_price *= 1000;
 		} elseif ( $unit === 'cl' ) {
