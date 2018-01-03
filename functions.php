@@ -1581,7 +1581,7 @@
 	}
 
 	// Bereken - indien mogelijk - de eenheidsprijs tijdens de ERP-import
-	add_action( 'pmxi_saved_post', 'update_unit_price', 10, 4 );
+	add_action( 'pmxi_saved_post', 'update_unit_price', 10, 5 );
 
 	function update_unit_price( $post_id, $price, $content, $unit, $from_database = true ) {
 		$product = wc_get_product( $post_id );

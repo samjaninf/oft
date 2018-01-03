@@ -64,7 +64,7 @@
 		return number_format( $float, 3, '.', '' );
 	}
 
-	function get_unit( $value ) {
+	function get_unit( $unit ) {
 		if ( mb_strtoupper($unit) === 'KG' ) {
 			$unit = 'g';
 		} elseif ( mb_strtoupper($unit) === 'L' ) {
