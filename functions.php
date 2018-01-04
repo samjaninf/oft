@@ -593,7 +593,7 @@
 	}
 
 	// 2de mogelijkheid om niet-OFT-producten te verbergen: visbiliteit wijzigen
-	// add_action( 'save_post', 'change_product_visibility_on_save', 10, 3 );
+	add_action( 'save_post', 'change_product_visibility_on_save', 10, 3 );
 
 	function change_product_visibility_on_save( $post_id, $post, $update ) {
 		if ( $post->post_status !== 'publish' or $post->post_type !== 'product' ) {
@@ -1171,12 +1171,12 @@
 		
 		$partners = get_partner_terms_by_product($product);
 		if ( $partners !== false ) {
-			echo implode( ', ', $countries );
+			echo '<p>'.implode( ', ', $countries ).'<p>';
 		}
 
 		$countries = get_country_terms_by_product($product);
 		if ( $countries !== false ) {
-			echo implode( ', ', $countries );
+			echo '<p>'.implode( ', ', $countries ).'<p>';
 		}
 
 		$icons = array();
@@ -1581,9 +1581,9 @@
 	}
 
 	// Bereken - indien mogelijk - de eenheidsprijs tijdens de ERP-import
-	add_action( 'pmxi_saved_post', 'update_unit_price', 10, 5 );
+	add_action( 'pmxi_saved_post', 'update_unit_price', 10, 1 );
 
-	function update_unit_price( $post_id, $price, $content, $unit, $from_database = true ) {
+	function update_unit_price( $post_id, $price = false, $content = false, $unit = false, $from_database = true ) {
 		$product = wc_get_product( $post_id );
 		if ( $product !== false ) {
 			if ( $from_database = true ) {
