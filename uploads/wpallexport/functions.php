@@ -20,4 +20,12 @@
 		}
 		return implode( ', ', $may_contain );
 	}
+
+	function transform_net_unit( $unit = 'g' ) {
+		if ( $unit === 'cl' ) {
+			return '€/l';
+		} else {
+			return '€/kg';
+		}
+	}
 ?>

@@ -1,7 +1,7 @@
 <?php
 
 	setlocale( LC_ALL, 'nl_NL' );
-
+	
 	if ( ! defined('ABSPATH') ) exit;
 
 	// Laad het child theme na het hoofdthema
@@ -112,7 +112,7 @@
 			'description' => __( 'Ken het product toe aan een partner/land', 'oft' ),
 			'hierarchical' => true,
 			'query_var' => true,
-			'rewrite' => array( 'slug' => 'partner', 'with_front' => true, 'hierarchical' => false ),
+			'rewrite' => array( 'slug' => 'herkomst', 'with_front' => true, 'hierarchical' => true ),
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
 		);
@@ -263,14 +263,14 @@
 		$args = array(
 			'labels' => $labels,
 			'description' => __( 'Geef aan dat het product dit bevat', 'oft' ),
-			'public' => true,
+			'public' => false,
 			'publicly_queryable' => true,
 			'hierarchical' => true,
 			'show_ui' => true,
 			'show_in_menu' => true,
-			'show_in_nav_menus' => true,
+			'show_in_nav_menus' => false,
 			'show_in_rest' => true,
-			'show_tagcloud' => true,
+			'show_tagcloud' => false,
 			'show_in_quick_edit' => true,
 			'show_admin_column' => true,
 			'query_var' => true,
@@ -417,6 +417,9 @@
 		?>
 		<script>
 			jQuery(document).ready( function() {
+				/* Disable nutteloze filter op producttype */
+				jQuery( '#dropdown_product_type' ).remove();
+
 				/* Disable hoofdcategorieën */
 				<?php foreach ( $categories as $id ) : ?>
 					jQuery( '#in-product_cat-<?php echo $id; ?>' ).prop( 'disabled', true );
@@ -506,12 +509,12 @@
 			'description' => __( 'Duid de eigenschappen van het product aan', 'oft' ),
 			'public' => true,
 			'publicly_queryable' => true,
-			'hierarchical' => true,
+			'hierarchical' => false,
 			'show_ui' => true,
 			'show_in_menu' => true,
 			'show_in_nav_menus' => true,
 			'show_in_rest' => true,
-			'show_tagcloud' => true,
+			'show_tagcloud' => false,
 			'show_in_quick_edit' => true,
 			'show_admin_column' => true,
 			'query_var' => true,
@@ -534,8 +537,18 @@
 	add_filter( 'manage_edit-product_columns', 'add_attribute_columns', 20, 1 );
 
 	function add_attribute_columns( $columns ) {
-		$columns['brand'] = __( 'Merk', 'oft-admin' );
-		return $columns;
+		$new_columns = array();
+		foreach( $columns as $key => $title ) {
+			if ( $key === 'product_cat' ) {
+				$new_columns['pa_merk'] = __( 'Merk', 'oft-admin' );
+				// Inhoud van deze kolom is al door WooCommerce gedefinieerd, dit zorgt er gewoon voor dat de kolom ook beschikbaar is indien de optie 'woocommerce_manage_stock' op 'no' staat
+				$new_columns['is_in_stock'] = __( 'BestelWeb', 'oft-admin' );
+			}
+			if ( $key !== 'product_type' ) {
+				$new_columns[$key] = $title;
+			}
+		}
+		return $new_columns;
 	}
 
 	// Toon de data van elk order in de kolom
@@ -544,7 +557,7 @@
 	function get_attribute_column_value( $column, $post_id ) {
 		global $wp, $the_product;
 		
-		if ( $column === 'brand' ) {
+		if ( $column === 'pa_merk' ) {
 			if ( ! empty( $the_product->get_attribute('pa_merk') ) ) {
 				// OPGELET: Kan theoretisch meer dan één term bevatten!
 				$attribute = get_term_by( 'name', $the_product->get_attribute('pa_merk'), 'pa_merk' );
@@ -556,24 +569,50 @@
 		}
 	}
 
-	// Maak sorteren op deze nieuwe kolom mogelijk
+	// Creëer extra merkenfilter bovenaan de productenlijst 
+	add_action( 'restrict_manage_posts', 'add_filters_to_products' );
+
+	function add_filters_to_products() {
+		global $pagenow, $post_type;
+		if ( $pagenow === 'edit.php' and $post_type === 'product' ) {
+			// FILTER OP STOCK_STATUS WORDT OPGENOMEN IN CORE VANAF WC 3.3
+			
+			$args = array( 'taxonomy' => 'pa_merk', 'hide_empty' => true );
+			$terms = get_terms( $args );
+			$values_brand = array();
+			foreach ( $terms as $term ) {
+				$values_brand[$term->slug] = $term->name;
+			}
+			
+			$current_brand = isset( $_REQUEST['pa_merk'] ) ? wc_clean( wp_unslash( $_REQUEST['pa_merk'] ) ) : false;
+			echo '<select name="pa_merk">';
+				echo '<option value="">'.__( 'Op merk filteren', 'oft-admin' ).'</option>';
+				foreach ( $values_brand as $status => $label ) {
+					echo '<option value="'.$status.'" '.selected( $status, $current_brand, false ).'>'.$label.'</option>';
+				}
+			echo '</select>';
+		}
+	}
+
+	// Maak sorteren op custom kolommen mogelijk
 	// add_filter( 'manage_edit-product_sortable_columns', 'make_attribute_columns_sortable', 10, 1 );
 
 	function make_attribute_columns_sortable( $columns ) {
-		$columns['brand'] = 'brand';
+		$columns['pa_merk'] = 'pa_merk';
+		$columns['is_in_stock'] = 'is_in_stock';
 		return $columns;
 	}
 
-	// Voer de sortering uit tijdens het bekijken van orders in de admin (voor alle zekerheid NA filteren uitvoeren)
+	// Voer de sortering uit tijdens het bekijken van producten in de admin NIET NODIG VOOR STANDAARD EIGENSCHAPPEN
 	// add_action( 'pre_get_posts', 'sort_products_on_custom_column', 20 );
 	
 	function sort_products_on_custom_column( $query ) {
 		global $pagenow, $post_type;
 		if ( $pagenow === 'edit.php' and $post_type === 'product' and $query->query['post_type'] === 'product' ) {
 			// Check of we moeten sorteren op één van onze custom kolommen
-			if ( $query->get( 'orderby' ) === 'brand' ) {
-				$query->set( 'meta_key', 'pa_brand' );
-				$query->set( 'orderby', 'meta_value_num' );
+			if ( $query->get( 'orderby' ) === 'pa_merk' ) {
+				$query->set( 'meta_key', 'pa_merk' );
+				$query->set( 'orderby', 'meta_value' );
 			}
 		}
 	}
@@ -582,17 +621,18 @@
 	// add_action( 'woocommerce_product_query', 'filter_product_query_by_taxonomy' );
 
 	function filter_product_query_by_taxonomy( $q ){	
+		$oft_term = get_term_by( 'name', 'Oxfam Fair Trade', 'pa_merk' );
 		$tax_query = (array) $q->get('tax_query');
 		$tax_query[] = array(
 			'taxonomy' => 'pa_merk',
 			'field' => 'term_taxonomy_id',
-			'terms' => array( '273' ),
+			'terms' => $oft_term->term_id,
 			'operator' => 'IN',
 		);
 		$q->set( 'tax_query', $tax_query );
 	}
 
-	// 2de mogelijkheid om niet-OFT-producten te verbergen: visbiliteit wijzigen
+	// 2de mogelijkheid om niet-OFT-producten te verbergen: visbiliteit wijzigen INMIDDELS OOK GEÏNTEGREERD IN ERP-IMPORT
 	add_action( 'save_post', 'change_product_visibility_on_save', 10, 3 );
 
 	function change_product_visibility_on_save( $post_id, $post, $update ) {
@@ -607,6 +647,8 @@
 		if ( $product->get_attribute('merk') !== 'Oxfam Fair Trade' ) {
 			$product->set_catalog_visibility( 'hidden' );
 			$product->save();
+		} else {
+			create_product_pdf($product);
 		}
 	}
 
@@ -620,12 +662,14 @@
 	
 	function add_oft_general_fields() {
 		global $post;
+		$product = wc_get_product($post->ID);
+		
 		echo '<div class="options_group oft">';
 			
 			$suffix = '&euro;';
-			if ( get_post_meta( $post->ID, '_net_unit', true ) === 'cl' ) {
+			if ( $product->get_meta('_net_unit') === 'cl' ) {
 				$suffix .= '/l';
-			} elseif( get_post_meta( $post->ID, '_net_unit', true ) === 'g' ) {
+			} elseif( $product->get_meta('_net_unit') === 'g' ) {
 				$suffix .= '/kg';
 			}
 
@@ -661,8 +705,8 @@
 			}
 
 			// Toon het veld voor de netto-inhoud pas na het instellen van de eenheid!
-			if ( ! empty( get_post_meta( $post->ID, '_net_unit', true ) ) ) {
-				$unit = get_post_meta( $post->ID, '_net_unit', true );
+			if ( ! empty( $product->get_meta('_net_unit') ) ) {
+				$unit = $product->get_meta('_net_unit');
 			} else {
 				$unit = 'g of cl';
 			}
@@ -694,6 +738,12 @@
 			);
 
 		echo '</div>';
+
+		if ( file_exists(WP_CONTENT_DIR.'/fiches/nl/'.$product->get_sku().'.pdf') ) {
+			echo '<div class="options_group">';
+				echo '<p class="form-field"><label>Productfiche</label><a href="/wp-content/fiches/nl/'.$product->get_sku().'.pdf" target="_blank">Download PDF</a> ('.get_date_from_gmt( date_i18n( 'Y-m-d H:i:s', filemtime(WP_CONTENT_DIR.'/fiches/nl/'.$product->get_sku().'.pdf') ), 'd/m/Y @ H:i' ).')</p>';
+			echo '</div>';
+		}
 	}
 	
 	function add_oft_inventory_fields() {
@@ -718,13 +768,6 @@
 						'min'	=> '1',
 						'max'	=> '10000',
 					),
-				)
-			);			
-
-			woocommerce_wp_checkbox( 
-				array( 
-					'id' => '_in_bestelweb',
-					'label' => __( 'In BestelWeb?', 'oft-admin' ),
 				)
 			);
 
@@ -1028,7 +1071,6 @@
 			'_fairtrade_share',
 			'_shopplus_sku',
 			'_shelf_life',
-			'_in_bestelweb',
 			'_intrastat',
 			'_cu_ean',
 			'_steh_ean',
@@ -1202,6 +1244,9 @@
 		}
 	}
 
+	// Aantal producten per pagina wijzigen
+	add_filter( 'loop_shop_per_page', create_function( '$cols', 'return 30;' ), 20 );
+
 	// Aantal gerelateerde producten wijzigen
 	// add_filter( 'woocommerce_output_related_products_args', 'alter_related_products_args', 20 );
 
@@ -1285,25 +1330,52 @@
 
 	// Creëer een productfiche
 	function create_product_pdf( $product ) {
-		require_once WP_CONTENT_DIR.'/plugins/html2pdf/html2pdf.class.php';
-		
+		require_once WP_PLUGIN_DIR.'/html2pdf/autoload.php';
 		$templatelocatie = get_stylesheet_directory().'/productfiche.html';
 		$templatefile = fopen( $templatelocatie, 'r' );
 		$templatecontent = fread( $templatefile, filesize($templatelocatie) );
-		
 		$sku = $product->get_sku();
-		$templatecontent = str_replace( "###SKU###", $sku, $templatecontent );
-		$templatecontent = str_replace( "###DESCRIPTION###", wc_price( $product->get_description() ), $templatecontent );
-		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('pa_merk'), $templatecontent );
-		$templatecontent = str_replace( "###EAN###", $product->get_meta('_cu_ean'), $templatecontent );
-		$templatecontent = str_replace( "###OMPAK###", $product->get_meta('_multiple'), $templatecontent );
-		$templatecontent = str_replace( "###LABELS###", $product->get_attribute('pa_bio'), $templatecontent );
 		
-		$pdffile = new HTML2PDF( "P", "A4", "nl" );
-		$pdffile->pdf->SetAuthor( "Oxfam Fair Trade cvba" );
-		$pdffile->pdf->SetTitle( "Productfiche ".$sku );
-		$pdffile->WriteHTML($templatecontent);
-		$pdffile->Output( WP_CONTENT_DIR."/".$sku.".pdf", "F" );
+		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
+		$templatecontent = str_replace( "###PRICE###", wc_price( $product->get_regular_price() ), $templatecontent );
+		$templatecontent = str_replace( "###NET_CONTENT###", $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'), $templatecontent );
+		$templatecontent = str_replace( "###DESCRIPTION###", $product->get_description(), $templatecontent );
+		$templatecontent = str_replace( "###INGREDIENTS###", $product->get_attribute('ingredient'), $templatecontent );
+		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('merk'), $templatecontent );
+		$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
+		foreach ( $allergens as $term ) {
+			if ( $term->parent == '237' ) {
+				$mc[] = $term->name;
+			} elseif( $term->parent == '236' ) {
+				$c[] = $term->name;
+			}
+		}
+		$templatecontent = str_replace( "###ALLERGENS###", implode( ', ', $c ), $templatecontent );
+		$templatecontent = str_replace( "###BIO###", $product->get_attribute('bio'), $templatecontent );
+		$templatecontent = str_replace( "###SHOPPLUS###", preg_replace( '/[a-zA-Z]/', '', $product->get_meta('_shopplus_sku') ), $templatecontent );
+		// OPGELET: Fatale error bij het proberen aanmaken van een ongeldige barcode!
+		$templatecontent = str_replace( "###CU_EAN###", $product->get_meta('_cu_ean'), $templatecontent );
+		$templatecontent = str_replace( "###MULTIPLE###", $product->get_meta('_multiple'), $templatecontent );
+		$templatecontent = str_replace( "###SKU###", $sku, $templatecontent );
+		$templatecontent = str_replace( "###STEH_EAN###", $product->get_meta('_steh_ean'), $templatecontent );
+		$templatecontent = str_replace( "###DIMENSIONS###", $product->get_dimensions(), $templatecontent );
+		$steh_dimensions = array(
+			'length' => $product->get_meta('_steh_length'),
+			'width' => $product->get_meta('_steh_width'),
+			'height' => $product->get_meta('_steh_height'),
+		);
+		$templatecontent = str_replace( "###STEH_DIMENSIONS###", wc_format_dimensions($steh_dimensions), $templatecontent );
+		$templatecontent = str_replace( "###NUMBER_OF_LAYERS###", $product->get_meta('_pal_number_of_layers'), $templatecontent );
+		$templatecontent = str_replace( "###NUMBER_PER_LAYER###", $product->get_meta('_pal_number_per_layer'), $templatecontent );
+		$templatecontent = str_replace( "###INTRASTAT###", $product->get_meta('_intrastat'), $templatecontent );
+		$templatecontent = str_replace( "###FOOTER###", "Aangemaakt op ".date_i18n( 'l j F Y \o\m G\ui' ), $templatecontent );
+		
+		$pdffile = new Spipu\Html2Pdf\Html2Pdf( 'P', 'A4', 'nl', true, 'UTF-8', array( 10, 5, 10, 5 ) );
+		$pdffile->setDefaultFont('Arial');
+		$pdffile->pdf->setAuthor('Oxfam Fair Trade cvba');
+		$pdffile->pdf->setTitle('Productfiche '.$sku);
+		$pdffile->writeHTML($templatecontent);
+		$pdffile->output( WP_CONTENT_DIR.'/fiches/nl/'.$sku.'.pdf', 'F' );
 	}
 
 	// Voeg een bericht toe bovenaan alle adminpagina's
@@ -1557,23 +1629,25 @@
 	#  IMPORTING  #
 	###############
 
-	add_action( 'pmxi_before_xml_import', 'delete_in_bestelweb_keys', 10, 1 );
+	// NIET MEER NODIG, NU VIA VOORRAADSTATUS
+	add_action( 'pmxi_before_xml_import', 'set_all_out_of_stock', 10, 1 );
 
-	function delete_in_bestelweb_keys( $import_id ) {
-		if ( $import_id == 9 ) {
-			// Zet de key '_in_bestelweb' van alle producten af voor we beginnen
+	function set_all_out_of_stock( $import_id ) {
+		if ( $import_id == 14 ) {
 			$args = array(
-				'post_type'			=> 'product',
-				'post_status'		=> array( 'publish', 'draft', 'trash' ),
-				'posts_per_page'	=> -1,
+				'post_type'	=> 'product',
+				'post_status' => array( 'publish', 'draft', 'trash' ),
+				'posts_per_page' => -1,
 			);
 
-			$to_remove = new WP_Query( $args );
+			$out_of_stocks = new WP_Query( $args );
 
-			if ( $to_remove->have_posts() ) {
-				while ( $to_remove->have_posts() ) {
-					$to_remove->the_post();
-					update_post_meta( get_the_ID(), '_in_bestelweb', 'no' );
+			if ( $out_of_stocks->have_posts() ) {
+				while ( $out_of_stocks->have_posts() ) {
+					$out_of_stocks->the_post();
+					$product = wc_get_product( get_the_ID() );
+					$product->set_stock_status( 'outofstock' );
+					$product->save();
 				}
 				wp_reset_postdata();
 			}
@@ -1592,7 +1666,7 @@
 				$unit = $product->get_meta('_net_unit');
 			}
 			if ( ! empty( $price ) and ! empty( $content ) and ! empty( $unit ) ) {
-				$unit_price = calc_unit_price( $price, $content, $unit );
+				$unit_price = calculate_unit_price( $price, $content, $unit );
 				$product->update_meta_data( '_unit_price', number_format( $unit_price, 2, '.', '' ) );
 			} else {
 				// Indien er een gegeven ontbreekt: verwijder sowieso de oude waarde
@@ -1602,7 +1676,7 @@
 		}
 	}
 
-	function calc_unit_price( $price, $content, $unit ) {
+	function calculate_unit_price( $price, $content, $unit ) {
 		$unit_price = floatval( str_replace( ',', '.', $price ) ) / floatval( $content );
 		if ( $unit === 'g' ) {
 			$unit_price *= 1000;
@@ -1610,6 +1684,16 @@
 			$unit_price *= 100;
 		}
 		return $unit_price;
+	}
+
+	add_action( 'pmxi_after_xml_import', 'rename_import_file', 10, 1 );
+
+	function rename_import_file( $import_id ) {
+		if ( $import_id == 14 ) {
+			$old = WP_CONTENT_DIR."/B2CImport.csv";
+			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
+			rename( $old, $new );
+		}
 	}
 
 	// TE MOEILIJK, VOORLOPIG NIET GEBRUIKEN
@@ -1790,6 +1874,42 @@
 	###############
 	#  DEBUGGING  #
 	###############
+
+	// Schakel autosaves uit
+	// add_action( 'wp_print_scripts', function() { wp_deregister_script('autosave'); } );
+
+	// Schakel productrevisies in
+	add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
+	
+	function add_product_revisions( $vars ) {
+		$vars['supports'][] = 'revisions';
+		return $vars;
+	}
+
+	// Log wijzigingen aan de metadata (en taxonomieën?)
+	add_action( 'updated_post_meta', 'log_product_changes', 100, 4 );
+	
+	function log_product_changes( $meta_id, $post_id, $meta_key, $new_meta_value ) {
+		// Alle overige interessante data zitten in het algemene veld '_product_attributes' dus daarvoor best een ander filtertje zoeken
+		$watched_metas = array( '_price', '_tax_class', '_weight', '_length', '_width', '_height', '_thumbnail_id', '_cu_ean', '_product_attributes' );
+		
+		// Deze actie vuurt bij 'single value meta keys' enkel indien er een wezenlijke wijziging was, dus oude waarde vergelijken hoeft niet meer
+		if ( in_array( $meta_key, $watched_metas ) ) {
+			
+			if ( ! $product = wc_get_product( $post_id ) ) {
+				return;
+			}
+
+			$user = wp_get_current_user();
+			if ( is_array($new_meta_value) ) {
+				$new_meta_value = serialize($new_meta_value);
+			}
+			
+			// Schrijf weg in log per weeknummer (zonder leading zero's)
+			$str = date_i18n('d/m/Y H:i:s') . "\t" . $product->get_sku()." ".$product->get_name() . "\t" . $user->user_firstname." (".$user->user_login.")" . "\t" . $meta_key . " gewijzigd in " . $new_meta_value . "\n";
+			file_put_contents( WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND );
+		}
+	}
 
 	// Print variabelen op een overzichtelijke manier naar debug.log
 	if ( ! function_exists( 'write_log' ) ) {

@@ -1,9 +1,19 @@
 <?php
-	function alter_brand( $brand ) {
-		if ( $brand == 'Oxfam Fairtrade' or $brand == 'EZA' ) {
+	function alter_brand( $raw_brand ) {
+		if ( $raw_brand == 'Oxfam Fairtrade' or $raw_brand == 'EZA' ) {
 			$brand = 'Oxfam Fair Trade';
+		} else {
+			$brand = $raw_brand;
 		}
 		return $brand;
+	}
+
+	function determine_visibility( $raw_brand ) {
+		if ( alter_brand($raw_brand) == 'Oxfam Fair Trade' ) {
+			return 'visible';
+		} else {
+			return 'hidden';
+		}
 	}
 
 	function only_last_term( $string ) {
@@ -15,41 +25,40 @@
 		return implode( ', ', $last_ones );
 	}
 
-	function calc_content_per_kg_l( $stat, $ompak ) {
-		$calc = 0.0;
-		$numerator = floatval( str_replace( ',', '.', $stat ) );
-		$denominator = intval($ompak);
-		// Veiligheid inbouwen voor onvolledige gegevens
-		if ( $numerator > 0.001 and $denominator >= 1) {
-			$calc = $numerator / $denominator;
+	function calculate_net_content_per_kg_l( $stat_conversion, $cu_conversion ) {
+		$net_content = 0.0;
+		$numerator = floatval( str_replace( ',', '.', $stat_conversion ) );
+		$denominator = intval( $cu_conversion );
+		// Enkel berekenen indien alle gegevens beschikbaar!
+		if ( $numerator > 0.001 and $denominator >= 1 ) {
+			$net_content = $numerator / $denominator;
 		}
-		return $calc;
+		return $net_content;
 	}
 
-	function get_content( $stat, $ompak, $unit ) {
-		$cont = '';
-		$calc = calc_content_per_kg_l( $stat, $ompak );
-		if ( $calc > 0 ) {	
-			if ( mb_strtoupper($unit) === 'L' ) {
-				$cont = number_format( 100*$calc, 0 );
-			} elseif ( mb_strtoupper($unit) === 'KG' ) {
-				$cont = number_format( 1000*$calc, 0 );
+	function get_net_content( $stat_conversion, $cu_conversion, $raw_unit ) {
+		$net_content = '';
+		$fraction = calculate_net_content_per_kg_l( $stat_conversion, $cu_conversion );
+		if ( $fraction > 0 ) {	
+			if ( $raw_unit == 'L' ) {
+				$net_content = number_format( 100*$fraction, 0 );
+			} elseif ( $raw_unit == 'KG' ) {
+				$net_content = number_format( 1000*$fraction, 0 );
 			}
 		}
-		return $cont;
+		return $net_content;
 	}
 
-	function get_eprice( $cp, $stat, $ompak, $unit ) {
-		$eprice = '';
-		$denominator = calc_content_per_kg_l( $stat, $ompak );
-		if ( $denominator > 0 ) {
-			$numerator = floatval( str_replace( ',', '.', $cp ) );
-			if ( $numerator > 0 ) {
-				$calc = $numerator / $denominator;
-				$eprice = number_format( $calc, 2, '.', '' );
-			}
+	function get_unit_price( $price, $stat_conversion, $cu_conversion, $raw_unit ) {
+		$unit_price = '';
+		$numerator = floatval( str_replace( ',', '.', $price ) );
+		$denominator = calculate_net_content_per_kg_l( $stat_conversion, $cu_conversion );
+		// Enkel berekenen indien alle gegevens beschikbaar!
+		if ( $numerator > 0 and $denominator > 0 ) {
+			$fraction = $numerator / $denominator;
+			$unit_price = number_format( $fraction, 2, '.', '' );
 		}
-		return $eprice;
+		return $unit_price;
 	}
 
 	function ditch_zeros( $value ) {
@@ -59,15 +68,15 @@
 		return $value;
 	}
 
-	function seperator_comma_to_point( $string ) {
+	function transform_decimal_to_point( $string ) {
 		$float = floatval( str_replace( ',', '.', $string ) );
 		return number_format( $float, 3, '.', '' );
 	}
 
-	function get_unit( $unit ) {
-		if ( mb_strtoupper($unit) === 'KG' ) {
+	function get_unit( $raw_unit ) {
+		if ( $raw_unit == 'KG' ) {
 			$unit = 'g';
-		} elseif ( mb_strtoupper($unit) === 'L' ) {
+		} elseif ( $raw_unit == 'L' ) {
 			$unit = 'cl';
 		} else {
 			$unit = '';
