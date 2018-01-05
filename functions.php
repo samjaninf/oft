@@ -690,7 +690,8 @@
 		if ( $product->get_attribute('merk') !== 'Oxfam Fair Trade' ) {
 			$product->set_catalog_visibility( 'hidden' );
 			$product->save();
-		} else {
+		} elseif ( get_option('oft_import_active') !== 'yes' ) {
+			// Update de productfiches niet indien er een import bezig is (te langzaam)
 			create_product_pdf($product);
 		}
 	}
@@ -1457,7 +1458,7 @@
 		if ( $product->get_attribute('bio') === 'Ja' ) {
 			$labels[] = 'Biolabel (EU)';
 		}
-		if ( $product->get_attribute('havelaar') === 'Ja' ) {
+		if ( $product->get_attribute('fairtrade') === 'Ja' ) {
 			$labels[] = 'Fairtrade (FLO-CERT)';
 		}
 
@@ -1793,6 +1794,7 @@
 	add_action( 'pmxi_before_xml_import', 'set_all_out_of_stock', 10, 1 );
 
 	function set_all_out_of_stock( $import_id ) {
+		update_option( 'oft_import_active', 'yes' );
 		if ( $import_id == 14 ) {
 			$args = array(
 				'post_type'	=> 'product',
@@ -1851,6 +1853,7 @@
 	add_action( 'pmxi_after_xml_import', 'rename_import_file', 10, 1 );
 
 	function rename_import_file( $import_id ) {
+		delete_option( 'oft_import_active' );
 		if ( $import_id == 14 ) {
 			$old = WP_CONTENT_DIR."/B2CImport.csv";
 			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
@@ -2080,6 +2083,7 @@
 			'product_recipe',
 			'pa_bio',
 			'pa_merk',
+			'pa_fairtrade',
 		);
 
 		if ( in_array( $taxonomy, $watched_taxonomies ) ) {
@@ -2136,6 +2140,11 @@
 	}
 
 	function log_product_meta_changes( $meta_id, $post_id, $meta_key, $new_meta_value, $mode ) {
+		// Log de data niet indien er een import loopt (doet een volledige delete/create i.p.v. update)
+		if ( get_option('oft_import_active') === 'yes' ) {
+			return;
+		}
+
 		$watched_metas = array(
 			'_regular_price',
 			'_thumbnail_id',
