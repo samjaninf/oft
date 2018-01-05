@@ -1345,6 +1345,7 @@
 		$templatecontent = str_replace( "###NET_CONTENT###", $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'), $templatecontent );
 		$templatecontent = str_replace( "###DESCRIPTION###", $product->get_description(), $templatecontent );
 		$templatecontent = str_replace( "###INGREDIENTS###", $product->get_attribute('ingredient'), $templatecontent );
+		$templatecontent = str_replace( "###FAIRTRADE_SHARE###", $product->get_met('_fairtrade_share'), $templatecontent );
 		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('merk'), $templatecontent );
 		$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
 		foreach ( $allergens as $term ) {
@@ -1920,13 +1921,25 @@
 		);
 
 		if ( in_array( $taxonomy, $watched_taxonomies ) ) {
-			asort($tt_ids);
-			asort($old_tt_ids);
-			if ( trim( implode( ',', $tt_ids ) ) !== trim( implode( ',', $old_tt_ids ) ) ) {
-				write_log("UPDATED TERMS FOR ".$taxonomy." ON PRODUCT-ID ".$object_id);
-				write_log($tt_ids);
-				write_log($old_tt_ids);
-				// CHECK WAT ER VERDWEEN / BIJKWAM
+			write_log("UPDATED TERMS FOR ".$taxonomy." ON PRODUCT-ID ".$object_id);
+			write_log($tt_ids);
+			write_log($old_tt_ids);
+			
+			$added_terms = array_diff( $old_tt_ids, $tt_ids );
+			if ( count($added_terms) > 0 ) {
+				// LOG WAT ER BIJKWAM
+				foreach ( $added_terms as $term_id ) {
+					$added_term = get_term_by( 'id', $term_id, $taxonomy );
+					write_log($added_term->term_name);
+				}
+			}
+			$removed_terms = array_diff( $tt_ids, $old_tt_ids );
+			if ( count($removed_terms) > 0 ) {
+				// LOG WAT ER VERDWEEN
+				foreach ( $removed_terms as $term_id ) {
+					$removed_term = get_term_by( 'id', $term_id, $taxonomy );
+					write_log($removed_term->term_name);
+				}
 			}
 		}
 	}
