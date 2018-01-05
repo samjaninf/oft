@@ -1416,7 +1416,6 @@
 		$templatelocatie = get_stylesheet_directory().'/assets/fiche-nl.html';
 		$templatefile = fopen( $templatelocatie, 'r' );
 		$templatecontent = fread( $templatefile, filesize($templatelocatie) );
-		
 		$sku = $product->get_sku();
 
 		if ( $partners = get_partner_terms_by_product($product) ) {
@@ -1430,8 +1429,10 @@
 		// Druiven kunnen door de meta_boxlogica enkel op wijn ingesteld worden, dus geen nood om de categorie te checken
 		if ( $grapes = get_grape_terms_by_product($product) ) {
 			$ingredients_text = 'Samenstelling: '.implode( ', ', $grapes );
-		} else {
+		} elseif ( ! empty( $product->get_attribute('ingredienten') ) ) {
 			$ingredients_text = 'Ingrediënten: '.$product->get_attribute('ingredienten').'.';
+		} else {
+			$ingredients_text = '';
 		}
 
 		$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
@@ -1461,6 +1462,11 @@
 		if ( $product->get_attribute('fairtrade') === 'Ja' ) {
 			$labels[] = 'Fairtrade (FLO-CERT)';
 		}
+		if ( count($labels) > 0 ) {
+			$labels_text = format_pdf_block( 'Labels', implode( ', ', $labels ) );
+		} else {
+			$labels_text = '';
+		}
 
 		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
 		$templatecontent = str_replace( "###PRICE###", wc_price( $product->get_regular_price() ), $templatecontent );
@@ -1468,22 +1474,37 @@
 		// Verwijder eventuele enters door HTML-tags
 		$templatecontent = str_replace( "###DESCRIPTION###", preg_replace( '/<[^>]+>/', ' ', $product->get_description() ), $templatecontent );
 		$templatecontent = str_replace( "###ORIGIN###", $origin_text, $templatecontent );
-		$templatecontent = str_replace( "###INGREDIENTS###", $ingredients_text, $templatecontent );
+		$templatecontent = str_replace( "###INGREDIENTS_OPTIONAL###", $ingredients_text, $templatecontent );
+		$templatecontent = str_replace( "###LABELS_OPTIONAL###", $labels_text, $templatecontent );
 		$templatecontent = str_replace( "###FAIRTRADE_SHARE###", $product->get_meta('_fairtrade_share'), $templatecontent );
 		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('merk'), $templatecontent );
 		$templatecontent = str_replace( "###ALLERGENS###", $allergens_text, $templatecontent );
-		$templatecontent = str_replace( "###LABELS###", implode( ', ', $labels ), $templatecontent );
 		$templatecontent = str_replace( "###SHOPPLUS###", preg_replace( '/[a-zA-Z]/', '', $product->get_meta('_shopplus_sku') ), $templatecontent );
-		// OPGELET: Fatale error bij het proberen aanmaken van een ongeldige barcode!
-		if ( check_digit_ean13( $product->get_meta('_cu_ean') ) ) {
-			$templatecontent = str_replace( "###CU_EAN###", $product->get_meta('_cu_ean'), $templatecontent );
-		}
 		$templatecontent = str_replace( "###MULTIPLE###", $product->get_meta('_multiple'), $templatecontent );
 		$templatecontent = str_replace( "###SKU###", $sku, $templatecontent );
-		if ( check_digit_ean13( $product->get_meta('_steh_ean') ) ) {
-			$templatecontent = str_replace( "###STEH_EAN###", $product->get_meta('_steh_ean'), $templatecontent );
+		
+		// Let op met fatale error bij het proberen aanmaken van een ongeldige barcode!
+		if ( check_digit_ean13( $product->get_meta('_cu_ean') ) ) {
+			$cu_ean = format_pdf_ean13( $product->get_meta('_cu_ean') );
+		} else {
+			$cu_ean = '/';
 		}
-		$templatecontent = str_replace( "###SHELF_LIFE###", $product->get_meta('_shelf_life'), $templatecontent );
+		$templatecontent = str_replace( "###CU_EAN###", $cu_ean, $templatecontent );
+		
+		if ( check_digit_ean13( $product->get_meta('_steh_ean') ) ) {
+			$steh_ean = format_pdf_ean13( $product->get_meta('_steh_ean') );
+		} else {
+			$steh_ean = '/';
+		}
+		$templatecontent = str_replace( "###STEH_EAN###", $steh_ean, $templatecontent );
+
+		if ( intval( $product->get_meta('_shelf_life') ) > 0 ) {
+			$shelf_text = format_pdf_block( 'Houdbaarheid na productie', $product->get_meta('_shelf_life').' dagen' );
+		} else {
+			$shelf_text = '';
+		}
+		$templatecontent = str_replace( "###SHELF_LIFE_OPTIONAL###", $shelf_text, $templatecontent );
+
 		$templatecontent = str_replace( "###DIMENSIONS###", wc_format_dimensions( $product->get_dimensions(false) ), $templatecontent );
 		$steh_dimensions = array(
 			'length' => $product->get_meta('_steh_length'),
@@ -1509,6 +1530,14 @@
 			add_filter( 'redirect_post_location', 'add_html2pdf_notice_var', 99 );
 			update_option( 'html2pdf_notice', $formatter->getHtmlMessage() );
 		}
+	}
+
+	function format_pdf_block( $title, $value ) {
+		return '<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">'.$title.'</div>'.$value;
+	}
+
+	function format_pdf_ean13( $code ) {
+		return '<br><barcode dimension="1D" type="EAN13" value="'.$code.'" label="label" style="width: 90%; height: 10mm; font-size: 4mm;"></barcode>';
 	}
 
 	function add_html2pdf_notice_var( $location ) {
