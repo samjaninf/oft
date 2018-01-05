@@ -538,7 +538,7 @@
 
 	function add_attribute_columns( $columns ) {
 		$new_columns = array();
-		foreach( $columns as $key => $title ) {
+		foreach ( $columns as $key => $title ) {
 			if ( $key === 'product_cat' ) {
 				$new_columns['pa_merk'] = __( 'Merk', 'oft-admin' );
 				// Inhoud van deze kolom is al door WooCommerce gedefinieerd, dit zorgt er gewoon voor dat de kolom ook beschikbaar is indien de optie 'woocommerce_manage_stock' op 'no' staat
@@ -1083,9 +1083,13 @@
 			'_energy',
 		);
 
-		foreach( $regular_meta_keys as $meta_key ) {
+		foreach ( $regular_meta_keys as $meta_key ) {
 			if ( ! empty( $_POST[$meta_key] ) ) {
-				update_post_meta( $post_id, $meta_key, esc_attr( $_POST[$meta_key] ) );
+				if ( $meta_key === '_cu_ean' and ! checksum_ean13( $_POST[$meta_key] ) ) {
+					delete_post_meta( $post_id, $meta_key );
+				} else {
+					update_post_meta( $post_id, $meta_key, esc_attr( $_POST[$meta_key] ) );
+				}
 			} else {
 				delete_post_meta( $post_id, $meta_key );
 			}
@@ -1105,7 +1109,7 @@
 			
 		);
 
-		foreach( $decimal_meta_keys as $meta_key ) {
+		foreach ( $decimal_meta_keys as $meta_key ) {
 			if ( ! empty( $_POST[$meta_key] ) ) {
 				update_post_meta( $post_id, $meta_key, esc_attr( number_format( str_replace( ',', '.', $_POST[$meta_key] ), 1, '.', '' ) ) );
 			} else {
@@ -1119,7 +1123,7 @@
 			'_salteq',	
 		);
 
-		foreach( $high_precision_meta_keys as $meta_key ) {
+		foreach ( $high_precision_meta_keys as $meta_key ) {
 			if ( ! empty( $_POST[$meta_key] ) ) {
 				update_post_meta( $post_id, $meta_key, esc_attr( number_format( str_replace( ',', '.', $_POST[$meta_key] ), 3, '.', '' ) ) );
 			} else {
@@ -1331,7 +1335,7 @@
 	// Creëer een productfiche
 	function create_product_pdf( $product ) {
 		require_once WP_PLUGIN_DIR.'/html2pdf/autoload.php';
-		$templatelocatie = get_stylesheet_directory().'/productfiche.html';
+		$templatelocatie = get_stylesheet_directory().'/assets/fiche-nl.html';
 		$templatefile = fopen( $templatelocatie, 'r' );
 		$templatecontent = fread( $templatefile, filesize($templatelocatie) );
 		$sku = $product->get_sku();
@@ -1376,6 +1380,15 @@
 		$pdffile->pdf->setTitle('Productfiche '.$sku);
 		$pdffile->writeHTML($templatecontent);
 		$pdffile->output( WP_CONTENT_DIR.'/fiches/nl/'.$sku.'.pdf', 'F' );
+	}
+
+	function checksum_ean13( $ean ) {
+		$chars = str_split( trim($ean) );
+		$ints = array_map( 'intval', $chars );
+		// Rekenregel toepassen op de 12 eerste cijfers
+		$check_sum = $ints[0]+$ints[2]+$ints[4]+$ints[6]+$ints[8]+$ints[10] + 3*($ints[1]+$ints[3]+$ints[5]+$ints[7]+$ints[9]+$ints[11]);
+		$check_digit = ( 10 - ($check_sum % 10) ) % 10;
+		return ( $check_digit === $ints[12] );
 	}
 
 	// Voeg een bericht toe bovenaan alle adminpagina's
@@ -1660,14 +1673,16 @@
 	function update_unit_price( $post_id, $price = false, $content = false, $unit = false, $from_database = true ) {
 		$product = wc_get_product( $post_id );
 		if ( $product !== false ) {
-			if ( $from_database = true ) {
+			if ( $from_database === true ) {
 				$price = $product->get_regular_price();
 				$content = $product->get_meta('_net_content');
 				$unit = $product->get_meta('_net_unit');
 			}
 			if ( ! empty( $price ) and ! empty( $content ) and ! empty( $unit ) ) {
 				$unit_price = calculate_unit_price( $price, $content, $unit );
-				$product->update_meta_data( '_unit_price', number_format( $unit_price, 2, '.', '' ) );
+				// PROBLEEM: deze WC-functie voert eigenlijk een delete/create i.p.v. update uit, waardoor onze logs overspoeld worden
+				// $product->update_meta_data( '_unit_price', number_format( $unit_price, 2, '.', '' ) );
+				update_post_meta( $product->get_id(), '_unit_price', number_format( $unit_price, 2, '.', '' ) );
 			} else {
 				// Indien er een gegeven ontbreekt: verwijder sowieso de oude waarde
 				$product->delete_meta_data( '_unit_price' );
@@ -1871,9 +1886,9 @@
 
 
 
-	###############
-	#  DEBUGGING  #
-	###############
+	#############
+	#  LOGGING  #
+	#############
 
 	// Schakel autosaves uit
 	// add_action( 'wp_print_scripts', function() { wp_deregister_script('autosave'); } );
@@ -1886,12 +1901,103 @@
 		return $vars;
 	}
 
-	// Log wijzigingen aan de metadata (en taxonomieën?)
-	add_action( 'updated_post_meta', 'log_product_changes', 100, 4 );
+	// Log wijzigingen aan taxonomieën
+	add_action( 'set_object_terms', 'log_product_term_updates', 100, 6 );
+	// add_action( 'deleted_term_relationships', 'log_product_term_deletes', 100, 3 );
 	
-	function log_product_changes( $meta_id, $post_id, $meta_key, $new_meta_value ) {
-		// Alle overige interessante data zitten in het algemene veld '_product_attributes' dus daarvoor best een ander filtertje zoeken
-		$watched_metas = array( '_price', '_tax_class', '_weight', '_length', '_width', '_height', '_thumbnail_id', '_cu_ean', '_product_attributes' );
+	function log_product_term_updates( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ) {
+		$watched_taxonomies = array(
+			'product_cat',
+			'product_tag',
+			'product_partner',
+			'product_allergen',
+			'product_hipster',
+			'product_grape',
+			'product_taste',
+			'product_recipe',
+			'pa_bio',
+			'pa_merk',
+		);
+
+		if ( in_array( $taxonomy, $watched_taxonomies ) ) {
+			asort($tt_ids);
+			asort($old_tt_ids);
+			if ( trim( implode( ',', $tt_ids ) ) !== trim( implode( ',', $old_tt_ids ) ) ) {
+				write_log("UPDATED TERMS FOR ".$taxonomy." ON PRODUCT-ID ".$object_id);
+				write_log($tt_ids);
+				write_log($old_tt_ids);
+				// CHECK WAT ER VERDWEEN / BIJKWAM
+			}
+		}
+	}
+
+	function log_product_term_deletes( $tralala = '', $object_id, $tt_ids, $taxonomy ) {
+		write_log("DELETED TERMS: ".$taxonomy);
+		write_log($object_id);
+		write_log($tt_ids);
+	}
+
+	// Log wijzigingen aan metadata (en taxonomieën?)
+	add_action( 'added_post_meta', 'hook_product_meta_adds', 100, 4 );
+	add_action( 'updated_post_meta', 'hook_product_meta_updates', 100, 4 );
+	add_action( 'deleted_post_meta', 'hook_product_meta_deletes', 100, 4 );
+
+	function hook_product_meta_adds( $meta_id, $post_id, $meta_key, $new_meta_value ) {
+		if ( get_post_type($post_id) === 'product' ) {
+			log_product_meta_changes( $meta_id, $post_id, $meta_key, $new_meta_value, 'added' );
+		}
+	}
+
+	function hook_product_meta_updates( $meta_id, $post_id, $meta_key, $new_meta_value ) {
+		if ( get_post_type($post_id) === 'product' ) {
+			log_product_meta_changes( $meta_id, $post_id, $meta_key, $new_meta_value, 'updated' );
+		}
+	}
+
+	function hook_product_meta_deletes( $meta_id, $post_id, $meta_key, $new_meta_value ) {
+		if ( get_post_type($post_id) === 'product' ) {
+			log_product_meta_changes( $meta_id, $post_id, $meta_key, $new_meta_value, 'deleted' );
+		}
+	}
+
+	function log_product_meta_changes( $meta_id, $post_id, $meta_key, $new_meta_value, $mode ) {
+		$watched_metas = array(
+			'_regular_price',
+			'_thumbnail_id',
+			'_tax_class',
+			'_weight',
+			'_length',
+			'_width',
+			'_height',
+			'_net_unit',
+			'_net_content',
+			'_unit_price',
+			'_fairtrade_share',
+			'_shopplus_sku',
+			'_shelf_life',
+			'_intrastat',
+			'_cu_ean',
+			'_steh_ean',
+			'_multiple',
+			'_pal_number_per_layer',
+			'_pal_number_of_layers',
+			'_steh_length',
+			'_steh_width',
+			'_steh_height',
+			'_energy',
+			'_fat',
+			'_fasat',
+			'_famscis',
+			'_fapucis',
+			'_choavl',
+			'_sugar',
+			'_polyl',
+			'_starch',
+			'_fibtg',
+			'_pro',
+			'_steh_weight',
+			'_salteq',
+		);
 		
 		// Deze actie vuurt bij 'single value meta keys' enkel indien er een wezenlijke wijziging was, dus oude waarde vergelijken hoeft niet meer
 		if ( in_array( $meta_key, $watched_metas ) ) {
@@ -1906,8 +2012,9 @@
 			}
 			
 			// Schrijf weg in log per weeknummer (zonder leading zero's)
-			$str = date_i18n('d/m/Y H:i:s') . "\t" . $product->get_sku()." ".$product->get_name() . "\t" . $user->user_firstname." (".$user->user_login.")" . "\t" . $meta_key . " gewijzigd in " . $new_meta_value . "\n";
+			$str = date_i18n('d/m/Y H:i:s') . "\t" . $product->get_sku() . "\t" . $product->get_name() . "\t" . $user->user_firstname." (".$user->user_login.")" . "\t" . $meta_key . "\t" . mb_strtoupper($mode) . "\t" . $new_meta_value . "\n";
 			file_put_contents( WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND );
+
 		}
 	}
 

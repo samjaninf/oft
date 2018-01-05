@@ -1,0 +1,102 @@
+<html>
+
+	<head>
+	</head>
+
+	<body>
+		<div id="splash">
+
+			<div class="centered">
+
+				<div class="text">
+					<p>Welkom &bull; Bienvenu &bull; Welcome</p>
+					
+					<h1>Oxfam<br>Fair<br>Trade</h1>
+					
+					<a href="http://www.oxfamfairtrade.be/ofthome" title="Nederlands"><div class="box"><span style="font-size: 85%;">NL</span></div></a>
+					<a href="http://www.oxfamfairtrade.be/fr" title="Français"><div class="box"><span style="font-size: 85%;">FR</span></div></a>
+					<a href="http://www.oxfamfairtrade.be/en" title="English"><div class="box"><span style="font-size: 85%;">EN</span></div></a>
+					
+					<p style="margin-top: 10%;">
+						Particulier?<br/><a href="https://www.oxfamwereldwinkels.be">Oxfam-Wereldwinkels</a>
+					</p>
+				</div>
+
+			</div>
+
+			<!-- Foto 1 -->
+			<div class="cover" style="display: block;"></div>
+			<div class="credits" style="display: block;">
+				Foto: Tineke D'haese<br>
+				Partner: LFP / Laos
+			</div>
+
+			<!-- Foto 2 -->
+			<div class="cover"></div>
+			<div class="credits">
+				Foto: Yel Ratajczak<br>
+				Partner: Coopasa / Ivoorkust
+			</div>
+
+			<!-- Foto 3 -->
+			<div class="cover"></div>
+			<div class="credits">
+				Foto: Tineke D'haese<br>
+				Partner: LFP / Laos
+			</div>
+
+			<!-- Voeg een extra foto toe door het bovenstaande blokje te kopiëren -->
+			<!-- Vergeet de grote (2500px) én kleine (1250px) versie niet in de FTP-map te plaatsen! -->
+
+			<div class="logo">
+				<img src="UserFiles/oftv2/img/splash-logo.png" width="100%">
+			</div>
+
+		</div>
+
+		<script type="text/javascript" src="UserFiles/oftv2/scripts/jquery-waitforimages-min.js"></script>
+
+		<script type="text/javascript">
+			jQuery(document).ready(function() {
+				var quality = ( jQuery(window).width() <= 1400 ) ? "s" : "";
+				jQuery.waitForImages.hasImgProperties = ['background-image'];
+
+				function switchBackground(current_index) {
+					// Zorg ervoor dat we na de laatste foto terugkeren naar index 1
+					var next_index = (current_index+1) % jQuery(".cover").length;
+					var next = jQuery(".cover").eq(next_index);
+					// Stel de volgende achtergrond in
+					next.css("background-image", "url(UserFiles/oftv2/img/splash-"+(next_index+1)+quality+".jpg)");
+					setTimeout(function() {	
+						next.waitForImages(true).done(function() {
+							// Ga enkel verder indien de volgende achtergrond al volledig ingeladen is
+							jQuery(".cover").eq(current_index).fadeOut(100, function() {
+								next.fadeIn(100);
+								jQuery(".credits").eq(next_index).fadeIn();
+								jQuery(".credits").eq(current_index).fadeOut();
+								switchBackground(next_index);
+							});
+						});
+					}, 3000);
+				}
+
+				// Start de carrousel van zodra de 1ste foto volledig ingeladen is
+				jQuery(".cover").eq(0).waitForImages(true).done(function() {
+					switchBackground(0);
+				});
+				
+				// Detecteer de taal automatisch bij het klikken op de titel
+				jQuery(".text h1").click(function(){
+					if ( navigator.language.indexOf("en") > -1 ) {
+						window.location.href = "http://www.oxfamfairtrade.be/en";
+					} else if ( navigator.language.indexOf("fr") > -1 ) {
+						window.location.href = "http://www.oxfamfairtrade.be/fr";
+					} else {
+						window.location.href = "http://www.oxfamfairtrade.be/ofthome";
+					}
+				})
+			});
+		</script>
+	</body>
+
+</html>
