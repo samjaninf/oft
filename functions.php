@@ -1,5 +1,8 @@
 <?php
 
+	use Spipu\Html2Pdf\Html2Pdf;
+    use Spipu\Html2Pdf\Exception\Html2PdfException;
+    use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 	setlocale( LC_ALL, 'nl_NL' );
 	
 	if ( ! defined('ABSPATH') ) exit;
@@ -30,6 +33,17 @@
 	function allow_target_tag() { 
 		global $allowedtags;
 		$allowedtags['a']['target'] = 1;
+	}
+
+	// Voeg een menu toe met onze custom functies
+	add_action( 'admin_menu', 'register_oft_menus', 99 );
+
+	function register_oft_menus() {
+		add_submenu_page( 'woocommerce', 'Changelog', 'Changelog', 'manage_woocommerce', 'product-changelog', 'product_changelog_callback' );
+	}
+
+	function product_changelog_callback() {
+		include get_stylesheet_directory().'/changelog.php';
 	}
 
 	// Fixes i.v.m. cURL
@@ -89,6 +103,7 @@
 			'singular_name' => __( 'Partner', 'oft' ),
 			'all_items' => __( 'Alle partners', 'oft' ),
 			'edit_item' => __( 'Partner bewerken', 'oft' ),
+			'update_item' => __( 'Partner bijwerken', 'oft' ),
 			'view_item' => __( 'Partner bekijken', 'oft' ),
 			'add_new_item' => __( 'Voeg nieuwe partner toe', 'oft' ),
 			'new_item_name' => __( 'Nieuwe partner', 'oft' ),
@@ -112,6 +127,8 @@
 			'description' => __( 'Ken het product toe aan een partner/land', 'oft' ),
 			'hierarchical' => true,
 			'query_var' => true,
+			// Compacter maar we verliezen de ingebouwde beperkingen op de checkboxes!
+			// 'meta_box_cb' => 'post_tags_meta_box',
 			'rewrite' => array( 'slug' => 'herkomst', 'with_front' => true, 'hierarchical' => true ),
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
@@ -257,6 +274,7 @@
 			'add_new_item' => __( 'Voeg nieuw allergeen toe', 'oft' ),
 			'view_item' => __( 'Allergeen bekijken', 'oft' ),
 			'edit_item' => __( 'Allergeen bewerken', 'oft' ),
+			'update_item' => __( 'Allergeen bijwerken', 'oft' ),
 			'search_items' => __( 'Allergenen doorzoeken', 'oft' ),
 		);
 
@@ -300,6 +318,7 @@
 			'add_new_item' => __( 'Voeg nieuwe druivensoort toe', 'oft' ),
 			'view_item' => __( 'Druivensoort bekijken', 'oft' ),
 			'edit_item' => __( 'Druivensoort bewerken', 'oft' ),
+			'update_item' => __( 'Druivensoort bijwerken', 'oft' ),
 			'search_items' => __( 'Druivensoorten doorzoeken', 'oft' ),
 		);
 
@@ -339,6 +358,7 @@
 			'add_new_item' => __( 'Voeg nieuw gerecht toe', 'oft' ),
 			'view_item' => __( 'Gerecht bekijken', 'oft' ),
 			'edit_item' => __( 'Gerecht bewerken', 'oft' ),
+			'update_item' => __( 'Gerecht bijwerken', 'oft' ),
 			'search_items' => __( 'Gerechten doorzoeken', 'oft' ),
 		);
 
@@ -363,6 +383,7 @@
 			'add_new_item' => __( 'Voeg nieuwe smaak toe', 'oft' ),
 			'view_item' => __( 'Smaak bekijken', 'oft' ),
 			'edit_item' => __( 'Smaak bewerken', 'oft' ),
+			'update_item' => __( 'Smaak bijwerken', 'oft' ),
 			'search_items' => __( 'Smaken doorzoeken', 'oft' ),
 		);
 
@@ -422,22 +443,31 @@
 
 				/* Disable hoofdcategorieën */
 				<?php foreach ( $categories as $id ) : ?>
-					jQuery( '#in-product_cat-<?php echo $id; ?>' ).prop( 'disabled', true );
+					jQuery( '#in-product_cat-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
 				<?php endforeach; ?>
 				
 				/* Disable continenten */
 				<?php foreach ( $continents as $id ) : ?>
-					jQuery( '#in-product_partner-<?php echo $id; ?>' ).prop( 'disabled', true );
+					jQuery( '#in-product_partner-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
 				<?php endforeach; ?>
 
 				/* Disable allergeenklasses */
 				<?php foreach ( $types as $id ) : ?>
-					jQuery( '#in-product_allergen-<?php echo $id; ?>' ).prop( 'disabled', true );
+					jQuery( '#in-product_allergen-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
+					jQuery( '#taxonomy-product_allergen' ).find( 'input[type=checkbox]:checked' ).each( function() {
+						var checked_box = jQuery(this);
+						var label = checked_box.closest( 'label.selectit' ).text();
+						checked_box.closest( 'ul.children' ).closest( 'li' ).siblings().find( 'label.selectit' ).each( function() {
+							if ( jQuery(this).text() == label ) {
+								jQuery(this).find( 'input[type=checkbox]' ).prop( 'disabled', true );
+							}
+						});
+					});
 				<?php endforeach; ?>
 
 				/* Disable rode en witte druiven */
 				<?php foreach ( $grapes as $id ) : ?>
-					jQuery( '#in-product_grape-<?php echo $id; ?>' ).prop( 'disabled', true );
+					jQuery( '#in-product_grape-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
 				<?php endforeach; ?>
 				
 				/* Disable bovenliggende landen/continenten van alle aangevinkte partners/landen */
@@ -446,6 +476,17 @@
 				/* Disable/enable het bovenliggende land bij aan/afvinken van een partner en rest de aanvinkstatus van de parent */
 				jQuery( '#taxonomy-product_partner' ).find( 'input[type=checkbox]' ).on( 'change', function() {
 					jQuery(this).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', jQuery(this).is(":checked") );
+				});
+
+				/* Disable/enable het overeenkomstige allergeen in contains/may-contain bij aan/afvinken van may-contain/contains */
+				jQuery( '#taxonomy-product_allergen' ).find( 'input[type=checkbox]' ).on( 'change', function() {
+					var changed_box = jQuery(this);
+					var label = changed_box.closest( 'label.selectit' ).text();
+					changed_box.closest( 'ul.children' ).closest( 'li' ).siblings().find( 'label.selectit' ).each( function() {
+						if ( jQuery(this).text() == label ) {
+							jQuery(this).find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', changed_box.is(":checked") );
+						}
+					});
 				});
 
 				/* Eventueel: checken of de som van alle secondaries de primary niet overschrijdt! */
@@ -501,6 +542,7 @@
 			'add_new_item' => __( 'Voeg nieuwe hipsterterm toe', 'oft' ),
 			'view_item' => __( 'Hipsterterm bekijken', 'oft' ),
 			'edit_item' => __( 'Hipsterterm bewerken', 'oft' ),
+			'update_item' => __( 'Hipsterterm bijwerken', 'oft' ),
 			'search_items' => __( 'Hipstertermen doorzoeken', 'oft' ),
 		);
 
@@ -541,6 +583,7 @@
 		foreach ( $columns as $key => $title ) {
 			if ( $key === 'product_cat' ) {
 				$new_columns['pa_merk'] = __( 'Merk', 'oft-admin' );
+				// $new_columns['modified'] = __( 'Laatst bewerkt', 'oft-admin' );
 				// Inhoud van deze kolom is al door WooCommerce gedefinieerd, dit zorgt er gewoon voor dat de kolom ook beschikbaar is indien de optie 'woocommerce_manage_stock' op 'no' staat
 				$new_columns['is_in_stock'] = __( 'BestelWeb', 'oft-admin' );
 			}
@@ -1056,6 +1099,42 @@
 			div.options_group.oft > p.form-field.wide > input[type=number] {
 				min-width: 150px;
 			}
+
+			div#postbox-container-2 div#product_cat-all,
+			div#postbox-container-2 div#product_allergen-all,
+			div#postbox-container-2 div#product_partner-all {
+				min-height: 275px;
+				column-count: 4;
+				column-fill: auto;
+			}
+
+			div#postbox-container-2 div#product_partner-all {
+				min-height: 1100px;
+			}
+
+			div#postbox-container-2 div#product_allergen-all {
+				min-height: 375px;
+				column-count: 2;
+			}
+
+			div#postbox-container-2 ul.categorychecklist {
+				margin-top: 0em;
+			}
+
+			div#postbox-container-2 ul.categorychecklist > li {
+				-webkit-column-break-inside: avoid;
+				page-break-inside: avoid;
+				break-inside: avoid;
+				padding-top: 0.5em;
+				padding-bottom: 0.5em;
+			}
+
+			div#product_cat-all ul.categorychecklist > li > label,
+			div#product_allergen-all ul.categorychecklist > li > label,
+			div#product_partner-all ul.categorychecklist > li > label,
+			div#product_grape-all ul.categorychecklist > li > label {
+				font-weight: bold;
+			}
 		</style>
 		<?php
 	}
@@ -1085,7 +1164,7 @@
 
 		foreach ( $regular_meta_keys as $meta_key ) {
 			if ( ! empty( $_POST[$meta_key] ) ) {
-				if ( $meta_key === '_cu_ean' and ! checksum_ean13( $_POST[$meta_key] ) ) {
+				if ( $meta_key === '_cu_ean' and ! check_digit_ean13( $_POST[$meta_key] ) ) {
 					delete_post_meta( $post_id, $meta_key );
 				} else {
 					update_post_meta( $post_id, $meta_key, esc_attr( $_POST[$meta_key] ) );
@@ -1217,7 +1296,7 @@
 		
 		$partners = get_partner_terms_by_product($product);
 		if ( $partners !== false ) {
-			echo '<p>'.implode( ', ', $countries ).'<p>';
+			echo '<p>'.implode( ', ', $partners ).'<p>';
 		}
 
 		$countries = get_country_terms_by_product($product);
@@ -1326,8 +1405,6 @@
 		return $msg;
 	}
 
-
-
 	###########
 	#  VARIA  #
 	###########
@@ -1338,32 +1415,75 @@
 		$templatelocatie = get_stylesheet_directory().'/assets/fiche-nl.html';
 		$templatefile = fopen( $templatelocatie, 'r' );
 		$templatecontent = fread( $templatefile, filesize($templatelocatie) );
-		$sku = $product->get_sku();
 		
+		$sku = $product->get_sku();
+
+		if ( $partners = get_partner_terms_by_product($product) ) {
+			$origin_text = 'Partners: '.implode( ', ', $partners );
+		} else {
+			// Val terug op de landeninfo
+			$countries = get_country_terms_by_product($product);
+			$origin_text = 'Herkomst: '.implode( ', ', $countries );
+		}
+
+		// Druiven kunnen door de meta_boxlogica enkel op wijn ingesteld worden, dus geen nood om de categorie te checken
+		if ( $grapes = get_grape_terms_by_product($product) ) {
+			$ingredients_text = 'Samenstelling: '.implode( ', ', $grapes );
+		} else {
+			$ingredients_text = 'Ingrediënten: '.$product->get_attribute('ingredienten').'.';
+		}
+
+		$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
+		$c_term = get_term_by( 'slug', 'contains', 'product_allergen' );
+		$mc_term = get_term_by( 'slug', 'may-contain', 'product_allergen' );
+		$c = array();
+		$mc = array();
+		foreach ( $allergens as $term ) {
+			if ( $term->parent == $c_term->term_id ) {
+				$c[] = mb_strtolower($term->name);
+			} elseif( $term->parent == $mc_term->term_id ) {
+				$mc[] = mb_strtolower($term->name);
+			}
+		}
+		$allergens_text = '';
+		if ( count($c) > 0 ) {
+			$allergens_text .= 'Bevat '.implode( ', ', $c ).'. ';
+		}
+		if ( count($mc) > 0 ) {
+			$allergens_text .= 'Kan sporen bevatten van '.implode( ', ', $mc ).'. ';
+		}
+
+		$labels = array();
+		if ( $product->get_attribute('bio') === 'Ja' ) {
+			$labels[] = 'Biolabel (EU)';
+		}
+		if ( $product->get_attribute('havelaar') === 'Ja' ) {
+			$labels[] = 'Fairtrade (FLO-CERT)';
+		}
+
 		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
 		$templatecontent = str_replace( "###PRICE###", wc_price( $product->get_regular_price() ), $templatecontent );
 		$templatecontent = str_replace( "###NET_CONTENT###", $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'), $templatecontent );
-		$templatecontent = str_replace( "###DESCRIPTION###", $product->get_description(), $templatecontent );
-		$templatecontent = str_replace( "###INGREDIENTS###", $product->get_attribute('ingredient'), $templatecontent );
-		$templatecontent = str_replace( "###FAIRTRADE_SHARE###", $product->get_met('_fairtrade_share'), $templatecontent );
+		// Verwijder eventuele enters door HTML-tags
+		$templatecontent = str_replace( "###DESCRIPTION###", preg_replace( '/<[^>]+>/', ' ', $product->get_description() ), $templatecontent );
+		$templatecontent = str_replace( "###ORIGIN###", $origin_text, $templatecontent );
+		$templatecontent = str_replace( "###INGREDIENTS###", $ingredients_text, $templatecontent );
+		$templatecontent = str_replace( "###FAIRTRADE_SHARE###", $product->get_meta('_fairtrade_share'), $templatecontent );
 		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('merk'), $templatecontent );
-		$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
-		foreach ( $allergens as $term ) {
-			if ( $term->parent == '237' ) {
-				$mc[] = $term->name;
-			} elseif( $term->parent == '236' ) {
-				$c[] = $term->name;
-			}
-		}
-		$templatecontent = str_replace( "###ALLERGENS###", implode( ', ', $c ), $templatecontent );
-		$templatecontent = str_replace( "###BIO###", $product->get_attribute('bio'), $templatecontent );
+		$templatecontent = str_replace( "###ALLERGENS###", $allergens_text, $templatecontent );
+		$templatecontent = str_replace( "###LABELS###", implode( ', ', $labels ), $templatecontent );
 		$templatecontent = str_replace( "###SHOPPLUS###", preg_replace( '/[a-zA-Z]/', '', $product->get_meta('_shopplus_sku') ), $templatecontent );
 		// OPGELET: Fatale error bij het proberen aanmaken van een ongeldige barcode!
-		$templatecontent = str_replace( "###CU_EAN###", $product->get_meta('_cu_ean'), $templatecontent );
+		if ( check_digit_ean13( $product->get_meta('_cu_ean') ) ) {
+			$templatecontent = str_replace( "###CU_EAN###", $product->get_meta('_cu_ean'), $templatecontent );
+		}
 		$templatecontent = str_replace( "###MULTIPLE###", $product->get_meta('_multiple'), $templatecontent );
 		$templatecontent = str_replace( "###SKU###", $sku, $templatecontent );
-		$templatecontent = str_replace( "###STEH_EAN###", $product->get_meta('_steh_ean'), $templatecontent );
-		$templatecontent = str_replace( "###DIMENSIONS###", $product->get_dimensions(), $templatecontent );
+		if ( check_digit_ean13( $product->get_meta('_steh_ean') ) ) {
+			$templatecontent = str_replace( "###STEH_EAN###", $product->get_meta('_steh_ean'), $templatecontent );
+		}
+		$templatecontent = str_replace( "###SHELF_LIFE###", $product->get_meta('_shelf_life'), $templatecontent );
+		$templatecontent = str_replace( "###DIMENSIONS###", wc_format_dimensions( $product->get_dimensions(false) ), $templatecontent );
 		$steh_dimensions = array(
 			'length' => $product->get_meta('_steh_length'),
 			'width' => $product->get_meta('_steh_width'),
@@ -1372,24 +1492,50 @@
 		$templatecontent = str_replace( "###STEH_DIMENSIONS###", wc_format_dimensions($steh_dimensions), $templatecontent );
 		$templatecontent = str_replace( "###NUMBER_OF_LAYERS###", $product->get_meta('_pal_number_of_layers'), $templatecontent );
 		$templatecontent = str_replace( "###NUMBER_PER_LAYER###", $product->get_meta('_pal_number_per_layer'), $templatecontent );
+		$templatecontent = str_replace( "###TOTAL###", intval( $product->get_meta('_pal_number_of_layers') ) * intval( $product->get_meta('_pal_number_per_layer') ), $templatecontent );
 		$templatecontent = str_replace( "###INTRASTAT###", $product->get_meta('_intrastat'), $templatecontent );
 		$templatecontent = str_replace( "###FOOTER###", "Aangemaakt op ".date_i18n( 'l j F Y \o\m G\ui' ), $templatecontent );
 		
-		$pdffile = new Spipu\Html2Pdf\Html2Pdf( 'P', 'A4', 'nl', true, 'UTF-8', array( 10, 5, 10, 5 ) );
-		$pdffile->setDefaultFont('Arial');
-		$pdffile->pdf->setAuthor('Oxfam Fair Trade cvba');
-		$pdffile->pdf->setTitle('Productfiche '.$sku);
-		$pdffile->writeHTML($templatecontent);
-		$pdffile->output( WP_CONTENT_DIR.'/fiches/nl/'.$sku.'.pdf', 'F' );
+		try {
+			$pdffile = new Html2Pdf( 'P', 'A4', 'nl', true, 'UTF-8', array( 15, 5, 15, 5 ) );
+			$pdffile->setDefaultFont('Arial');
+			$pdffile->pdf->setAuthor('Oxfam Fair Trade cvba');
+			$pdffile->pdf->setTitle('Productfiche '.$sku);
+			$pdffile->writeHTML($templatecontent);
+			$pdffile->output( WP_CONTENT_DIR.'/fiches/nl/'.$sku.'.pdf', 'F' );
+		} catch ( Html2PdfException $e ) {
+			$formatter = new ExceptionFormatter($e);
+			add_filter( 'redirect_post_location', 'add_html2pdf_notice_var', 99 );
+			update_option( 'html2pdf_notice', $formatter->getHtmlMessage() );
+		}
 	}
 
-	function checksum_ean13( $ean ) {
-		$chars = str_split( trim($ean) );
-		$ints = array_map( 'intval', $chars );
-		// Rekenregel toepassen op de 12 eerste cijfers
-		$check_sum = $ints[0]+$ints[2]+$ints[4]+$ints[6]+$ints[8]+$ints[10] + 3*($ints[1]+$ints[3]+$ints[5]+$ints[7]+$ints[9]+$ints[11]);
-		$check_digit = ( 10 - ($check_sum % 10) ) % 10;
-		return ( $check_digit === $ints[12] );
+	function add_html2pdf_notice_var( $location ) {
+		remove_filter( 'redirect_post_location', 'add_html2pdf_notice_var', 99 );
+		return add_query_arg( array( 'html2pdf' => 'error' ), $location );
+	}
+
+	add_action( 'admin_notices', 'oft_admin_notices' );
+
+	function oft_admin_notices() {
+		if ( isset( $_GET['html2pdf'] ) ) {
+			echo '<div class="notice notice-error">';
+				echo '<p>'.get_option( 'html2pdf_notice' ).'</p>';
+			echo '</div>';
+		}
+	}
+
+	function check_digit_ean13( $ean ) {
+		if ( strlen( trim($ean) ) !== 13 ) {
+			return false;
+		} else {
+			$chars = str_split( trim($ean) );
+			$ints = array_map( 'intval', $chars );
+			// Rekenregel toepassen op de 12 eerste cijfers
+			$check_sum = $ints[0]+$ints[2]+$ints[4]+$ints[6]+$ints[8]+$ints[10] + 3*($ints[1]+$ints[3]+$ints[5]+$ints[7]+$ints[9]+$ints[11]);
+			$check_digit = ( 10 - ($check_sum % 10) ) % 10;
+			return ( $check_digit === $ints[12] );
+		}
 	}
 
 	// Voeg een bericht toe bovenaan alle adminpagina's
@@ -1792,7 +1938,7 @@
 				}
 			}
 			// Sorteer de partners alfabetisch maar bewaar de indices
-			asort( $partners );
+			asort($partners);
 		}
 
 		if ( count($partners) < 1 ) {
@@ -1803,6 +1949,23 @@
 		return $partners;
 	}
 
+	// Retourneert een array term_id => name van de druiven in de wijn (en anders false)
+	function get_grape_terms_by_product( $product ) {
+		$terms = get_the_terms( $product->get_id(), 'product_grape' );
+		
+		$grapes = array();
+		foreach ( $terms as $term ) {
+			$grapes[$term->term_id] = $term->name;
+		}
+		asort($grapes);
+
+		if ( count($grapes) < 1 ) {
+			// Fallback indien geen partnerinfo bekend
+			$grapes = false;
+		}
+
+		return $grapes;
+	}
 
 
 	############
@@ -1904,7 +2067,6 @@
 
 	// Log wijzigingen aan taxonomieën
 	add_action( 'set_object_terms', 'log_product_term_updates', 100, 6 );
-	// add_action( 'deleted_term_relationships', 'log_product_term_deletes', 100, 3 );
 	
 	function log_product_term_updates( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ) {
 		$watched_taxonomies = array(
@@ -1921,33 +2083,33 @@
 		);
 
 		if ( in_array( $taxonomy, $watched_taxonomies ) ) {
-			write_log("UPDATED TERMS FOR ".$taxonomy." ON PRODUCT-ID ".$object_id);
-			write_log($tt_ids);
-			write_log($old_tt_ids);
 			
-			$added_terms = array_diff( $old_tt_ids, $tt_ids );
+			$added_terms = array_diff( $tt_ids, $old_tt_ids );
 			if ( count($added_terms) > 0 ) {
-				// LOG WAT ER BIJKWAM
 				foreach ( $added_terms as $term_id ) {
 					$added_term = get_term_by( 'id', $term_id, $taxonomy );
-					write_log($added_term->term_name);
+					$product = wc_get_product($object_id);
+					$user = wp_get_current_user();
+					
+					// Schrijf weg in log per weeknummer (zonder leading zero's)
+					$str = date_i18n('d/m/Y H:i:s') . "\t" . $product->get_sku() . "\t" . $product->get_name() . "\t" . $user->user_firstname." (".$user->user_login.")" . "\t" . $taxonomy . "\t" . "TERM ADDED" . "\t" . $added_term->name . "\n";
+					file_put_contents( WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND );
 				}
 			}
-			$removed_terms = array_diff( $tt_ids, $old_tt_ids );
+			
+			$removed_terms = array_diff( $old_tt_ids, $tt_ids );
 			if ( count($removed_terms) > 0 ) {
-				// LOG WAT ER VERDWEEN
 				foreach ( $removed_terms as $term_id ) {
 					$removed_term = get_term_by( 'id', $term_id, $taxonomy );
-					write_log($removed_term->term_name);
+					$product = wc_get_product($object_id);
+					$user = wp_get_current_user();
+					
+					// Schrijf weg in log per weeknummer (zonder leading zero's)
+					$str = date_i18n('d/m/Y H:i:s') . "\t" . $product->get_sku() . "\t" . $product->get_name() . "\t" . $user->user_firstname." (".$user->user_login.")" . "\t" . $taxonomy . "\t" . "TERM REMOVED" . "\t" . $removed_term->name . "\n";
+					file_put_contents( WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND );
 				}
 			}
 		}
-	}
-
-	function log_product_term_deletes( $tralala = '', $object_id, $tt_ids, $taxonomy ) {
-		write_log("DELETED TERMS: ".$taxonomy);
-		write_log($object_id);
-		write_log($tt_ids);
 	}
 
 	// Log wijzigingen aan metadata (en taxonomieën?)
@@ -1967,9 +2129,9 @@
 		}
 	}
 
-	function hook_product_meta_deletes( $meta_id, $post_id, $meta_key, $new_meta_value ) {
+	function hook_product_meta_deletes( $meta_id, $post_id, $meta_key ) {
 		if ( get_post_type($post_id) === 'product' ) {
-			log_product_meta_changes( $meta_id, $post_id, $meta_key, $new_meta_value, 'deleted' );
+			log_product_meta_changes( $meta_id, $post_id, $meta_key, '', 'deleted' );
 		}
 	}
 
@@ -2050,6 +2212,23 @@
 		var_dump($variable);
 		echo '</pre>';
 		return null;
+	}
+
+	// Tab-delimited CSV omzetten in een paginabrede tabel, ongeacht het aantal kolommen
+	function parse_csv_to_table( $handle ) {
+		// Initialiseer
+		$body = '';
+		while ( ( $line = fgetcsv( $handle, 0, "\t" ) ) !== false ) {
+			// Reset variabele
+			$row = '';
+			foreach ( $line as $column ) {
+				$row .= '<td>'.$column.'</td>';
+			}
+			// Voeg vooraan de lijst toe!
+			$body = '<tr>'.$row.'</tr>'.$body;
+		}
+		fclose($handle);
+		return '<table style="width: 100%;">'.$body.'</table>';
 	}
 	
 ?>

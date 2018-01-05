@@ -1,93 +1,109 @@
 <page backtop="10mm" backbottom="10mm"> 
  	
+ 	<!-- DOCS: padding applicable only on table, th, td, div, li! -->
+ 	
  	<page_header>
- 		<p style="font-size: 8pt; text-align: center;">###BRAND### &mdash; ###SKU###</p>
+ 		<p style="font-size: 9pt; text-align: center;">###BRAND### &mdash; ###SKU###</p>
  	</page_header>
 
  	<table border="0" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse;">
  		<tr>
- 			<td style="width: 60%; vertical-align: top; padding-top: 5mm; padding-right: 5mm;">
- 				<h1 style="font-size: 24pt; text-align: left;">###NAME###</h1>
- 				<h2 style="font-size: 16pt; text-align: left;">###MULTIPLE### x ###NET_CONTENT###</h2>
- 				<p style="font-size: 10pt; padding-top: 20mm;">
+ 			<td style="width: 55%; vertical-align: top; padding-right: 5mm;">
+ 				<h1 style="font-size: 26pt; text-align: left; margin-bottom: 0;">###NAME###</h1>
+ 				<h2 style="font-size: 18pt; text-align: left;">###MULTIPLE### x ###NET_CONTENT###</h2>
+ 				<p style="font-size: 12pt;">
 					###DESCRIPTION###
 				</p>
-				<p style="font-size: 10pt; padding-top: 10mm;">
+				<p style="font-size: 11pt;">
 					###INGREDIENTS###
 				</p>
-				<p style="font-size: 10pt; padding-top: 10mm;">
-					Fairtradepercentage: ###FAIRTRADE_SHARE### %
+				<p style="font-size: 11pt; margin-bottom: 4mm;">
+					###ORIGIN###
+				</p>
+				<p style="font-size: 11pt; font-weight: bold; margin-bottom: 4mm;">
+					Totaal fairtrade: ###FAIRTRADE_SHARE### %
 				</p>
 			</td>
-			<td style="width: 40%; vertical-align: top;">
- 				<p style="text-align: right;">
- 					<img src="https://shop.oxfamwereldwinkels.be/wp-content/uploads/oww-logo-groen-70px.png" style="width: 60%;">
- 				</p>
- 				<p style="text-align: left;">
+			<td style="width: 45%; vertical-align: top; padding-top: 5mm; ">
+ 				<div style="text-align: right;">
+ 					<img src="https://shop.oxfamwereldwinkels.be/wp-content/uploads/oww-logo-groen-70px.png" style="width: 55%;">
+ 				</div>
+ 				<div style="text-align: left; padding-top: 10mm; padding-bottom: 20mm;">
 					<img src="https://shop.oxfamwereldwinkels.be/wp-content/uploads/###SKU###.jpg" style="width: 100%;">
-				</p>
+				</div>
 			</td>
 		</tr>
  	</table>
 	
-	<table border="0" cellpadding="10" cellspacing="0" style="padding-top: 20mm; width: 100%; border-collapse: collapse;">
+	<table border="0" cellpadding="10" cellspacing="0" style="padding-top: 5mm; width: 100%; border-collapse: collapse;">
  		<tr>
  			<td style="width: 33%; vertical-align: top; padding-right: 5mm; border-right: solid 0.25mm #000000;">
  				<p style="font-size: 10pt;">
-					<span style="font-weight: bold; text-decoration: underline;">Allergeneninfo</span><br>
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Allergeneninfo</div>
 					###ALLERGENS###
 				</p>
 				<p style="font-size: 10pt;">
-					<span style="font-weight: bold; text-decoration: underline;">Biogecertificeerd</span><br>
-					###BIO###
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Labels</div>
+					###LABELS###
 				</p>
 				<p style="font-size: 10pt;">
-					<span style="font-weight: bold; text-decoration: underline;">Productnummer consumenteneenheid</span><br>
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Inhoud</div>
+					###NET_CONTENT###
+				</p>
+				<p style="font-size: 10pt;">
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Verpakking consumenteneenheid</div>
+					###CU_PACKAGING###
+				</p>
+				<p style="font-size: 10pt;">
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Productnummer consumenteneenheid</div>
 					###SHOPPLUS###
 				</p>
 				<p style="font-size: 10pt;">
-					<span style="font-weight: bold; text-decoration: underline;">Barcode consumenteneenheid</span><br>&nbsp;<br>
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Barcode consumenteneenheid</div><br>
 					<barcode dimension="1D" type="EAN13" value="###CU_EAN###" label="label" style="width: 80%; height: 12mm; font-size: 4mm;"></barcode>
 				</p>
 			</td>
 			<td style="width: 33%; vertical-align: top; padding-left: 5mm; padding-right: 5mm; border-right: solid 0.25mm #000000;">
 				<p style="font-size: 10pt;">
-					<span style="font-weight: bold; text-decoration: underline;">Afmetingen consumenteneenheid</span><br>
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Houdbaarheid na productie</div>
+					###SHELF_LIFE### dagen
+				</p>
+				<p style="font-size: 10pt;">
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Afmetingen consumenteneenheid</div>
 					###DIMENSIONS###
 				</p>
 				<p style="font-size: 10pt;">
-					<span style="font-weight: bold; text-decoration: underline;">Besteleenheid</span><br>
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Besteleenheid</div>
 					###MULTIPLE### consumenteneenheden
 				</p>
 				<p style="font-size: 10pt;">
-					<span style="font-weight: bold; text-decoration: underline;">Productnummer besteleenheid</span><br>
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Productnummer besteleenheid</div>
 					###SKU###
 				</p>
 				<p style="font-size: 10pt;">
-					<span style="font-weight: bold; text-decoration: underline;">Barcode besteleenheid</span><br>
-					###STEH_EAN###
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Barcode besteleenheid</div><br>
+					<barcode dimension="1D" type="EAN13" value="###STEH_EAN###" label="label" style="width: 80%; height: 12mm; font-size: 4mm;"></barcode>
 				</p>
 			</td>
 			<td style="width: 33%; vertical-align: top; padding-left: 5mm;">
  				<p style="font-size: 10pt;">
-					<span style="font-weight: bold; text-decoration: underline;">Verpakking besteleenheid</span><br>
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Verpakking besteleenheid</div>
 					###STEH_PACKAGING###
 				</p>
 				<p style="font-size: 10pt;">
-					<span style="font-weight: bold; text-decoration: underline;">Bewaarvoorschrift</span><br>
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Bewaarvoorschrift</div>
 					###STORAGE_CONDITIONS###
 				</p>
 				<p style="font-size: 10pt;">
-					<span style="font-weight: bold; text-decoration: underline;">Afmetingen besteleenheid</span><br>
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Afmetingen besteleenheid</div>
 					###STEH_DIMENSIONS###
 				</p>
 				<p style="font-size: 10pt;">
-					<span style="font-weight: bold; text-decoration: underline;">Palettisatie</span><br>
-					###NUMBER_PER_LAYER### ompakken per laag<br>
-					###NUMBER_OF_LAYERS### lagen per pallet
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Palletisering</div>
+					###NUMBER_OF_LAYERS### lagen x ###NUMBER_PER_LAYER### per laag = ###TOTAL### besteleenheden<br>
 				</p>
 				<p style="font-size: 10pt;">
-					<span style="font-weight: bold; text-decoration: underline;">Intrastatcode</span><br>
+					<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">Intrastatcode</div>
 					###INTRASTAT###
 				</p>
 			</td>
@@ -95,7 +111,7 @@
  	</table>
 
  	<page_footer>
- 		<p style="font-size: 8pt; text-align: center;">###FOOTER###</p>
+ 		<p style="font-size: 9pt; text-align: center; padding-bottom: 5mm;">###FOOTER###</p>
  	</page_footer>
 
 </page>
