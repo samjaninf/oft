@@ -1454,6 +1454,9 @@
 		if ( count($mc) > 0 ) {
 			$allergens_text .= 'Kan sporen bevatten van '.implode( ', ', $mc ).'. ';
 		}
+		if ( count($mc) === 0 and count($mc) === 0 ) {
+			$allergens_text = 'Geen meldingsplichtige allergenen.';
+		}
 
 		$labels = array();
 		if ( $product->get_attribute('bio') === 'Ja' ) {
@@ -1505,7 +1508,7 @@
 		}
 		$templatecontent = str_replace( "###SHELF_LIFE_OPTIONAL###", $shelf_text, $templatecontent );
 
-		$templatecontent = str_replace( "###DIMENSIONS###", wc_format_dimensions( $product->get_dimensions(false) ), $templatecontent );
+		$templatecontent = str_replace( "###CU_DIMENSIONS###", wc_format_dimensions( $product->get_dimensions(false) ), $templatecontent );
 		$steh_dimensions = array(
 			'length' => $product->get_meta('_steh_length'),
 			'width' => $product->get_meta('_steh_width'),
@@ -1537,7 +1540,7 @@
 	}
 
 	function format_pdf_ean13( $code ) {
-		return '<br><barcode dimension="1D" type="EAN13" value="'.$code.'" label="label" style="width: 90%; height: 10mm; font-size: 4mm;"></barcode>';
+		return '<br><barcode dimension="1D" type="EAN13" value="'.$code.'" label="label" style="width: 80%; height: 10mm; font-size: 4mm;"></barcode>';
 	}
 
 	function add_html2pdf_notice_var( $location ) {
