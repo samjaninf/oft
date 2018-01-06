@@ -40,19 +40,20 @@ div.options_group.oft > p.form-field.wide > input[type=number] {
 /* Enkel toepassen op boxes in linkerkolom! */
 div#postbox-container-2 {
 	div#product_cat-all,
-	div#product_allergen-all,
-	div#product_partner-all {
-		max-height: 265px;
+	div#product_partner-all,
+	div#product_allergen-all {
+		min-height: 265px;
+		max-height: 1100px;
 		column-count: 4;
 		column-fill: auto;
 	}
 
-	div#product_partner-all {
-		max-height: 1100px;
+	div#product_cat-all {
+		max-height: 265px; /* Enkel verplichten voor FF */
 	}
 
 	div#product_allergen-all {
-		max-height: 375px;
+		max-height: 375px; /* Enkel verplichten voor FF */
 		column-count: 2;
 	}
 
@@ -74,4 +75,9 @@ div#product_allergen-all ul.categorychecklist > li > label,
 div#product_partner-all ul.categorychecklist > li > label,
 div#product_grape-all ul.categorychecklist > li > label {
 	font-weight: bold;
+}
+
+div#product_cat-all ul.categorychecklist > li > ul.children,
+div#product_partner-all ul.categorychecklist > li > ul.children {
+	margin-left: 0;
 }

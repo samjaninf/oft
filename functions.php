@@ -1254,7 +1254,7 @@
 		$quoted_term = get_term_by( 'id', 177, 'product_partner' );
 		echo '<blockquote style="font-style: italic;">"'.$quoted_term->description.'"</blockquote>';
 		echo '<a href="https://www.oxfamwereldwinkels.be/node/'.get_term_meta( $quoted_term->term_id, 'partner_node', true ).'" target="_blank"><p>Link naar OWW-pagina over '.$quoted_term->name.'</p></a>';
-		echo wp_get_attachment_image( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ), 'thumbnail', 'circle' );
+		echo wp_get_attachment_image( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ), 'thumbnail', array( 'class' => 'circle' ) );
 
 		if ( $partners !== false ) {
 			echo '<p>Partners: '.implode( ', ', $partners ).'.<p>';
