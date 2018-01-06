@@ -42,17 +42,17 @@ div#postbox-container-2 {
 	div#product_cat-all,
 	div#product_allergen-all,
 	div#product_partner-all {
-		min-height: 275px;
+		max-height: 265px;
 		column-count: 4;
 		column-fill: auto;
 	}
 
 	div#product_partner-all {
-		min-height: 1100px;
+		max-height: 1100px;
 	}
 
 	div#product_allergen-all {
-		min-height: 375px;
+		max-height: 375px;
 		column-count: 2;
 	}
 
@@ -61,7 +61,9 @@ div#postbox-container-2 {
 	}
 
 	ul.categorychecklist > li {
+		-webkit-column-break-inside: avoid;
 		page-break-inside: avoid;
+		break-inside: avoid;
 		padding-top: 0.5em;
 		padding-bottom: 0.5em;
 	}

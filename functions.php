@@ -1207,7 +1207,6 @@
 
 	function show_hipster_icons() {
 		global $product, $sitepress;
-		// var_dump_pre( $veggie->term_id );
 		if ( in_array( intval( apply_filters( 'wpml_object_id', get_term_by( 'slug', 'veggie', 'product_tag' )->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
 			echo "<img class='veggie'>";
 		}
@@ -1227,16 +1226,6 @@
 	function show_additional_information() {
 		global $product;
 		
-		$partners = get_partner_terms_by_product($product);
-		if ( $partners !== false ) {
-			echo '<p>'.implode( ', ', $partners ).'<p>';
-		}
-
-		$countries = get_country_terms_by_product($product);
-		if ( $countries !== false ) {
-			echo '<p>'.implode( ', ', $countries ).'<p>';
-		}
-
 		$icons = array();
 		foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
 			$icons[] = $term->slug;
@@ -1257,6 +1246,18 @@
 		// TAGS ZIJN A.H.W. TERMEN VAN EEN WELBEPAALD ATTRIBUUT EN WORDEN DUS OOK VERTAALD
 		if ( in_array( $product->get_attribute('bio'), $yes ) ) {
 			echo "<img class='organic'>";
+		}
+
+		$partners = get_partner_terms_by_product($product);
+		
+		$quoted_term_id = array_rand($partners);
+		$quoted_term = get_term_by( 'id', 177, 'product_partner' );
+		echo '<blockquote style="font-style: italic;">"'.$quoted_term->description.'"</blockquote>';
+		echo '<a href="https://www.oxfamwereldwinkels.be/node/'.get_term_meta( $quoted_term->term_id, 'partner_node', true ).'" target="_blank"><p>Link naar OWW-pagina over '.$quoted_term->name.'</p></a>';
+		echo wp_get_attachment_image( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ), 'thumbnail', 'circle' );
+
+		if ( $partners !== false ) {
+			echo '<p>Partners: '.implode( ', ', $partners ).'.<p>';
 		}
 	}
 
@@ -1351,11 +1352,11 @@
 		$sku = $product->get_sku();
 
 		if ( $partners = get_partner_terms_by_product($product) ) {
-			$origin_text = 'Partners: '.implode( ', ', $partners );
+			$origin_text = 'Herkomst: '.strip_tags( implode( ', ', $partners ) ).'.';
 		} else {
-			// Val terug op de landeninfo
+			// Val terug op de landeninfo ENKEL NODIG VOOR EXTERNE PRODUCTEN, PER DEFINITIE GEEN FICHE NODIG
 			$countries = get_country_terms_by_product($product);
-			$origin_text = 'Herkomst: '.implode( ', ', $countries );
+			$origin_text = 'Herkomst: '.implode( ', ', $countries ).'.';
 		}
 
 		// Druiven kunnen door de meta_boxlogica enkel op wijn ingesteld worden, dus geen nood om de categorie te checken
@@ -1405,6 +1406,7 @@
 
 		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
 		$templatecontent = str_replace( "###PRICE###", wc_price( $product->get_regular_price() ), $templatecontent );
+		$templatecontent = str_replace( "###PERMALINK###", '<a href="'.$product->get_permalink().'">(bekijk product online)</a>', $templatecontent );
 		$templatecontent = str_replace( "###NET_CONTENT###", $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'), $templatecontent );
 		// Verwijder eventuele enters door HTML-tags
 		$templatecontent = str_replace( "###DESCRIPTION###", preg_replace( '/<[^>]+>/', ' ', $product->get_description() ), $templatecontent );
@@ -1472,7 +1474,7 @@
 	}
 
 	function format_pdf_ean13( $code ) {
-		return '<br><barcode dimension="1D" type="EAN13" value="'.$code.'" label="label" style="width: 80%; height: 10mm; font-size: 4mm;"></barcode>';
+		return '<br><barcode dimension="1D" type="EAN13" value="'.$code.'" label="label" style="width: 80%; height: 10mm; font-size: 10pt;"></barcode>';
 	}
 
 	function add_html2pdf_notice_var( $location ) {
@@ -1887,7 +1889,7 @@
 		return $countries;
 	}
 
-	// Retourneert een array term_id => name van de partners die bijdragen aan het product (en anders false)
+	// Retourneert een array term_id => name (parent_name) van de partners die bijdragen aan het product (en anders false)
 	function get_partner_terms_by_product( $product ) {
 		// Producten worden door de import + checkboxlogica enkel aan de laagste hiërarchische term gelinkt, dus dit zijn per definitie landen of partners!
 		$terms = get_the_terms( $product->get_id(), 'product_partner' );
@@ -1901,7 +1903,9 @@
 			foreach ( $terms as $term ) {
 				if ( ! in_array( $term->parent, $continents, true ) ) {
 					// De bovenliggende term is geen continent, dus het is een partner!
-					$partners[$term->term_id] = $term->name;
+					$parent_term = get_term_by( 'id', $term->parent, 'product_partner' );
+					// VERVANG DOOR 'node/'.get_term_meta( $term->term_id, 'partner_node', true )
+					$partners[$term->term_id] = '<a href="https://www.oxfamwereldwinkels.be/'.mb_strtolower( str_replace( ' ', '-', $term->name ) ).'" target="_blank">'.$term->name.'</a> ('.$parent_term->name.')';
 				}
 			}
 			// Sorteer de partners alfabetisch maar bewaar de indices
