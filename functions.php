@@ -18,13 +18,18 @@
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
 	}
 
-	// Laad custom JS-files
+	// Voeg custom styling toe aan de adminomgeving
+	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
+
+	function load_admin_css() {
+		wp_enqueue_style( 'oft-admin', get_stylesheet_directory_uri().'/admin.css' );
+	}
+
+	// Activeer WP API
 	add_action( 'wp_enqueue_scripts', 'load_extra_js' );
 
 	function load_extra_js() {
-		// Activeer WP API
 		wp_enqueue_script( 'wp-api' );
-		// wp_enqueue_script( 'bootstrap_js', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js');
 	}
 
 	// Sta HTML-attribuut 'target' toe in beschrijvingen van taxonomieën
@@ -1067,79 +1072,6 @@
 		echo '</div>';
 	}
 
-	// Voeg CSS toe aan adminomgeving in afwachting van style-admin.scss
-	add_action( 'admin_head', 'custom_admin_css' );
-
-	function custom_admin_css() {
-		?>
-		<style>
-			#woocommerce-product-data ul.wc-tabs li.quality_options a:before {
-				font-family: FontAwesome;
-				content: '\f0c3';
-			}
-
-			div.options_group.oft > p.form-field.secondary > label {
-				padding-left: 30px;
-				font-style: italic;
-			}
-
-			#quality_product_data div.options_group.oft > p.form-field > label {
-				width: 90%;
-				max-width: 400px;
-			}
-
-			#quality_product_data div.options_group.oft > p.form-field:not(.secondary) > label {
-				padding-right: 30px;
-			}
-
-			div.options_group.oft > p.form-field > input[type=number] {
-				width: 75px;
-				text-align: right;
-			}
-
-			div.options_group.oft > p.form-field.wide > input[type=number] {
-				min-width: 150px;
-			}
-
-			div#postbox-container-2 div#product_cat-all,
-			div#postbox-container-2 div#product_allergen-all,
-			div#postbox-container-2 div#product_partner-all {
-				min-height: 275px;
-				column-count: 4;
-				column-fill: auto;
-			}
-
-			div#postbox-container-2 div#product_partner-all {
-				min-height: 1100px;
-			}
-
-			div#postbox-container-2 div#product_allergen-all {
-				min-height: 375px;
-				column-count: 2;
-			}
-
-			div#postbox-container-2 ul.categorychecklist {
-				margin-top: 0em;
-			}
-
-			div#postbox-container-2 ul.categorychecklist > li {
-				-webkit-column-break-inside: avoid;
-				page-break-inside: avoid;
-				break-inside: avoid;
-				padding-top: 0.5em;
-				padding-bottom: 0.5em;
-			}
-
-			div#product_cat-all ul.categorychecklist > li > label,
-			div#product_allergen-all ul.categorychecklist > li > label,
-			div#product_partner-all ul.categorychecklist > li > label,
-			div#product_grape-all ul.categorychecklist > li > label {
-				font-weight: bold;
-			}
-		</style>
-		<?php
-	}
-
 	function save_oft_fields( $post_id ) {
 		// Bereken - indien mogelijk - de eenheidsprijs a.d.h.v. alle data in $_POST
 		// Laatste parameter: val expliciet niét terug op de (verouderde) databasewaarden!
@@ -1454,7 +1386,7 @@
 		if ( count($mc) > 0 ) {
 			$allergens_text .= 'Kan sporen bevatten van '.implode( ', ', $mc ).'. ';
 		}
-		if ( count($mc) === 0 and count($mc) === 0 ) {
+		if ( count($c) === 0 and count($mc) === 0 ) {
 			$allergens_text = 'Geen meldingsplichtige allergenen.';
 		}
 

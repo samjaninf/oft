@@ -1,0 +1,75 @@
+/*!
+	Theme Name:		Oxfam Fair Trade
+	Theme URI:		https://github.com/OxfamFairTrade/oft
+	Author:			Frederik Neirynck
+	Author URI:		https://www.lecouperet.net
+	Description:	Toevoegingen voor custom Oxfam-pagina's in de back-end.
+	Template:		alone
+	Version:		1.0.0
+	Text Domain:	oft
+*/
+
+#woocommerce-product-data ul.wc-tabs li.quality_options a:before {
+	font-family: FontAwesome;
+	content: '\f0c3';
+}
+
+div.options_group.oft > p.form-field.secondary > label {
+	padding-left: 30px;
+	font-style: italic;
+}
+
+div.options_group.oft > p.form-field > input[type=number] {
+	width: 75px;
+	text-align: right;
+}
+
+div.options_group.oft > p.form-field.wide > input[type=number] {
+	min-width: 150px;
+}
+
+#quality_product_data div.options_group.oft > p.form-field > label {
+	width: 90%;
+	max-width: 400px;
+}
+
+#quality_product_data div.options_group.oft > p.form-field:not(.secondary) > label {
+	padding-right: 30px;
+}
+
+/* Enkel toepassen op boxes in linkerkolom! */
+div#postbox-container-2 {
+	div#product_cat-all,
+	div#product_allergen-all,
+	div#product_partner-all {
+		min-height: 275px;
+		column-count: 4;
+		column-fill: auto;
+	}
+
+	div#product_partner-all {
+		min-height: 1100px;
+	}
+
+	div#product_allergen-all {
+		min-height: 375px;
+		column-count: 2;
+	}
+
+	ul.categorychecklist {
+		margin-top: 0em;
+	}
+
+	ul.categorychecklist > li {
+		page-break-inside: avoid;
+		padding-top: 0.5em;
+		padding-bottom: 0.5em;
+	}
+}
+
+div#product_cat-all ul.categorychecklist > li > label,
+div#product_allergen-all ul.categorychecklist > li > label,
+div#product_partner-all ul.categorychecklist > li > label,
+div#product_grape-all ul.categorychecklist > li > label {
+	font-weight: bold;
+}
