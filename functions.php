@@ -1430,7 +1430,7 @@
 		if ( $grapes = get_grape_terms_by_product($product) ) {
 			$ingredients_text = 'Samenstelling: '.implode( ', ', $grapes );
 		} elseif ( ! empty( $product->get_attribute('ingredienten') ) ) {
-			$ingredients_text = 'Ingrediënten: '.$product->get_attribute('ingredienten').'.';
+			$ingredients_text = '<p style="font-size: 11pt;">Ingrediënten: '.$product->get_attribute('ingredienten').'.</p>';
 		} else {
 			$ingredients_text = '';
 		}
@@ -1533,7 +1533,7 @@
 	}
 
 	function format_pdf_block( $title, $value ) {
-		return '<div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">'.$title.'</div>'.$value;
+		return '<p style="font-size: 10pt;"><div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">'.$title.'</div>'.$value.'</p>';
 	}
 
 	function format_pdf_ean13( $code ) {
