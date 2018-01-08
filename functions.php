@@ -1245,23 +1245,25 @@
 		// SLUGS VAN ATTRIBUTEN WORDEN NIET VERTAALD, ENKEL DE TERMEN
 		// TAGS ZIJN A.H.W. TERMEN VAN EEN WELBEPAALD ATTRIBUUT EN WORDEN DUS OOK VERTAALD
 		if ( in_array( $product->get_attribute('bio'), $yes ) ) {
-			echo "<img class='organic'>";
+			echo '<img class="organic" style="border: 0; outline: 0; padding: 0; background-color: white;">';
 		}
 
+		echo '<p>&nbsp;</p>';
+
 		$partners = get_partner_terms_by_product($product);
-		
-		$quoted_term_id = array_rand($partners);
-		$quoted_term = get_term_by( 'id', 177, 'product_partner' );
+		$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
+		echo wp_get_attachment_image( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ), 'thumbnail', false, array( 'class' => 'circle' ) );
 		echo '<blockquote style="font-style: italic;">"'.$quoted_term->description.'"</blockquote>';
-		echo '<a href="https://www.oxfamwereldwinkels.be/node/'.get_term_meta( $quoted_term->term_id, 'partner_node', true ).'" target="_blank"><p>Link naar OWW-pagina over '.$quoted_term->name.'</p></a>';
-		echo wp_get_attachment_image( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ), 'thumbnail', array( 'class' => 'circle' ) );
+		echo '<a href="https://www.oxfamwereldwinkels.be/node/'.get_term_meta( $quoted_term->term_id, 'partner_node', true ).'" target="_blank"><p style="text-align: right;">Link naar '.$quoted_term->name.'</p></a>';
+		
+		echo '<p style="clear: both;">&nbsp;</p>';
 
 		if ( $partners !== false ) {
 			echo '<p>Partners: '.implode( ', ', $partners ).'.<p>';
 		}
 
 		if ( file_exists(WP_CONTENT_DIR.'/fiches/nl/'.$product->get_sku().'.pdf') ) {
-			echo '<a href="/wp-content/fiches/nl/'.$product->get_sku().'.pdf" target="_blank"><button>Download productfiche</button></a>';
+			echo '<br><a href="/wp-content/fiches/nl/'.$product->get_sku().'.pdf" target="_blank"><button>Download productfiche</button></a>';
 		}
 	}
 
