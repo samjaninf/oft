@@ -1259,6 +1259,10 @@
 		if ( $partners !== false ) {
 			echo '<p>Partners: '.implode( ', ', $partners ).'.<p>';
 		}
+
+		if ( file_exists(WP_CONTENT_DIR.'/fiches/nl/'.$product->get_sku().'.pdf') ) {
+			echo '<a href="/wp-content/fiches/nl/'.$product->get_sku().'.pdf" target="_blank"><button>Download productfiche</button></a>';
+		}
 	}
 
 	// Aantal producten per pagina wijzigen
