@@ -153,33 +153,57 @@
 
 	function add_partner_node_field( $taxonomy ) {
 		?>
-			<div class="form-field term-group">
-			<label for="partner_node"><?php _e( 'Partnernode OWW-site', 'oft' ); ?></label>
-			<input type="number" min="1" max="99999" class="postform" id="partner_node" name="partner_node">
+			<div class="form-field term-node">
+				<label for="partner_node"><?php _e( 'Node OWW-site', 'oft-admin' ); ?></label>
+				<input type="number" min="1" max="99999" class="postform" id="partner_node" name="partner_node">
+			</div>
+			<div class="form-field term-type">
+				<label for="partner_type"><?php _e( 'Partnertype', 'oft-admin' ); ?></label>
+				<select class="postform" id="partner_type" name="partner_type">
+					<option value="">(selecteer)</option>
+					<option value="A">A</option>
+					<option value="B">B</option>
+					<option value="C">C</option>
+				</select>
 			</div>
 		<?php
 	}
 
 	function save_partner_node_meta( $term_id, $tt_id ) {
-		if ( isset($_POST['partner_node']) && '' !== $_POST['partner_node'] ) {
+		if ( ! empty($_POST['partner_node']) ) {
 			add_term_meta( $term_id, 'partner_node', absint($_POST['partner_node']), true );
 		}
-		if( isset($_POST['partner_image_id']) && '' !== $_POST['partner_image_id'] ) {
-			update_term_meta( $term_id, 'partner_image_id', absint($_POST['partner_image_id']) );
+		if ( ! empty($_POST['partner_type']) ) {
+			add_term_meta( $term_id, 'partner_type', sanitize_text_field($_POST['partner_type']), true );
+		}
+		if ( ! empty($_POST['partner_image_id']) ) {
+			add_term_meta( $term_id, 'partner_image_id', absint($_POST['partner_image_id']), true );
 		}
 	}
 
 	function edit_partner_node_field( $term, $taxonomy ) {
 		?>
-			<tr class="form-field term-group-wrap">
-				<th scope="row"><label for="partner_node"><?php _e( 'Partnernode OWW-site', 'oft' ); ?></label></th>
+			<tr class="form-field term-node-wrap">
+				<th scope="row"><label for="partner_node"><?php _e( 'Node OWW-site', 'oft-admin' ); ?></label></th>
 				<td>
 					<?php $partner_node = get_term_meta( $term->term_id, 'partner_node', true ); ?>
 					<input type="number" min="1" max="99999" class="postform" id="partner_node" name="partner_node" value="<?php if ($partner_node) echo esc_attr($partner_node); ?>">
 				</td>
 			</tr>
-			 <tr class="form-field term-group-wrap">
-				<th scope="row"><label for="partner_image_id"><?php _e( 'Beeld', 'oft' ); ?></label></th>
+			<tr class="form-field term-node-wrap">
+				<th scope="row"><label for="partner_type"><?php _e( 'Partnertype', 'oft-admin' ); ?></label></th>
+				<td>
+					<?php $partner_type = get_term_meta( $term->term_id, 'partner_type', true ); ?>
+					<select class="postform" id="partner_type" name="partner_type">
+						<option value="">(selecteer)</option>
+						<option value="A" <?php selected( 'A', $partner_type ); ?>>A</option>
+						<option value="B" <?php selected( 'B', $partner_type ); ?>>B</option>
+						<option value="C" <?php selected( 'C', $partner_type ); ?>>C</option>
+					</select>
+				</td>
+			</tr>
+			 <tr class="form-field term-image-wrap">
+				<th scope="row"><label for="partner_image_id"><?php _e( 'Beeld', 'oft-admin' ); ?></label></th>
 				<td>
 					<?php $image_id = get_term_meta( $term->term_id, 'partner_image_id', true ); ?>
 					<input type="hidden" id="partner_image_id" name="partner_image_id" value="<?php if ($image_id) echo esc_attr($image_id); ?>">
@@ -187,8 +211,8 @@
 						<?php if ($image_id) echo wp_get_attachment_image( $image_id, 'thumbnail' ); ?>
 					</div>
 					<p>
-						<input type="button" class="button button-secondary showcase_tax_media_button" id="showcase_tax_media_button" name="showcase_tax_media_button" value="<?php _e( 'Kies foto', 'oft' ); ?>" />
-						<input type="button" class="button button-secondary showcase_tax_media_remove" id="showcase_tax_media_remove" name="showcase_tax_media_remove" value="<?php _e( 'Verwijder foto', 'oft' ); ?>" />
+						<input type="button" class="button button-secondary showcase_tax_media_button" id="showcase_tax_media_button" name="showcase_tax_media_button" value="<?php _e( 'Kies foto', 'oft-admin' ); ?>" />
+						<input type="button" class="button button-secondary showcase_tax_media_remove" id="showcase_tax_media_remove" name="showcase_tax_media_remove" value="<?php _e( 'Verwijder foto', 'oft-admin' ); ?>" />
 					</p>
 				</td>
 			</tr>
@@ -196,12 +220,17 @@
 	}
 
 	function update_partner_node_meta( $term_id, $tt_id ) {
-		if ( isset($_POST['partner_node']) && '' !== $_POST['partner_node'] ) {
-			add_term_meta( $term_id, 'partner_node', absint($_POST['partner_node']), true );
+		if ( ! empty($_POST['partner_node']) ) {
+			update_term_meta( $term_id, 'partner_node', absint($_POST['partner_node']) );
 		} else {
 			delete_term_meta( $term_id, 'partner_node' );
 		}
-		if( isset($_POST['partner_image_id']) && '' !== $_POST['partner_image_id'] ) {
+		if ( ! empty($_POST['partner_type']) ) {
+			update_term_meta( $term_id, 'partner_type', sanitize_text_field($_POST['partner_type']) );
+		} else {
+			delete_term_meta( $term_id, 'partner_type' );
+		}
+		if ( ! empty($_POST['partner_image_id']) ) {
 			update_term_meta( $term_id, 'partner_image_id', absint($_POST['partner_image_id']) );
 		} else {
 			delete_term_meta( $term_id, 'partner_image_id' );
@@ -222,7 +251,7 @@
 		?>
 		<script>
 			jQuery(document).ready( function($) {
-				_wpMediaViewsL10n.insertIntoPost = '<?php _e( 'Stel in', 'oft' ); ?>';
+				_wpMediaViewsL10n.insertIntoPost = '<?php _e( 'Stel in', 'oft-admin' ); ?>';
 				function ct_media_upload(button_class) {
 					var _custom_media = true, _orig_send_attachment = wp.media.editor.send.attachment;
 					$('body').on('click', button_class, function(e) {
