@@ -541,21 +541,28 @@
 	add_action( 'admin_init', 'hide_wine_taxonomies' );
 
 	function hide_wine_taxonomies() {
-		if ( isset($_GET['action']) and $_GET['action'] === 'edit' ) {
-			$categories = isset( $_GET['post'] ) ? get_the_terms( $_GET['post'], 'product_cat' ) : false;
-			if ( is_array( $categories ) ) {
-				foreach ( $categories as $category ) {
-					while ( $category->parent !== 0 ) {
-						$parent = get_term( $category->parent, 'product_cat' );
-						$category = $parent;
+		global $pagenow, $post_type;
+		$remove = true;
+		if ( ( $pagenow === 'edit.php' or 'post-new.php' ) and $post_type === 'product' ) {
+			if ( isset($_GET['action']) and $_GET['action'] === 'edit' ) {
+				$categories = isset( $_GET['post'] ) ? get_the_terms( $_GET['post'], 'product_cat' ) : false;
+				if ( is_array( $categories ) ) {
+					foreach ( $categories as $category ) {
+						while ( $category->parent !== 0 ) {
+							$parent = get_term( $category->parent, 'product_cat' );
+							$category = $parent;
+						}
+					}
+					if ( $parent->slug !== 'wijn' ) {
+						$remove = false;
 					}
 				}
 			}
-			if ( $categories === false or $parent->slug !== 'wijn' ) {
-				remove_meta_box( 'product_grapediv', 'product', 'normal' );
-				remove_meta_box( 'product_recipediv', 'product', 'normal' );
-				remove_meta_box( 'product_tastediv', 'product', 'normal' );
-			}
+		}
+		if ( $remove ) {
+			remove_meta_box( 'product_grapediv', 'product', 'normal' );
+			remove_meta_box( 'product_recipediv', 'product', 'normal' );
+			remove_meta_box( 'product_tastediv', 'product', 'normal' );
 		}
 	}
 
