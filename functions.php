@@ -751,6 +751,19 @@
 				$suffix .= '/kg';
 			}
 
+			$category_ids = $product->get_category_ids();
+			// In principe slechts één categorie geselecteerd bij ons, dus gewoon 1ste element nemen
+			$category = get_term( $category_ids[0], 'product_cat' );
+			if ( $category->slug === 'fruitsap' ) {
+				woocommerce_wp_text_input(
+					array( 
+						'id' => '_empty_fee',
+						'label' => sprintf( __( 'Leeggoed (&euro;)', 'oft-admin' ), $suffix ),
+						'data_type' => 'price',
+					)
+				);
+			}
+
 			woocommerce_wp_text_input(
 				array( 
 					'id' => '_unit_price',
@@ -1147,12 +1160,23 @@
 			'_starch',
 			'_fibtg',
 			'_pro',
-			
 		);
 
 		foreach ( $decimal_meta_keys as $meta_key ) {
 			if ( ! empty( $_POST[$meta_key] ) ) {
 				update_post_meta( $post_id, $meta_key, esc_attr( number_format( str_replace( ',', '.', $_POST[$meta_key] ), 1, '.', '' ) ) );
+			} else {
+				delete_post_meta( $post_id, $meta_key );
+			}
+		}
+
+		$price_meta_keys = array(
+			'_empty_fee',
+		);
+
+		foreach ( $price_meta_keys as $meta_key ) {
+			if ( ! empty( $_POST[$meta_key] ) ) {
+				update_post_meta( $post_id, $meta_key, esc_attr( number_format( str_replace( ',', '.', $_POST[$meta_key] ), 2, '.', '' ) ) );
 			} else {
 				delete_post_meta( $post_id, $meta_key );
 			}
@@ -1280,14 +1304,13 @@
 		echo '<p>&nbsp;</p>';
 
 		$partners = get_partner_terms_by_product($product);
-		$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
-		echo wp_get_attachment_image( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ), 'thumbnail', false, array( 'class' => 'circle' ) );
-		echo '<blockquote style="font-style: italic;">"'.$quoted_term->description.'"</blockquote>';
-		echo '<a href="https://www.oxfamwereldwinkels.be/node/'.get_term_meta( $quoted_term->term_id, 'partner_node', true ).'" target="_blank"><p style="text-align: right;">Link naar '.$quoted_term->name.'</p></a>';
-		
-		echo '<p style="clear: both;">&nbsp;</p>';
-
-		if ( $partners !== false ) {
+		if ( $partners ) {
+			$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
+			echo wp_get_attachment_image( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ), 'thumbnail', false, array( 'class' => 'circle' ) );
+			echo '<blockquote style="font-style: italic;">"'.$quoted_term->description.'"</blockquote>';
+			echo '<a href="https://www.oxfamwereldwinkels.be/node/'.get_term_meta( $quoted_term->term_id, 'partner_node', true ).'" target="_blank"><p style="text-align: right;">Link naar '.$quoted_term->name.'</p></a>';
+			
+			echo '<p style="clear: both;">&nbsp;</p>';
 			echo '<p>Partners: '.implode( ', ', $partners ).'.<p>';
 		}
 
@@ -1404,25 +1427,26 @@
 		}
 
 		$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
-		$c_term = get_term_by( 'slug', 'contains', 'product_allergen' );
-		$mc_term = get_term_by( 'slug', 'may-contain', 'product_allergen' );
-		$c = array();
-		$mc = array();
-		foreach ( $allergens as $term ) {
-			if ( $term->parent == $c_term->term_id ) {
-				$c[] = mb_strtolower($term->name);
-			} elseif( $term->parent == $mc_term->term_id ) {
-				$mc[] = mb_strtolower($term->name);
+		if ( count($allergens) > 0 ) {
+			$c_term = get_term_by( 'slug', 'contains', 'product_allergen' );
+			$mc_term = get_term_by( 'slug', 'may-contain', 'product_allergen' );
+			$c = array();
+			$mc = array();
+			foreach ( $allergens as $term ) {
+				if ( $term->parent == $c_term->term_id ) {
+					$c[] = mb_strtolower($term->name);
+				} elseif( $term->parent == $mc_term->term_id ) {
+					$mc[] = mb_strtolower($term->name);
+				}
 			}
-		}
-		$allergens_text = '';
-		if ( count($c) > 0 ) {
-			$allergens_text .= 'Bevat '.implode( ', ', $c ).'. ';
-		}
-		if ( count($mc) > 0 ) {
-			$allergens_text .= 'Kan sporen bevatten van '.implode( ', ', $mc ).'. ';
-		}
-		if ( count($c) === 0 and count($mc) === 0 ) {
+			$allergens_text = '';
+			if ( count($c) > 0 ) {
+				$allergens_text .= 'Bevat '.implode( ', ', $c ).'. ';
+			}
+			if ( count($mc) > 0 ) {
+				$allergens_text .= 'Kan sporen bevatten van '.implode( ', ', $mc ).'. ';
+			}
+		} else {
 			$allergens_text = 'Geen meldingsplichtige allergenen.';
 		}
 
@@ -1929,12 +1953,12 @@
 		// Producten worden door de import + checkboxlogica enkel aan de laagste hiërarchische term gelinkt, dus dit zijn per definitie landen of partners!
 		$terms = get_the_terms( $product->get_id(), 'product_partner' );
 		
-		// Vraag de term-ID's van de continenten op
-		$args = array( 'taxonomy' => 'product_partner', 'parent' => 0, 'hide_empty' => false, 'fields' => 'ids' );
-		$continents = get_terms( $args );
-		
-		$partners = array();
-		if ( is_array($terms) and count($terms) > 0 ) {
+		if ( count($terms) > 0 ) {
+			// Vraag de term-ID's van de continenten op
+			$args = array( 'taxonomy' => 'product_partner', 'parent' => 0, 'hide_empty' => false, 'fields' => 'ids' );
+			$continents = get_terms( $args );
+			
+			$partners = array();
 			foreach ( $terms as $term ) {
 				if ( ! in_array( $term->parent, $continents, true ) ) {
 					// De bovenliggende term is geen continent, dus het is een partner!
@@ -1943,30 +1967,32 @@
 					$partners[$term->term_id] = '<a href="https://www.oxfamwereldwinkels.be/'.mb_strtolower( str_replace( ' ', '-', $term->name ) ).'" target="_blank">'.$term->name.'</a> ('.$parent_term->name.')';
 				}
 			}
-			// Sorteer de partners alfabetisch maar bewaar de indices
-			asort($partners);
-		}
 
-		if ( count($partners) < 1 ) {
-			// Fallback indien geen partnerinfo bekend
-			$partners = false;
+			if ( count($partners) > 0 ) {
+				// Sorteer de partners alfabetisch maar bewaar de indices
+				asort($partners);
+				return $partners;
+			} else {
+				// Geen partnerinfo bekend
+				return false;
+			}
+		} else {
+			// Geen herkomstinfo bekend
+			return false;
 		}
-
-		return $partners;
 	}
 
 	// Retourneert een array term_id => name van de druiven in de wijn (en anders false)
 	function get_grape_terms_by_product( $product ) {
 		$terms = get_the_terms( $product->get_id(), 'product_grape' );
 		
-		$grapes = array();
-		foreach ( $terms as $term ) {
-			$grapes[$term->term_id] = $term->name;
-		}
-		asort($grapes);
-
-		if ( count($grapes) < 1 ) {
-			// Fallback indien geen partnerinfo bekend
+		if ( count($terms) > 0 ) {
+			$grapes = array();
+			foreach ( $terms as $term ) {
+				$grapes[$term->term_id] = $term->name;
+			}
+			asort($grapes);
+		} else {
 			$grapes = false;
 		}
 
@@ -1989,7 +2015,7 @@
 	}
 
 	// Testje met het toevoegen van custom taxonomieën aan de WP API
-	add_filter( 'woocommerce_rest_prepare_product_object', 'add_custom_taxonomies_to_response', 10, 3 );
+	// add_filter( 'woocommerce_rest_prepare_product_object', 'add_custom_taxonomies_to_response', 10, 3 );
 
 	function add_custom_taxonomies_to_response( $response, $object, $request ) {
 		if ( empty( $response->data ) ) {
@@ -2099,7 +2125,7 @@
 					$user = wp_get_current_user();
 					
 					// Schrijf weg in log per weeknummer (zonder leading zero's)
-					$str = date_i18n('d/m/Y H:i:s') . "\t" . $product->get_sku() . "\t" . $product->get_name() . "\t" . $user->user_firstname." (".$user->user_login.")" . "\t" . $taxonomy . "\t" . "TERM ADDED" . "\t" . $added_term->name . "\n";
+					$str = date_i18n('d/m/Y H:i:s') . "\t" . $product->get_sku() . "\t" . $product->get_name() . "\t" . $user->user_firstname." (".$user->user_login.")" . "\t" . $taxonomy . "\t" . "TERM CREATED" . "\t" . $added_term->name . "\n";
 					file_put_contents( WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND );
 				}
 			}
@@ -2112,7 +2138,7 @@
 					$user = wp_get_current_user();
 					
 					// Schrijf weg in log per weeknummer (zonder leading zero's)
-					$str = date_i18n('d/m/Y H:i:s') . "\t" . $product->get_sku() . "\t" . $product->get_name() . "\t" . $user->user_firstname." (".$user->user_login.")" . "\t" . $taxonomy . "\t" . "TERM REMOVED" . "\t" . $removed_term->name . "\n";
+					$str = date_i18n('d/m/Y H:i:s') . "\t" . $product->get_sku() . "\t" . $product->get_name() . "\t" . $user->user_firstname." (".$user->user_login.")" . "\t" . $taxonomy . "\t" . "TERM DELETED" . "\t" . $removed_term->name . "\n";
 					file_put_contents( WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND );
 				}
 			}
@@ -2126,7 +2152,7 @@
 
 	function hook_product_meta_adds( $meta_id, $post_id, $meta_key, $new_meta_value ) {
 		if ( get_post_type($post_id) === 'product' ) {
-			log_product_meta_changes( $meta_id, $post_id, $meta_key, $new_meta_value, 'added' );
+			log_product_meta_changes( $meta_id, $post_id, $meta_key, $new_meta_value, 'created' );
 		}
 	}
 
@@ -2156,6 +2182,7 @@
 			'_length',
 			'_width',
 			'_height',
+			'_empty_fee',
 			'_net_unit',
 			'_net_content',
 			'_unit_price',
