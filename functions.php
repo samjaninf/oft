@@ -1493,8 +1493,13 @@
 		}
 		$templatecontent = str_replace( "###CU_EAN###", $cu_ean, $templatecontent );
 		
-		if ( check_digit_ean13( $product->get_meta('_steh_ean') ) ) {
-			$steh_ean = format_pdf_ean13( $product->get_meta('_steh_ean') );
+		if ( strlen( $product->get_meta('_steh_ean') ) >= 8 ) {
+			if ( check_digit_ean13( $product->get_meta('_steh_ean') ) ) {
+				$steh_ean = format_pdf_ean13( $product->get_meta('_steh_ean') );
+			} else {
+				// Ompaknummers kunnen ook 14 cijfers bevatten!
+				$steh_ean = $product->get_meta('_steh_ean');
+			}
 		} else {
 			$steh_ean = '/';
 		}
