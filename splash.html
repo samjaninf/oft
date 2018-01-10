@@ -8,8 +8,8 @@
 		<meta name="keywords" content="Oxfam Fair Trade, voedingsproducten, eerlijke handel, fair trade, fairtradeproducten, koffie, cacao, thee, chocolade, wijn, wereldwinkel, Oxfam, Oxfam-Wereldwinkels, koffieservice, bio">
 		<meta name="description" content="Oxfam Fair Trade brengt je een wereld vol kwaliteitsproducten van eerlijke handel. Chocolade die smelt op je tong. Een kop koffie waar je helemaal van opkikkert. Of een zelfgemaakt gerecht boordevol p">
 		<meta name="viewport" content="width=device-width">
-		<link rel="stylesheet" type="text/css" href="http://demo.oxfamfairtrade.be/style-style.css">
-		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="style-style.css">
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	</head>
 
 	<body>
@@ -22,12 +22,12 @@
 					
 					<h1>Oxfam<br>Fair<br>Trade</h1>
 					
-					<a href="https://www.oxfamfairtrade.be/nl" title="Nederlands"><div class="box"><span style="font-size: 85%;">NL</span></div></a>
-					<a href="https://www.oxfamfairtrade.be/fr" title="Français"><div class="box"><span style="font-size: 85%;">FR</span></div></a>
-					<a href="https://www.oxfamfairtrade.be/en" title="English"><div class="box"><span style="font-size: 85%;">EN</span></div></a>
+					<a href="/nl/" title="Nederlands"><div class="box"><span style="font-size: 85%;">NL</span></div></a>
+					<a href="/fr/" title="Français"><div class="box"><span style="font-size: 85%;">FR</span></div></a>
+					<a href="/en/" title="English"><div class="box"><span style="font-size: 85%;">EN</span></div></a>
 					
 					<p style="margin-top: 10%;">
-						Particulier?<br/><a href="https://www.oxfamwereldwinkels.be">Oxfam-Wereldwinkels</a>
+						Particulier?<br/><a href="https://www.oxfamwereldwinkels.be/nl">Oxfam-Wereldwinkels</a>
 					</p>
 				</div>
 
@@ -58,12 +58,12 @@
 			<!-- Vergeet de grote (2500px) én kleine (1250px) versie niet in de FTP-map te plaatsen! -->
 
 			<div class="logo">
-				<img src="http://www.oxfamfairtrade.be/UserFiles/oftv2/img/splash-logo.png" width="100%">
+				<img src="assets/splash-logo.png" width="100%">
 			</div>
 
 		</div>
 
-		<script type="text/javascript" src="http://www.oxfamfairtrade.be/UserFiles/oftv2/scripts/jquery-waitforimages-min.js"></script>
+		<script type="text/javascript" src="assets/jquery-waitforimages-min.js"></script>
 
 		<script type="text/javascript">
 			jQuery(document).ready(function() {
@@ -75,7 +75,7 @@
 					var next_index = (current_index+1) % jQuery(".cover").length;
 					var next = jQuery(".cover").eq(next_index);
 					// Stel de volgende achtergrond in
-					next.css("background-image", "url(http://www.oxfamfairtrade.be/UserFiles/oftv2/img/splash-"+(next_index+1)+quality+".jpg)");
+					next.css("background-image", "url(assets/splash-"+(next_index+1)+quality+".jpg)");
 					setTimeout(function() {	
 						next.waitForImages(true).done(function() {
 							// Ga enkel verder indien de volgende achtergrond al volledig ingeladen is
@@ -97,11 +97,11 @@
 				// Detecteer de taal automatisch bij het klikken op de titel
 				jQuery(".text h1").click(function(){
 					if ( navigator.language.indexOf("en") > -1 ) {
-						window.location.href = "http://www.oxfamfairtrade.be/en";
+						window.location.href = "/en/";
 					} else if ( navigator.language.indexOf("fr") > -1 ) {
-						window.location.href = "http://www.oxfamfairtrade.be/fr";
+						window.location.href = "/fr/";
 					} else {
-						window.location.href = "http://www.oxfamfairtrade.be/ofthome";
+						window.location.href = "/nl/";
 					}
 				})
 			});
