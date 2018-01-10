@@ -542,8 +542,7 @@
 
 	function hide_wine_taxonomies() {
 		if ( isset($_GET['action']) and $_GET['action'] === 'edit' ) {
-			$post_id = isset( $_GET['post'] ) ? $_GET['post'] : $_POST['post_ID'];
-			$categories = get_the_terms( $post_id, 'product_cat' );
+			$categories = isset( $_GET['post'] ) ? get_the_terms( $_GET['post'], 'product_cat' ) : false;
 			if ( is_array( $categories ) ) {
 				foreach ( $categories as $category ) {
 					while ( $category->parent !== 0 ) {
@@ -551,11 +550,11 @@
 						$category = $parent;
 					}
 				}
-				if ( $parent->slug !== 'wijn' ) {
-					remove_meta_box('product_grapediv', 'product', 'normal');
-					remove_meta_box('product_recipediv', 'product', 'normal');
-					remove_meta_box('product_tastediv', 'product', 'normal');
-				}
+			}
+			if ( $categories === false or $parent->slug !== 'wijn' ) {
+				remove_meta_box( 'product_grapediv', 'product', 'normal' );
+				remove_meta_box( 'product_recipediv', 'product', 'normal' );
+				remove_meta_box( 'product_tastediv', 'product', 'normal' );
 			}
 		}
 	}
