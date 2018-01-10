@@ -2,13 +2,12 @@
 
 	<head>
 		<meta charset="UTF-8">
-		<title>
-			Welkom | Oxfam Fair Trade
-		</title>
+		<title>Welkom | Oxfam Fair Trade</title>
 		<meta name="keywords" content="Oxfam Fair Trade, voedingsproducten, eerlijke handel, fair trade, fairtradeproducten, koffie, cacao, thee, chocolade, wijn, wereldwinkel, Oxfam, Oxfam-Wereldwinkels, koffieservice, bio">
-		<meta name="description" content="Oxfam Fair Trade brengt je een wereld vol kwaliteitsproducten van eerlijke handel. Chocolade die smelt op je tong. Een kop koffie waar je helemaal van opkikkert. Of een zelfgemaakt gerecht boordevol p">
+		<meta name="description" content="Oxfam Fair Trade brengt je een wereld vol kwaliteitsproducten van eerlijke handel. Chocolade die smelt op je tong. Een kop koffie waar je helemaal van opkikkert.">
 		<meta name="viewport" content="width=device-width">
-		<link rel="stylesheet" type="text/css" href="style-style.css">
+		<link rel="stylesheet" type="text/css" href="/wp-content/themes/oft/assets/normalize.css">
+		<link rel="stylesheet" type="text/css" href="/wp-content/themes/oft/assets/style-splash.css">
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	</head>
 
@@ -58,12 +57,12 @@
 			<!-- Vergeet de grote (2500px) én kleine (1250px) versie niet in de FTP-map te plaatsen! -->
 
 			<div class="logo">
-				<img src="assets/splash-logo.png" width="100%">
+				<img src="/wp-content/themes/oft/assets/splash-logo.png" width="100%">
 			</div>
 
 		</div>
 
-		<script type="text/javascript" src="assets/jquery-waitforimages-min.js"></script>
+		<script type="text/javascript" src="/wp-content/themes/oft/assets/jquery-waitforimages-min.js"></script>
 
 		<script type="text/javascript">
 			jQuery(document).ready(function() {
@@ -75,7 +74,7 @@
 					var next_index = (current_index+1) % jQuery(".cover").length;
 					var next = jQuery(".cover").eq(next_index);
 					// Stel de volgende achtergrond in
-					next.css("background-image", "url(assets/splash-"+(next_index+1)+quality+".jpg)");
+					next.css("background-image", "url(/wp-content/themes/oft/assets/splash-"+(next_index+1)+quality+".jpg)");
 					setTimeout(function() {	
 						next.waitForImages(true).done(function() {
 							// Ga enkel verder indien de volgende achtergrond al volledig ingeladen is
@@ -86,7 +85,7 @@
 								switchBackground(next_index);
 							});
 						});
-					}, 3000);
+					}, 5000);
 				}
 
 				// Start de carrousel van zodra de 1ste foto volledig ingeladen is
