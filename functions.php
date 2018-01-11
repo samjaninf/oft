@@ -935,6 +935,7 @@
 				array( 
 					'id' => '_promo_text',
 					'label' => __( 'Actuele promotekst', 'oft-admin' ),
+					'description' => __( 'Dit tekstje dient enkel om te tonen aan particulieren in de wijnkiezer en de webshops. Te combineren met de actieprijs en -periode hierboven.', 'oft-admin' ),
 				)
 			);
 
@@ -1400,7 +1401,7 @@
 	}
 
 	function show_additional_information() {
-		global $product;
+		global $product, $sitepress;
 		
 		$icons = array();
 		foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
@@ -1434,11 +1435,11 @@
 			echo '<a href="https://www.oxfamwereldwinkels.be/node/'.get_term_meta( $quoted_term->term_id, 'partner_node', true ).'" target="_blank"><p style="text-align: right;">Link naar '.$quoted_term->name.'</p></a>';
 			
 			echo '<p style="clear: both;">&nbsp;</p>';
-			echo '<p>Partners: '.implode( ', ', $partners ).'.<p>';
+			echo '<p>'.sprintf( _n( 'Partner: %s', 'Partners: %s', count($partners), 'oft' ),  str_replace( ')', '</span>)', str_replace( '(', '(<span class="oft-country">', implode( ', ', $partners ) ) ) ).'<p>';
 		}
 
-		if ( file_exists(WP_CONTENT_DIR.'/fiches/nl/'.$product->get_sku().'.pdf') ) {
-			echo '<br><a href="/wp-content/fiches/nl/'.$product->get_sku().'.pdf" target="_blank"><button>Download productfiche</button></a>';
+		if ( file_exists(WP_CONTENT_DIR.'/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf') ) {
+			echo '<br><a href="/wp-content/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf" target="_blank"><button>'.__( 'Download productfiche', 'oft' ).'</button></a>';
 		}
 	}
 
@@ -1546,9 +1547,9 @@
 		if ( $grapes = get_grape_terms_by_product($product) ) {
 			$ingredients_text .= 'Samenstelling: '.implode( ', ', $grapes ).'</p>';
 		} elseif ( ! empty( $product->get_attribute('ingredienten') ) ) {
-			$ingredients_text .= 'Ingrediënten: '.$product->get_attribute('ingredienten').'</p>';
+			$ingredients_text .= 'Ingrediënten: '.$product->get_attribute('ingredienten').'.</p>';
 		} elseif ( ! empty( $product->get_meta('_ingredients') ) ) {
-			$ingredients_text .= 'Ingrediënten: '.$product->get_meta('_ingredients').'</p>';
+			$ingredients_text .= 'Ingrediënten: '.$product->get_meta('_ingredients').'.</p>';
 		} else {
 			$ingredients_text = '';
 		}
@@ -1845,8 +1846,8 @@
 	}
 
 	function subscribe_user_to_mailchimp_list( $email, $fname = '', $lname = '', $company = '', $list_id = MC_LIST_ID ) {
-		// global $sitepress;
-		// $language = $sitepress->get_current_language();
+		global $sitepress;
+		$language = $sitepress->get_current_language();
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
 		$member = md5( strtolower( trim( $email ) ) );
 		$merge_fields = array( 'LANGUAGE' => 'Nederlands', 'SOURCE' => 'OFT-site', );
@@ -1876,8 +1877,8 @@
 	}
 
 	function update_user_in_mailchimp_list( $email, $fname = '', $lname = '', $company = '', $list_id = MC_LIST_ID ) {
-		// global $sitepress;
-		// $language = $sitepress->get_current_language();
+		global $sitepress;
+		$language = $sitepress->get_current_language();
 		
 		// VERGELIJK MET BESTAANDE WAARDES
 		$member = get_status_in_mailchimp_list( $email );
