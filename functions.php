@@ -476,6 +476,10 @@
 			?>
 			<script>
 				jQuery(document).ready( function() {
+					/* Disable enkele standaard WC-velden */
+					jQuery( '#general_product_data' ).find( 'input#_regular_price' ).prop( 'disabled', true );
+					jQuery( '#general_product_data' ).find( 'input#_sale_price' ).prop( 'disabled', true );
+					
 					/* Disable en verberg checkboxes hoofdcategorieën */
 					<?php foreach ( $categories as $id ) : ?>
 						jQuery( '#in-product_cat-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );

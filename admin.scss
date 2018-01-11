@@ -51,14 +51,14 @@ div#postbox-container-2 {
 	div#product_cat-all,
 	div#product_partner-all,
 	div#product_allergen-all {
-		min-height: 265px;
+		min-height: 275px;
 		max-height: 1100px;
 		column-count: 4;
 		column-fill: auto;
 	}
 
 	div#product_cat-all {
-		max-height: 265px; /* Enkel verplichten voor FF */
+		max-height: 275px; /* Enkel verplichten voor FF */
 	}
 
 	div#product_allergen-all {
