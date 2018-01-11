@@ -12,7 +12,7 @@
 
 	function load_child_theme() {
 		// Zorgt ervoor dat de stylesheet van het child theme zeker na alone.css ingeladen wordt
-		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.0.0' );
+		// wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.0.0' );
 		// BOOTSTRAP REEDS INGELADEN DOOR ALONE
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
@@ -1436,13 +1436,14 @@
 		$partners = get_partner_terms_by_product($product);
 		if ( $partners ) {
 			$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
-			echo wp_get_attachment_image( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ), 'thumbnail', false, array( 'class' => 'circle' ) );
-			if ( strlen($quoted_term->description) > 10 ) {
+			$quoted_term_meta = get_term_meta( $quoted_term->term_id );
+			if ( strlen($quoted_term->description) > 10 and intval($quoted_term_meta->partner_image_id) > 0 ) {
+				echo wp_get_attachment_image( $quoted_term_meta->partner_image_id, 'thumbnail', false );
 				echo '<blockquote style="font-style: italic;">"'.$quoted_term->description.'"</blockquote>';
 			}
-			echo '<a href="https://www.oxfamwereldwinkels.be/node/'.get_term_meta( $quoted_term->term_id, 'partner_node', true ).'" target="_blank"><p style="text-align: right;">Link naar '.$quoted_term->name.'</p></a>';
-			
-			echo '<p style="clear: both;">&nbsp;</p>';
+			if ( intval($quoted_term_meta->partner_node) > 0 ) {
+				echo '<a href="https://www.oxfamwereldwinkels.be/node/'.$quoted_term_meta->partner_node.'" target="_blank"><p style="text-align: right;">Link naar '.$quoted_term->name.'</p></a>';
+			}
 			echo '<p>'.sprintf( _n( 'Partner: %s', 'Partners: %s', count($partners), 'oft' ),  str_replace( ')', ')</span>', str_replace( '(', '<span class="oft-country">(', implode( ', ', $partners ) ) ) ).'<p>';
 		}
 

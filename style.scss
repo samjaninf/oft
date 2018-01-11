@@ -5,18 +5,29 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.0.0
+	Version:		1.1.0
 	Text Domain:	oft
 */
 
+$red: #eb476f;
+$yellow: #ffcd66;
+$green: #06d29c;
+$blue: #06d29c;
+$beige: #f4f4f4;
 $oxfam-green: #61a534;
+
+$black-title: #1a1a1a;
+$grey-text: #4d4d4d;
+$link-text: #000000;
+$link-text-bis: #0085ea;
+
 $see-through-green: rgba(97, 165, 52, 0.9);
 $see-through-orange: rgba(255, 165, 0, 0.9);
 $see-through-red: rgba(250, 22, 50, 0.9);
 
 
 /*************/
-/*  CONTENT  */
+/*  GENERAL  */
 /*************/
 
 @font-face {
@@ -24,25 +35,28 @@ $see-through-red: rgba(250, 22, 50, 0.9);
 	src: url('assets/oxfam.ttf');
 }
 
-h1, h2 {
-	font-family: Oxfam;
+@import url('https://fonts.googleapis.com/css?family=Rubik');
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: Rubik !important;
 }
+
+
+/*************/
+/*  OLDIES?  */
+/*************/
 
 .error404 {
 	background: url("assets/background-404.jpeg") center top / cover no-repeat;
 }
 
 .bt-section-space {
-	padding-top: 2em;
-	padding-bottom: 2em;
-}
-
-.widget_search .search-field {
-	font-family: Arial;
+	// padding-top: 2em;
+	// padding-bottom: 2em;
 }
 
 .latest-news {
-	text-align: center;
+	// text-align: center;
 }
 
 .feedback,
@@ -51,9 +65,183 @@ h1, h2 {
 }
 
 
-/*************/
-/*  BANNERS  */
-/*************/
+/****************/
+/*  CUSTOMIZER  */
+/****************/
+
+h4.featured-box-title {
+	letter-spacing: 1px !important;
+}
+
+#nav_menu-4 {
+	display: inline-block !important;
+}
+
+span.oft-country {
+	font-size: 80%;
+}
+
+#icl_lang_sel_widget-2 {
+	display: inline-block !important;
+	top: -1px;
+	position: relative;
+	margin-left: 20px;
+}
+
+#icl_lang_sel_widget-2 .wpml-ls-legacy-list-horizontal {
+	padding: 0;
+	border-left: 1px solid black;
+}
+
+.wpml-ls-link {
+	padding: 0 !important;
+}
+
+.wpml-ls-native {
+	padding-left: 20px;
+}
+
+.oft-searchbar {
+	max-width: 300px;
+	max-height: 36px;
+	float: right;
+}
+
+.oft-searchbar h2.widget-title {
+	display: none;
+}
+
+.oft-searchbar input.search-field {
+	border-width: 0px !important;
+	font-size: 14px !important;
+}
+
+div.featured-box-alignment {
+	max-width: 200px;
+	margin: 0 auto;
+}
+
+div.featured-box-alignment .icon-wrap {
+	display: none !important;
+}
+
+h4.featured-box-title {
+	margin-bottom: 1em;
+}
+
+.oft-minimal-button > a {
+	background-color: transparent !important;
+	color: white !important;
+	font-size: 1em !important;
+}
+
+.oft-minimal-button > a:hover {
+	text-decoration: underline !important;
+	-webkit-text-underline-position: under !important;
+}
+
+.vc_grid-filter.vc_grid-filter-color-grey > .vc_active.vc_grid-filter-item {
+	background-color: #fff !important;
+	text-decoration: underline;
+	-webkit-text-underline-position: under;
+}
+
+div.vc_btn3-container.vc_btn3-left {
+	text-align: center;
+}
+a.vc_general.vc_btn3.vc_btn3-size-md.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue {
+	padding: 0 !important;
+	background-color: transparent !important;
+	color: deepskyblue !important;
+	font-size: 1.1em !important;
+}
+
+a.vc_gitem-link.vc_general.vc_btn3.vc_btn3-size-md.vc_btn3-shape-rounded.vc_btn3-style-flat:hover {
+	text-decoration: underline;
+	-webkit-text-underline-position: under;
+}
+
+#page .wpb_theme_custom_element.wpb_posts_grid_resizable .vc-custom-inner-wrap .grid-item.item-skin-products-default .grid-item-inner .background-image-backend::after {
+	background-color: transparent;
+}
+
+.woocommerce.columns-4 > ul.products {
+	text-align: center;	
+}
+
+.woocommerce.columns-4 > ul.products > div.product {
+	width: 24%;
+	display: inline-block;
+	margin-bottom: 2em;
+}
+
+.woocommerce.columns-4 > ul.products > div.product h2.woocommerce-loop-product__title {
+	font-family: Arial;
+	font-size: 1.2em;
+	line-height: 1em;
+	text-align: center;
+}
+
+.woocommerce.columns-4 > ul.products > div.product span.price {
+	text-align: center;
+	display: block;
+	font-size: 1em;
+}
+
+.woocommerce.columns-4 > ul.products > div.product div.woocommerce-taxonomy-loop {
+	display: none;
+}
+
+form.wpcf7-form sup.required {
+	color: red;
+}
+
+.summary img.circle {
+	border-radius: 100%;
+	float: right;
+}
+
+div.site-main form.wpcf7-form p:not(:first-of-type) > label {
+	padding-top: 2em;
+}
+
+ul#menu-menu-top.menu {
+	margin-top: 3px;
+}
+
+.fw-heading {
+	display: none;
+}
+
+.fw-special-title {
+	color: white;
+	text-shadow: 3px 3px #888888;
+}
+
+.fw-title-bar {
+	color: white;
+	min-height: 100%;
+	background-size: cover;
+	box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.3);
+}
+
+body.page .bt-default-page {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+.partner-quote-icon {
+	border-radius: 150px;
+}
+
+.wpcf7-form-control-wrap {
+	color: black;
+}
+
+
+/**************/
+/*  PRODUCTS  */
+/**************/
 
 @mixin banner( $color: $see-through-green, $font-size: 85% ) {
 	color: white;
