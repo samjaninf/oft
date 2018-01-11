@@ -481,10 +481,12 @@
 					jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', true );
 					jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', true );
 					jQuery( '#general_product_data' ).find( 'select#_net_unit' ).prop( 'disabled', true );
+					jQuery( '#inventory_product_data' ).find( 'select#_stock_status' ).prop( 'disabled', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_weight]' ).prop( 'readonly', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_length]' ).prop( 'readonly', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_width]' ).prop( 'readonly', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_height]' ).prop( 'readonly', true );
+					jQuery( '#shipping_product_data' ).find( 'select#product_shipping_class' ).prop( 'disabled', true );
 					
 					/* Disable en verberg checkboxes hoofdcategorieën */
 					<?php foreach ( $categories as $id ) : ?>
@@ -545,6 +547,8 @@
 						jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', false );
 						jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', false );
 						jQuery( '#general_product_data' ).find( 'select#_net_unit' ).prop( 'disabled', false );
+						jQuery( '#inventory_product_data' ).find( 'select#_stock_status' ).prop( 'disabled', false );
+						jQuery( '#shipping_product_data' ).find( 'select#product_shipping_class' ).prop( 'disabled', false );
 
 						var pass = true;
 						if ( jQuery( '#product_partner-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
@@ -796,7 +800,7 @@
 	add_action( 'save_post', 'change_product_visibility_on_save', 10, 3 );
 
 	function change_product_visibility_on_save( $post_id, $post, $update ) {
-		if ( $post->post_status !== 'publish' or $post->post_type !== 'product' ) {
+		if ( $post->post_status === 'draft' or $post->post_type !== 'product' ) {
 			return;
 		}
 
@@ -805,7 +809,9 @@
 		}
 
 		if ( $product->get_attribute('merk') !== 'Oxfam Fair Trade' ) {
-			$product->set_catalog_visibility( 'hidden' );
+			// TIJDELIJKE FIX
+			$product->set_catalog_visibility( 'visible' );
+			$product->set_status( 'private' );
 			$product->save();
 		} elseif ( get_option('oft_import_active') !== 'yes' ) {
 			// Update de productfiches niet indien er een import bezig is (te langzaam)
@@ -925,6 +931,13 @@
 				)
 			);
 
+			woocommerce_wp_textarea_input(
+				array( 
+					'id' => '_promo_text',
+					'label' => __( 'Actuele promotekst', 'oft-admin' ),
+				)
+			);
+
 		echo '</div>';
 
 		if ( file_exists(WP_CONTENT_DIR.'/fiches/nl/'.$product->get_sku().'.pdf') ) {
@@ -1022,6 +1035,9 @@
 				array( 
 					'id' => '_intrastat',
 					'label' => __( 'Intrastatcode', 'oft-admin' ),
+					'custom_attributes' => array(
+						'readonly' => true,
+					),
 				)
 			);
 			woocommerce_wp_text_input( $cu_ean + $barcode_args );
@@ -1042,6 +1058,9 @@
 					'desc_tip' => true,
 					'description' => __( 'Weight in decimal form', 'woocommerce' ),
 					'data_type' => 'decimal',
+					'custom_attributes' => array(
+						'readonly' => true,
+					),
 				)
 			);
 			?>
@@ -1049,9 +1068,9 @@
 			<p class="form-field dimensions_field">
 				<label for="box_length"><?php printf( __( 'Afmetingen <u>ompak</u> (%s)', 'oft-admin' ), get_option( 'woocommerce_dimension_unit' ) ); ?></label>
 				<span class="wrap">
-					<input id="box_length" placeholder="<?php esc_attr_e( 'Length', 'woocommerce' ); ?>" class="input-text wc_input_decimal" size="6" type="text" name="_steh_length" value="<?php echo esc_attr( wc_format_localized_decimal( get_post_meta( $post->ID, '_steh_length', true ) ) ); ?>" />
-					<input placeholder="<?php esc_attr_e( 'Width', 'woocommerce' ); ?>" class="input-text wc_input_decimal" size="6" type="text" name="_steh_width" value="<?php echo esc_attr( wc_format_localized_decimal( get_post_meta( $post->ID, '_steh_width', true ) ) ); ?>" />
-					<input placeholder="<?php esc_attr_e( 'Height', 'woocommerce' ); ?>" class="input-text wc_input_decimal last" size="6" type="text" name="_steh_height" value="<?php echo esc_attr( wc_format_localized_decimal( get_post_meta( $post->ID, '_steh_height', true ) ) ); ?>" />
+					<input id="box_length" placeholder="<?php esc_attr_e( 'Length', 'woocommerce' ); ?>" class="input-text wc_input_decimal" size="6" type="text" name="_steh_length" value="<?php echo esc_attr( wc_format_localized_decimal( get_post_meta( $post->ID, '_steh_length', true ) ) ); ?>" readonly />
+					<input placeholder="<?php esc_attr_e( 'Width', 'woocommerce' ); ?>" class="input-text wc_input_decimal" size="6" type="text" name="_steh_width" value="<?php echo esc_attr( wc_format_localized_decimal( get_post_meta( $post->ID, '_steh_width', true ) ) ); ?>" readonly />
+					<input placeholder="<?php esc_attr_e( 'Height', 'woocommerce' ); ?>" class="input-text wc_input_decimal last" size="6" type="text" name="_steh_height" value="<?php echo esc_attr( wc_format_localized_decimal( get_post_meta( $post->ID, '_steh_height', true ) ) ); ?>" readonly />
 				</span>
 				<?php echo wc_help_tip( __( 'LxWxH in decimal form', 'woocommerce' ) ); ?>
 			</p>
@@ -1173,9 +1192,10 @@
 						'label' => __( 'Energie (kJ)', 'oft-admin' ).$suffix,
 						'type' => 'number',
 						'custom_attributes' => array(
-							'step'	=> 'any',
-							'min'	=> '1',
-							'max'	=> '10000',
+							'step' => 'any',
+							'min' => '1',
+							'max' => '10000',
+							'readonly' => true,
 						),
 					)
 				);
@@ -1205,9 +1225,9 @@
 						'data_type' => 'decimal',
 						'type' => 'number',
 						'custom_attributes' => array(
-							'step'	=> '0.001',
-							'min'	=> '0.001',
-							'max'	=> '100.000',
+							'step' => '0.001',
+							'min' => '0.001',
+							'max' => '100.000',
 						),
 					)
 				);
@@ -1225,6 +1245,7 @@
 			'_net_content',
 			'_fairtrade_share',
 			'_ingredients',
+			'_promo_text',
 			'_shopplus_sku',
 			'_shelf_life',
 			'_intrastat',
@@ -2296,6 +2317,7 @@
 			'_unit_price',
 			'_fairtrade_share',
 			'_ingredients',
+			'_promo_text',
 			'_shopplus_sku',
 			'_shelf_life',
 			'_intrastat',
