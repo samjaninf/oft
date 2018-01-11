@@ -478,7 +478,9 @@
 				jQuery(document).ready( function() {
 					/* Disable enkele standaard WC-velden */
 					jQuery( '#general_product_data' ).find( 'input#_regular_price' ).prop( 'readonly', true );
-					jQuery( '#general_product_data' ).find( 'input#_sale_price' ).prop( 'readonly', true );
+					jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', true );
+					jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', true );
+					jQuery( '#general_product_data' ).find( 'select#_net_unit' ).prop( 'disabled', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_weight]' ).prop( 'readonly', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_length]' ).prop( 'readonly', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_width]' ).prop( 'readonly', true );
@@ -539,6 +541,11 @@
 
 					/* Vereis dat er één productcategorie en minstens één partner/land aangevinkt is voor het opslaan */
 					jQuery( 'input[type=submit]#publish, input[type=submit]#save-post' ).click( function() {
+						// ALLE DISABLED DROPDOWNS WEER ACTIVEREN, ANDERS GEEN WAARDE DOORGESTUURD
+						jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', false );
+						jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', false );
+						jQuery( '#general_product_data' ).find( 'select#_net_unit' ).prop( 'disabled', false );
+
 						var pass = true;
 						if ( jQuery( '#product_partner-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
 							pass = false;
@@ -553,6 +560,7 @@
 							pass = false;
 							alert('Je moet het fairtradepercentage nog ingeven!');
 						}
+
 						return pass;
 					});
 
