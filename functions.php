@@ -815,7 +815,9 @@
 			$product->save();
 		} elseif ( get_option('oft_import_active') !== 'yes' ) {
 			// Update de productfiches niet indien er een import bezig is (te langzaam)
-			create_product_pdf($product);
+			create_product_pdf( $product, 'nl' );
+			create_product_pdf( $product, 'fr' );
+			// create_product_pdf( $product, 'en' );
 		}
 	}
 
@@ -941,10 +943,14 @@
 
 		echo '</div>';
 
-		if ( file_exists(WP_CONTENT_DIR.'/fiches/nl/'.$product->get_sku().'.pdf') ) {
-			echo '<div class="options_group">';
-				echo '<p class="form-field"><label>Productfiche</label><a href="/wp-content/fiches/nl/'.$product->get_sku().'.pdf" target="_blank">Download PDF</a> ('.get_date_from_gmt( date_i18n( 'Y-m-d H:i:s', filemtime(WP_CONTENT_DIR.'/fiches/nl/'.$product->get_sku().'.pdf') ), 'd/m/Y @ H:i' ).')</p>';
-			echo '</div>';
+		$languages = array( 'nl', 'fr', 'en' );
+		foreach ( $languages as $language ) {
+			$path = '/fiches/'.$language.'/'.$product->get_sku().'.pdf';
+			if ( file_exists( WP_CONTENT_DIR.$path ) ) {
+				echo '<div class="options_group">';
+					echo '<p class="form-field"><label>Productfiche</label><a href="'.content_url($path).'" target="_blank">'.sprintf( __( 'Download PDF (%s)', 'oft-admin' ), mb_strtoupper($language) ).'</a> ('.get_date_from_gmt( date_i18n( 'Y-m-d H:i:s', filemtime(WP_CONTENT_DIR.$path) ), 'd/m/Y @ H:i' ).')</p>';
+				echo '</div>';
+			}
 		}
 	}
 	
@@ -1109,9 +1115,9 @@
 			),
 		);
 
-		if ( ! post_language_equals_site_language() ) {
-			$one_decimal_args['custom_attributes']['readonly'] = true;
-		}
+		// if ( ! post_language_equals_site_language() ) {
+		// 	$one_decimal_args['custom_attributes']['readonly'] = true;
+		// }
 
 		$primary = array(
 			'wrapper_class' => 'primary',
@@ -1431,11 +1437,13 @@
 		if ( $partners ) {
 			$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
 			echo wp_get_attachment_image( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ), 'thumbnail', false, array( 'class' => 'circle' ) );
-			echo '<blockquote style="font-style: italic;">"'.$quoted_term->description.'"</blockquote>';
+			if ( strlen($quoted_term->description) > 10 ) {
+				echo '<blockquote style="font-style: italic;">"'.$quoted_term->description.'"</blockquote>';
+			}
 			echo '<a href="https://www.oxfamwereldwinkels.be/node/'.get_term_meta( $quoted_term->term_id, 'partner_node', true ).'" target="_blank"><p style="text-align: right;">Link naar '.$quoted_term->name.'</p></a>';
 			
 			echo '<p style="clear: both;">&nbsp;</p>';
-			echo '<p>'.sprintf( _n( 'Partner: %s', 'Partners: %s', count($partners), 'oft' ),  str_replace( ')', '</span>)', str_replace( '(', '(<span class="oft-country">', implode( ', ', $partners ) ) ) ).'<p>';
+			echo '<p>'.sprintf( _n( 'Partner: %s', 'Partners: %s', count($partners), 'oft' ),  str_replace( ')', ')</span>', str_replace( '(', '<span class="oft-country">(', implode( ', ', $partners ) ) ) ).'<p>';
 		}
 
 		if ( file_exists(WP_CONTENT_DIR.'/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf') ) {
@@ -1526,9 +1534,9 @@
 	###########
 
 	// Creëer een productfiche
-	function create_product_pdf( $product ) {
+	function create_product_pdf( $product, $language ) {
 		require_once WP_PLUGIN_DIR.'/html2pdf/autoload.php';
-		$templatelocatie = get_stylesheet_directory().'/assets/fiche-nl.html';
+		$templatelocatie = get_stylesheet_directory().'/assets/fiche-'.$language.'.html';
 		$templatefile = fopen( $templatelocatie, 'r' );
 		$templatecontent = fread( $templatefile, filesize($templatelocatie) );
 		$sku = $product->get_sku();
@@ -1651,9 +1659,9 @@
 			$pdffile = new Html2Pdf( 'P', 'A4', 'nl', true, 'UTF-8', array( 15, 5, 15, 5 ) );
 			$pdffile->setDefaultFont('Arial');
 			$pdffile->pdf->setAuthor('Oxfam Fair Trade cvba');
-			$pdffile->pdf->setTitle('Productfiche '.$sku);
+			$pdffile->pdf->setTitle( __( 'Productfiche', 'oft' ).' '.$sku );
 			$pdffile->writeHTML($templatecontent);
-			$pdffile->output( WP_CONTENT_DIR.'/fiches/nl/'.$sku.'.pdf', 'F' );
+			$pdffile->output( WP_CONTENT_DIR.'/fiches/'.$language.'/'.$sku.'.pdf', 'F' );
 		} catch ( Html2PdfException $e ) {
 			$formatter = new ExceptionFormatter($e);
 			add_filter( 'redirect_post_location', 'add_html2pdf_notice_var', 99 );
@@ -2093,8 +2101,9 @@
 				if ( ! in_array( $term->parent, $continents, true ) ) {
 					// De bovenliggende term is geen continent, dus het is een partner!
 					$parent_term = get_term_by( 'id', $term->parent, 'product_partner' );
-					// VERVANG DOOR 'node/'.get_term_meta( $term->term_id, 'partner_node', true )
-					$partners[$term->term_id] = '<a href="https://www.oxfamwereldwinkels.be/'.mb_strtolower( str_replace( ' ', '-', $term->name ) ).'" target="_blank">'.$term->name.'</a> ('.$parent_term->name.')';
+					// VERVANG EVENTUEEL DOOR 'node/'.get_term_meta( $term->term_id, 'partner_node', true )
+					// OOK LINK OP COUNTRY_TERM TOEVOEGEN?
+					$partners[$term->term_id] = '<a href="'.get_term_link( $term->term_id, 'product_partner' ).'">'.$term->name.'</a> ('.$parent_term->name.')';
 				}
 			}
 
