@@ -477,8 +477,12 @@
 			<script>
 				jQuery(document).ready( function() {
 					/* Disable enkele standaard WC-velden */
-					jQuery( '#general_product_data' ).find( 'input#_regular_price' ).prop( 'disabled', true );
-					jQuery( '#general_product_data' ).find( 'input#_sale_price' ).prop( 'disabled', true );
+					jQuery( '#general_product_data' ).find( 'input#_regular_price' ).prop( 'readonly', true );
+					jQuery( '#general_product_data' ).find( 'input#_sale_price' ).prop( 'readonly', true );
+					jQuery( '#shipping_product_data' ).find( 'input[name=_weight]' ).prop( 'readonly', true );
+					jQuery( '#shipping_product_data' ).find( 'input[name=_length]' ).prop( 'readonly', true );
+					jQuery( '#shipping_product_data' ).find( 'input[name=_width]' ).prop( 'readonly', true );
+					jQuery( '#shipping_product_data' ).find( 'input[name=_height]' ).prop( 'readonly', true );
 					
 					/* Disable en verberg checkboxes hoofdcategorieën */
 					<?php foreach ( $categories as $id ) : ?>

@@ -1,6 +1,6 @@
 @font-face {
 	font-family: 'Oxfam';
-	src: url('assets/oxfam.ttf');
+	src: url('oxfam.ttf');
 }
 
 div#splash {
@@ -15,7 +15,7 @@ div#splash {
 #splash .cover {
 	display: none;
 	position: fixed;
-	background-image: url('assets/splash-1s.jpg');
+	background-image: url('splash-1s.jpg');
 	background-position: center center;
 	background-repeat: no-repeat;
 	background-size: cover;
@@ -135,6 +135,6 @@ div#splash {
 	}
 	
 	#splash .cover {
-		background-image: url('assets/splash-1.jpg');
+		background-image: url('splash-1.jpg');
 	}
 }
