@@ -9,9 +9,18 @@
 	Text Domain:	oft
 */
 
+body.wp-admin.post-type-product div.actions select#dropdown_product_type {
+	display: none;
+}
+
 #woocommerce-product-data ul.wc-tabs li.quality_options a:before {
 	font-family: FontAwesome;
 	content: '\f0c3';
+}
+
+p.form-field.important-for-catman,
+p.form-field._sku_field {
+	background-color: lightgreen;
 }
 
 div.options_group.oft > p.form-field.secondary > label {

@@ -343,17 +343,17 @@
 		$taxonomy_name = 'product_grape';
 		
 		$labels = array(
-			'name' => __( 'Druiven', 'oft' ),
-			'singular_name' => __( 'Druif', 'oft' ),
-			'all_items' => __( 'Alle druivensoorten', 'oft' ),
-			'parent_item' => __( 'Druif', 'oft' ),
-			'parent_item_colon' => __( 'Druif:', 'oft' ),
-			'new_item_name' => __( 'Nieuwe druivensoort', 'oft' ),
-			'add_new_item' => __( 'Voeg nieuwe druivensoort toe', 'oft' ),
-			'view_item' => __( 'Druivensoort bekijken', 'oft' ),
-			'edit_item' => __( 'Druivensoort bewerken', 'oft' ),
-			'update_item' => __( 'Druivensoort bijwerken', 'oft' ),
-			'search_items' => __( 'Druivensoorten doorzoeken', 'oft' ),
+			'name' => __( 'Druivenrassen', 'oft' ),
+			'singular_name' => __( 'Druivenras', 'oft' ),
+			'all_items' => __( 'Alle druivenrassen', 'oft' ),
+			'parent_item' => __( 'Kleur', 'oft' ),
+			'parent_item_colon' => __( 'Kleur:', 'oft' ),
+			'new_item_name' => __( 'Nieuw druivenras', 'oft' ),
+			'add_new_item' => __( 'Voeg nieuw druivenras toe', 'oft' ),
+			'view_item' => __( 'Druivenras bekijken', 'oft' ),
+			'edit_item' => __( 'Druivenras bewerken', 'oft' ),
+			'update_item' => __( 'Druivenras bijwerken', 'oft' ),
+			'search_items' => __( 'Druivenrassen doorzoeken', 'oft' ),
 		);
 
 		$args = array(
@@ -451,111 +451,172 @@
 	add_action( 'admin_footer', 'disable_custom_checkboxes' );
 
 	function disable_custom_checkboxes() {
-		$args = array(
-			'fields' => 'ids',
-			'hide_empty' => false,
-			// Enkel de hoofdtermen selecteren!
-			'parent' => 0,
-		);
+		global $pagenow, $post_type;
 
-		$args['taxonomy'] = 'product_cat';
-		$categories = get_terms($args);
+		if ( ( $pagenow === 'post.php' or $pagenow === 'post-new.php' ) and $post_type === 'product' ) {
+			$args = array(
+				'fields' => 'ids',
+				'hide_empty' => false,
+				// Enkel de hoofdtermen selecteren!
+				'parent' => 0,
+			);
 
-		$args['taxonomy'] = 'product_partner';
-		$continents = get_terms($args);
+			$args['taxonomy'] = 'product_cat';
+			$categories = get_terms($args);
 
-		$args['taxonomy'] = 'product_allergen';
-		$types = get_terms($args);
+			$args['taxonomy'] = 'product_partner';
+			$continents = get_terms($args);
 
-		$args['taxonomy'] = 'product_grape';
-		$grapes = get_terms($args);
-		?>
-		<script>
-			jQuery(document).ready( function() {
-				/* Disable nutteloze filter op producttype */
-				jQuery( '#dropdown_product_type' ).remove();
+			$args['taxonomy'] = 'product_allergen';
+			$types = get_terms($args);
 
-				/* Disable hoofdcategorieën */
-				<?php foreach ( $categories as $id ) : ?>
-					jQuery( '#in-product_cat-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
-				<?php endforeach; ?>
-				
-				/* Disable continenten */
-				<?php foreach ( $continents as $id ) : ?>
-					jQuery( '#in-product_partner-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
-				<?php endforeach; ?>
+			$args['taxonomy'] = 'product_grape';
+			$grapes = get_terms($args);
+			
+			?>
+			<script>
+				jQuery(document).ready( function() {
+					/* Disable en verberg checkboxes hoofdcategorieën */
+					<?php foreach ( $categories as $id ) : ?>
+						jQuery( '#in-product_cat-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
+					<?php endforeach; ?>
+					
+					/* Disable en verberg checkboxes continenten */
+					<?php foreach ( $continents as $id ) : ?>
+						jQuery( '#in-product_partner-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
+					<?php endforeach; ?>
 
-				/* Disable allergeenklasses */
-				<?php foreach ( $types as $id ) : ?>
-					jQuery( '#in-product_allergen-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
-					jQuery( '#taxonomy-product_allergen' ).find( 'input[type=checkbox]:checked' ).each( function() {
-						var checked_box = jQuery(this);
-						var label = checked_box.closest( 'label.selectit' ).text();
-						checked_box.closest( 'ul.children' ).closest( 'li' ).siblings().find( 'label.selectit' ).each( function() {
+					/* Disable en verberg checkboxes allergeenklasses */
+					<?php foreach ( $types as $id ) : ?>
+						jQuery( '#in-product_allergen-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
+						jQuery( '#product_allergen-all' ).find( 'input[type=checkbox]:checked' ).each( function() {
+							var checked_box = jQuery(this);
+							var label = checked_box.closest( 'label.selectit' ).text();
+							checked_box.closest( 'ul.children' ).closest( 'li' ).siblings().find( 'label.selectit' ).each( function() {
+								if ( jQuery(this).text() == label ) {
+									jQuery(this).find( 'input[type=checkbox]' ).prop( 'disabled', true );
+								}
+							});
+						});
+					<?php endforeach; ?>
+
+					/* Disable en verberg checkboxes rode en witte druiven */
+					<?php foreach ( $grapes as $id ) : ?>
+						jQuery( '#in-product_grape-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
+					<?php endforeach; ?>
+					
+					/* Disable bovenliggende landen/continenten van alle aangevinkte partners/landen */
+					jQuery( '#product_partner-all' ).find( 'input[type=checkbox]:checked' ).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'disabled', true );
+
+					/* Disable/enable het bovenliggende land bij aan/afvinken van een partner en reset de aanvinkstatus van de parent */
+					jQuery( '#product_partner-all' ).find( 'input[type=checkbox]' ).on( 'change', function() {
+						jQuery(this).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', jQuery(this).is(":checked") );
+					});
+
+					/* Disable/enable het overeenkomstige allergeen in contains/may-contain bij aan/afvinken van may-contain/contains */
+					jQuery( '#product_allergen-all' ).find( 'input[type=checkbox]' ).on( 'change', function() {
+						var changed_box = jQuery(this);
+						var label = changed_box.closest( 'label.selectit' ).text();
+						changed_box.closest( 'ul.children' ).closest( 'li' ).siblings().find( 'label.selectit' ).each( function() {
 							if ( jQuery(this).text() == label ) {
-								jQuery(this).find( 'input[type=checkbox]' ).prop( 'disabled', true );
+								jQuery(this).find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', changed_box.is(":checked") );
 							}
 						});
 					});
-				<?php endforeach; ?>
 
-				/* Disable rode en witte druiven */
-				<?php foreach ( $grapes as $id ) : ?>
-					jQuery( '#in-product_grape-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
-				<?php endforeach; ?>
-				
-				/* Disable bovenliggende landen/continenten van alle aangevinkte partners/landen */
-				jQuery( '#taxonomy-product_partner' ).find( 'input[type=checkbox]:checked' ).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'disabled', true );
+					/* Disable/enable het overeenkomstige allergeen in contains/may-contain bij aan/afvinken van may-contain/contains */
+					jQuery( '#product_cat-all' ).find( 'input[type=checkbox]' ).on( 'change', function() {
+						jQuery(this).closest( '#product_catchecklist' ).find( 'input[type=checkbox]' ).not(this).prop( 'checked', false );
+					});
 
-				/* Disable/enable het bovenliggende land bij aan/afvinken van een partner en rest de aanvinkstatus van de parent */
-				jQuery( '#taxonomy-product_partner' ).find( 'input[type=checkbox]' ).on( 'change', function() {
-					jQuery(this).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', jQuery(this).is(":checked") );
-				});
-
-				/* Disable/enable het overeenkomstige allergeen in contains/may-contain bij aan/afvinken van may-contain/contains */
-				jQuery( '#taxonomy-product_allergen' ).find( 'input[type=checkbox]' ).on( 'change', function() {
-					var changed_box = jQuery(this);
-					var label = changed_box.closest( 'label.selectit' ).text();
-					changed_box.closest( 'ul.children' ).closest( 'li' ).siblings().find( 'label.selectit' ).each( function() {
-						if ( jQuery(this).text() == label ) {
-							jQuery(this).find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', changed_box.is(":checked") );
+					/* Vereis dat er één productcategorie en minstens één partner/land aangevinkt is voor het opslaan */
+					jQuery( 'input[type=submit]#publish, input[type=submit]#save-post' ).click( function() {
+						var pass = true;
+						if ( jQuery( '#product_partner-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
+							pass = false;
+							alert('Je moet de herkomst nog aanvinken!');
 						}
+						if ( jQuery( '#product_cat-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
+							pass = false;
+							alert('Je moet de productcategorie nog aanvinken!');
+						}
+						/* Eventueel: check ook of het fairtradepercentageveld niet leeg gebleven is */
+						if ( jQuery( '#general_product_data' ).find( 'input#_fairtrade_share' ).val() == '' ) {
+							pass = false;
+							alert('Je moet het fairtradepercentage nog ingeven!');
+						}
+						return pass;
 					});
-				});
 
-				/* Eventueel: checken of de som van alle secondaries de primary niet overschrijdt! */
-				jQuery( '#quality_product_data' ).find( 'p.primary' ).change( function() {
-					var max = jQuery(this).children( 'input' ).first().val();
-					var sum = 0;
-					jQuery(this).siblings( 'p.secondary' ).each( function() {
-						sum += Number( jQuery(this).children( 'input' ).first().val() );
+					/* Eventueel: checken of de som van alle secondaries de primary niet overschrijdt! */
+					jQuery( '#quality_product_data' ).find( 'p.primary' ).change( function() {
+						var max = jQuery(this).children( 'input' ).first().val();
+						var sum = 0;
+						jQuery(this).siblings( 'p.secondary' ).each( function() {
+							sum += Number( jQuery(this).children( 'input' ).first().val() );
+						});
+						// alert(sum);
 					});
-					// alert(sum);
 				});
-			});
-		</script>
-		<?php
+			</script>
+			<?php
+			
+			$categories = isset( $_GET['post'] ) ? get_the_terms( $_GET['post'], 'product_cat' ) : false;
+			if ( is_array( $categories ) ) {
+				foreach ( $categories as $category ) {
+					while ( $category->parent !== 0 ) {
+						$parent = get_term( $category->parent, 'product_cat' );
+						$category = $parent;
+					}
+				}
+				if ( $parent->slug === 'wijn' ) {
+					
+					?>
+					<script>
+						jQuery(document).ready( function() {
+							/* Vereis dat minstens één druif, gerecht en smaak aangevinkt is voor het opslaan */
+							jQuery( 'input[type=submit]#publish, input[type=submit]#save-post' ).click( function() {
+								var pass = true;
+								if ( jQuery( '#product_grape-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
+									pass = false;
+									alert('Je moet de druivenrassen nog aanvinken!');
+								}
+								if ( jQuery( '#product_recipe-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
+									pass = false;
+									alert('Je moet de gerechten nog aanvinken!');
+								}
+								if ( jQuery( '#product_taste-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
+									pass = false;
+									alert('Je moet de smaken nog aanvinken!');
+								}
+								return pass;
+							});
+						});
+					</script>
+					<?php
+
+				}
+			}
+		}
 	}
 
 	// Toon metaboxes voor wijninfo enkel voor producten onder de hoofdcategorie 'Wijn'
 	add_action( 'admin_init', 'hide_wine_taxonomies' );
 
 	function hide_wine_taxonomies() {
-		global $pagenow, $post_type;
+		global $pagenow;
 		$remove = true;
-		if ( ( $pagenow === 'edit.php' or 'post-new.php' ) and $post_type === 'product' ) {
-			if ( isset($_GET['action']) and $_GET['action'] === 'edit' ) {
-				$categories = isset( $_GET['post'] ) ? get_the_terms( $_GET['post'], 'product_cat' ) : false;
-				if ( is_array( $categories ) ) {
-					foreach ( $categories as $category ) {
-						while ( $category->parent !== 0 ) {
-							$parent = get_term( $category->parent, 'product_cat' );
-							$category = $parent;
-						}
+		if ( ( $pagenow === 'post.php' or $pagenow === 'post-new.php' ) and ( isset($_GET['post']) and get_post_type($_GET['post']) === 'product' ) ) {
+			$categories =  get_the_terms( $_GET['post'], 'product_cat' );
+			if ( is_array( $categories ) ) {
+				foreach ( $categories as $category ) {
+					while ( $category->parent !== 0 ) {
+						$parent = get_term( $category->parent, 'product_cat' );
+						$category = $parent;
 					}
-					if ( $parent->slug !== 'wijn' ) {
-						$remove = false;
-					}
+				}
+				if ( $parent->slug === 'wijn' ) {
+					$remove = false;
 				}
 			}
 		}
@@ -794,12 +855,16 @@
 						'g' => __( 'gram (vast product)', 'oft-admin' ),
 						'cl' => __( 'centiliter (vloeibaar product)', 'oft-admin' ),
 					),
+					'custom_attributes' => array(
+						// Readonly werkt niet op een select en disabled verdwijdert de waarde, dus ongemoeid laten!
+						// 'disabled' => true,
+					),
 				)
 			);
 
-			if ( ! post_language_equals_site_language() ) {
-				$number_args['custom_attributes']['readonly'] = true;
-			}
+			// if ( ! post_language_equals_site_language() ) {
+			// 	$number_args['custom_attributes']['readonly'] = true;
+			// }
 
 			// Toon het veld voor de netto-inhoud pas na het instellen van de eenheid!
 			if ( ! empty( $product->get_meta('_net_unit') ) ) {
@@ -814,9 +879,10 @@
 					'label' => sprintf( __( 'Netto-inhoud (%s)', 'oft-admin' ), $unit ),
 					'type' => 'number',
 					'custom_attributes' => array(
-						'step'	=> '1',
-						'min'	=> '1',
-						'max'	=> '10000',
+						'step' => '1',
+						'min' => '1',
+						'max' => '10000',
+						'readonly' => true,
 					),
 				)
 			);
@@ -826,11 +892,20 @@
 					'id' => '_fairtrade_share',
 					'label' => __( 'Aandeel fairtrade (%)', 'oft-admin' ),
 					'type' => 'number',
+					'wrapper_class' => 'important-for-catman',
 					'custom_attributes' => array(
 						'step'	=> '1',
 						'min'	=> '25',
 						'max'	=> '100',
 					),
+				)
+			);
+
+			woocommerce_wp_textarea_input(
+				array( 
+					'id' => '_ingredients',
+					'label' => __( 'Ingrediëntenlijst', 'oft-admin' ),
+					'wrapper_class' => 'important-for-catman',
 				)
 			);
 
@@ -879,25 +954,27 @@
 			'type' => 'number',
 			'wrapper_class' => 'wide',
 			'custom_attributes' => array(
-				'step'	=> '1',
-				'min'	=> '1000000000000',
-				'max'	=> '99999999999999',
+				'step' => '1',
+				'min' => '1000000000000',
+				'max' => '99999999999999',
+				'readonly' => true,
 			),
 		);
 
 		$number_args = array( 
 			'type' => 'number',
 			'custom_attributes' => array(
-				'step'	=> '1',
-				'min'	=> '1',
-				'max'	=> '1000',
+				'step' => '1',
+				'min' => '1',
+				'max' => '1000',
+				'readonly' => true,
 			),
 		);
 
-		if ( ! post_language_equals_site_language() ) {
-			$barcode_args['custom_attributes']['readonly'] = true;
-			$number_args['custom_attributes']['readonly'] = true;
-		}
+		// if ( ! post_language_equals_site_language() ) {
+		// 	$barcode_args['custom_attributes']['readonly'] = true;
+		// 	$number_args['custom_attributes']['readonly'] = true;
+		// }
 
 		$cu_ean = array(
 			'id' => '_cu_ean',
@@ -983,6 +1060,8 @@
 
 	function add_oft_quality_fields() {
 		global $post;
+
+		$suffix = ' &nbsp; <small><u>'.mb_strtoupper( __( 'per 100 gram', 'oft-admin' ) ).'</u></small>';
 		
 		$one_decimal_args = array( 
 			'data_type' => 'decimal',
@@ -1008,7 +1087,7 @@
 
 		$fat = array(
 			'id' => '_fat',
-			'label' => __( 'Vetten (g)', 'oft-admin' ),
+			'label' => __( 'Vetten (g)', 'oft-admin' ).$suffix,
 		);
 		
 		$fasat = array(
@@ -1035,7 +1114,7 @@
 
 		$choavl = array(
 			'id' => '_choavl',
-			'label' => __( 'Koolhydraten (g)', 'oft-admin' ),
+			'label' => __( 'Koolhydraten (g)', 'oft-admin' ).$suffix,
 		);
 
 		$sugar = array(
@@ -1062,12 +1141,12 @@
 		
 		$fibtg = array(
 			'id' => '_fibtg',
-			'label' => __( 'Vezels (g)', 'oft-admin' ),
+			'label' => __( 'Vezels (g)', 'oft-admin' ).$suffix,
 		);
 
 		$pro = array(
 			'id' => '_pro',
-			'label' => __( 'Eiwitten (g)', 'oft-admin' ),
+			'label' => __( 'Eiwitten (g)', 'oft-admin' ).$suffix,
 		);
 
 		echo '<div id="quality_product_data" class="panel woocommerce_options_panel">';
@@ -1075,7 +1154,7 @@
 				woocommerce_wp_text_input(
 					array( 
 						'id' => '_energy',
-						'label' => __( 'Energie (kJ)', 'oft-admin' ),
+						'label' => __( 'Energie (kJ)', 'oft-admin' ).$suffix,
 						'type' => 'number',
 						'custom_attributes' => array(
 							'step'	=> 'any',
@@ -1106,7 +1185,7 @@
 				woocommerce_wp_text_input(
 					array( 
 						'id' => '_salteq',
-						'label' => __( 'Zout (g)', 'oft-admin' ),
+						'label' => __( 'Zout (g)', 'oft-admin' ).$suffix,
 						'data_type' => 'decimal',
 						'type' => 'number',
 						'custom_attributes' => array(
@@ -1129,6 +1208,7 @@
 			'_net_unit',
 			'_net_content',
 			'_fairtrade_share',
+			'_ingredients',
 			'_shopplus_sku',
 			'_shelf_life',
 			'_intrastat',
@@ -1416,18 +1496,22 @@
 		$sku = $product->get_sku();
 
 		if ( $partners = get_partner_terms_by_product($product) ) {
-			$origin_text = 'Herkomst: '.strip_tags( implode( ', ', $partners ) ).'.';
+			$origin_text = 'Herkomst: '.strip_tags( implode( ', ', $partners ) );
 		} else {
 			// Val terug op de landeninfo ENKEL NODIG VOOR EXTERNE PRODUCTEN, PER DEFINITIE GEEN FICHE NODIG
 			$countries = get_country_terms_by_product($product);
-			$origin_text = 'Herkomst: '.implode( ', ', $countries ).'.';
+			$origin_text = 'Herkomst: '.implode( ', ', $countries );
 		}
 
+		// ALGEMENE GET_INGREDIENTS FUNCTIE MAKEN?
 		// Druiven kunnen door de meta_boxlogica enkel op wijn ingesteld worden, dus geen nood om de categorie te checken
+		$ingredients_text = '<p style="font-size: 11pt;">';
 		if ( $grapes = get_grape_terms_by_product($product) ) {
-			$ingredients_text = 'Samenstelling: '.implode( ', ', $grapes );
+			$ingredients_text .= 'Samenstelling: '.implode( ', ', $grapes ).'</p>';
 		} elseif ( ! empty( $product->get_attribute('ingredienten') ) ) {
-			$ingredients_text = '<p style="font-size: 11pt;">Ingrediënten: '.$product->get_attribute('ingredienten').'.</p>';
+			$ingredients_text .= 'Ingrediënten: '.$product->get_attribute('ingredienten').'</p>';
+		} elseif ( ! empty( $product->get_meta('_ingredients') ) ) {
+			$ingredients_text .= 'Ingrediënten: '.$product->get_meta('_ingredients').'</p>';
 		} else {
 			$ingredients_text = '';
 		}
@@ -1579,16 +1663,14 @@
 	add_action( 'admin_notices', 'oxfam_admin_notices' );
 
 	function oxfam_admin_notices() {
-		global $pagenow, $post_type;
+		global $pagenow;
 		$screen = get_current_screen();
 		// var_dump($screen);
 
 		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
-			if ( $pagenow === 'edit.php' and $post_type === 'product' and current_user_can( 'edit_products' ) ) {
-				echo '<div class="notice notice-warning">';
-					echo '<p>Hou er rekening mee dat alle volumes in g / cl ingegeven worden, zonder eenheid!</p>';
-				echo '</div>';
-			}
+			echo '<div class="notice notice-warning">';
+				echo '<p>Welkom in het walhalla van de productdata!</p>';
+			echo '</div>';
 		}
 	}
 
@@ -1606,8 +1688,7 @@
 		if ( $post_language['language_code'] === $default_language ) {
 			return true;
 		} else {
-			// ALTIJD TRUE RETOURNEREN IN AFWACHTING ACTIVATIE WPML
-			return true;
+			return false;
 		}	
 	}
 
@@ -2198,6 +2279,7 @@
 			'_net_content',
 			'_unit_price',
 			'_fairtrade_share',
+			'_ingredients',
 			'_shopplus_sku',
 			'_shelf_life',
 			'_intrastat',
