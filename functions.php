@@ -1396,32 +1396,33 @@
 		}
 
 		if ( file_exists( WP_CONTENT_DIR.'/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ) ) {
-			echo '<a href="'.content_url( '/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ).'" target="_blank"><p>'.__( 'Download productfiche', 'oft' ).'</p></a>';
+			echo '<a href="'.content_url( '/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ).'" target="_blank"><p>'.__( 'Download de productfiche', 'oft' ).'</p></a>';
 		}
 
-		$yes = array( 'Ja', 'Yes', 'Oui' );
-		// SLUGS VAN ATTRIBUTEN WORDEN NIET VERTAALD, ENKEL DE TERMEN
-		// TAGS ZIJN A.H.W. TERMEN VAN EEN WELBEPAALD ATTRIBUUT EN WORDEN DUS OOK VERTAALD
-		if ( in_array( $product->get_attribute('bio'), $yes ) ) {
-			echo "<img class='icon-organic'>";
-		}
-
-		$icons = array();
-		foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
-			$icons[] = $term->slug;
-		}
-		if ( in_array( 'veganistisch', $icons ) ) {
-			echo "<div class='icon-vegan'></div>";
-		}
-		if ( in_array( 'glutenvrij', $icons ) ) {
-			echo "<div class='icon-gluten-free'></div>";
-		}
-		if ( in_array( 'zonder-toegevoegde-suikers', $icons ) ) {
-			echo "<div class='icon-no-added-sugars'></div>";
-		}
-		if ( in_array( 'lactosevrij', $icons ) ) {
-			echo "<div class='icon-lactose-free'></div>";
-		}
+		echo '<p class="oft-icons">';
+			$yes = array( 'Ja', 'Yes', 'Oui' );
+			// SLUGS VAN ATTRIBUTEN WORDEN NIET VERTAALD, ENKEL DE TERMEN
+			// TAGS ZIJN A.H.W. TERMEN VAN EEN WELBEPAALD ATTRIBUUT EN WORDEN DUS OOK VERTAALD
+			if ( in_array( $product->get_attribute('bio'), $yes ) ) {
+				echo "<div class='icon-organic'></div>";
+			}
+			$icons = array();
+			foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
+				$icons[] = $term->slug;
+			}
+			if ( in_array( 'veganistisch', $icons ) ) {
+				echo "<div class='icon-vegan'></div>";
+			}
+			if ( in_array( 'glutenvrij', $icons ) ) {
+				echo "<div class='icon-gluten-free'></div>";
+			}
+			if ( in_array( 'zonder-toegevoegde-suikers', $icons ) ) {
+				echo "<div class='icon-no-added-sugars'></div>";
+			}
+			if ( in_array( 'lactosevrij', $icons ) ) {
+				echo "<div class='icon-lactose-free'></div>";
+			}
+		echo '</p>';
 	}
 
 	// add_action( 'woocommerce_single_product_summary', 'show_hipster_icons', 80 );
@@ -1436,11 +1437,6 @@
 		}
 		if ( in_array( intval( apply_filters( 'wpml_object_id', get_term_by( 'slug', 'gluten-free', 'product_tag' )->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
 			echo "<img class='gluten-free'>";
-		}
-
-		$yes = array( 'nl' => 'Ja', 'en' => 'Yes', 'fr' => 'Oui' );
-		if ( $product->get_attribute('biocertificatie') === $yes[$sitepress->get_current_language()] ) {
-			echo "<img class='organic'>";
 		}
 	}
 
