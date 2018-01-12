@@ -928,6 +928,7 @@
 				array( 
 					'id' => '_promo_text',
 					'label' => __( 'Actuele promotekst', 'oft-admin' ),
+					'desc_tip' => true,
 					'description' => __( 'Dit tekstje dient enkel om te tonen aan particulieren in de wijnkiezer en de webshops. Te combineren met de actieprijs en -periode hierboven.', 'oft-admin' ),
 				)
 			);
@@ -1421,6 +1422,9 @@
 			}
 			if ( in_array( 'lactosevrij', $icons ) ) {
 				echo "<div class='icon-lactose-free'></div>";
+			}
+			if ( in_array( 'eerlijke-verhandelde-palmolie', $icons ) ) {
+				echo "<div class='icon-fairly-traded-palm-oil'></div>";
 			}
 		echo '</p>';
 	}

@@ -96,8 +96,8 @@ span.oft-copyright {
 
 .product .summary {
 	.product_title {
-		display: inline-block;
-		margin-right: 1em;
+		display: inline;
+		margin-right: 2em;
 	}
 
 	.price {
@@ -112,6 +112,7 @@ span.oft-country {
 @mixin icon() {
 	color: transparent;
 	margin-right: 1em;
+	display: inline-block;
 	padding: 0;
 	z-index: 50;
 	width: 75px;
