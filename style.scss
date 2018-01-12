@@ -98,9 +98,10 @@ span.oft-copyright {
 
 	.woocommerce-product-gallery.images {
 		width: 30%;
+		min-width: 400px;
 	}
 
-	.entry-summary {
+	.summary.entry-summary {
 		width: 65%;
 
 		.product_title {
@@ -150,8 +151,8 @@ span.oft-copyright {
 
 @mixin icon() {
 	color: transparent;
-	margin-right: 0.5em;
 	display: inline-block;
+	margin: 0;
 	padding: 0;
 	z-index: 50;
 	width: 75px;

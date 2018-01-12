@@ -1414,7 +1414,7 @@
 			echo '<a href="'.content_url( '/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ).'" target="_blank"><p class="oft-product-sheet">'.__( 'Download de productfiche', 'oft' ).'</p></a>';
 		}
 
-		echo '<p class="oft-icons">';
+		echo '<div class="oft-icons">';
 			$yes = array( 'Ja', 'Yes', 'Oui' );
 			// SLUGS VAN ATTRIBUTEN WORDEN NIET VERTAALD, ENKEL DE TERMEN
 			// TAGS ZIJN A.H.W. TERMEN VAN EEN WELBEPAALD ATTRIBUUT EN WORDEN DUS OOK VERTAALD
@@ -1440,7 +1440,7 @@
 			if ( in_array( 'eerlijke-verhandelde-palmolie', $icons ) ) {
 				echo "<div class='icon-fairly-traded-palm-oil'></div>";
 			}
-		echo '</p>';
+		echo '</div>';
 	}
 
 	// add_action( 'woocommerce_single_product_summary', 'show_hipster_icons', 80 );
