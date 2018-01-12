@@ -94,45 +94,63 @@ span.oft-copyright {
 	border-width: 0px !important;
 }
 
-.woocommerce.single-product .entry-summary {
-	.product_title {
-		display: inline;
-		margin-right: 1em;
+.woocommerce.single-product {
+
+	.woocommerce-product-gallery.images {
+		width: 30%;
 	}
 
-	.price {
-		display: inline;
-	}
+	.entry-summary {
+		width: 65%;
 
-	.woocommerce-product-details__short-description {
-		font-size: 125%;
-		margin-top: 1em;
-	}
+		.product_title {
+			display: inline;
+			margin-right: 1em;
+		}
 
-	.oft-partners-th {
-		display: inline-block;
-		width: 25%;
-		min-width: 100px;
-	}
+		.price {
+			display: inline;
+		}
 
-	.oft-partners-td {
-		display: inline-block;
-		width: 75%;
-	}
+		.woocommerce-product-details__short-description {
+			font-size: 125%;
+			margin-top: 1em 0;
+		}
 
-	.oft-country {
-		font-size: 80%;
-	}
+		.oft-partner-quote {
+			font-style: italic;
+		}
 
-	.oft-product-sheet {
-		margin: 0 1em;
+		.oft-partner-link {
+
+		}
+
+		.oft-partners-th {
+			display: inline-block;
+			width: 25%;
+			min-width: 100px;
+			vertical-align: top;
+		}
+
+		.oft-partners-td {
+			display: inline-block;
+			width: 75%;
+		}
+
+		.oft-country {
+			font-size: 80%;
+		}
+
+		.oft-product-sheet {
+			margin: 1em 0;
+		}
 	}
 }
 
 
 @mixin icon() {
 	color: transparent;
-	margin-right: 1em;
+	margin-right: 0.5em;
 	display: inline-block;
 	padding: 0;
 	z-index: 50;

@@ -1387,17 +1387,27 @@
 		
 		$partners = get_partner_terms_by_product($product);
 		if ( $partners ) {
+			
 			$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
 			$quoted_term_meta = get_term_meta( $quoted_term->term_id );
-			if ( strlen($quoted_term->description) > 10 and intval($quoted_term_meta->partner_image_id) > 0 ) {
+			while( strlen($quoted_term->description) < 20 and intval($quoted_term_meta->partner_image_id) < 1 ) {
+				$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
+				$quoted_term_meta = get_term_meta( $quoted_term->term_id );
+			}
+
+			if ( strlen($quoted_term->description) >= 20 and intval($quoted_term_meta->partner_image_id) >= 1 ) {
 				echo wp_get_attachment_image( $quoted_term_meta->partner_image_id, 'thumbnail', false );
-				echo '<blockquote style="font-style: italic;">"'.$quoted_term->description.'"</blockquote>';
+				echo '<blockquote class="oft-partner-quote">"'.$quoted_term->description.'"</blockquote>';
 			}
 			if ( intval($quoted_term_meta->partner_node) > 0 ) {
-				echo '<a href="https://www.oxfamwereldwinkels.be/node/'.$quoted_term_meta->partner_node.'" target="_blank"><p style="text-align: right;">Link naar '.$quoted_term->name.'</p></a>';
+				echo '<a href="https://www.oxfamwereldwinkels.be/node/'.$quoted_term_meta->partner_node.'" target="_blank"><p class="oft-partner-link">Link naar '.$quoted_term->name.'</p></a>';
 			}
-			echo '<div class="oft-partners-th">'._n( 'Partner:', 'Partners:', count($partners), 'oft' ).'</div>';
-			echo '<div class="oft-partners-td">'.str_replace( ')', ')</span>', str_replace( '(', '<span class="oft-country">(', implode( ', ', $partners ) ) ).'<p></div>';
+			
+			echo '<div class="oft-partners">';
+				echo '<div class="oft-partners-th">'._n( 'Partner:', 'Partners:', count($partners), 'oft' ).'</div>';
+				echo '<div class="oft-partners-td">'.str_replace( ')', ')</span>', str_replace( '(', '<span class="oft-country">(', implode( ', ', $partners ) ) ).'</div>';
+			echo '</div>';
+
 		}
 
 		if ( file_exists( WP_CONTENT_DIR.'/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ) ) {
