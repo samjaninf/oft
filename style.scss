@@ -97,12 +97,13 @@ span.oft-copyright {
 .woocommerce.single-product {
 
 	.woocommerce-product-gallery.images {
-		width: 30%;
+		width: 33%;
 		min-width: 400px;
 	}
 
 	.summary.entry-summary {
-		width: 65%;
+		max-width: 66%;
+		margin-left: 2em;
 
 		.product_title {
 			display: inline;
@@ -114,8 +115,8 @@ span.oft-copyright {
 		}
 
 		.woocommerce-product-details__short-description {
-			font-size: 125%;
-			margin-top: 1em 0;
+			font-size: 135%;
+			margin: 1em 0;
 		}
 
 		.oft-partner-quote {
@@ -144,6 +145,11 @@ span.oft-copyright {
 
 		.oft-product-sheet {
 			margin: 1em 0;
+		}
+
+		.oft-icons {
+			position: relative;
+			left: -10px;
 		}
 	}
 }
