@@ -1381,34 +1381,6 @@
 	function show_additional_information() {
 		global $product, $sitepress;
 		
-		$yes = array( 'Ja', 'Yes', 'Oui' );
-		// SLUGS VAN ATTRIBUTEN WORDEN NIET VERTAALD, ENKEL DE TERMEN
-		// TAGS ZIJN A.H.W. TERMEN VAN EEN WELBEPAALD ATTRIBUUT EN WORDEN DUS OOK VERTAALD
-		if ( in_array( $product->get_attribute('bio'), $yes ) ) {
-			echo "<img class='icon-organic'>";
-		}
-
-		$icons = array();
-		foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
-			$icons[] = $term->slug;
-		}
-		if ( in_array( 'veganistisch', $icons ) ) {
-			echo "<img class='icon-vegan'>";
-		}
-		if ( in_array( 'glutenvrij', $icons ) ) {
-			echo "<img class='icon-gluten-free'>";
-		}
-		if ( in_array( 'zonder-toegevoegde-suikers', $icons ) ) {
-			echo "<img class='icon-no-added-sugars'>";
-		}
-		if ( in_array( 'lactosevrij', $icons ) ) {
-			echo "<img class='icon-lactose-free'>";
-		}
-
-		if ( file_exists( WP_CONTENT_DIR.'/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ) ) {
-			echo '<a href="'.content_url( '/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ).'" target="_blank"><p>'.__( 'Download productfiche', 'oft' ).'</p></a>';
-		}
-
 		$partners = get_partner_terms_by_product($product);
 		if ( $partners ) {
 			$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
@@ -1422,9 +1394,37 @@
 			}
 			echo '<p>'.sprintf( _n( 'Partner: %s', 'Partners: %s', count($partners), 'oft' ),  str_replace( ')', ')</span>', str_replace( '(', '<span class="oft-country">(', implode( ', ', $partners ) ) ) ).'<p>';
 		}
+
+		if ( file_exists( WP_CONTENT_DIR.'/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ) ) {
+			echo '<a href="'.content_url( '/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ).'" target="_blank"><p>'.__( 'Download productfiche', 'oft' ).'</p></a>';
+		}
+
+		$yes = array( 'Ja', 'Yes', 'Oui' );
+		// SLUGS VAN ATTRIBUTEN WORDEN NIET VERTAALD, ENKEL DE TERMEN
+		// TAGS ZIJN A.H.W. TERMEN VAN EEN WELBEPAALD ATTRIBUUT EN WORDEN DUS OOK VERTAALD
+		if ( in_array( $product->get_attribute('bio'), $yes ) ) {
+			echo "<img class='icon-organic'>";
+		}
+
+		$icons = array();
+		foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
+			$icons[] = $term->slug;
+		}
+		if ( in_array( 'veganistisch', $icons ) ) {
+			echo "<span class='icon-vegan'></span>";
+		}
+		if ( in_array( 'glutenvrij', $icons ) ) {
+			echo "<span class='icon-gluten-free'></span>";
+		}
+		if ( in_array( 'zonder-toegevoegde-suikers', $icons ) ) {
+			echo "<span class='icon-no-added-sugars'></span>";
+		}
+		if ( in_array( 'lactosevrij', $icons ) ) {
+			echo "<span class='icon-lactose-free'></span>";
+		}
 	}
 
-	add_action( 'woocommerce_single_product_summary', 'show_hipster_icons', 80 );
+	// add_action( 'woocommerce_single_product_summary', 'show_hipster_icons', 80 );
 	
 	function show_hipster_icons() {
 		global $product, $sitepress;
@@ -1437,7 +1437,7 @@
 		if ( in_array( intval( apply_filters( 'wpml_object_id', get_term_by( 'slug', 'gluten-free', 'product_tag' )->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
 			echo "<img class='gluten-free'>";
 		}
-		var_dump_pre( $product->get_attribute('biocertificatie') );
+
 		$yes = array( 'nl' => 'Ja', 'en' => 'Yes', 'fr' => 'Oui' );
 		if ( $product->get_attribute('biocertificatie') === $yes[$sitepress->get_current_language()] ) {
 			echo "<img class='organic'>";
@@ -1448,11 +1448,11 @@
 	add_filter( 'loop_shop_per_page', create_function( '$cols', 'return 30;' ), 20 );
 
 	// Aantal gerelateerde producten wijzigen
-	// add_filter( 'woocommerce_output_related_products_args', 'alter_related_products_args', 20 );
+	add_filter( 'woocommerce_output_related_products_args', 'alter_related_products_args', 20 );
 
 	function alter_related_products_args( $args ) {
-		$args['posts_per_page'] = 3;
-		$args['columns'] = 3;
+		$args['posts_per_page'] = 4;
+		$args['columns'] = 4;
 		return $args;
 	}
 
