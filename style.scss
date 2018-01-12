@@ -94,20 +94,38 @@ span.oft-copyright {
 	border-width: 0px !important;
 }
 
-.product .summary {
+.woocommerce.single-product .entry-summary {
 	.product_title {
 		display: inline;
-		margin-right: 2em;
+		margin-right: 1em;
 	}
 
 	.price {
 		display: inline;
 	}
+
+	.woocommerce-product-details__short-description {
+		font-size: 150%;
+		margin-top: 2em;
+	}
+
+	.oft-partners-th {
+		display: inline-block;
+	}
+
+	.oft-partners-td {
+		display: inline-block;
+	}
+
+	.oft-country {
+		font-size: 80%;
+	}
+
+	.oft-product-sheet {
+		font-size: 80%;
+	}
 }
 
-span.oft-country {
-	font-size: 80%;
-}
 
 @mixin icon() {
 	color: transparent;

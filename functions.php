@@ -1393,11 +1393,12 @@
 			if ( intval($quoted_term_meta->partner_node) > 0 ) {
 				echo '<a href="https://www.oxfamwereldwinkels.be/node/'.$quoted_term_meta->partner_node.'" target="_blank"><p style="text-align: right;">Link naar '.$quoted_term->name.'</p></a>';
 			}
-			echo '<p>'.sprintf( _n( 'Partner: %s', 'Partners: %s', count($partners), 'oft' ),  str_replace( ')', ')</span>', str_replace( '(', '<span class="oft-country">(', implode( ', ', $partners ) ) ) ).'<p>';
+			echo '<div class="oft-partners-th">'._n( 'Partner:', 'Partners:', count($partners), 'oft' ).'</div>';
+			echo '<div class="oft-partners-td">'.str_replace( ')', ')</span>', str_replace( '(', '<span class="oft-country">(', implode( ', ', $partners ) ) ).'<p>';
 		}
 
 		if ( file_exists( WP_CONTENT_DIR.'/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ) ) {
-			echo '<a href="'.content_url( '/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ).'" target="_blank"><p>'.__( 'Download de productfiche', 'oft' ).'</p></a>';
+			echo '<a href="'.content_url( '/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ).'" target="_blank"><p class="oft-product-sheet">'.__( 'Download de productfiche', 'oft' ).'</p></a>';
 		}
 
 		echo '<p class="oft-icons">';
