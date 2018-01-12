@@ -11,7 +11,9 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme', 999 );
 
 	function load_child_theme() {
-		// BOOTSTRAP EN CHILD THEME REEDS INGELADEN DOOR ALONE
+		// Zorgt ervoor dat de stylesheet van het child theme ZEKER NA alone.css ingeladen wordt
+		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.1.1' );
+		// BOOTSTRAP REEDS INGELADEN DOOR ALONE
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
 	}

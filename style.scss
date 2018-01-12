@@ -5,7 +5,7 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.1.0
+	Version:		1.1.1
 	Text Domain:	oft
 */
 
@@ -105,16 +105,19 @@ span.oft-copyright {
 	}
 
 	.woocommerce-product-details__short-description {
-		font-size: 150%;
-		margin-top: 2em;
+		font-size: 125%;
+		margin-top: 1em;
 	}
 
 	.oft-partners-th {
 		display: inline-block;
+		width: 25%;
+		min-width: 100px;
 	}
 
 	.oft-partners-td {
 		display: inline-block;
+		width: 75%;
 	}
 
 	.oft-country {
@@ -122,7 +125,7 @@ span.oft-copyright {
 	}
 
 	.oft-product-sheet {
-		font-size: 80%;
+		margin: 0 1em;
 	}
 }
 
