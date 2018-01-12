@@ -9,7 +9,7 @@
 	Text Domain:	oft
 */
 
-$red: #eb476f;
+$red: #000;
 $yellow: #ffcd66;
 $green: #06d29c;
 $blue: #06d29c;
@@ -18,8 +18,8 @@ $oxfam-green: #61a534;
 
 $black-title: #1a1a1a;
 $grey-text: #4d4d4d;
-$link-text: #000000;
-$link-text-bis: #0085ea;
+$link-black: #000000;
+$link-blue: #0085ea;
 
 $see-through-green: rgba(97, 165, 52, 0.9);
 $see-through-orange: rgba(255, 165, 0, 0.9);
@@ -30,15 +30,68 @@ $see-through-red: rgba(250, 22, 50, 0.9);
 /*  GENERAL  */
 /*************/
 
-@font-face {
-	font-family: Oxfam;
-	src: url('assets/oxfam.ttf');
-}
-
-@import url('https://fonts.googleapis.com/css?family=Rubik');
-
 h1, h2, h3, h4, h5, h6 {
 	font-family: Rubik !important;
+	font-weight: lighter;
+	letter-spacing: 1px !important;
+	color: $black-title !important;
+}
+
+body {
+	font-family: Rubik !important;
+	font-weight: lighter;
+	letter-spacing: 1px !important;
+	color: $grey-text !important;
+}
+
+.widget .widget-title span::after {
+	display: none;
+}
+
+a:hover,
+h2.woocommerce-loop-product__title:hover {
+	text-decoration: underline !important;
+	-webkit-text-underline-position: under !important;
+}
+
+.oft-grid-post-date-tags {
+	font-size: 80%;
+}
+
+
+/************/
+/*  FOOTER  */
+/************/
+
+span.oft-copyright {
+	font-size: 90%;
+	color: lightgrey;
+}
+
+
+/************/
+/*  HEADER  */
+/************/
+
+#menu-oxfam .menu-item-has-children span:after {
+	display: none;
+}
+
+h4.featured-box-title {
+	color: white !important;
+}
+
+
+/**************/
+/*  PRODUCTS  */
+/**************/
+
+.woocommerce .products .product-item .wp-post-image img {
+	border-width: 0px !important;
+}
+
+span.oft-country {
+	font-size: 80%;
 }
 
 
@@ -69,16 +122,8 @@ h1, h2, h3, h4, h5, h6 {
 /*  CUSTOMIZER  */
 /****************/
 
-h4.featured-box-title {
-	letter-spacing: 1px !important;
-}
-
 #nav_menu-4 {
 	display: inline-block !important;
-}
-
-span.oft-country {
-	font-size: 80%;
 }
 
 #icl_lang_sel_widget-2 {

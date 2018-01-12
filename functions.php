@@ -7,13 +7,59 @@
 	
 	if ( ! defined('ABSPATH') ) exit;
 
+	add_filter( 'excerpt_more', 'wpdocs_excerpt_more', 100 );
+	function wpdocs_excerpt_more( $more ) {
+		return ' ...';
+	}
+
+	// Werkt per woord!
+	add_filter( 'excerpt_length', 'wpdocs_custom_excerpt_length', 1000 );
+	function wpdocs_custom_excerpt_length( $length ) {
+		return 25;
+	}
+
+	// Definieer extra element met post data voor grids
+	add_filter( 'vc_grid_item_shortcodes', 'add_grid_shortcodes_to_wpbakery' );
+	function add_grid_shortcodes_to_wpbakery( $shortcodes ) {
+		$shortcodes['list_post_date_tags'] = array(
+			'name' => 'Post Tags',
+			'base' => 'list_post_date_tags',
+			'category' => 'Post',
+			'description' => __( 'Toon de datum en eventuele tags van de post.', 'oft-admin' ),
+			'post_type' => Vc_Grid_Item_Editor::postType(),
+			'params' => array(
+				array(
+					'type' => 'textfield',
+					'heading' => __( 'Extra class name', 'js_composer' ),
+					'param_name' => 'el_class',
+					'description' => __( 'Style particular content element differently - add a class name and refer to it in custom CSS.', 'js_composer' )
+				),
+			),
+		);
+		return $shortcodes;
+	}
+
+	// Haal extra data op die hier beschikbaar is op basis van global $post!
+	add_filter( 'vc_gitem_template_attribute_post_date_tags', 'vc_gitem_template_attribute_post_date_tags', 10, 2 );
+	function vc_gitem_template_attribute_post_date_tags( $value, $data ) {
+		extract( array_merge( array(
+			'post' => null,
+			'data' => '',
+		), $data ) );
+		return __( 'Datum: ', 'oft' ).get_the_date( 'd/m/Y' ).'<br>'.get_the_tag_list( __( 'Tags: ', 'oft' ), ', ', '' );
+	}
+
+	// Output
+	add_shortcode( 'list_post_date_tags', 'vc_list_post_date_tags' );
+	function vc_list_post_date_tags() {
+		return '<p class="oft-grid-post-date-tags">{{ post_data:post_date_tags }}</p>';
+	}
+
 	// Laad het child theme na het hoofdthema
 	add_action( 'wp_enqueue_scripts', 'load_child_theme', 999 );
 
 	function load_child_theme() {
-		// Zorgt ervoor dat de stylesheet van het child theme zeker na alone.css ingeladen wordt
-		// wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.0.0' );
-		// BOOTSTRAP REEDS INGELADEN DOOR ALONE
+		// BOOTSTRAP EN CHILD THEME REEDS INGELADEN DOOR ALONE
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
 	}
