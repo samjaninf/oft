@@ -7,54 +7,6 @@
 	
 	if ( ! defined('ABSPATH') ) exit;
 
-	add_filter( 'excerpt_more', 'wpdocs_excerpt_more', 100 );
-	function wpdocs_excerpt_more( $more ) {
-		return ' ...';
-	}
-
-	// Werkt per woord!
-	add_filter( 'excerpt_length', 'wpdocs_custom_excerpt_length', 1000 );
-	function wpdocs_custom_excerpt_length( $length ) {
-		return 25;
-	}
-
-	// Definieer extra element met post data voor grids
-	add_filter( 'vc_grid_item_shortcodes', 'add_grid_shortcodes_to_wpbakery' );
-	function add_grid_shortcodes_to_wpbakery( $shortcodes ) {
-		$shortcodes['list_post_date_tags'] = array(
-			'name' => 'Post Tags',
-			'base' => 'list_post_date_tags',
-			'category' => 'Post',
-			'description' => __( 'Toon de datum en eventuele tags van de post.', 'oft-admin' ),
-			'post_type' => Vc_Grid_Item_Editor::postType(),
-			'params' => array(
-				array(
-					'type' => 'textfield',
-					'heading' => __( 'Extra class name', 'js_composer' ),
-					'param_name' => 'el_class',
-					'description' => __( 'Style particular content element differently - add a class name and refer to it in custom CSS.', 'js_composer' )
-				),
-			),
-		);
-		return $shortcodes;
-	}
-
-	// Haal extra data op die hier beschikbaar is op basis van global $post!
-	add_filter( 'vc_gitem_template_attribute_post_date_tags', 'vc_gitem_template_attribute_post_date_tags', 10, 2 );
-	function vc_gitem_template_attribute_post_date_tags( $value, $data ) {
-		extract( array_merge( array(
-			'post' => null,
-			'data' => '',
-		), $data ) );
-		return __( 'Datum: ', 'oft' ).get_the_date( 'd/m/Y' ).'<br>'.get_the_tag_list( __( 'Tags: ', 'oft' ), ', ', '' );
-	}
-
-	// Output
-	add_shortcode( 'list_post_date_tags', 'vc_list_post_date_tags' );
-	function vc_list_post_date_tags() {
-		return '<p class="oft-grid-post-date-tags">{{ post_data:post_date_tags }}</p>';
-	}
-
 	// Laad het child theme na het hoofdthema
 	add_action( 'wp_enqueue_scripts', 'load_child_theme', 999 );
 
@@ -69,13 +21,6 @@
 
 	function load_admin_css() {
 		wp_enqueue_style( 'oft-admin', get_stylesheet_directory_uri().'/admin.css' );
-	}
-
-	// Activeer WP API
-	add_action( 'wp_enqueue_scripts', 'load_extra_js' );
-
-	function load_extra_js() {
-		wp_enqueue_script( 'wp-api' );
 	}
 
 	// Sta HTML-attribuut 'target' toe in beschrijvingen van taxonomieën
@@ -1431,9 +1376,56 @@
 		}
 	}
 
-	// add_action( 'woocommerce_single_product_summary', 'show_hipster_icons', 75 );
-	add_action( 'woocommerce_single_product_summary', 'show_additional_information', 75 );
+	add_action( 'woocommerce_single_product_summary', 'show_additional_information', 70 );
 
+	function show_additional_information() {
+		global $product, $sitepress;
+		
+		$yes = array( 'Ja', 'Yes', 'Oui' );
+		// SLUGS VAN ATTRIBUTEN WORDEN NIET VERTAALD, ENKEL DE TERMEN
+		// TAGS ZIJN A.H.W. TERMEN VAN EEN WELBEPAALD ATTRIBUUT EN WORDEN DUS OOK VERTAALD
+		if ( in_array( $product->get_attribute('bio'), $yes ) ) {
+			echo "<img class='icon-organic'>";
+		}
+
+		$icons = array();
+		foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
+			$icons[] = $term->slug;
+		}
+		if ( in_array( 'veganistisch', $icons ) ) {
+			echo "<img class='icon-vegan'>";
+		}
+		if ( in_array( 'glutenvrij', $icons ) ) {
+			echo "<img class='icon-gluten-free'>";
+		}
+		if ( in_array( 'zonder-toegevoegde-suikers', $icons ) ) {
+			echo "<img class='icon-no-added-sugars'>";
+		}
+		if ( in_array( 'lactosevrij', $icons ) ) {
+			echo "<img class='icon-lactose-free'>";
+		}
+
+		if ( file_exists( WP_CONTENT_DIR.'/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ) ) {
+			echo '<a href="'.content_url( '/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ).'" target="_blank"><p>'.__( 'Download productfiche', 'oft' ).'</p></a>';
+		}
+
+		$partners = get_partner_terms_by_product($product);
+		if ( $partners ) {
+			$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
+			$quoted_term_meta = get_term_meta( $quoted_term->term_id );
+			if ( strlen($quoted_term->description) > 10 and intval($quoted_term_meta->partner_image_id) > 0 ) {
+				echo wp_get_attachment_image( $quoted_term_meta->partner_image_id, 'thumbnail', false );
+				echo '<blockquote style="font-style: italic;">"'.$quoted_term->description.'"</blockquote>';
+			}
+			if ( intval($quoted_term_meta->partner_node) > 0 ) {
+				echo '<a href="https://www.oxfamwereldwinkels.be/node/'.$quoted_term_meta->partner_node.'" target="_blank"><p style="text-align: right;">Link naar '.$quoted_term->name.'</p></a>';
+			}
+			echo '<p>'.sprintf( _n( 'Partner: %s', 'Partners: %s', count($partners), 'oft' ),  str_replace( ')', ')</span>', str_replace( '(', '<span class="oft-country">(', implode( ', ', $partners ) ) ) ).'<p>';
+		}
+	}
+
+	add_action( 'woocommerce_single_product_summary', 'show_hipster_icons', 80 );
+	
 	function show_hipster_icons() {
 		global $product, $sitepress;
 		if ( in_array( intval( apply_filters( 'wpml_object_id', get_term_by( 'slug', 'veggie', 'product_tag' )->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
@@ -1449,52 +1441,6 @@
 		$yes = array( 'nl' => 'Ja', 'en' => 'Yes', 'fr' => 'Oui' );
 		if ( $product->get_attribute('biocertificatie') === $yes[$sitepress->get_current_language()] ) {
 			echo "<img class='organic'>";
-		}
-	}
-
-	function show_additional_information() {
-		global $product, $sitepress;
-		
-		$icons = array();
-		foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
-			$icons[] = $term->slug;
-		}
-		
-		if ( in_array( 'veganistisch', $icons ) ) {
-			echo "<img class='vegan'>";
-		}
-		if ( in_array( 'glutenvrij', $icons ) ) {
-			echo "<img class='gluten-free'>";
-		}
-		if ( in_array( 'lactosevrij', $icons ) ) {
-			echo "<img class='lactose-free'>";
-		}
-		
-		$yes = array( 'Ja', 'Yes', 'Oui' );
-		// SLUGS VAN ATTRIBUTEN WORDEN NIET VERTAALD, ENKEL DE TERMEN
-		// TAGS ZIJN A.H.W. TERMEN VAN EEN WELBEPAALD ATTRIBUUT EN WORDEN DUS OOK VERTAALD
-		if ( in_array( $product->get_attribute('bio'), $yes ) ) {
-			echo '<img class="organic" style="border: 0; outline: 0; padding: 0; background-color: white;">';
-		}
-
-		echo '<p>&nbsp;</p>';
-
-		$partners = get_partner_terms_by_product($product);
-		if ( $partners ) {
-			$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
-			$quoted_term_meta = get_term_meta( $quoted_term->term_id );
-			if ( strlen($quoted_term->description) > 10 and intval($quoted_term_meta->partner_image_id) > 0 ) {
-				echo wp_get_attachment_image( $quoted_term_meta->partner_image_id, 'thumbnail', false );
-				echo '<blockquote style="font-style: italic;">"'.$quoted_term->description.'"</blockquote>';
-			}
-			if ( intval($quoted_term_meta->partner_node) > 0 ) {
-				echo '<a href="https://www.oxfamwereldwinkels.be/node/'.$quoted_term_meta->partner_node.'" target="_blank"><p style="text-align: right;">Link naar '.$quoted_term->name.'</p></a>';
-			}
-			echo '<p>'.sprintf( _n( 'Partner: %s', 'Partners: %s', count($partners), 'oft' ),  str_replace( ')', ')</span>', str_replace( '(', '<span class="oft-country">(', implode( ', ', $partners ) ) ) ).'<p>';
-		}
-
-		if ( file_exists(WP_CONTENT_DIR.'/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf') ) {
-			echo '<br><a href="/wp-content/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf" target="_blank"><button>'.__( 'Download productfiche', 'oft' ).'</button></a>';
 		}
 	}
 
@@ -1515,6 +1461,54 @@
 	#############
 	#  CONTENT  #
 	#############
+
+	add_filter( 'excerpt_more', 'wpdocs_excerpt_more', 100 );
+	function wpdocs_excerpt_more( $more ) {
+		return ' ...';
+	}
+
+	// Werkt per woord!
+	add_filter( 'excerpt_length', 'wpdocs_custom_excerpt_length', 1000 );
+	function wpdocs_custom_excerpt_length( $length ) {
+		return 25;
+	}
+
+	// Definieer extra element met post data voor grids
+	add_filter( 'vc_grid_item_shortcodes', 'add_grid_shortcodes_to_wpbakery' );
+	function add_grid_shortcodes_to_wpbakery( $shortcodes ) {
+		$shortcodes['list_post_date_tags'] = array(
+			'name' => 'Post Tags',
+			'base' => 'list_post_date_tags',
+			'category' => 'Post',
+			'description' => __( 'Toon de datum en eventuele tags van de post.', 'oft-admin' ),
+			'post_type' => Vc_Grid_Item_Editor::postType(),
+			'params' => array(
+				array(
+					'type' => 'textfield',
+					'heading' => __( 'Extra class name', 'js_composer' ),
+					'param_name' => 'el_class',
+					'description' => __( 'Style particular content element differently - add a class name and refer to it in custom CSS.', 'js_composer' )
+				),
+			),
+		);
+		return $shortcodes;
+	}
+
+	// Haal extra data op die hier beschikbaar is op basis van global $post!
+	add_filter( 'vc_gitem_template_attribute_post_date_tags', 'vc_gitem_template_attribute_post_date_tags', 10, 2 );
+	function vc_gitem_template_attribute_post_date_tags( $value, $data ) {
+		extract( array_merge( array(
+			'post' => null,
+			'data' => '',
+		), $data ) );
+		return __( 'Datum: ', 'oft' ).get_the_date( 'd/m/Y' ).'<br>'.get_the_tag_list( __( 'Tags: ', 'oft' ), ', ', '' );
+	}
+
+	// Output
+	add_shortcode( 'list_post_date_tags', 'vc_list_post_date_tags' );
+	function vc_list_post_date_tags() {
+		return '<p class="oft-grid-post-date-tags">{{ post_data:post_date_tags }}</p>';
+	}
 
 	remove_action( 'woocommerce_archive_description', 'woocommerce_taxonomy_archive_description', 10 );
 	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count', 20 );
@@ -1575,6 +1569,8 @@
 
 		return $msg;
 	}
+
+
 
 	###########
 	#  VARIA  #
@@ -2186,9 +2182,17 @@
 	}
 
 
+
 	############
 	#  WP API  #
 	############
+
+	// Activeer WP API
+	// add_action( 'wp_enqueue_scripts', 'load_extra_scripts' );
+
+	function load_extra_scripts() {
+		wp_enqueue_script( 'wp-api' );
+	}
 
 	// Verhinder het lekken van gegevens via de WP API
 	add_filter( 'rest_authentication_errors', 'only_allow_administrator_rest_access' );
