@@ -1411,16 +1411,16 @@
 			$icons[] = $term->slug;
 		}
 		if ( in_array( 'veganistisch', $icons ) ) {
-			echo "<span class='icon-vegan'></span>";
+			echo "<div class='icon-vegan'></div>";
 		}
 		if ( in_array( 'glutenvrij', $icons ) ) {
-			echo "<span class='icon-gluten-free'></span>";
+			echo "<div class='icon-gluten-free'></div>";
 		}
 		if ( in_array( 'zonder-toegevoegde-suikers', $icons ) ) {
-			echo "<span class='icon-no-added-sugars'></span>";
+			echo "<div class='icon-no-added-sugars'></div>";
 		}
 		if ( in_array( 'lactosevrij', $icons ) ) {
-			echo "<span class='icon-lactose-free'></span>";
+			echo "<div class='icon-lactose-free'></div>";
 		}
 	}
 
