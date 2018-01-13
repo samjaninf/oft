@@ -97,21 +97,20 @@ span.oft-copyright {
 .woocommerce.single-product {
 
 	.woocommerce-product-gallery.images {
-		width: 33%;
-		min-width: 400px;
+		// width: 35%;
 	}
 
 	.summary.entry-summary {
-		max-width: 66%;
-		margin-left: 2em;
+		// width: 60%;
+		// margin-left: 2em;
 
 		.product_title {
-			display: inline;
-			margin-right: 1em;
+			display: inline-block;
+			margin-right: 0.75em;
 		}
 
 		.price {
-			display: inline;
+			display: inline-block;
 		}
 
 		.woocommerce-product-details__short-description {
@@ -119,37 +118,41 @@ span.oft-copyright {
 			margin: 1em 0;
 		}
 
-		.oft-partner-quote {
-			font-style: italic;
+		.oft-partners {
+			margin: 2em 0;
 		}
 
-		.oft-partner-link {
-
-		}
-
+		.oft-partner-image,
 		.oft-partners-th {
-			display: inline-block;
-			width: 25%;
-			min-width: 100px;
+			display: table-cell;
+			width: 125px;
 			vertical-align: top;
-		}
-
-		.oft-partners-td {
-			display: inline-block;
-			width: 75%;
 		}
 
 		.oft-country {
 			font-size: 80%;
 		}
 
+		.oft-partners-td {
+			display: table-cell;
+		}
+
+		.oft-partner-quote {
+			display: table-cell;
+			font-style: italic;
+		}
+
+		.oft-partner-link {
+			text-align: right;
+		}
+
 		.oft-product-sheet {
-			margin: 1em 0;
+			margin: 2em 0;
 		}
 
 		.oft-icons {
 			position: relative;
-			left: -10px;
+			left: -15px;
 		}
 	}
 }
