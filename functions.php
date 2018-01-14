@@ -938,15 +938,15 @@
 
 		echo '</div>';
 
-		$languages = array( 'nl', 'fr', 'en' );
-		foreach ( $languages as $language ) {
-			$path = '/fiches/'.$language.'/'.$product->get_sku().'.pdf';
-			if ( file_exists( WP_CONTENT_DIR.$path ) ) {
-				echo '<div class="options_group">';
+		echo '<div class="options_group">';
+			$languages = array( 'nl', 'fr', 'en' );
+			foreach ( $languages as $language ) {
+				$path = '/fiches/'.$language.'/'.$product->get_sku().'.pdf';
+				if ( file_exists( WP_CONTENT_DIR.$path ) ) {
 					echo '<p class="form-field"><label>Productfiche</label><a href="'.content_url($path).'" target="_blank">'.sprintf( __( 'Download PDF (%s)', 'oft-admin' ), mb_strtoupper($language) ).'</a> ('.get_date_from_gmt( date_i18n( 'Y-m-d H:i:s', filemtime(WP_CONTENT_DIR.$path) ), 'd/m/Y @ H:i' ).')</p>';
-				echo '</div>';
+				}
 			}
-		}
+		echo '</div>';
 	}
 	
 	function add_oft_inventory_fields() {

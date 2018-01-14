@@ -1707,4 +1707,5 @@ if(! function_exists('_alone_notification_center_action')) :
 		echo fw_render_view(get_template_directory() . '/templates/notification_center/content.php', array(), true);
 	}
 endif;
-add_action( 'wp_footer', '_alone_notification_center_action' );
+// GEWIJZIGD: Notification center uitschakelen ("undefined variable: background_style" vermijden)
+// add_action( 'wp_footer', '_alone_notification_center_action' );

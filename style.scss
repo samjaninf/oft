@@ -65,12 +65,28 @@ h2.woocommerce-loop-product__title:hover {
 /*  HEADER  */
 /************/
 
+ul#menu-menu-top.menu {
+	margin-top: 3px;
+}
+
+/* Uitklappijltjes verbergen */
 #menu-oxfam .menu-item-has-children span:after {
 	display: none;
 }
 
+/* Titels van de vier hoofdblokken op de homepage wit maken */
 h4.featured-box-title {
 	color: white !important;
+	margin-bottom: 1em;
+}
+
+.featured-box-alignment {
+	max-width: 200px;
+	margin: 0 auto;
+
+	.icon-wrap {
+		display: none !important;
+	}
 }
 
 
@@ -79,6 +95,7 @@ h4.featured-box-title {
 /*  FOOTER  */
 /************/
 
+/* Copyright iets kleiner en bleker */
 span.oft-copyright {
 	font-size: 90%;
 	color: lightgrey;
@@ -227,6 +244,27 @@ span.oft-copyright {
 
 
 
+/**************/
+/*  HOMEPAGE  */
+/**************/
+
+body.home {
+	.bt-header-container.fw-absolute-header.fw-sticky-header {
+		background-color: red !important;
+	}
+	
+	#menu-oxfam > li.menu-item > a > span {
+		color: white;
+	}
+
+	.bt-default-page {
+		padding-top: 0;
+		padding-bottom: 0;
+	}
+}
+
+
+
 /****************/
 /*  CUSTOMIZER  */
 /****************/
@@ -268,19 +306,6 @@ span.oft-copyright {
 .oft-searchbar input.search-field {
 	border-width: 0px !important;
 	font-size: 14px !important;
-}
-
-div.featured-box-alignment {
-	max-width: 200px;
-	margin: 0 auto;
-}
-
-div.featured-box-alignment .icon-wrap {
-	display: none !important;
-}
-
-h4.featured-box-title {
-	margin-bottom: 1em;
 }
 
 .oft-minimal-button > a {
@@ -330,7 +355,6 @@ a.vc_gitem-link.vc_general.vc_btn3.vc_btn3-size-md.vc_btn3-shape-rounded.vc_btn3
 }
 
 .woocommerce.columns-4 > ul.products > div.product h2.woocommerce-loop-product__title {
-	font-family: Arial;
 	font-size: 1.2em;
 	line-height: 1em;
 	text-align: center;
@@ -354,33 +378,25 @@ div.site-main form.wpcf7-form p:not(:first-of-type) > label {
 	padding-top: 2em;
 }
 
-ul#menu-menu-top.menu {
-	margin-top: 3px;
+.wpcf7-form-control-wrap {
+	color: black;
 }
 
+/* Verberg het volledige titelblok in de banners */
 .fw-heading {
 	display: none;
 }
 
 .fw-special-title {
-	color: white;
-	text-shadow: 3px 3px #888888;
+	// color: white;
+	// text-shadow: 3px 3px #888888;
 }
 
 .fw-title-bar {
-	color: white;
-	min-height: 100%;
-	background-size: cover;
-	box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.3);
-}
-
-body.page .bt-default-page {
-	padding-top: 0;
-	padding-bottom: 0;
-}
-
-.wpcf7-form-control-wrap {
-	color: black;
+	// color: white;
+	// min-height: 100%;
+	// background-size: cover;
+	// box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.3);
 }
 
 

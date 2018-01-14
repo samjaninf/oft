@@ -1713,7 +1713,7 @@ if(!function_exists('alone_title_bar')) :
 			if($image == ''){
 				// if image from page is empty - get image from general theme settings
 				$image = isset($general_title_bar_options['title_bar_image']) ? $general_title_bar_options['title_bar_image'] : array();
-				// GEWIJZIGD: Geen title bar tonen in dit geval
+				// GEWIJZIGD: Geen title bar tonen indien header image niet expliciet ingevuld
 				return;
 			}
 			$title = get_the_title($post_id);
@@ -1816,7 +1816,7 @@ if(!function_exists('alone_title_bar')) :
 			if($image == ''){
 				// if image from post is empty - get image from general theme settings
 				$image = isset($general_title_bar_options['title_bar_image']) ? $general_title_bar_options['title_bar_image'] : array();
-				// GEWIJZIGD: Geen title bar tonen in dit geval
+				// GEWIJZIGD: Geen title bar tonen indien header image niet expliciet ingevuld
 				return;
 			}
 
