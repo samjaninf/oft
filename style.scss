@@ -53,6 +53,7 @@ a:hover,
 h2.woocommerce-loop-product__title:hover {
 	text-decoration: underline !important;
 	text-underline-position: under !important;
+	-webkit-text-underline-position: under !important;
 }
 
 .oft-grid-post-date-tags {
@@ -116,15 +117,12 @@ h2.woocommerce-loop-product__title:hover {
 	}
 
 	/* Bovenliggende hoofdpagina van huidige pagina onderlijnen */
-	.current_page_item > a > span, 
-	.current_page_parent > a > span {
+	.current_page_item > a, 
+	.current_page_parent > a {
 		text-decoration: underline;
 		text-underline-position: under;
+		-webkit-text-underline-position: under;
 	}
-}
-
-.bt-header-top-bar {
-	background-color: lightgrey;
 }
 
 
@@ -312,6 +310,10 @@ body:not(.single-product):not(.single-post) {
 
 body.single-product,
 body.single-post {
+	.bt-header-top-bar {
+		background-color: lightgrey;
+	}
+
 	.bt-header-container.fw-absolute-header.fw-sticky-header {
 		border-bottom: 1px solid lightgrey;
 	}
@@ -347,6 +349,7 @@ body.single-post {
 .oft-minimal-button > a:hover {
 	text-decoration: underline !important;
 	text-underline-position: under !important;
+	-webkit-text-underline-position: under !important;
 }
 
 .vc_grid-filter-center.vc_grid-filter-color-grey {
@@ -354,12 +357,14 @@ body.single-post {
 		background-color: #fff !important;
 		text-decoration: underline;
 		text-underline-position: under;
+		-webkit-text-underline-position: under;
 	}
 	
 	> .vc_grid-filter-item:hover {
 		background-color: #fff !important;
 		text-decoration: underline;
 		text-underline-position: under;
+		-webkit-text-underline-position: under;
 	}
 }
 
