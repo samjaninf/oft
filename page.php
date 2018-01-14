@@ -24,7 +24,7 @@ if ( $_FW ) {
 			<div class="bt-content-area <?php alone_get_content_class( $content_class, $alone_sidebar_position ); ?>">
 				<div class="bt-inner">
 					<!-- GEWIJZIGD: Breadcrumb weer tonen, behalve op homepage! -->
-					<?php if( function_exists('fw_ext_breadcrumbs') && ! is_home() ) fw_ext_breadcrumbs(); ?>
+					<?php if ( function_exists('fw_ext_breadcrumbs') && ! is_front_page() ) fw_ext_breadcrumbs(); ?>
 					<?php while ( have_posts() ) : the_post(); ?>
 						<article id="page-<?php the_ID(); ?>" class="post post-details" itemscope="itemscope" itemtype="http://schema.org/BlogPosting" itemprop="blogPost">
 							<div class="inner">

@@ -52,7 +52,7 @@ body {
 a:hover,
 h2.woocommerce-loop-product__title:hover {
 	text-decoration: underline !important;
-	-webkit-text-underline-position: under !important;
+	text-underline-position: under !important;
 }
 
 .oft-grid-post-date-tags {
@@ -250,10 +250,10 @@ span.oft-copyright {
 
 body.home {
 	.bt-header-container.fw-absolute-header.fw-sticky-header {
-		background-color: rgba(255, 255, 255, 0.5);
+		background-color: rgba( 50, 50, 50, 0.5 );
 	}
 	
-	#menu-oxfam > li.menu-item > a > span {
+	&:not(.is-header-sticky) #menu-oxfam > li.menu-item > a > span {
 		color: white;
 	}
 
@@ -270,7 +270,7 @@ body:not(.home) {
 	}
 
 	.sticky-logo {
-		display: block;
+		display: block !important;
 	}
 }
 
@@ -346,11 +346,13 @@ body:not(.home) {
 
 .oft-grid-post-title,
 .oft-grid-post-excerpt {
-	text-decoration: none;
+	text-decoration: none !important;
 }
 
 .oft-grid-read-more {
-	
+	padding: 0 !important;
+	background-color: transparent !important;
+	color: deepskyblue !important;
 }
 
 div.vc_btn3-container.vc_btn3-left {
