@@ -1440,6 +1440,26 @@
 				echo "<div class='icon-fairly-traded-palm-oil'></div>";
 			}
 		echo '</div>';
+
+		$args = array(
+			'post_type' => 'post',
+			'post_status' => 'publish',
+			'orderby' => 'date',
+			'order' => 'DESC',
+			'meta_key' => 'oft-post-product',
+			'meta_value' => $product->get_id(),
+			'meta_compare' => '=',
+			'numberposts' => 1,
+		);
+		$news_posts = new WP_Query( $args );
+
+		if ( $news_posts->have_posts() ) {
+			while ( $news_posts->have_posts() ) {
+				$news_posts->the_post();
+				echo "<div class='latest-news'><h4>".get_the_title( $post->ID )."</h4><p>".apply_filters( 'the_content', get_the_excerpt( $post->ID ) )."</p></div>";
+			}
+			wp_reset_postdata();
+		}
 	}
 
 	// add_action( 'woocommerce_single_product_summary', 'show_hipster_icons', 80 );
@@ -1558,29 +1578,6 @@
 				}
 			}
 		}
-	}
-
-	add_shortcode( 'latest_post', 'output_latest_post' );
-	
-	function output_latest_post( $atts ) {
-		// Geef de gewenste SLUG van de categorie in
-		$args = shortcode_atts( array(
-			'category' => 'productnieuws',
-		), $atts );
-		$my_posts = get_posts( array( 'numberposts' => 1, 'category_name' => $args['category'] ) );
-
-		if ( count($my_posts) > 0 ) {
-			foreach ( $my_posts as $post ) {
-				setup_postdata( $post );
-				$msg .= "<div class='latest-news'><h1>".get_the_title( $post->ID )."</h1>".apply_filters( 'the_content', get_the_content( $post->ID ) )."</div>";
-			}
-		} else {
-			$msg .= "<p>Geen berichten gevonden in de categorie '".$atts['category']."'.</p>";
-		}
-
-		wp_reset_postdata();
-
-		return $msg;
 	}
 
 

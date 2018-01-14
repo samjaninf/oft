@@ -65,8 +65,47 @@ h2.woocommerce-loop-product__title:hover {
 /*  HEADER  */
 /************/
 
-ul#menu-menu-top.menu {
-	margin-top: 3px;
+#nav_menu-4 {
+	display: inline-block !important;
+
+	#menu-menu-top.menu {
+		margin-top: 3px;
+	}
+}
+
+#icl_lang_sel_widget-2 {
+	display: inline-block !important;
+	top: -1px;
+	position: relative;
+	margin-left: 20px;
+
+	.wpml-ls-legacy-list-horizontal {
+		padding: 0;
+		border-left: 1px solid black;
+	}
+
+	.wpml-ls-link {
+		padding: 0 !important;
+	}
+
+	.wpml-ls-native {
+		padding-left: 20px;
+	}
+}
+
+.oft-searchbar {
+	max-width: 300px;
+	max-height: 36px;
+	float: right;
+
+	h2.widget-title {
+		display: none;
+	}
+
+	input.search-field {
+		border-width: 0px !important;
+		font-size: 14px !important;
+	}
 }
 
 /* Uitklappijltjes verbergen */
@@ -75,7 +114,7 @@ ul#menu-menu-top.menu {
 }
 
 /* Titels van de vier hoofdblokken op de homepage wit maken */
-h4.featured-box-title {
+.featured-box-title {
 	color: white !important;
 	margin-bottom: 1em;
 }
@@ -228,15 +267,6 @@ span.oft-copyright {
 	background: url("assets/background-404.jpeg") center top / cover no-repeat;
 }
 
-.bt-section-space {
-	// padding-top: 2em;
-	// padding-bottom: 2em;
-}
-
-.latest-news {
-	// text-align: center;
-}
-
 .feedback,
 .fa-spinner {
 	display: none;
@@ -248,7 +278,8 @@ span.oft-copyright {
 /*  HOMEPAGE  */
 /**************/
 
-body.home {
+body.single-product,
+body.single-post {
 	.bt-header-container.fw-absolute-header.fw-sticky-header {
 		background-color: rgba( 50, 50, 50, 0.5 );
 	}
@@ -263,7 +294,18 @@ body.home {
 	}
 }
 
-body:not(.home) {
+body:not(.single-product),
+body:not(.single-post) {
+	.bt-header-container.fw-absolute-header.fw-sticky-header {
+		border-bottom: 1px solid lightgrey;
+	}
+
+	// Door absolute header moeten we genoeg padding voorzien bovenaan hoofdinhoud!
+	.bt-section-space {
+		padding-top: 125px;
+		padding-bottom: 0;
+	}
+
 	/* Toon meteen alternatief logo */
 	.main-logo {
 		display: none !important;
@@ -279,45 +321,6 @@ body:not(.home) {
 /****************/
 /*  CUSTOMIZER  */
 /****************/
-
-#nav_menu-4 {
-	display: inline-block !important;
-}
-
-#icl_lang_sel_widget-2 {
-	display: inline-block !important;
-	top: -1px;
-	position: relative;
-	margin-left: 20px;
-}
-
-#icl_lang_sel_widget-2 .wpml-ls-legacy-list-horizontal {
-	padding: 0;
-	border-left: 1px solid black;
-}
-
-.wpml-ls-link {
-	padding: 0 !important;
-}
-
-.wpml-ls-native {
-	padding-left: 20px;
-}
-
-.oft-searchbar {
-	max-width: 300px;
-	max-height: 36px;
-	float: right;
-}
-
-.oft-searchbar h2.widget-title {
-	display: none;
-}
-
-.oft-searchbar input.search-field {
-	border-width: 0px !important;
-	font-size: 14px !important;
-}
 
 .oft-minimal-button > a {
 	background-color: transparent !important;
