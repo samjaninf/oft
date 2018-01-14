@@ -105,27 +105,26 @@ h2.woocommerce-loop-product__title:hover {
 	input.search-field {
 		border-width: 0px !important;
 		font-size: 14px !important;
+		background-color:  transparent !important;
 	}
 }
 
-/* Uitklappijltjes verbergen */
-#menu-oxfam .menu-item-has-children span:after {
-	display: none;
-}
-
-/* Titels van de vier hoofdblokken op de homepage wit maken */
-.featured-box-title {
-	color: white !important;
-	margin-bottom: 1em;
-}
-
-.featured-box-alignment {
-	max-width: 200px;
-	margin: 0 auto;
-
-	.icon-wrap {
-		display: none !important;
+#menu-oxfam {
+	/* Uitklappijltjes verbergen */
+	.menu-item-has-children span:after {
+		display: none;
 	}
+
+	/* Bovenliggende hoofdpagina van huidige pagina onderlijnen */
+	.current_page_item > a > span, 
+	.current_page_parent > a > span {
+		text-decoration: underline;
+		text-underline-position: under;
+	}
+}
+
+.bt-header-top-bar {
+	background-color: lightgrey;
 }
 
 
@@ -194,8 +193,8 @@ span.oft-copyright {
 		}
 
 		.oft-partner-quote {
-			display: table-cell;
-			font-style: italic;
+			display: table-cell !important;
+			font-style: italic !important;
 		}
 
 		.oft-partner-link {
@@ -278,9 +277,27 @@ span.oft-copyright {
 /*  HOMEPAGE  */
 /**************/
 
+body.home {
+	/* Titels van de vier hoofdblokken op de homepage wit maken */
+	.featured-box-title {
+		color: white !important;
+		margin-bottom: 1em;
+	}
+
+	.featured-box-alignment {
+		max-width: 200px;
+		margin: 0 auto;
+
+		.icon-wrap {
+			display: none !important;
+		}
+	}	
+}
+
 body:not(.single-product):not(.single-post) {
+	.fw-title-bar,
 	.bt-header-container.fw-absolute-header.fw-sticky-header {
-		background-color: rgba( 50, 50, 50, 0.5 );
+		background-color: rgba( 50, 50, 50, 0.5 ) !important;
 	}
 	
 	&:not(.is-header-sticky) #menu-oxfam > li.menu-item > a > span {
