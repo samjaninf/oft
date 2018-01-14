@@ -250,7 +250,7 @@ span.oft-copyright {
 
 body.home {
 	.bt-header-container.fw-absolute-header.fw-sticky-header {
-		background-color: red !important;
+		background-color: rgba(255, 255, 255, 0.5);
 	}
 	
 	#menu-oxfam > li.menu-item > a > span {
@@ -260,6 +260,17 @@ body.home {
 	.bt-default-page {
 		padding-top: 0;
 		padding-bottom: 0;
+	}
+}
+
+body:not(.home) {
+	/* Toon meteen alternatief logo */
+	.main-logo {
+		display: none !important;
+	}
+
+	.sticky-logo {
+		display: block;
 	}
 }
 
@@ -316,28 +327,40 @@ body.home {
 
 .oft-minimal-button > a:hover {
 	text-decoration: underline !important;
-	-webkit-text-underline-position: under !important;
+	text-underline-position: under !important;
 }
 
-.vc_grid-filter.vc_grid-filter-color-grey > .vc_active.vc_grid-filter-item {
-	background-color: #fff !important;
-	text-decoration: underline;
-	-webkit-text-underline-position: under;
+.vc_grid-filter-center.vc_grid-filter-color-grey {
+	> .vc_active.vc_grid-filter-item {
+		background-color: #fff !important;
+		text-decoration: underline;
+		text-underline-position: under;
+	}
+	
+	> .vc_grid-filter-item:hover {
+		background-color: #fff !important;
+		text-decoration: underline;
+		text-underline-position: under;
+	}
+}
+
+.oft-grid-post-title,
+.oft-grid-post-excerpt {
+	text-decoration: none;
+}
+
+.oft-grid-read-more {
+	
 }
 
 div.vc_btn3-container.vc_btn3-left {
 	text-align: center;
 }
-a.vc_general.vc_btn3.vc_btn3-size-md.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue {
+a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue {
 	padding: 0 !important;
 	background-color: transparent !important;
 	color: deepskyblue !important;
 	font-size: 1.1em !important;
-}
-
-a.vc_gitem-link.vc_general.vc_btn3.vc_btn3-size-md.vc_btn3-shape-rounded.vc_btn3-style-flat:hover {
-	text-decoration: underline;
-	-webkit-text-underline-position: under;
 }
 
 #page .wpb_theme_custom_element.wpb_posts_grid_resizable .vc-custom-inner-wrap .grid-item.item-skin-products-default .grid-item-inner .background-image-backend::after {
