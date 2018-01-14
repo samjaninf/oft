@@ -16,6 +16,13 @@
 		// BOOTSTRAP REEDS INGELADEN DOOR ALONE
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
+		?>
+		<script>
+			jQuery(document).ready( function() {
+				jQuery( '.oft-link-target' ).attr( 'href', jQuery(this).find( '.vc_btn3-shape-rounded.vc_btn3-style-flat' ).attr( 'href') );
+			});
+		</script>
+		<?php
 	}
 
 	// Voeg custom styling toe aan de adminomgeving

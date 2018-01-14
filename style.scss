@@ -193,6 +193,7 @@ span.oft-copyright {
 		.oft-partner-quote {
 			display: table-cell !important;
 			font-style: italic !important;
+			background-color: red;
 		}
 
 		.oft-partner-link {
@@ -289,13 +290,25 @@ body.home {
 		.icon-wrap {
 			display: none !important;
 		}
-	}	
+	}
 }
 
 body:not(.single-product):not(.single-post) {
-	.fw-title-bar,
 	.bt-header-container.fw-absolute-header.fw-sticky-header {
-		background-color: rgba( 50, 50, 50, 0.5 ) !important;
+		border-bottom: 1px solid darkgrey;
+	}
+	
+	.fw-title-bar::before,
+	.rev_slider_wrapper.fullwidthbanner-container::before  {
+		background-image: linear-gradient( to bottom, rgba(0,0,0,0.75), rgba(0,0,0,0.25) 20%, rgba(0,0,0,0) 40% );
+		content: '';
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		opacity: 1;
+		z-index: 1000;
 	}
 	
 	&:not(.is-header-sticky) #menu-oxfam > li.menu-item > a > span {
@@ -368,8 +381,8 @@ body.single-post {
 	}
 }
 
-.oft-grid-post-title,
-.oft-grid-post-excerpt {
+.oft-grid-post-title a:hover,
+.oft-grid-post-excerpt a:hover {
 	text-decoration: none !important;
 }
 
