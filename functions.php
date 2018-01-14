@@ -1456,7 +1456,7 @@
 		if ( $news_posts->have_posts() ) {
 			while ( $news_posts->have_posts() ) {
 				$news_posts->the_post();
-				echo "<div class='latest-news'><h4>".get_the_title( $post->ID )."</h4><p>".apply_filters( 'the_content', get_the_excerpt( $post->ID ) )."</p></div>";
+				echo "<div class='latest-news'><h4>".get_the_title()."</h4><p>".apply_filters( 'the_content', get_the_excerpt() )."</p></div>";
 			}
 			wp_reset_postdata();
 		}

@@ -278,8 +278,7 @@ span.oft-copyright {
 /*  HOMEPAGE  */
 /**************/
 
-body:not(.single-product),
-body:not(.single-post) {
+body:not(.single-product):not(.single-post) {
 	.bt-header-container.fw-absolute-header.fw-sticky-header {
 		background-color: rgba( 50, 50, 50, 0.5 );
 	}
