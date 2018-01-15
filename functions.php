@@ -16,13 +16,6 @@
 		// BOOTSTRAP REEDS INGELADEN DOOR ALONE
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
-		?>
-		<script>
-			jQuery(document).ready( function() {
-				jQuery( '.oft-link-target' ).attr( 'href', jQuery(this).find( '.vc_btn3-shape-rounded.vc_btn3-style-flat' ).attr( 'href') );
-			});
-		</script>
-		<?php
 	}
 
 	// Voeg custom styling toe aan de adminomgeving
@@ -90,6 +83,22 @@
 		remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', '_bearsthemes_yith_add_compare_button', 10 );
 		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
 		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
+	}
+
+	// Laad niet-prioritaire JavaScript (die bv. moet wachten op jQuery) 
+	add_action( 'wp_footer', 'add_scripts_to_front_end' );
+	
+	function add_scripts_to_front_end() {
+		?>
+		<script>
+			jQuery(document).ready( function() {
+				jQuery( '.oft-link-target' ).click( function() {
+					window.location.href = jQuery(this).find( '.vc_btn3-shape-rounded.vc_btn3-style-flat' ).attr('href'); 
+					return false;
+				});
+			});
+		</script>
+		<?php
 	}
 
 
