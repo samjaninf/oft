@@ -209,7 +209,7 @@ span.oft-copyright {
 			display: table-cell;
 		}
 
-		p.oft-partners-quote {
+		.oft-partners-quote {
 			font-style: italic;
 		}
 
@@ -223,7 +223,7 @@ span.oft-copyright {
 
 		.oft-icons {
 			position: relative;
-			left: -10px;
+			left: -15px;
 		}
 	}
 
@@ -231,7 +231,7 @@ span.oft-copyright {
 		li {
 			background-color: transparent !important;
 
-			a {
+			a[class$="_tab active"] {
 				color: black !important;
 				text-decoration: underline !important;
 				text-underline-position: under !important;
