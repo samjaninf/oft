@@ -1568,9 +1568,11 @@
 				echo '<div class="oft-partners-row">';
 					$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
 					$quoted_term_image_id = intval( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ) );
-					while( strlen($quoted_term->description) < 20 or $quoted_term_image_id < 1 ) {
+					$cnt = 0;
+					while( ( strlen($quoted_term->description) < 20 or $quoted_term_image_id < 1 ) and $cnt < 3*count($partners) ) {
 						$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
 						$quoted_term_image_id = intval( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ) );
+						$cnt++;
 					}
 					if ( strlen($quoted_term->description) >= 20 and $quoted_term_image_id >= 1 ) {
 						echo '<div class="oft-partners-th">'.wp_get_attachment_image( $quoted_term_image_id, array( '110', '110' ), false ).'</div>';
