@@ -61,6 +61,37 @@ h2.woocommerce-loop-product__title:hover {
 	font-size: 80%;
 }
 
+.oft-reduce-width {
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.oft-center-text {
+	text-align: center;
+}
+
+article.post {
+	h3 {
+		font-size: 24px;
+	}
+
+	h4 {
+		font-size: 18px;
+		font-weight: bold;
+		margin-top: 2em;
+	}
+}
+
+.page-id-811 .oft-coffee-featured {
+	.featured-box-title {
+		font-size: 36px !important;
+	}
+
+	.featured-box-text {
+		font-size: 18px !important;
+	}
+}
+
 
 
 /************/
@@ -266,7 +297,6 @@ span.oft-copyright {
 	border: none !important;
 }
 
-
 @mixin icon() {
 	color: transparent;
 	display: inline-block;
@@ -388,6 +418,27 @@ body:not(.single-product):not(.single-post) {
 	.bt-default-page {
 		padding-top: 0;
 		padding-bottom: 0;
+	}
+
+	/* Verberg het volledige titelblok in de banners */
+	.fw-heading {
+		// display: none;
+	}
+
+	.fw-heading {
+		.fw-special-title {
+			color: white !important;
+			font-size: 72px;
+			// text-shadow: 3px 3px #888888;
+		}
+
+		.fw-special-title::after {
+			display: none;
+		}
+
+		.breadcrumbs {
+			display: none;
+		}
 	}
 }
 
@@ -513,22 +564,6 @@ div.site-main form.wpcf7-form p:not(:first-of-type) > label {
 	color: black;
 }
 
-/* Verberg het volledige titelblok in de banners */
-.fw-heading {
-	display: none;
-}
-
-.fw-special-title {
-	// color: white;
-	// text-shadow: 3px 3px #888888;
-}
-
-.fw-title-bar {
-	// color: white;
-	// min-height: 100%;
-	// background-size: cover;
-	// box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.3);
-}
 
 
 
