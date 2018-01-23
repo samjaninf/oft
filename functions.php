@@ -457,6 +457,153 @@
 		return $args;
 	}
 
+	// Registreer een extra tabje op de productdetailpagina voor de voedingswaardes
+	add_filter( 'woocommerce_product_tabs', 'add_extra_product_tabs' );
+	
+	function add_extra_product_tabs( $tabs ) {
+		global $product;
+		// Schakel lange beschrijving uit (werd naar boven verplaatst)
+		unset($tabs['description']);
+
+		// Voeg tabje met voedingswaardes toe (indien niet leeg)
+		if ( get_tab_content('food') !== false ) {
+			$eh = $product->get_attribute( 'pa_eenheid' );
+			if ( $eh === 'L' ) {
+				$suffix = 'ml';
+			} elseif ( $eh === 'KG' ) {
+				$suffix = 'g';
+			}
+			$tabs['food_info'] = array(
+				'title' 	=> 'Voedingswaarde per 100 '.$suffix,
+				'priority' 	=> 14,
+				'callback' 	=> function() { output_tab_content('food'); },
+			);
+		}
+
+		// Voeg tabje met allergenen toe
+		$tabs['allergen_info'] = array(
+			'title' 	=> 'Allergenen',
+			'priority' 	=> 16,
+			'callback' 	=> function() { output_tab_content('allergen'); },
+		);
+
+		// Titel wijzigen van standaardtabs kan maar prioriteit niet! (description = 10, additional_information = 20)
+		$tabs['additional_information']['title'] = 'Technische fiche';
+		
+		return $tabs;
+	}
+
+	// Retourneer de gegevens voor een custom tab (antwoordt met FALSE indien geen gegevens beschikbaar)
+	function get_tab_content( $type ) {
+		global $product;
+		$has_row = false;
+		$alt = 1;
+		ob_start();
+		echo '<table class="shop_attributes">';
+
+		if ( $type === 'food' ) {
+			$product_metas = array(
+				'_fapucis' => 'Meervoudig onverzadigd',
+				'_famscis' => 'Enkelvoudig onverzadigd',
+				'_fasat' => 'Verzadigd',
+				'_polyl' => 'Polyolen',
+				'_starch' => 'Zetmeel',
+				'_sugar' => 'Suikers',
+			);
+			
+			foreach ( $product_metas as $meta_key => $meta_label ) {
+				?>
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th><?php
+						$submetas = array( '_fapucis', '_famscis', '_fasat', '_polyl', '_starch', '_sugar' );
+						if ( in_array( $mete_key, $submetas ) ) {
+							echo '<i style="padding-left: 20px;">waarvan '.$meta_label.'</i>';
+						} else {
+							echo $meta_label;
+						}
+					?></th>
+					<td><?php
+						if ( in_array( $meta_key, $submetas ) ) {
+							echo '<i>'.$product->get_meta($meta_key).'</i>';
+						} else {
+							echo $product->get_meta($meta_key);
+						}
+					?></td>
+				</tr>
+				<?php
+			}
+
+		} elseif ( $type === 'allergen' ) {
+			// Allergenentab altijd tonen!
+			$has_row = true;
+			$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
+			$contains = array();
+			$traces = array();
+
+			if ( $allergens !== false ) {
+				foreach ( $allergens as $allergen ) {
+					if ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'contains' ) {
+						$contains[] = $allergen;
+					} elseif ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'may-contain' ) {
+						$traces[] = $allergen;
+					}
+				}
+			}
+			?>
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th><?php echo 'Dit product bevat'; ?></th>
+				<td>
+				<?php
+					$i = 0;
+					$str = '/';
+					if ( count( $contains ) > 0 ) {
+						foreach ( $contains as $substance ) {
+							$i++;
+							if ( $i === 1 ) {
+								$str = $substance->name;
+							} else {
+								$str .= ', '.$substance->name;
+							}
+						}
+					}
+					echo $str;
+				?>
+				</td>
+			</tr>
+
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th><?php echo 'Kan sporen bevatten van'; ?></th>
+				<td>
+				<?php
+					$i = 0;
+					$str = '/';
+					if ( count( $traces ) > 0 ) {
+						foreach ( $traces as $substance ) {
+							$i++;
+							if ( $i === 1 ) {
+								$str = $substance->name;
+							} else {
+								$str .= ', '.$substance->name;
+							}
+						}
+					}
+					echo $str;
+				?>
+				</td>
+			</tr>
+			<?php
+		}
+		
+		echo '</table>';
+		
+		if ( $has_row ) {
+			return ob_get_clean();
+		} else {
+			ob_end_clean();
+			return false;
+		}
+	}
+
 	// Verhinder bepaalde selecties in de back-end AAN TE PASSEN NAAR DE NIEUWE ID'S
 	add_action( 'admin_footer', 'disable_custom_checkboxes' );
 
@@ -1574,6 +1721,8 @@
 	remove_action( 'woocommerce_archive_description', 'woocommerce_taxonomy_archive_description', 10 );
 	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count', 20 );
 	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30 );
+	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
+	add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_content', 20 );
 	add_action( 'woocommerce_before_shop_loop', 'output_oft_partner_info', 10 );
 	
 	function output_oft_partner_info() {
