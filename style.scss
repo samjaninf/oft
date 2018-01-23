@@ -188,6 +188,10 @@ span.oft-copyright {
 			margin: 2em 0;
 		}
 
+		.oft-partners-row {
+			margin: 1em 0;
+		}
+
 		.oft-partners-th {
 			display: table-cell;
 			width: 125px;
@@ -202,12 +206,12 @@ span.oft-copyright {
 			display: table-cell;
 		}
 
-		.oft-partner-quote {
+		.oft-partners-quote {
 			font-style: italic;
 			background-color: red;
 		}
 
-		.oft-partner-link {
+		.oft-partners-link {
 			text-align: right;
 		}
 
@@ -229,8 +233,8 @@ span.oft-copyright {
 	margin: 0;
 	padding: 0;
 	z-index: 50;
-	width: 75px;
-	height: 75px;
+	width: 100px;
+	height: 100px;
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center center;

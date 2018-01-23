@@ -499,6 +499,7 @@
 		$has_row = false;
 		$alt = 1;
 		ob_start();
+		echo '<h2>OPTIONELE TITEL</h2>';
 		echo '<table class="shop_attributes">';
 
 		if ( $type === 'food' ) {
@@ -601,6 +602,15 @@
 		} else {
 			ob_end_clean();
 			return false;
+		}
+	}
+
+	// Print de inhoud van een tab
+	function output_tab_content( $type ) {
+		if ( get_tab_content( $type ) !== false ) {
+			echo get_tab_content( $type );
+		} else {
+			echo '<i>Geen info beschikbaar.</i>';
 		}
 	}
 
@@ -1563,8 +1573,11 @@
 						$quoted_term_image_id = intval( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ) );
 					}
 					if ( strlen($quoted_term->description) >= 20 and $quoted_term_image_id >= 1 ) {
-						echo '<div class="oft-partner-th">'.wp_get_attachment_image( $quoted_term_image_id, array( '110', '110' ), false ).'</div>';
-						echo '<div class="oft-partner-td oft-partner-quote">&laquo; '.trim($quoted_term->description).' &raquo;';
+						echo '<div class="oft-partners-th">'.wp_get_attachment_image( $quoted_term_image_id, array( '110', '110' ), false ).'</div>';
+						echo '<div class="oft-partners-td">';
+						echo '<p class="oft-partners-quote">';
+						echo '&laquo; '.trim($quoted_term->description).' &raquo;';
+						echo '</p>';
 						$quoted_term_node = intval( get_term_meta( $quoted_term->term_id, 'partner_node', true ) );
 						if ($quoted_term_node > 0 ) {
 							$url = 'https://www.oxfamwereldwinkels.be/node/'.$quoted_term_node;
@@ -1572,9 +1585,9 @@
 							curl_setopt( $handle, CURLOPT_RETURNTRANSFER, true );
 							$response = curl_exec($handle);
 							$code = curl_getinfo( $handle, CURLINFO_HTTP_CODE );
-							if ( $code == 200 ) {
-								// Link staat publiek en mag dus getoond worden
-								echo '<br><a href="'.$url.'" target="_blank" class="oft-partner-link">'.trim($quoted_term->name).'</a>';
+							if ( $code !== 404 ) {
+								// Link staat publiek en mag dus getoond worden WERKT NIET DOOR DE REDIRECTS
+								echo '<a href="'.$url.'" target="_blank"><p class="oft-partners-link">'.trim($quoted_term->name).'</p></a>';
 							}
 							curl_close($handle);	
 						}
@@ -1722,8 +1735,16 @@
 	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count', 20 );
 	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30 );
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
-	add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_content', 20 );
+	// ENKEL VERWIJDEREN INDIEN UPSELLS AANWEZIG?
+	remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20 );
+	add_action( 'woocommerce_single_product_summary', 'output_full_product_description', 20 );
 	add_action( 'woocommerce_before_shop_loop', 'output_oft_partner_info', 10 );
+
+	function output_full_product_description() {
+		echo '<div class="woocommerce-product-details__short-description">';
+		the_content();
+		echo '</div>';
+	}
 	
 	function output_oft_partner_info() {
 		if ( is_tax('product_partner') ) {
@@ -2305,7 +2326,7 @@
 				}
 			}
 			// Sorteer de landen alfabetisch maar bewaar de indices (parent_terms reeds automatisch ontdubbeld dankzij de unieke array_key = term_id)
-			asort( $countries );
+			asort($countries);
 		}
 
 		if ( count($countries) < 1 ) {
