@@ -187,11 +187,12 @@ span.oft-copyright {
 		.oft-partners {
 			margin: 2em 0;
 			display: table;
+			border-collapse: separate;
+			border-spacing: 1em 0;
 		}
 
 		.oft-partners-row {
 			display: table-row;
-			margin: 1em 0;
 		}
 
 		.oft-partners-th {
@@ -223,7 +224,7 @@ span.oft-copyright {
 
 		.oft-icons {
 			position: relative;
-			left: -25px;
+			left: -15px;
 		}
 	}
 }
