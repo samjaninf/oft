@@ -186,9 +186,11 @@ span.oft-copyright {
 
 		.oft-partners {
 			margin: 2em 0;
+			display: table;
 		}
 
 		.oft-partners-row {
+			display: table-row;
 			margin: 1em 0;
 		}
 
@@ -221,7 +223,7 @@ span.oft-copyright {
 
 		.oft-icons {
 			position: relative;
-			left: -15px;
+			left: -25px;
 		}
 	}
 }
@@ -233,8 +235,8 @@ span.oft-copyright {
 	margin: 0;
 	padding: 0;
 	z-index: 50;
-	width: 100px;
-	height: 100px;
+	width: 125px;
+	height: 125px;
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center center;
