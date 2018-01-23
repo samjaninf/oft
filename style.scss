@@ -230,12 +230,12 @@ span.oft-copyright {
 	.wc-tabs-wrapper .wc-tabs {
 		li {
 			background-color: transparent !important;
-			padding: 0 !important;
+			padding: 0 1em 0 0 !important;
 
 			a {
 				background-color: transparent !important;
 				text-decoration: none !important;
-				color: grey !important;
+				color: $grey-text !important;
 			}
 
 			a:hover {
@@ -257,6 +257,14 @@ span.oft-copyright {
 			}
 		}
 	}
+}
+
+.product-item > .product-type-simple:hover {
+	background-colo: transparent !important;
+}
+
+.woocommerce-imagewrapper > a.woocommerce-product-link > img {
+	border: none !important;
 }
 
 
