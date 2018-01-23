@@ -1404,25 +1404,37 @@
 		$partners = get_partner_terms_by_product($product);
 		if ( $partners ) {
 			echo '<div class="oft-partners">';
-				echo '<div class="oft-partners-th">'._n( 'Partner:', 'Partners:', count($partners), 'oft' ).'</div>';
-				echo '<div class="oft-partners-td">'.str_replace( ')', ')</span>', str_replace( '(', '<span class="oft-country">(', implode( ', ', $partners ) ) ).'</div>';
-			echo '</div>';
-
-			$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
-			$quoted_term_image_id = intval( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ) );
-			while( strlen($quoted_term->description) < 20 or $quoted_term_image_id < 1 ) {
-				$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
-				$quoted_term_image_id = intval( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ) );
-			}
-			if ( strlen($quoted_term->description) >= 20 and $quoted_term_image_id >= 1 ) {
-				echo '<div class="oft-partner-image">'.wp_get_attachment_image( $quoted_term_image_id, array( '110', '110' ), false ).'</div>';
-				echo '<div class="oft-partner-quote">&laquo; '.trim($quoted_term->description).' &raquo;';
-				$quoted_term_node = intval( get_term_meta( $quoted_term->term_id, 'partner_node', true ) );
-				if ($quoted_term_node > 0 ) {
-					echo '<br><a href="https://www.oxfamwereldwinkels.be/node/'.$quoted_term_node.'" target="_blank" class="oft-partner-link">'.trim($quoted_term->name).'</a>';
-				}
+				echo '<div class="oft-partners-row">';
+					echo '<div class="oft-partners-th">'._n( 'Partner:', 'Partners:', count($partners), 'oft' ).'</div>';
+					echo '<div class="oft-partners-td">'.str_replace( ')', ')</span>', str_replace( '(', '<span class="oft-country">(', implode( ', ', $partners ) ) ).'</div>';
 				echo '</div>';
-			}
+				echo '<div class="oft-partners-row">';
+					$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
+					$quoted_term_image_id = intval( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ) );
+					while( strlen($quoted_term->description) < 20 or $quoted_term_image_id < 1 ) {
+						$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
+						$quoted_term_image_id = intval( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ) );
+					}
+					if ( strlen($quoted_term->description) >= 20 and $quoted_term_image_id >= 1 ) {
+						echo '<div class="oft-partner-th">'.wp_get_attachment_image( $quoted_term_image_id, array( '110', '110' ), false ).'</div>';
+						echo '<div class="oft-partner-td oft-partner-quote">&laquo; '.trim($quoted_term->description).' &raquo;';
+						$quoted_term_node = intval( get_term_meta( $quoted_term->term_id, 'partner_node', true ) );
+						if ($quoted_term_node > 0 ) {
+							$url = 'https://www.oxfamwereldwinkels.be/node/'.$quoted_term_node;
+							$handle = curl_init($url);
+							curl_setopt( $handle, CURLOPT_RETURNTRANSFER, true );
+							$response = curl_exec($handle);
+							$code = curl_getinfo( $handle, CURLINFO_HTTP_CODE );
+							if ( $code == 200 ) {
+								// Link staat publiek en mag dus getoond worden
+								echo '<br><a href="'.$url.'" target="_blank" class="oft-partner-link">'.trim($quoted_term->name).'</a>';
+							}
+							curl_close($handle);	
+						}
+						echo '</div>';
+					}
+				echo '</div>';
+			echo '</div>';
 		}
 
 		if ( file_exists( WP_CONTENT_DIR.'/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ) ) {
@@ -1519,7 +1531,7 @@
 	// Werkt per woord!
 	add_filter( 'excerpt_length', 'wpdocs_custom_excerpt_length', 1000 );
 	function wpdocs_custom_excerpt_length( $length ) {
-		return 25;
+		return 50;
 	}
 
 	// Definieer extra element met post data voor grids

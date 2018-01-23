@@ -56,6 +56,7 @@ h2.woocommerce-loop-product__title:hover {
 	-webkit-text-underline-position: under !important;
 }
 
+.oft-grid-post-date,
 .oft-grid-post-date-tags {
 	font-size: 80%;
 }
@@ -110,18 +111,25 @@ h2.woocommerce-loop-product__title:hover {
 	}
 }
 
-#menu-oxfam {
-	/* Uitklappijltjes verbergen */
+#menu-oft-hoofdmenu {
+	/* Menu-items onderlijnen bij aanwijzen */
+	.menu-item:hover > a > span {
+		text-decoration: underline;
+		text-underline-position: under;
+		-webkit-text-underline-position: under;
+	}
+
+	/* Uitklappijltjes van submenu's verbergen */
 	.menu-item-has-children span:after {
 		display: none;
 	}
 
-	/* Bovenliggende hoofdpagina van huidige pagina onderlijnen */
-	.current_page_item > a, 
-	.current_page_parent > a {
-		text-decoration: underline;
-		text-underline-position: under;
-		-webkit-text-underline-position: under;
+	/* Huidige pagina en bovenliggende hoofdpagina van huidige pagina onderlijnen in menu */
+	.current-menu-item > a > span,
+	.current-menu-ancestor > a > span {
+		text-decoration: underline !important;
+		text-underline-position: under !important;
+		-webkit-text-underline-position: under !important;
 	}
 }
 
@@ -145,6 +153,11 @@ span.oft-copyright {
 
 .woocommerce .products .product-item .wp-post-image img {
 	border-width: 0px !important;
+}
+
+/* Verberg de automatisch toegevoegde categorieën op de hoofdpagina van de shop NOG NIET SPECIFIEK GENOEG */
+.woocommerce-page .woocommerce-product-subcategories-wrap {
+	display: none;
 }
 
 .woocommerce.single-product {
@@ -175,7 +188,6 @@ span.oft-copyright {
 			margin: 2em 0;
 		}
 
-		.oft-partner-image,
 		.oft-partners-th {
 			display: table-cell;
 			width: 125px;
@@ -191,8 +203,7 @@ span.oft-copyright {
 		}
 
 		.oft-partner-quote {
-			display: table-cell !important;
-			font-style: italic !important;
+			font-style: italic;
 			background-color: red;
 		}
 
@@ -289,17 +300,6 @@ body.home {
 				-webkit-text-underline-position: under !important;
 			}
 		}
-		
-		.wpb_wrapper {
-			transition: all 0.25s ease;
-
-			&:hover {
-				transform: scale(1.05);
-				backface-visibility: hidden !important;
-				-webkit-perspective: 1000 !important;
-				-webkit-font-smoothing: subpixel-antialiased !important;
-			}
-		}
 	}
 
 	/* Titels van de vier hoofdblokken op de homepage wit maken */
@@ -337,7 +337,7 @@ body:not(.single-product):not(.single-post) {
 		z-index: 100;
 	}
 	
-	&:not(.is-header-sticky) #menu-oxfam > li.menu-item > a > span {
+	&:not(.is-header-sticky) #menu-oft-hoofdmenu > li.menu-item > a > span {
 		color: white;
 	}
 
@@ -407,8 +407,7 @@ body.single-post {
 	}
 }
 
-.oft-grid-post-title a:hover,
-.oft-grid-post-excerpt a:hover {
+.oft-grid-post-excerpt a:hover {
 	text-decoration: none !important;
 }
 
