@@ -517,7 +517,7 @@
 				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 					<th><?php
 						$submetas = array( '_fapucis', '_famscis', '_fasat', '_polyl', '_starch', '_sugar' );
-						if ( in_array( $mete_key, $submetas ) ) {
+						if ( in_array( $meta_key, $submetas ) ) {
 							echo '<i style="padding-left: 20px;">waarvan '.$meta_label.'</i>';
 						} else {
 							echo $meta_label;
