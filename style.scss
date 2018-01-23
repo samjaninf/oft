@@ -185,7 +185,7 @@ span.oft-copyright {
 		}
 
 		.oft-partners {
-			margin: 2em 0;
+			margin: 1em 0;
 			display: table;
 			border-collapse: separate;
 			border-spacing: 0 1em;
@@ -227,12 +227,30 @@ span.oft-copyright {
 		}
 	}
 
-	.wc-tabs {
+	.wc-tabs-wrapper .wc-tabs {
 		li {
 			background-color: transparent !important;
+			padding: 0;
 
-			a[class$="_tab active"] {
-				color: black !important;
+			a {
+				background-color: transparent !important;
+				text-decoration: none !important;
+				color: grey;
+			}
+
+			a:hover {
+				text-decoration: underline !important;
+				text-underline-position: under !important;
+				-webkit-text-underline-position: under !important;
+			}
+		}
+
+		li.active {
+			background-color: transparent !important;
+			padding: 0;
+
+			a {
+				color: black;
 				text-decoration: underline !important;
 				text-underline-position: under !important;
 				-webkit-text-underline-position: under !important;
