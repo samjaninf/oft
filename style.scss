@@ -429,7 +429,7 @@ body:not(.single-product):not(.single-post) {
 		.fw-special-title {
 			color: white !important;
 			font-size: 72px;
-			width: 100%;
+			max-width: 100%;
 			// text-shadow: 3px 3px #888888;
 		}
 
