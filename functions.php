@@ -1577,9 +1577,7 @@
 					if ( strlen($quoted_term->description) >= 20 and $quoted_term_image_id >= 1 ) {
 						echo '<div class="oft-partners-th">'.wp_get_attachment_image( $quoted_term_image_id, array( '110', '110' ), false ).'</div>';
 						echo '<div class="oft-partners-td">';
-						echo '<p class="oft-partners-quote">';
-						echo '&laquo; '.trim($quoted_term->description).' &raquo;';
-						echo '</p>';
+						echo '<p class="oft-partners-quote">'.trim($quoted_term->description).'</p>';
 						$quoted_term_node = intval( get_term_meta( $quoted_term->term_id, 'partner_node', true ) );
 						if ($quoted_term_node > 0 ) {
 							$url = 'https://www.oxfamwereldwinkels.be/node/'.$quoted_term_node;

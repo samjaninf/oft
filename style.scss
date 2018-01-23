@@ -209,9 +209,8 @@ span.oft-copyright {
 			display: table-cell;
 		}
 
-		.oft-partners-quote {
+		p.oft-partners-quote {
 			font-style: italic;
-			background-color: red;
 		}
 
 		.oft-partners-link {
@@ -236,8 +235,8 @@ span.oft-copyright {
 	margin: -10px;
 	padding: 0;
 	z-index: 50;
-	width: 150px;
-	height: 150px;
+	width: 100px;
+	height: 100px;
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center center;
