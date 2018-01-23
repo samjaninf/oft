@@ -226,6 +226,19 @@ span.oft-copyright {
 			left: -10px;
 		}
 	}
+
+	.wc-tabs {
+		li {
+			background-color: transparent !important;
+
+			a {
+				color: black !important;
+				text-decoration: underline !important;
+				text-underline-position: under !important;
+				-webkit-text-underline-position: under !important;
+			}
+		}
+	}
 }
 
 
