@@ -99,7 +99,7 @@ article.post .wpb_text_column {
 	word-break: break-word;
 }
 
-.oft-coffee-featured #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-text {
+#page .oft-coffee-featured .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-text {
 	font-size: 18px !important;
 	font-weight: bold !important;
 }
@@ -186,14 +186,15 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 }
 
 .bt-content-area .breadcrumbs {
-	span {
+	span,
+	span a {
 		letter-spacing: 1px !important;
-
-		&.separator,
-		&.last-item {
-			color: black;
-			padding: 0px;
-		}
+	}
+	
+	span.separator,
+	span.last-item {
+		color: black;
+		padding: 0px 1px;
 	}
 }
 
@@ -612,14 +613,14 @@ div.site-main form.wpcf7-form p:not(:first-of-type) > label {
 
 @media (max-width: 768px) {
 	.oft-coffee-featured {
-		.vc_column-inner {
+		.wpb_column:not(.oft-coffee-first) .vc_column-inner {
 			/* Marge boven kolommen wat verhogen, aangezien ze nu collapsen */
 			margin-top: 200px;
+		}
 
-			.vc_custom_1516801093731  {
-				/* Marge bovenaan eerste kolom daarentegen een beetje verminderen */
-				margin-top: 100px !important;
-			}
+		.wpb_column.oft-coffee-first .vc_column-inner  {
+			/* Marge bovenaan eerste kolom daarentegen een beetje verminderen */
+			margin-top: 100px;
 		}
 	}
 }
