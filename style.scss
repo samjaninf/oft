@@ -397,13 +397,17 @@ body.home {
 	}
 
 	.featured-box-alignment {
-		max-width: 200px;
 		margin: 0 auto;
 
 		.icon-wrap {
 			display: none !important;
 		}
 	}
+
+	.featured-box-text {
+		max-width: 200px;
+	}
+
 }
 
 body:not(.single-product):not(.single-post) {
@@ -429,7 +433,7 @@ body:not(.single-product):not(.single-post) {
 		color: white;
 	}
 
-	.bt-default-page {
+	section.bt-main-row {
 		padding-top: 0;
 		padding-bottom: 0;
 	}

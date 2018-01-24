@@ -25,7 +25,8 @@ $alone_sidebar_position = function_exists( 'fw_ext_sidebars_get_current_position
 		<div class="row">
 			<div class="bt-content-area <?php alone_get_content_class( 'content', $alone_sidebar_position ); ?>">
 				<div class="bt-col-inner">
-					<?php // if( function_exists('fw_ext_breadcrumbs') ) fw_ext_breadcrumbs(); ?>
+					<!-- GEWIJZIGD: Breadcrumb weer tonen -->
+					<?php if ( function_exists('woocommerce_breadcrumb') ) woocommerce_breadcrumb(); ?>
 					<?php
 						/**
 						 * woocommerce_before_main_content hook.
