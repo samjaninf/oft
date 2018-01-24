@@ -18,6 +18,7 @@ $oxfam-green: #61a534;
 
 $black-title: #1a1a1a;
 $grey-text: #4d4d4d;
+$grey-background: #f1f1f1;
 $link-black: #000000;
 $link-blue: #0085ea;
 
@@ -35,18 +36,19 @@ h1, h2, h3, h4, h5, h6 {
 	font-family: Rubik !important;
 	font-weight: lighter;
 	letter-spacing: 1px !important;
-	color: $black-title !important;
+	color: $black-title;
 }
 
 body {
 	font-family: Rubik !important;
 	font-weight: lighter;
 	letter-spacing: 1px !important;
-	color: $grey-text !important;
+	color: $grey-text;
 }
 
 p {
 	line-height: 1.75em !important;
+	color: $grey-text;
 }
 
 .widget .widget-title span::after {
@@ -74,7 +76,11 @@ h2.woocommerce-loop-product__title:hover {
 	text-align: center;
 }
 
-article.post {
+.oft-title-size {
+	font-size: 36px;
+}
+
+article.post .wpb_text_column {
 	h3 {
 		font-size: 24px;
 	}
@@ -88,6 +94,10 @@ article.post {
 
 .featured-box-title {
 	margin-bottom: 1em !important;
+}
+
+#page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-title {
+	font-size: 48px !important;
 }
 
 /* WERKT NIET, ALONE BLIJFT OVERRULEN */
@@ -187,7 +197,7 @@ article.post {
 /* Copyright iets kleiner en bleker */
 span.oft-copyright {
 	font-size: 90%;
-	color: lightgrey;
+	color: $grey-background;
 }
 
 
@@ -402,8 +412,8 @@ body.home {
 
 body:not(.single-product):not(.single-post) {
 	.bt-header-container.fw-absolute-header.fw-sticky-header {
-		border-bottom: 1px solid darkgrey;
-		// z-index: 1000;
+		// border-bottom: 1px solid $grey-text;
+		box-shadow: 0 1px 1px -1px $grey-text;
 	}
 	
 	.fw-title-bar::before,
@@ -454,11 +464,11 @@ body:not(.single-product):not(.single-post) {
 body.single-product,
 body.single-post {
 	.bt-header-top-bar {
-		background-color: lightgrey;
+		background-color: $grey-background;
 	}
 
 	.bt-header-container.fw-absolute-header.fw-sticky-header {
-		border-bottom: 1px solid lightgrey;
+		border-bottom: 1px solid $grey-background;
 	}
 
 	// Door absolute header moeten we genoeg padding voorzien bovenaan hoofdinhoud!
