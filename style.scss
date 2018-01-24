@@ -86,13 +86,12 @@ article.post {
 	}
 }
 
-.page-id-811 .oft-coffee-featured {
-	#oft-left .featured-box-title,
-	#oft-center .featured-box-title,
-	#oft-right .featured-box-title {
-		font-size: 36px !important;
-	}
+.featured-box-title {
+	margin-bottom: 1em !important;
+}
 
+/* WERKT NIET, ALONE BLIJFT OVERRULEN */
+.page-id-811 .oft-coffee-featured {
 	.featured-box-text {
 		font-size: 18px !important;
 	}
@@ -167,6 +166,15 @@ article.post {
 		text-decoration: underline !important;
 		text-underline-position: under !important;
 		-webkit-text-underline-position: under !important;
+	}
+}
+
+.bt-content-area .breadcrumbs {
+	font-size: 70%;
+
+	span.separator,
+	span.last-item {
+		color: black;
 	}
 }
 
@@ -380,12 +388,6 @@ body.home {
 				-webkit-text-underline-position: under !important;
 			}
 		}
-	}
-
-	/* Titels van de vier hoofdblokken op de homepage wit maken */
-	.featured-box-title {
-		color: white !important;
-		margin-bottom: 1em;
 	}
 
 	.featured-box-alignment {

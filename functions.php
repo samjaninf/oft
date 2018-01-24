@@ -103,6 +103,7 @@
 					window.location.href = jQuery(this).find( '.vc_btn3-shape-rounded.vc_btn3-style-flat' ).attr('href'); 
 					return false;
 				});
+				jQuery( '.featured-box-title' ).css( 'font-size': '36px' );
 			});
 		</script>
 		<?php
