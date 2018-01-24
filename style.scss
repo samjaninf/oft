@@ -100,7 +100,7 @@ article.post .wpb_text_column {
 }
 
 #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-text {
-	font-size: 20px !important;
+	font-size: 18px !important;
 	font-weight: bold !important;
 }
 
@@ -593,11 +593,9 @@ div.site-main form.wpcf7-form p:not(:first-of-type) > label {
 /*******************/
 
 @media (max-width: 768) {
-	.oft-coffee-featured {
-		.vc_column-inner {
-			/* Marge bovenaan beetje verminderen */
-			margin-top: 100px;
-		}
+	.oft-coffee-featured .vc_column-inner .vc_custom_1516801093731  {
+		/* Marge bovenaan van eerste blokje beetje verminderen */
+		margin-top: 100px;
 	}
 }
 
