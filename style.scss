@@ -396,12 +396,12 @@ body.home {
 		}
 	}
 
-	.featured-box-alignment {
-		margin: 0 auto;
+	.icon-wrap {
+		display: none !important;
+	}
 
-		.icon-wrap {
-			display: none !important;
-		}
+	.entry-box-wrap {
+		margin: 0 auto;
 	}
 
 	.featured-box-text {

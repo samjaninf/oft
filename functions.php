@@ -83,7 +83,7 @@
 		remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', '_bearsthemes_yith_add_compare_button', 10 );
 		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
 		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
-		add_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 10 );
+		// add_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 10 );
 		remove_action( 'woocommerce_before_shop_loop_item', 'woocommerce_template_loop_product_link_open', 10 );
 		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_product_link_close', 5 );
 		remove_action( 'woocommerce_after_shop_loop_item_title', '_bearsthemes_woocommerce_get_taxonomy_loop', 10 );
@@ -480,7 +480,7 @@
 			if ( $unit === 'cl' ) {
 				$suffix = 'ml';
 			} else {
-				$suffix = $unit;
+				$suffix = 'g';
 			}
 			$tabs['food_info'] = array(
 				'title' 	=> 'Voedingswaarde per 100 '.$suffix,
@@ -512,6 +512,36 @@
 		echo '<table class="shop_attributes">';
 
 		if ( $type === 'food' ) {
+			// Blokje tonen van zodra energie ingevuld?
+			if ( intval( $product->get_meta('_energy') ) > 0 ) {
+				$has_row = true;
+			}
+			
+			if ( $product->get_meta('_net_unit') === 'cl' ) {
+				$unit = 'ml';
+			} else {
+				$unit = 'g';
+			}
+
+			?>
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th><?php echo __( 'Inhoud', 'oft' ); ?></th>
+				<td><?php echo $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'); ?></td>
+			</tr>
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th><?php echo __( 'Ingrediënten', 'oft' ); ?></th>
+				<td><?php echo $product->get_meta('_ingredients'); ?></td>
+			</tr>
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th><?php echo __( 'Fairtradepercentage', 'oft' ); ?></th>
+				<td><?php echo $product->get_meta('_fairtrade_share').' %' ?></td>
+			</tr>
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th><?php echo __( 'Energie', 'oft' ); ?></th>
+				<td><?php echo $product->get_meta('_energy').' kJ' ?></td>
+			</tr>
+			<?php
+
 			$product_metas = array(
 				'_fat' => 'Vetten',
 				'_fapucis' => 'Meervoudig onverzadigde vetzuren',
@@ -524,33 +554,31 @@
 				'_fibtg' => 'Vezels',
 				'_pro' => 'Eiwitten',
 				'_salteq' => 'Zout',
-				'_energy' => 'Energie',
-				'_ingredients' => __( 'Ingrediënten', 'oft' ),
-				'_net_content' => __( 'Inhoud', 'oft' ),
-				'_net_unit' => __( 'Eenheid', 'oft' ),
-				'_fairtrade_share' => __( 'Fairtradepercentage', 'oft' ),
 			);
 
 			foreach ( $product_metas as $meta_key => $meta_label ) {
-				?>
-				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th><?php
-						$submetas = array( '_fapucis', '_famscis', '_fasat', '_polyl', '_starch', '_sugar' );
-						if ( in_array( $meta_key, $submetas ) ) {
-							echo '<i style="padding-left: 20px;">waarvan '.mb_strtolower($meta_label).'</i>';
-						} else {
-							echo $meta_label;
-						}
-					?></th>
-					<td><?php
-						if ( in_array( $meta_key, $submetas ) ) {
-							echo '<i>'.$product->get_meta($meta_key).'</i>';
-						} else {
-							echo $product->get_meta($meta_key);
-						}
-					?></td>
-				</tr>
-				<?php
+				// Check of er een (nul)waarde ingesteld is
+				if ( $product->get_meta($meta_key) !== false ) {
+					?>
+					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+						<th><?php
+							$submetas = array( '_fapucis', '_famscis', '_fasat', '_polyl', '_starch', '_sugar' );
+							if ( in_array( $meta_key, $submetas ) ) {
+								echo '<i style="padding-left: 20px;">waarvan '.mb_strtolower($meta_label).'</i>';
+							} else {
+								echo $meta_label;
+							}
+						?></th>
+						<td><?php
+							if ( in_array( $meta_key, $submetas ) ) {
+								echo '<i>'.$product->get_meta($meta_key).' g</i>';
+							} else {
+								echo $product->get_meta($meta_key).' g';
+							}
+						?></td>
+					</tr>
+					<?php
+				}
 			}
 
 			$product_attributes = array(
@@ -760,10 +788,14 @@
 							pass = false;
 							msg += '* Je moet de productcategorie nog aanvinken!\n';
 						}
-						/* Eventueel: check ook of het fairtradepercentageveld niet leeg gebleven is */
 						if ( jQuery( '#general_product_data' ).find( 'input#_fairtrade_share' ).val() == '' ) {
 							pass = false;
 							msg += '* Je moet het fairtradepercentage nog ingeven!\n';
+						}
+						/* UITSCHAKELEN BIJ WIJNTJES */
+						if ( jQuery( '#general_product_data' ).find( 'textarea#_ingredients' ).val() == '' ) {
+							pass = false;
+							msg += '* Je moet de ingrediëntenlijst nog ingeven!\n';
 						}
 
 						if ( pass == false ) {
@@ -900,6 +932,53 @@
 	#################
 	#  WOOCOMMERCE  #
 	#################
+
+	// Voeg sorteren op artikelnummer toe aan de opties op cataloguspagina's
+	add_filter( 'woocommerce_get_catalog_ordering_args', 'add_extra_sorting_filters' );
+
+	function add_extra_sorting_filters( $args ) {
+		$orderby_value = isset( $_GET['orderby'] ) ? wc_clean( $_GET['orderby'] ) : apply_filters( 'woocommerce_default_catalog_orderby', get_option( 'woocommerce_default_catalog_orderby' ) );
+
+		if ( 'alpha' === $orderby_value ) {
+			$args['orderby'] = 'title';
+			$args['order'] = 'ASC';
+		}
+
+		if ( 'alpha-desc' === $orderby_value ) {
+			$args['orderby'] = 'title';
+			$args['order'] = 'DESC';
+		}
+
+		if ( 'sku' === $orderby_value ) {
+			$args['orderby'] = 'meta_value_num';
+			$args['order'] = 'ASC';
+			$args['meta_key'] = '_sku';
+		}
+
+		if ( 'sku-desc' === $orderby_value ) {
+			$args['orderby'] = 'meta_value_num';
+			$args['order'] = 'DESC';
+			$args['meta_key'] = '_sku';
+		}
+
+		return $args;
+	}
+	
+	add_filter( 'woocommerce_catalog_orderby', 'sku_sorting_orderby' );
+	add_filter( 'woocommerce_default_catalog_orderby_options', 'sku_sorting_orderby' );
+
+	function sku_sorting_orderby( $sortby ) {
+		unset( $sortby['popularity'] );
+		unset( $sortby['rating'] );
+		$sortby['date'] = 'Laatst toegevoegd';
+		$sortby['alpha'] = 'Van A tot Z';
+		$sortby['alpha-desc'] = 'Van Z tot A';
+		$sortby['price'] = 'Stijgende prijs';
+		$sortby['price-desc'] = 'Dalende prijs';
+		$sortby['sku'] = 'Stijgend artikelnummer';
+		$sortby['sku-desc'] = 'Dalend artikelnummer';
+		return $sortby;
+	}
 
 	// Voeg ook een kolom toe aan het besteloverzicht in de back-end
 	add_filter( 'manage_edit-product_columns', 'add_attribute_columns', 20, 1 );
@@ -1313,7 +1392,8 @@
 		$suffix = ' &nbsp; <small><u>'.mb_strtoupper( __( 'per 100 gram', 'oft-admin' ) ).'</u></small>';
 		
 		$one_decimal_args = array( 
-			'data_type' => 'decimal',
+			// Niet doen, zorgt ervoor dat waardes met een punt niet goed uitgelezen worden in back-endformulier
+			// 'data_type' => 'decimal',
 			'type' => 'number',
 			'custom_attributes' => array(
 				'step'	=> '0.1',
@@ -1435,7 +1515,6 @@
 					array( 
 						'id' => '_salteq',
 						'label' => __( 'Zout (g)', 'oft-admin' ).$suffix,
-						'data_type' => 'decimal',
 						'type' => 'number',
 						'custom_attributes' => array(
 							'step' => '0.001',
@@ -1453,6 +1532,8 @@
 		// Laatste parameter: val expliciet niét terug op de (verouderde) databasewaarden!
 		update_unit_price( $post_id, $_POST['_regular_price'], $_POST['_net_content'], $_POST['_net_unit'], false );
 		
+		write_log($_POST);
+
 		$regular_meta_keys = array(
 			'_net_unit',
 			'_net_content',
@@ -1499,8 +1580,9 @@
 		);
 
 		foreach ( $decimal_meta_keys as $meta_key ) {
-			if ( ! empty( $_POST[$meta_key] ) ) {
-				update_post_meta( $post_id, $meta_key, esc_attr( number_format( str_replace( ',', '.', $_POST[$meta_key] ), 1, '.', '' ) ) );
+			// Geen !empty() gebruiken want we willen nullen expliciet kunnen opslaan!
+			if ( $_POST[$meta_key] !== '' ) {
+				update_post_meta( $post_id, $meta_key, esc_attr( number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 1, '.', '' ) ) );
 			} else {
 				delete_post_meta( $post_id, $meta_key );
 			}
@@ -1512,7 +1594,7 @@
 
 		foreach ( $price_meta_keys as $meta_key ) {
 			if ( ! empty( $_POST[$meta_key] ) ) {
-				update_post_meta( $post_id, $meta_key, esc_attr( number_format( str_replace( ',', '.', $_POST[$meta_key] ), 2, '.', '' ) ) );
+				update_post_meta( $post_id, $meta_key, esc_attr( number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 2, '.', '' ) ) );
 			} else {
 				delete_post_meta( $post_id, $meta_key );
 			}
@@ -1525,8 +1607,9 @@
 		);
 
 		foreach ( $high_precision_meta_keys as $meta_key ) {
-			if ( ! empty( $_POST[$meta_key] ) ) {
-				update_post_meta( $post_id, $meta_key, esc_attr( number_format( str_replace( ',', '.', $_POST[$meta_key] ), 3, '.', '' ) ) );
+			// Geen !empty() gebruiken want we willen nullen expliciet kunnen opslaan!
+			if ( $_POST[$meta_key] !== '' ) {
+				update_post_meta( $post_id, $meta_key, esc_attr( number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 3, '.', '' ) ) );
 			} else {
 				delete_post_meta( $post_id, $meta_key );
 			}
@@ -1704,7 +1787,7 @@
 	}
 
 	// Aantal producten per pagina wijzigen
-	add_filter( 'loop_shop_per_page', create_function( '$cols', 'return 30;' ), 20 );
+	add_filter( 'loop_shop_per_page', create_function( '$cols', 'return 50;' ), 20 );
 
 	// Aantal gerelateerde producten wijzigen
 	add_filter( 'woocommerce_output_related_products_args', 'alter_related_products_args', 20 );
