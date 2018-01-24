@@ -78,6 +78,7 @@ h2.woocommerce-loop-product__title:hover {
 
 .oft-title-size {
 	font-size: 36px;
+	margin-bottom: 0.5em;
 }
 
 article.post .wpb_text_column {
@@ -412,8 +413,8 @@ body.home {
 
 body:not(.single-product):not(.single-post) {
 	.bt-header-container.fw-absolute-header.fw-sticky-header {
-		// border-bottom: 1px solid $grey-text;
-		box-shadow: 0 1px 1px -1px $grey-text;
+		// border-bottom: 1px solid white;
+		box-shadow: 0 1px 1px -1px $grey-background;
 	}
 	
 	.fw-title-bar::before,
@@ -538,6 +539,7 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	padding: 0 !important;
 	background-color: transparent !important;
 	color: deepskyblue !important;
+	font-size: 1em !important;
 }
 
 #page .wpb_theme_custom_element.wpb_posts_grid_resizable .vc-custom-inner-wrap .grid-item.item-skin-products-default .grid-item-inner .background-image-backend::after {
