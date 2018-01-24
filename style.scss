@@ -96,6 +96,7 @@ article.post .wpb_text_column {
 #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-title {
 	font-size: 36px !important;
 	margin-bottom: 0.5em !important;
+	word-break: break-word;
 }
 
 body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-title {
@@ -400,12 +401,9 @@ body.home {
 		display: none !important;
 	}
 
-	.entry-box-wrap {
-		margin: 0 auto;
-	}
-
 	.featured-box-text {
 		max-width: 200px;
+		margin: 0 auto;
 	}
 
 }
@@ -583,6 +581,20 @@ div.site-main form.wpcf7-form p:not(:first-of-type) > label {
 	color: black;
 }
 
+
+
+/*******************/
+/*  MOBILE TWEAKS  */
+/*******************/
+
+@media (max-width: 768) {
+	.oft-coffee-featured {
+		.vc_column-inner .vc_custom_1516801093731 {
+			/* Marge bovenaan beetje verminderen */
+			margin-top: 100px;
+		}
+	}
+}
 
 
 
