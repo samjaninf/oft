@@ -45,6 +45,10 @@ body {
 	color: $grey-text !important;
 }
 
+p {
+	line-height: 1.75em !important;
+}
+
 .widget .widget-title span::after {
 	display: none;
 }
@@ -83,7 +87,9 @@ article.post {
 }
 
 .page-id-811 .oft-coffee-featured {
-	.featured-box-title {
+	#oft-left .featured-box-title,
+	#oft-center .featured-box-title,
+	#oft-right .featured-box-title {
 		font-size: 36px !important;
 	}
 
@@ -520,7 +526,6 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	padding: 0 !important;
 	background-color: transparent !important;
 	color: deepskyblue !important;
-	font-size: 1.1em !important;
 }
 
 #page .wpb_theme_custom_element.wpb_posts_grid_resizable .vc-custom-inner-wrap .grid-item.item-skin-products-default .grid-item-inner .background-image-backend::after {
