@@ -34,21 +34,26 @@ $see-through-red: rgba(250, 22, 50, 0.9);
 
 h1, h2, h3, h4, h5, h6 {
 	font-family: Rubik !important;
-	font-weight: lighter;
 	letter-spacing: 1px !important;
+	font-weight: lighter;
 	color: $black-title;
 }
 
 body {
 	font-family: Rubik !important;
-	font-weight: lighter;
 	letter-spacing: 1px !important;
+	font-weight: lighter;
 	color: $grey-text;
 }
 
 p {
 	line-height: 1.75em !important;
 	color: $grey-text;
+}
+
+blockquote {
+	font-style: italic;
+	border-left: none;
 }
 
 .widget .widget-title span::after {
@@ -76,11 +81,6 @@ h2.woocommerce-loop-product__title:hover {
 	text-align: center;
 }
 
-.oft-title-size {
-	font-size: 36px;
-	margin-bottom: 0.5em;
-}
-
 article.post .wpb_text_column {
 	h3 {
 		font-size: 24px;
@@ -93,20 +93,15 @@ article.post .wpb_text_column {
 	}
 }
 
-.featured-box-title {
+#page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-title {
+	font-size: 36px !important;
+	margin-bottom: 0.5em !important;
+}
+
+body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-title {
 	margin-bottom: 1em !important;
 }
 
-#page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-title {
-	font-size: 48px !important;
-}
-
-/* WERKT NIET, ALONE BLIJFT OVERRULEN */
-.page-id-811 .oft-coffee-featured {
-	.featured-box-text {
-		font-size: 18px !important;
-	}
-}
 
 
 
