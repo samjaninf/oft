@@ -186,12 +186,14 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 }
 
 .bt-content-area .breadcrumbs {
-	letter-spacing: 1px !important;
+	span {
+		letter-spacing: 1px !important;
 
-	span.separator,
-	span.last-item {
-		color: black;
-		padding: 0px;
+		&.separator,
+		&.last-item {
+			color: black;
+			padding: 0px;
+		}
 	}
 }
 
@@ -613,11 +615,11 @@ div.site-main form.wpcf7-form p:not(:first-of-type) > label {
 		.vc_column-inner {
 			/* Marge boven kolommen wat verhogen, aangezien ze nu collapsen */
 			margin-top: 200px;
-		}
-		
-		.vc_custom_1516801093731  {
-			/* Marge bovenaan eerste kolom daarentegen een beetje verminderen */
-			margin-top: 50px !important;
+
+			.vc_custom_1516801093731  {
+				/* Marge bovenaan eerste kolom daarentegen een beetje verminderen */
+				margin-top: 100px !important;
+			}
 		}
 	}
 }

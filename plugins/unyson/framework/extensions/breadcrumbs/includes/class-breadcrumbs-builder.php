@@ -95,7 +95,9 @@ class Breadcrumbs_Builder {
 
 		$return = array(
 			0 => array(
-				'name' => $this->settings['labels']['homepage-title'],
+				// GEWIJZIGD: Titel rechtstreeks overschijrven (werkt niet via settings)
+				// 'name' => $this->settings['labels']['homepage-title'],
+				'name' => 'Home',
 				'url'  => esc_url( home_url('/') ),
 				'type' => 'front_page'
 			),
