@@ -99,9 +99,13 @@ article.post .wpb_text_column {
 	word-break: break-word;
 }
 
-#page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-text {
+.oft-coffee-featured #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-text {
 	font-size: 18px !important;
 	font-weight: bold !important;
+}
+
+.oft-coffee-featured .vc_column-inner {
+	margin-top: 150px;
 }
 
 body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-title {
@@ -182,12 +186,24 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 }
 
 .bt-content-area .breadcrumbs {
-	font-size: 70%;
+	letter-spacing: 1px !important;
 
 	span.separator,
 	span.last-item {
 		color: black;
+		padding: 0px;
 	}
+}
+
+/* Style WooCommerce-breadcrumbs zoals Unyson-breadcrumbs */
+.woocommerce .woocommerce-breadcrumb,
+.woocommerce .woocommerce-breadcrumb a {
+	letter-spacing: 1px !important;
+	color: black;
+	font-size: 16px;
+	font-weight: 300;
+	line-height: 32px;
+	margin: 12px 0px;
 }
 
 
@@ -592,10 +608,17 @@ div.site-main form.wpcf7-form p:not(:first-of-type) > label {
 /*  MOBILE TWEAKS  */
 /*******************/
 
-@media (max-width: 768) {
-	.oft-coffee-featured .vc_column-inner .vc_custom_1516801093731  {
-		/* Marge bovenaan van eerste blokje beetje verminderen */
-		margin-top: 100px;
+@media (max-width: 768px) {
+	.oft-coffee-featured {
+		.vc_column-inner {
+			/* Marge boven kolommen wat verhogen, aangezien ze nu collapsen */
+			margin-top: 200px;
+		}
+		
+		.vc_custom_1516801093731  {
+			/* Marge bovenaan eerste kolom daarentegen een beetje verminderen */
+			margin-top: 50px !important;
+		}
 	}
 }
 
