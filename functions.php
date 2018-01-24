@@ -471,16 +471,16 @@
 	
 	function add_extra_product_tabs( $tabs ) {
 		global $product;
-		// Schakel lange beschrijving uit (werd naar boven verplaatst)
+		// Schakel lange beschrijving uit (werd naar boven verplaatst) TENZIJ VOOR WIJNEN => SOMMELIERINFO?
 		unset($tabs['description']);
 
 		// Voeg tabje met voedingswaardes toe (indien niet leeg)
 		if ( get_tab_content('food') !== false ) {
-			$eh = $product->get_attribute( 'pa_eenheid' );
-			if ( $eh === 'L' ) {
+			$unit = $product->get_meta( '_net_unit' );
+			if ( $unit === 'cl' ) {
 				$suffix = 'ml';
-			} elseif ( $eh === 'KG' ) {
-				$suffix = 'g';
+			} else {
+				$suffix = $unit;
 			}
 			$tabs['food_info'] = array(
 				'title' 	=> 'Voedingswaarde per 100 '.$suffix,
@@ -508,26 +508,36 @@
 		$has_row = false;
 		$alt = 1;
 		ob_start();
-		echo '<h2>OPTIONELE TITEL</h2>';
+		echo '<p>Blablabla, ik ben de inleiding.</p>';
 		echo '<table class="shop_attributes">';
 
 		if ( $type === 'food' ) {
 			$product_metas = array(
-				'_fapucis' => 'Meervoudig onverzadigd',
-				'_famscis' => 'Enkelvoudig onverzadigd',
-				'_fasat' => 'Verzadigd',
+				'_fat' => 'Vetten',
+				'_fapucis' => 'Meervoudig onverzadigde vetzuren',
+				'_famscis' => 'Enkelvoudig onverzadigde vetzuren',
+				'_fasat' => 'Verzadigd vetzuren',
 				'_polyl' => 'Polyolen',
+				'_choavl' => 'Koolhydraten',
 				'_starch' => 'Zetmeel',
 				'_sugar' => 'Suikers',
+				'_fibtg' => 'Vezels',
+				'_pro' => 'Eiwitten',
+				'_salteq' => 'Zout',
+				'_energy' => 'Energie',
+				'_ingredients' => __( 'Ingrediënten', 'oft' ),
+				'_net_content' => __( 'Inhoud', 'oft' ),
+				'_net_unit' => __( 'Eenheid', 'oft' ),
+				'_fairtrade_share' => __( 'Fairtradepercentage', 'oft' ),
 			);
-			
+
 			foreach ( $product_metas as $meta_key => $meta_label ) {
 				?>
 				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 					<th><?php
 						$submetas = array( '_fapucis', '_famscis', '_fasat', '_polyl', '_starch', '_sugar' );
 						if ( in_array( $meta_key, $submetas ) ) {
-							echo '<i style="padding-left: 20px;">waarvan '.$meta_label.'</i>';
+							echo '<i style="padding-left: 20px;">waarvan '.mb_strtolower($meta_label).'</i>';
 						} else {
 							echo $meta_label;
 						}
@@ -539,6 +549,20 @@
 							echo $product->get_meta($meta_key);
 						}
 					?></td>
+				</tr>
+				<?php
+			}
+
+			$product_attributes = array(
+				'bio' => 'Biogecertificeerd',
+				'fairtrade' => 'Fairtradegelabeld',
+			);
+
+			foreach ( $product_attributes as $attribute_key => $attribute_label ) {
+				?>
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th><?php echo $attribute_label; ?></th>
+					<td><?php echo $product->get_attribute($attribute_key); ?></td>
 				</tr>
 				<?php
 			}
@@ -727,18 +751,23 @@
 						jQuery( '#shipping_product_data' ).find( 'select#product_shipping_class' ).prop( 'disabled', false );
 
 						var pass = true;
+						var msg = 'Hold your horses, er zijn enkele issues:\n';
 						if ( jQuery( '#product_partner-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
 							pass = false;
-							alert('Je moet de herkomst nog aanvinken!');
+							msg += '* Je moet de herkomst nog aanvinken!\n';
 						}
 						if ( jQuery( '#product_cat-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
 							pass = false;
-							alert('Je moet de productcategorie nog aanvinken!');
+							msg += '* Je moet de productcategorie nog aanvinken!\n';
 						}
 						/* Eventueel: check ook of het fairtradepercentageveld niet leeg gebleven is */
 						if ( jQuery( '#general_product_data' ).find( 'input#_fairtrade_share' ).val() == '' ) {
 							pass = false;
-							alert('Je moet het fairtradepercentage nog ingeven!');
+							msg += '* Je moet het fairtradepercentage nog ingeven!\n';
+						}
+
+						if ( pass == false ) {
+							alert(msg);
 						}
 
 						return pass;
@@ -1109,14 +1138,15 @@
 				)
 			);
 
-			woocommerce_wp_textarea_input(
-				array( 
-					'id' => '_promo_text',
-					'label' => __( 'Actuele promotekst', 'oft-admin' ),
-					'desc_tip' => true,
-					'description' => __( 'Dit tekstje dient enkel om te tonen aan particulieren in de wijnkiezer en de webshops. Te combineren met de actieprijs en -periode hierboven.', 'oft-admin' ),
-				)
-			);
+			// PAS INSCHAKELEN INDIEN WIJNKIEZER AANGESLOTEN
+			// woocommerce_wp_textarea_input(
+			// 	array( 
+			// 		'id' => '_promo_text',
+			// 		'label' => __( 'Actuele promotekst', 'oft-admin' ),
+			// 		'desc_tip' => true,
+			// 		'description' => __( 'Dit tekstje dient enkel om te tonen aan particulieren in de wijnkiezer en de webshops. Te combineren met de actieprijs en -periode hierboven.', 'oft-admin' ),
+			// 	)
+			// );
 
 		echo '</div>';
 
@@ -1287,7 +1317,7 @@
 			'type' => 'number',
 			'custom_attributes' => array(
 				'step'	=> '0.1',
-				'min'	=> '0.1',
+				'min'	=> '0.0',
 				'max'	=> '100.0',
 			),
 		);
@@ -1379,7 +1409,6 @@
 							'step' => 'any',
 							'min' => '1',
 							'max' => '10000',
-							'readonly' => true,
 						),
 					)
 				);
@@ -1410,7 +1439,7 @@
 						'type' => 'number',
 						'custom_attributes' => array(
 							'step' => '0.001',
-							'min' => '0.001',
+							'min' => '0.000',
 							'max' => '100.000',
 						),
 					)
@@ -1813,11 +1842,9 @@
 		// Druiven kunnen door de meta_boxlogica enkel op wijn ingesteld worden, dus geen nood om de categorie te checken
 		$ingredients_text = '<p style="font-size: 11pt;">';
 		if ( $grapes = get_grape_terms_by_product($product) ) {
-			$ingredients_text .= 'Samenstelling: '.implode( ', ', $grapes ).'</p>';
-		} elseif ( ! empty( $product->get_attribute('ingredienten') ) ) {
-			$ingredients_text .= 'Ingrediënten: '.$product->get_attribute('ingredienten').'.</p>';
+			$ingredients_text .= __( 'Samenstelling:', 'oft' ).' '.implode( ', ', $grapes ).'</p>';
 		} elseif ( ! empty( $product->get_meta('_ingredients') ) ) {
-			$ingredients_text .= 'Ingrediënten: '.$product->get_meta('_ingredients').'.</p>';
+			$ingredients_text .= __( 'Ingrediënten:', 'oft' ).' '.$product->get_meta('_ingredients').'.</p>';
 		} else {
 			$ingredients_text = '';
 		}
