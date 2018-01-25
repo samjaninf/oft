@@ -490,10 +490,10 @@
 		}
 
 		// Voeg tabje met allergenen toe
-		$tabs['allergen_info'] = array(
-			'title' 	=> 'Allergenen',
+		$tabs['ingredients_info'] = array(
+			'title' 	=> __( 'Ingrediënten', 'oft' ),
 			'priority' 	=> 16,
-			'callback' 	=> function() { output_tab_content('allergen'); },
+			'callback' 	=> function() { output_tab_content('ingredients'); },
 		);
 
 		// Titel wijzigen van standaardtabs kan maar prioriteit niet! (description = 10, additional_information = 20)
@@ -508,7 +508,6 @@
 		$has_row = false;
 		$alt = 1;
 		ob_start();
-		echo '<p>Blablabla, ik ben de inleiding.</p>';
 		echo '<table class="shop_attributes">';
 
 		if ( $type === 'food' ) {
@@ -527,14 +526,6 @@
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php echo __( 'Inhoud', 'oft' ); ?></th>
 				<td><?php echo $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'); ?></td>
-			</tr>
-			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php echo __( 'Ingrediënten', 'oft' ); ?></th>
-				<td><?php echo $product->get_meta('_ingredients'); ?></td>
-			</tr>
-			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php echo __( 'Fairtradepercentage', 'oft' ); ?></th>
-				<td><?php echo $product->get_meta('_fairtrade_share').' %' ?></td>
 			</tr>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php echo __( 'Energie', 'oft' ); ?></th>
@@ -582,7 +573,6 @@
 			}
 
 			$product_attributes = array(
-				'bio' => 'Biogecertificeerd',
 				'fairtrade' => 'Fairtradegelabeld',
 			);
 
@@ -595,12 +585,23 @@
 				<?php
 			}
 
-		} elseif ( $type === 'allergen' ) {
+		} elseif ( $type === 'ingredients' ) {
 			// Allergenentab altijd tonen!
 			$has_row = true;
 			$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
 			$contains = array();
 			$traces = array();
+
+			?>
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th><?php echo __( 'Fairtradepercentage', 'oft' ); ?></th>
+				<td><?php echo $product->get_meta('_fairtrade_share').' %' ?></td>
+			</tr>
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th><?php echo __( 'Ingrediënten', 'oft' ); ?></th>
+				<td><?php echo $product->get_meta('_ingredients'); ?></td>
+			</tr>
+			<?php
 
 			if ( $allergens !== false ) {
 				foreach ( $allergens as $allergen ) {
