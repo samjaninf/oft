@@ -345,12 +345,12 @@ span.oft-copyright {
 	background-colo: transparent !important;
 }
 
-.woocommerce-imagewrapper > a.woocommerce-product-link::after {
-	display: none !important;
-}
-
 .woocommerce-imagewrapper > a.woocommerce-product-link > img {
 	border: none !important;
+}
+
+.woocommerce-imagewrapper:hover > a.woocommerce-product-link::after {
+	display: none !important;
 }
 
 @mixin icon() {
