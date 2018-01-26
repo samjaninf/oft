@@ -37,10 +37,11 @@
 	add_action( 'admin_menu', 'register_oft_menus', 99 );
 
 	function register_oft_menus() {
-		add_submenu_page( 'woocommerce', 'Changelog', 'Changelog', 'manage_woocommerce', 'product-changelog', 'product_changelog_callback' );
+		add_submenu_page( 'woocommerce', 'Changelog', 'Changelog', 'manage_woocommerce', 'product-changelog', 'oxfam_product_changelog_callback' );
+		add_media_page( __( 'Bulkregistratie', 'oft-admin' ), __( 'Bulkregistratie', 'oft-admin' ), 'update_core', 'oxfam-photos', 'oxfam_photos_callback' );
 	}
 
-	function product_changelog_callback() {
+	function oxfam_product_changelog_callback() {
 		include get_stylesheet_directory().'/changelog.php';
 	}
 
@@ -2598,6 +2599,121 @@
 		<?php
 	}
 
+	function oxfam_photos_callback() {
+		include get_stylesheet_directory().'/register-bulk-images.php';
+	}
+	
+	// Registreer de AJAX-acties
+	add_action( 'wp_ajax_oxfam_photo_action', 'oxfam_photo_action_callback' );
+	
+	function oxfam_photo_action_callback() {
+		echo register_photo( $_POST['name'], $_POST['timestamp'], $_POST['path'] );
+		wp_die();
+	}
+
+	function wp_get_attachment_id_by_post_name( $post_title ) {
+		$args = array(
+			// We gaan ervan uit dat ons proces waterdicht is en er dus maar één foto met dezelfde titel kan bestaan
+			'posts_per_page'	=> 1,
+			'post_type'			=> 'attachment',
+			// Moet er in principe bij, want anders wordt de default 'publish' gebruikt en die bestaat niet voor attachments!
+			'post_status'		=> 'inherit',
+			// De titel is steeds gelijk aan de bestandsnaam en beter dan de 'name' die uniek moet zijn en door WP automatisch voorzien wordt van volgnummers
+			'title'				=> trim($post_title),
+		);
+		$attachments = new WP_Query($args);
+		if ( $attachments->have_posts() ) {
+			$attachments->the_post();
+			$attachment_id = get_the_ID();
+			wp_reset_postdata();
+		} else {
+			$attachment_id = false;
+		}
+		return $attachment_id;
+	}
+
+	function register_photo( $filename, $filestamp, $filepath ) {			
+		// Parse de fototitel
+		$filetitle = explode( '.jpg', $filename );
+		$filetitle = $filetitle[0];
+		
+		// Check of er al een vorige versie bestaat
+		$updated = false;
+		$deleted = false;
+		$old_id= wp_get_attachment_id_by_post_name($filetitle);
+		if ( $old_id ) {
+			// Bewaar de post_parent van het originele attachment
+			$product_id = wp_get_post_parent_id($old_id);
+			
+			// Stel het originele bestand veilig
+			rename( $filepath, WP_CONTENT_DIR.'/uploads/temporary.jpg' );
+			// Verwijder de versie
+			if ( wp_delete_attachment( $old_id, true ) ) {
+				// Extra check op het succesvol verwijderen
+				$deleted = true;
+			}
+			$updated = true;
+			// Hernoem opnieuw zodat de links weer naar de juiste file wijzen 
+			rename( WP_CONTENT_DIR.'/uploads/temporary.jpg', $filepath );
+		}
+		
+		// Creëer de parameters voor de foto
+		$wp_filetype = wp_check_filetype( $filename, null );
+		$attachment = array(
+			'post_mime_type' => $wp_filetype['type'],
+			'post_title' => $filetitle,
+			'post_content' => '',
+			'post_author' => get_current_user_id(),
+			'post_status' => 'inherit',
+		);
+
+		// Probeer de foto in de mediabibliotheek te stoppen
+		$msg = "";
+		$attachment_id = wp_insert_attachment( $attachment, $filepath );
+		if ( ! is_wp_error( $attachment_id ) ) {
+			// Check of de uploadlocatie ingegeven was!
+			if ( ! isset($product_id) ) {
+				// Indien het een b/c/d/e/f-foto is zal de search naar $filetitle een 0 opleveren
+				// Dat is de bedoeling, want die foto's mogen het hoofdbeeld niet vervangen!
+				$product_id = wc_get_product_id_by_sku( $filetitle );
+			}
+
+			if ( $product_id > 0 ) {
+				// Voeg de nieuwe attachment-ID toe aan het bestaande product
+				update_post_meta( $product_id, '_thumbnail_id', $attachment_id );
+				// WERKT NOG NIET IN WC 2.6
+				// $product->set_image_id($attachment_id);
+				// $product->save();
+
+				// Stel de uploadlocatie van de nieuwe afbeelding in
+				wp_update_post(
+					array(
+						'ID' => $attachment_id, 
+						'post_parent' => $product_id,
+					)
+				);
+			}
+
+			$attachment_data = wp_generate_attachment_metadata( $attachment_id, $filepath );
+			// Registreer ook de metadata en toon een succesboodschap
+			wp_update_attachment_metadata( $attachment_id,  $attachment_data );
+			if ( $updated ) {
+				$deleted = $deleted ? "verwijderd en opnieuw aangemaakt" : "bijgewerkt";
+				$msg .= "<i>".$filename."</i> ".$deleted." in de mediabibliotheek om ".date_i18n('H:i:s')." ...";
+			} else {
+				$msg .= "<i>".$filename."</i> aangemaakt in de mediabibliotheek om ".date_i18n('H:i:s')." ...";
+			}
+			// Sla het uploadtijdstip van de laatste succesvolle registratie op (kan gebruikt worden als limiet voor nieuwe foto's!)
+			update_option( 'oft_timestamp_last_photo', $filestamp );
+			$registered = true;
+		} else {
+			// Geef een waarschuwing als de aanmaak mislukte
+			$msg .= "Opgelet, er liep iets mis met <i>".$filename."</i>!";
+		}
+
+		return $msg;
+	}
+
 
 
 	#############
@@ -2788,6 +2904,16 @@
 		}
 		fclose($handle);
 		return '<table style="width: 100%;">'.$body.'</table>';
+	}
+
+	// Check of een string eindigt op iets
+	function ends_with( $haystack, $needle ) {
+		return $needle === '' or ( ( $temp = strlen($haystack) - strlen($needle) ) >= 0 and strpos( $haystack, $needle, $temp ) !== false );
+	}
+
+	// Sorteer arrays in stijgende volgorde op basis van hun 'timestamp'-eigenschap  
+	function sort_by_time( $a, $b ) {
+		return $a['timestamp'] - $b['timestamp'];
 	}
 	
 ?>
