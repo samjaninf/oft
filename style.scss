@@ -349,7 +349,7 @@ span.oft-copyright {
 	border: none !important;
 }
 
-.woocommerce-imagewrapper:hover > a.woocommerce-product-link::after {
+.woocommerce .products .product-item:hover .woocommerce-imagewrapper a.woocommerce-product-link::after {
 	display: none !important;
 }
 
@@ -462,7 +462,7 @@ body:not(.single-product):not(.single-post) {
 		z-index: 100;
 	}
 	
-	&:not(.is-header-sticky) #menu-oft-hoofdmenu > li.menu-item > a > span {
+	&:not(.is-header-sticky) #bt-menu-primary > .bt-nav-menu > li.menu-item > a > span {
 		color: white;
 	}
 
