@@ -1086,7 +1086,7 @@
 	add_action( 'save_post', 'change_product_visibility_on_save', 10, 3 );
 
 	function change_product_visibility_on_save( $post_id, $post, $update ) {
-		if ( $post->post_status === 'draft' or $post->post_type !== 'product' ) {
+		if ( $post->post_status !== 'publish' or $post->post_type !== 'product' ) {
 			return;
 		}
 
@@ -1095,14 +1095,12 @@
 		}
 
 		if ( $product->get_attribute('merk') !== 'Oxfam Fair Trade' ) {
-			// TIJDELIJKE FIX
-			$product->set_catalog_visibility( 'visible' );
 			$product->set_status( 'private' );
 			$product->save();
 		} elseif ( get_option('oft_import_active') !== 'yes' ) {
 			// Update de productfiches niet indien er een import bezig is (te langzaam)
 			create_product_pdf( $product, 'nl' );
-			create_product_pdf( $product, 'fr' );
+			// create_product_pdf( $product, 'fr' );
 			// create_product_pdf( $product, 'en' );
 		}
 	}
