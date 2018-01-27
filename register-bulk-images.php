@@ -16,7 +16,7 @@
 				while ( false !== ( $file = readdir($handle) ) ) {
 					$filepath = WP_CONTENT_DIR.'/uploads/'.$file;
 					// Beschouw enkel de JPG-foto's met een naam van 5 cijfers die sinds de vorige bulksessie geüpload werden
-					$parts = explode( $file, '.jpg' );
+					$parts = explode( '.jpg', $file );
 					if ( ends_with( $file, '.jpg' ) and strlen( $parts[0] ) === 5 and is_numeric( $parts[0] ) and filemtime($filepath) > get_option( 'oft_timestamp_last_photo', '1516924800' ) ) {
 						// Zet naam, timestamp, datum en pad van de upload in de array
 						$photos[] = array(
