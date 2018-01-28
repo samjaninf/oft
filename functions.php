@@ -935,6 +935,13 @@
 	#  WOOCOMMERCE  #
 	#################
 
+	add_filter( 'woocommerce_breadcrumb_defaults', 'jk_change_breadcrumb_delimiter' );
+	
+	function jk_change_breadcrumb_delimiter( $defaults ) {
+		$defaults['delimiter'] = ' &rarr; ';
+		return $defaults;
+	}
+
 	// Voeg sorteren op artikelnummer toe aan de opties op cataloguspagina's
 	add_filter( 'woocommerce_get_catalog_ordering_args', 'add_extra_sorting_filters' );
 
