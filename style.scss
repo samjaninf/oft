@@ -5,7 +5,7 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.1.2
+	Version:		1.1.3
 	Text Domain:	oft
 */
 
@@ -94,7 +94,7 @@ article.post .wpb_text_column {
 }
 
 #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-title {
-	font-size: 36px !important;
+	font-size: 30px !important;
 	margin-bottom: 0.5em !important;
 	word-break: break-word;
 }
@@ -217,6 +217,73 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 
 .woocommerce-page .bt-sidebar {
 	margin-top: 3em;
+}
+
+
+
+/********************/
+/*  ONZE PRODUCTEN  */
+/********************/
+
+.page-id-3403 {
+	.wpb_single_image {
+		margin: 0px;
+	}
+
+	.oft-products-text-black {
+		padding: 0 20px;
+		margin-bottom: 20px;
+	}
+
+	.oft-products-text-white {
+		position: absolute;
+		bottom: 0px;
+		padding: 20px;
+
+		h2,
+		p,
+		a {
+			color: white;
+		}
+	}
+}
+
+
+
+/*************/
+/*  CONTACT  */
+/*************/
+
+.page-id-9 {
+	.oft-contact-map {
+		.wpb_gmaps_widget {
+			position: relative !important;
+			top: 25px !important;
+		}
+
+		.wpb_map_wraper {
+			overflow: hidden !important;
+			background-color: white;
+		}
+
+		iframe {
+			position: relative !important;
+			top: -50px !important;
+			pointer-events: auto !important;
+		}
+	}
+
+	.oft-contact-representative {
+		.featured-box-title {
+			font-size: 24px !important;
+		}
+
+		.featured-box-text {
+			font-size: 1em !important;
+			font-weight: bold !important;
+			color: darkgrey !important;
+		}
+	}
 }
 
 
@@ -413,7 +480,7 @@ span.oft-copyright {
 /*************/
 
 .error404 {
-	background: url("assets/background-404.jpeg") center top / cover no-repeat;
+	background: url("assets/background-404.jpg") center top / cover no-repeat;
 }
 
 .feedback,
@@ -455,16 +522,6 @@ body.home {
 
 .oft-on-top {
 	z-index: 5000 !important;
-}
-
-.oft-products-text-black {
-	padding: 20px;
-}
-
-.oft-products-text-white {
-	position: absolute;
-	bottom: 0px;
-	color: white;
 }
 
 body:not(.single-product):not(.single-post) {
