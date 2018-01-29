@@ -453,6 +453,20 @@ body.home {
 
 }
 
+.oft-on-top {
+	z-index: 5000 !important;
+}
+
+.oft-products-text-black {
+	padding: 20px;
+}
+
+.oft-products-text-white {
+	position: absolute;
+	bottom: 0px;
+	color: white;
+}
+
 body:not(.single-product):not(.single-post) {
 	.bt-header-container.fw-absolute-header.fw-sticky-header {
 		// border-bottom: 1px solid white;

@@ -1725,6 +1725,26 @@
 			echo '</div>';
 		}
 
+		$args = array(
+			'post_type' => 'post',
+			'post_status' => 'publish',
+			'orderby' => 'date',
+			'order' => 'DESC',
+			'meta_key' => 'oft-post-product',
+			'meta_value' => $product->get_id(),
+			'meta_compare' => '=',
+			'numberposts' => 1,
+		);
+		$news_posts = new WP_Query( $args );
+
+		if ( $news_posts->have_posts() ) {
+			while ( $news_posts->have_posts() ) {
+				$news_posts->the_post();
+				echo "<div class='latest-news'><h4>".get_the_title()."</h4><p>".apply_filters( 'the_content', get_the_excerpt() )."</p></div>";
+			}
+			wp_reset_postdata();
+		}
+
 		if ( file_exists( WP_CONTENT_DIR.'/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ) ) {
 			echo '<a href="'.content_url( '/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ).'" target="_blank"><p class="oft-product-sheet">'.__( 'Download de productfiche', 'oft' ).'</p></a>';
 		}
@@ -1756,26 +1776,6 @@
 				echo "<div class='icon-fairly-traded-palm-oil'></div>";
 			}
 		echo '</div>';
-
-		$args = array(
-			'post_type' => 'post',
-			'post_status' => 'publish',
-			'orderby' => 'date',
-			'order' => 'DESC',
-			'meta_key' => 'oft-post-product',
-			'meta_value' => $product->get_id(),
-			'meta_compare' => '=',
-			'numberposts' => 1,
-		);
-		$news_posts = new WP_Query( $args );
-
-		if ( $news_posts->have_posts() ) {
-			while ( $news_posts->have_posts() ) {
-				$news_posts->the_post();
-				echo "<div class='latest-news'><h4>".get_the_title()."</h4><p>".apply_filters( 'the_content', get_the_excerpt() )."</p></div>";
-			}
-			wp_reset_postdata();
-		}
 	}
 
 	// add_action( 'woocommerce_single_product_summary', 'show_hipster_icons', 80 );
