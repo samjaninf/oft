@@ -77,6 +77,10 @@ h2.woocommerce-loop-product__title:hover {
 	margin: 0 auto;
 }
 
+.oft-image-minimal-height {
+	min-height: 400px;
+}
+
 .oft-center-text {
 	text-align: center;
 }
@@ -541,6 +545,15 @@ body:not(.single-product):not(.single-post) {
 		left: 0;
 		opacity: 1;
 		z-index: 100;
+	}
+
+	.bt-header-mobi-main {
+		// Zorg ervoor dat het mobiele menu boven de gradient ligt
+		z-index: 200;
+
+		.fa:before {
+			color: white;
+		}
 	}
 	
 	&:not(.is-header-sticky) #bt-menu-primary > .bt-nav-menu > li.menu-item > a > span {

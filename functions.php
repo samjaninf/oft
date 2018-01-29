@@ -16,6 +16,7 @@
 		// BOOTSTRAP REEDS INGELADEN DOOR ALONE
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
+		load_child_theme_textdomain( 'oft', get_stylesheet_directory().'/languages' );
 	}
 
 	// Voeg custom styling toe aan de adminomgeving
@@ -2919,6 +2920,10 @@
 	// Sorteer arrays in stijgende volgorde op basis van hun 'timestamp'-eigenschap  
 	function sort_by_time( $a, $b ) {
 		return $a['timestamp'] - $b['timestamp'];
+	}
+
+	function define_placeholder_texts() {
+		$titel_zoekresultaten = __( 'Zoekresultaten', 'oft' );
 	}
 	
 ?>
