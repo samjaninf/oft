@@ -1804,6 +1804,13 @@ if(!function_exists('alone_title_bar')) :
 					$header_image_data = fw_akg('custom_header_image', $category_options);
 					$header_title = fw_akg('custom_category_title', $category_options);
 
+					// GEWIJZIGD: PROBEER HET OOK NOG EENS MET DE MOEDERCATEGORIE
+					if ( empty($header_image_data) ) {
+						$parent_term_id = absint( get_term( $term_id, 'product_cat' )->parent );
+						$category_options = fw_get_db_term_option( $parent_term_id, $taxonomy, '', '' );
+						$header_image_data = fw_akg( 'custom_header_image', $category_options );
+					}
+
 					if(! empty($header_image_data)) { $image = $header_image_data; }
 					if(! empty($header_title)) { $title = $header_title; }
 				}
@@ -1900,7 +1907,8 @@ if(!function_exists('alone_title_bar')) :
 								<?php if($description != '' ) : ?>
 									<div class="fw-special-subtitle"><?php echo alone_translate($description); ?></div>
 								<?php endif; ?>
-								<?php if( function_exists('fw_ext_breadcrumbs') && bearsthemes_check_is_bbpress() == '' ) fw_ext_breadcrumbs('<span class="ion-ios-arrow-right"></span>'); ?>
+								<!-- GEWIJZIGD: Breadcrumb nooit tonen in header -->
+								<?php if( function_exists('fw_ext_breadcrumbs') && bearsthemes_check_is_bbpress() == 'DISABLE' ) fw_ext_breadcrumbs('<span class="ion-ios-arrow-right"></span>'); ?>
 							</div>
 						</div>
 					</div>

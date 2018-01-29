@@ -211,6 +211,16 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 
 
 
+/*************/
+/*  SIDEBAR  */
+/*************/
+
+.woocommerce-page .bt-sidebar {
+	margin-top: 3em;
+}
+
+
+
 /************/
 /*  FOOTER  */
 /************/
@@ -489,7 +499,8 @@ body:not(.single-product):not(.single-post) {
 		}
 
 		.breadcrumbs {
-			display: none;
+			// UITGESCHAKELD IN HELPERS.PHP
+			// display: none;
 		}
 	}
 }
