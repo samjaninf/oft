@@ -589,6 +589,11 @@ body:not(.single-product):not(.single-post) {
 	}
 }
 
+.bt-section-space {
+	// Fix voor mobiel
+	padding-top: 0px;
+}
+
 body.single-product,
 body.single-post {
 	.bt-header-top-bar {

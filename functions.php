@@ -2183,32 +2183,45 @@
  	// BIJ HET AANROEPEN VAN DEZE FILTER ZIJN WE ZEKER DAT ALLES AL GEVALIDEERD IS
  	add_filter( 'wpcf7_before_send_mail', 'handle_mailchimp_subscribe', 20, 1 );
 
-	function handle_mailchimp_subscribe( $posted_data ) {
+	function handle_mailchimp_subscribe( $WPCF7_ContactForm ) {
 		// Nederlandstalige inschrijvingsformulier
-		if ( $posted_data['_wpcf7'] == 1054 ) {
-			$posted_data['send_error'] = __( 'Er was een onbekend probleem met Contact Form 7!', 'oft' );
-			$status = get_status_in_mailchimp_list( $_POST['newsletter-email'] );
+		write_log($WPCF7_ContactForm);
+		if ( $WPCF7_ContactForm->id() == 1054 ) {
+			$submission = WPCF7_Submission::get_instance();
+			if ( $submission ) {
+				$posted_data = $submission->get_posted_data();
+				write_log($posted_data);
+				if ( empty ($posted_data) ) {
+					return;
+				}
+				$mail = $WPCF7_ContactForm->prop('mail');
+				$mail['subject'] = "This is an alternate subject";
+				$WPCF7_ContactForm->set_properties( array( 'mail' => $mail ) );
 			
-			if ( $status['response']['code'] !== 200 ) {
-				$body = json_decode($status['body']);
-
-				// NOG NOOIT INGESCHREVEN, VOER INSCHRIJVING UIT
-				// Probleem: naam zit hier nog in 1 veld, moeten er 2 worden
-				$subscription = subscribe_user_to_mailchimp_list( $posted_data['newsletter-email'], $posted_data['newsletter-name'] );
+				// AAN TE PASSEN AAN NIEUWE API VAN CF7
+				$posted_data['send_error'] = __( 'Er was een onbekend probleem met Contact Form 7!', 'oft' );
+				$status = get_status_in_mailchimp_list( $_POST['newsletter-email'] );
 				
-				if ( $subscription['response']['code'] == 200 ) {
-					$body = json_decode($subscription['body']);
-					if ( $body->status === "subscribed" ) {
-						$posted_data['success'] = __( 'U bent vanaf nu geabonneerd op de OFT-nieuwsbrief.', 'oft' );
+				if ( $status['response']['code'] !== 200 ) {
+					$body = json_decode($status['body']);
+
+					// NOG NOOIT INGESCHREVEN, VOER INSCHRIJVING UIT
+					// Probleem: naam zit hier nog in 1 veld, moeten er 2 worden
+					$subscription = subscribe_user_to_mailchimp_list( $posted_data['newsletter-email'], $posted_data['newsletter-name'] );
+					
+					if ( $subscription['response']['code'] == 200 ) {
+						$body = json_decode($subscription['body']);
+						if ( $body->status === "subscribed" ) {
+							$posted_data['success'] = __( 'U bent vanaf nu geabonneerd op de OFT-nieuwsbrief.', 'oft' );
+						}
+					} else {
+						$posted_data['success'] = __( 'Er was een onbekend probleem met MailChimp!', 'oft' );
 					}
-				} else {
-					$posted_data['success'] = __( 'Er was een onbekend probleem met MailChimp!', 'oft' );
 				}
 			}
 		}
-		write_log("wpcf7_before_send_mail");
-		write_log($posted_data);
-		return $posted_data;
+		
+		return $WPCF7_ContactForm;
 	}
 
 	// Sta HTML-tags weer toe in resultaatboodschappen

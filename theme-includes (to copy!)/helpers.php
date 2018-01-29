@@ -1658,10 +1658,10 @@ if(! function_exists('alone_title_bar_default') ) :
 		else{
 			$archive = true;
 			if( is_post_type_archive('product')){
-				$title = esc_html__( 'Products', 'alone' );
+				$title = esc_html__('Products', 'alone');
 			}
 			elseif( is_search() ){
-				$title = esc_html__( 'Zoekresultaten', 'oft' );
+				$title = esc_html__( 'Search results', 'alone' );
 			}
 			elseif( is_page() || is_single() ) {
 				$title = get_the_title();
@@ -1752,19 +1752,19 @@ if(!function_exists('alone_title_bar')) :
 			}
 			else{
 				$archive = true;
-				if( is_post_type_archive('product')){
-					$title = esc_html__('Products', 'alone');
+				if ( is_post_type_archive('product') ) {
+					$title = esc_html__( 'Products', 'alone' );
 				}
-				elseif( is_search() ){
-					$title = esc_html__( 'Search results', 'alone' );
+				elseif ( is_search() ) {
+					$title = esc_html__( 'Zoekresultaten', 'oft' );
 				}
 				else{
 					$title = alone_get_the_archive_title();
-          // for blog page
-          if( is_home() ) {
-              $page_for_posts = get_option( 'page_for_posts' );
-              $title = ($page_for_posts != 0) ? get_the_title($page_for_posts) : esc_html__('Blog', 'alone');
-          }
+					// for blog page
+					if( is_home() ) {
+						$page_for_posts = get_option( 'page_for_posts' );
+						$title = ($page_for_posts != 0) ? get_the_title($page_for_posts) : esc_html__('Blog', 'alone');
+					}
 				}
 			}
 
