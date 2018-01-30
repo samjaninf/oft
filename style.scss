@@ -18,6 +18,7 @@ $oxfam-green: #61a534;
 
 $black-title: #1a1a1a;
 $grey-text: #4d4d4d;
+$lightgrey-text: #cccccc;
 $grey-background: #f1f1f1;
 $link-black: #000000;
 $link-blue: #0085ea;
@@ -96,20 +97,20 @@ article.post .wpb_text_column {
 
 	h4 {
 		font-size: 18px;
-		font-weight: 500;
+		font-weight: 700;
 		margin-top: 2em;
 	}
 }
 
 #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-title {
-	font-size: 30px !important;
+	font-size: 26px !important;
 	margin-bottom: 0.5em !important;
 	word-break: break-word;
 }
 
 #page .oft-coffee-featured .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-text {
 	font-size: 18px !important;
-	font-weight: 500 !important;
+	font-weight: 700 !important;
 }
 
 .oft-coffee-featured .vc_column-inner {
@@ -241,17 +242,20 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 	.oft-products-text-black {
 		padding: 0 20px;
 		margin-bottom: 20px;
+
+		h2 {
+			font-size: 26px !important;
+		}
 	}
 
 	.oft-products-text-white {
 		position: absolute;
 		bottom: 0px;
 		padding: 20px;
-
-		h2,
-		p,
-		a {
-			color: white;
+		color: white !important;
+		
+		h2 {
+			font-size: 26px !important;
 		}
 	}
 }
@@ -283,13 +287,12 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 
 	.oft-contact-representative {
 		.featured-box-title {
-			font-size: 24px !important;
+			font-size: 26px !important;
 		}
 
 		.featured-box-text {
 			font-size: 1em !important;
-			font-weight: 500 !important;
-			color: darkgrey !important;
+			font-weight: 700 !important;
 		}
 	}
 }
@@ -301,9 +304,9 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 /************/
 
 /* Copyright iets kleiner en bleker */
-span.oft-copyright {
+.oft-copyright {
 	font-size: 90%;
-	color: $grey-background;
+	color: $lightgrey-text;
 }
 
 

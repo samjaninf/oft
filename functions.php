@@ -106,6 +106,10 @@
 					window.location.href = jQuery(this).find( '.vc_btn3-shape-rounded.vc_btn3-style-flat' ).attr('href'); 
 					return false;
 				});
+				jQuery( '.oft-link-target-title' ).click( function() {
+					window.location.href = jQuery(this).find( '.wpb_text_column > .wpb_wrapper > h2 > a' ).attr('href'); 
+					return false;
+				});
 				// jQuery( '.featured-box-title' ).addClass( 'oft-title-size' );
 			});
 		</script>
