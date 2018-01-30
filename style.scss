@@ -306,6 +306,12 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 /*  FOOTER  */
 /************/
 
+.fw-side-posts-list li .posts-content a.post-title {
+	letter-spacing: 1px !important;
+	color: $black-title;
+	font-weight: 700;
+}
+
 /* Copyright iets kleiner en bleker */
 .oft-copyright {
 	font-size: 90%;
@@ -511,10 +517,12 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 body.home {
 	.oft-link-target {
 		cursor: pointer;
-
+		transition: opacity 400ms ease-in-out;
+		opacity: 1;
+		
 		&:hover {
 			opacity: 0.9;
-			filter: grayscale(75%);
+			filter: alpha(opacity=90);
 
 			a {
 				text-decoration: underline !important;
@@ -540,13 +548,25 @@ body.home {
 }
 
 .oft-link-target-title {
-	cursor: pointer;
+	.vc_column-inner,
+	.vc_figure {
+		transition: opacity 400ms ease-in-out;
+	}
 
-	&:hover {
-		opacity: 0.9;
+	.vc_column-inner:hover {
+		cursor: pointer;
 
 		.vc_figure {
-			filter: hue-rotate(90deg);
+			opacity: 0.9;
+			filter: alpha(opacity=90);
+		}
+	}
+
+	/* Blokjes met background-image */
+	&.oft-image-minimal-height {
+		.vc_column-inner:hover {
+			opacity: 0.95;
+			filter: alpha(opacity=95);
 		}
 	}
 }
@@ -650,7 +670,7 @@ body.single-post {
 /*  CONTACT FORM  */
 /******************/
 
-wpcf7-form {
+.wpcf7-form {
 	p:not(:first-of-type) > label {
 		padding-top: 2em;
 	}
