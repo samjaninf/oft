@@ -32,11 +32,15 @@ $see-through-red: rgba(250, 22, 50, 0.9);
 /*  GENERAL  */
 /*************/
 
-h1, h2, h3, h4, h5, h6, a {
+h1, h2, h3, h4, h5, h6 {
 	font-family: Rubik !important;
 	letter-spacing: 1px !important;
 	font-weight: 300;
 	color: $black-title;
+}
+
+a {
+	color: $link-black;
 }
 
 body {
@@ -92,7 +96,7 @@ article.post .wpb_text_column {
 
 	h4 {
 		font-size: 18px;
-		font-weight: bold;
+		font-weight: 500;
 		margin-top: 2em;
 	}
 }
@@ -105,7 +109,7 @@ article.post .wpb_text_column {
 
 #page .oft-coffee-featured .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-text {
 	font-size: 18px !important;
-	font-weight: bold !important;
+	font-weight: 500 !important;
 }
 
 .oft-coffee-featured .vc_column-inner {
@@ -284,7 +288,7 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 
 		.featured-box-text {
 			font-size: 1em !important;
-			font-weight: bold !important;
+			font-weight: 500 !important;
 			color: darkgrey !important;
 		}
 	}
@@ -666,7 +670,7 @@ body.single-post {
 .oft-grid-read-more {
 	padding: 0 !important;
 	background-color: transparent !important;
-	color: deepskyblue !important;
+	color: $link-blue !important;
 }
 
 div.vc_btn3-container.vc_btn3-left {
@@ -675,7 +679,7 @@ div.vc_btn3-container.vc_btn3-left {
 a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue {
 	padding: 0 !important;
 	background-color: transparent !important;
-	color: deepskyblue !important;
+	color: $link-blue !important;
 	font-size: 1em !important;
 }
 
