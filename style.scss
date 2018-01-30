@@ -306,10 +306,14 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 /*  FOOTER  */
 /************/
 
+.widget {
+	font-weight: 300 !important;
+}
+
 .fw-side-posts-list li .posts-content a.post-title {
 	letter-spacing: 1px !important;
 	color: $black-title;
-	font-weight: 700;
+	font-weight: 500;
 }
 
 /* Copyright iets kleiner en bleker */
@@ -672,7 +676,7 @@ body.single-post {
 
 .wpcf7-form {
 	p:not(:first-of-type) > label {
-		padding-top: 2em;
+		padding-top: 1em;
 	}
 
 	sup.required {
@@ -691,10 +695,15 @@ body.single-post {
 	.wpcf7-response-output {
 		margin: 1em 0em;
 		padding: 0.5em;
+		border-radius: 3px;
 	}
 
 	.wpcf7-validation-errors {
-		border: 1px solid $black-title;
+		border: 3px solid red;
+	}
+
+	.wpcf7-validation-errors {
+		border: 3px solid $black-title;
 	}
 }
 
@@ -801,7 +810,13 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 		}
 	}
 
-	
+	h2.tp-caption {
+		font-size: 36px !important;
+	}
+
+	h4.tp-caption {
+		font-size: 24px !important;
+	}
 }
 
 
