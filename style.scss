@@ -535,13 +535,13 @@ body:not(.single-product):not(.single-post) {
 	}
 	
 	.fw-title-bar::before,
-	.rev_slider_wrapper.fullwidthbanner-container::before  {
-		background-image: linear-gradient( to bottom, rgba(0,0,0,0.75), rgba(0,0,0,0.25) 20%, rgba(0,0,0,0) 40% );
+	.rev_slider_wrapper.fullwidthbanner-container::before {
+		background-image: linear-gradient( to bottom, rgba(0,0,0,0.50), rgba(0,0,0,0.1) 125px, rgba(0,0,0,0) );
 		content: '';
 		position: absolute;
 		top: 0;
 		right: 0;
-		bottom: 0;
+		height: 50%;
 		left: 0;
 		opacity: 1;
 		z-index: 100;
@@ -561,8 +561,9 @@ body:not(.single-product):not(.single-post) {
 	}
 
 	section.bt-main-row {
-		padding-top: 0.5em;
-		padding-bottom: 0.5em;
+		// NIET DOEN, GEEFT WIT RANDJE OP MOBIEL
+		// padding-top: 0.5em;
+		// padding-bottom: 0.5em;
 	}
 
 	/* Verberg het volledige titelblok in de banners */
