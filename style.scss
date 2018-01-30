@@ -9,7 +9,7 @@
 	Text Domain:	oft
 */
 
-$red: #000;
+$red: #eb476f;
 $yellow: #ffcd66;
 $green: #06d29c;
 $blue: #06d29c;
@@ -252,6 +252,7 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 		position: absolute;
 		bottom: 0px;
 		padding: 20px;
+		background-color: rgba(0,0,0,0.5);
 		
 		h2, p, a {
 			color: white;
@@ -307,7 +308,7 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 /************/
 
 .widget {
-	font-weight: 300 !important;
+	font-weight: 300;
 }
 
 .fw-side-posts-list li .posts-content a.post-title {
@@ -674,22 +675,21 @@ body.single-post {
 /*  CONTACT FORM  */
 /******************/
 
-.wpcf7-form {
+div.wpcf7 {
 	p:not(:first-of-type) > label {
 		padding-top: 1em;
 	}
 
 	sup.required {
-		color: red;
+		color: $red;
 	}
 
 	.wpcf7-form-control-wrap {
-		color: black;
+		color: $black-title;
 	}
 
 	.ajax-loader {
-		line-height: 40px;
-		margin: 1em;
+		margin: 0.75em;
 	}
 
 	.wpcf7-response-output {
@@ -699,11 +699,11 @@ body.single-post {
 	}
 
 	.wpcf7-validation-errors {
-		border: 3px solid red;
+		border: 2px solid $red;
 	}
 
-	.wpcf7-validation-errors {
-		border: 3px solid $black-title;
+	.wpcf7-mail-sent-ok {
+		border: 2px solid $grey-text;
 	}
 }
 
@@ -811,11 +811,15 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	}
 
 	h2.tp-caption {
-		font-size: 36px !important;
+		font-size: 32px !important;
+		line-height: 32px !important;
+		background-color: rgba(0,0,0,0.25);
 	}
 
 	h4.tp-caption {
 		font-size: 24px !important;
+		line-height: 24px !important;
+		background-color: rgba(0,0,0,0.25);
 	}
 }
 
