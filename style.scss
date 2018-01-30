@@ -543,6 +543,10 @@ body.home {
 
 	&:hover {
 		opacity: 0.9;
+		filter: grayscale(0);
+		filter: brightness(0.5);
+		filter: contrast(1.5);
+		filter: blur(1px);
 	}
 }
 
