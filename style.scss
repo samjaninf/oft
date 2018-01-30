@@ -83,7 +83,7 @@ h2.woocommerce-loop-product__title:hover {
 }
 
 .oft-image-minimal-height {
-	min-height: 400px;
+	min-height: 500px;
 }
 
 .oft-center-text {
@@ -252,8 +252,11 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 		position: absolute;
 		bottom: 0px;
 		padding: 20px;
-		color: white !important;
 		
+		h2, p, a {
+			color: white;
+		}
+
 		h2 {
 			font-size: 26px !important;
 		}
@@ -535,8 +538,12 @@ body.home {
 	// ANDERS OPGELOST
 }
 
-.oft-link-style {
-	// GEBEURT INLINE IN REVOLUTION SLIDER
+.oft-link-target-title {
+	cursor: pointer;
+
+	&:hover {
+		opacity: 0.9;
+	}
 }
 
 body:not(.single-product):not(.single-post) {
