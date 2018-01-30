@@ -528,6 +528,14 @@ body.home {
 	z-index: 5000 !important;
 }
 
+.oft-link-style {
+	cursor: pointer;
+
+	&:hover {
+		color: white;
+	}
+}
+
 body:not(.single-product):not(.single-post) {
 	.bt-header-container.fw-absolute-header.fw-sticky-header {
 		// border-bottom: 1px solid white;
