@@ -5,7 +5,7 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.1.4
+	Version:		1.1.5
 	Text Domain:	oft
 */
 
@@ -514,6 +514,7 @@ body.home {
 
 		&:hover {
 			opacity: 0.9;
+			filter: grayscale(75%);
 
 			a {
 				text-decoration: underline !important;
@@ -543,10 +544,10 @@ body.home {
 
 	&:hover {
 		opacity: 0.9;
-		filter: grayscale(0);
-		filter: brightness(0.5);
-		filter: contrast(1.5);
-		filter: blur(1px);
+
+		.vc_figure {
+			filter: hue-rotate(90deg);
+		}
 	}
 }
 
@@ -645,6 +646,40 @@ body.single-post {
 
 
 
+/******************/
+/*  CONTACT FORM  */
+/******************/
+
+wpcf7-form {
+	p:not(:first-of-type) > label {
+		padding-top: 2em;
+	}
+
+	sup.required {
+		color: red;
+	}
+
+	.wpcf7-form-control-wrap {
+		color: black;
+	}
+
+	.ajax-loader {
+		line-height: 40px;
+		margin: 1em;
+	}
+
+	.wpcf7-response-output {
+		margin: 1em 0em;
+		padding: 0.5em;
+	}
+
+	.wpcf7-validation-errors {
+		border: 1px solid $black-title;
+	}
+}
+
+
+
 /****************/
 /*  CUSTOMIZER  */
 /****************/
@@ -725,18 +760,6 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 
 .woocommerce.columns-4 > ul.products > div.product div.woocommerce-taxonomy-loop {
 	display: none;
-}
-
-form.wpcf7-form sup.required {
-	color: red;
-}
-
-div.site-main form.wpcf7-form p:not(:first-of-type) > label {
-	padding-top: 2em;
-}
-
-.wpcf7-form-control-wrap {
-	color: black;
 }
 
 
