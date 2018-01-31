@@ -815,10 +815,10 @@
 						}
 
 						if ( pass == false ) {
-							alert(msg);
+							// alert(msg);
 						}
 
-						return pass;
+						return true;
 					});
 
 					/* Eventueel: checken of de som van alle secondaries de primary niet overschrijdt! */
@@ -850,19 +850,25 @@
 							/* Vereis dat minstens één druif, gerecht en smaak aangevinkt is voor het opslaan */
 							jQuery( 'input[type=submit]#publish, input[type=submit]#save-post' ).click( function() {
 								var pass = true;
+								var msg = 'Hold your horses, er zijn enkele issues:\n';
 								if ( jQuery( '#product_grape-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
 									pass = false;
-									alert('Je moet de druivenrassen nog aanvinken!');
+									msg += '* Je moet de druivenrassen nog aanvinken!\n';
 								}
 								if ( jQuery( '#product_recipe-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
 									pass = false;
-									alert('Je moet de gerechten nog aanvinken!');
+									msg += '* Je moet de gerechten nog aanvinken!\n';
 								}
 								if ( jQuery( '#product_taste-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
 									pass = false;
-									alert('Je moet de smaken nog aanvinken!');
+									msg += '* Je moet de smaken nog aanvinken!\n';
 								}
-								return pass;
+								
+								if ( pass == false ) {
+									// alert(msg);
+								}
+
+								return true;
 							});
 						});
 					</script>
@@ -1107,11 +1113,7 @@
 	add_action( 'save_post', 'change_product_visibility_on_save', 10, 3 );
 
 	function change_product_visibility_on_save( $post_id, $post, $update ) {
-		if ( $post->post_status !== 'publish' or $post->post_type !== 'product' ) {
-			return;
-		}
-
-		if ( ! $product = wc_get_product( $post_id ) ) {
+		if ( $post->post_status === 'trash' or $post->post_status === 'draft' or $post->post_type !== 'product' or ! $product = wc_get_product( $post_id ) ) {
 			return;
 		}
 
@@ -1896,6 +1898,7 @@
 	
 	function output_oft_partner_info() {
 		if ( is_tax('product_partner') ) {
+			global $wp_query;
 			$term_id = get_queried_object()->term_id;
 			$parent_term_id = absint( get_term( $term_id, 'product_partner' )->parent );
 			if ( $parent_term_id > 0 ) {
@@ -1905,6 +1908,9 @@
 				if ( $grandparent_term_id > 0 ) {
 					// Er is opnieuw een parent dus de oorspronkelijke term is een partner
 					$grandparent_term = get_term( $grandparent_term_id, 'product_partner' );
+					
+					echo '<p>'.__( 'Deze boeren zijn voor ons geen leveranciers, het zijn partners. Dankzij jullie steun kunnen coöperaties uitgroeien tot bloeiende ondernemingen die hun fairtradeproducten wereldwijd verkopen.', 'oft' ).'</p>';
+
 					if ( strlen(term_description()) > 10 ) {
 						echo '<blockquote>'.wc_format_content( term_description() ).'</blockquote>';
 						echo '<h5 style="text-align: right;">'.single_term_title( '', false ).' &mdash; '.$parent_term->name.', '.$grandparent_term->name.'</h5>';
@@ -1913,12 +1919,13 @@
 							echo wp_get_attachment_image( $image_id, array(300,300), false, array( 'class' => 'partner-quote-icon' ) );
 						}
 					}
+
 					$partner_node = get_term_meta( get_queried_object()->term_id, 'partner_node', true );
 					if ( $partner_node > 0 ) {
-						echo '<h4><a href="https://www.oxfamwereldwinkels.be/node/'.$partner_node.'" target="_blank">Lees meer over deze partner =></a></h4>';
+						echo '<h4><a href="https://www.oxfamwereldwinkels.be/node/'.$partner_node.'" target="_blank">Lees meer over deze producent op oxfamwereldwinkels.be</a></h3>';
 					}
-					global $wp_query;
-					echo '<h3>'.$wp_query->found_posts.' producten van deze partner ...</h3>';
+
+					echo '<h4>'.sprintf( __( 'Momenteel verkopen wij %s producten van deze partner:', 'oft' ), $wp_query->found_posts ).'</h4>';
 				} else {
 					// Er is geen parent dus de oorspronkelijke term is een land
 				}
@@ -2371,7 +2378,7 @@
 		if ( $import_id == 14 ) {
 			$args = array(
 				'post_type'	=> 'product',
-				'post_status' => array( 'publish', 'draft', 'trash' ),
+				'post_status' => array( 'publish', 'private', 'draft', 'trash' ),
 				'posts_per_page' => -1,
 			);
 
