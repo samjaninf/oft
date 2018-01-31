@@ -49,6 +49,8 @@ body {
 	letter-spacing: 1px !important;
 	font-weight: 300;
 	color: $grey-text;
+	// WOORDEN ALTIJD SPLITSEN
+	// hyphens: auto !important;
 }
 
 p {
@@ -102,6 +104,7 @@ article.post .wpb_text_column {
 	font-size: 26px !important;
 	margin-bottom: 0.5em !important;
 	word-break: break-word;
+	hyphens: auto;
 }
 
 #page .oft-coffee-featured .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-text {
@@ -553,9 +556,11 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 body.home {
 	.rev_slider_wrapper {
 		h2.tp-caption {
-			display: inline;
-			line-height: 110%;
+			// display: inline;
+			line-height: 90%;
 			background-color: rgba(0,0,0,0.5);
+			word-break: break-word;
+			hyphens: auto;
 		}
 		
 		h4.tp-caption {
@@ -568,7 +573,6 @@ body.home {
 		-webkit-font-smoothing: antialiased;
 		cursor: pointer;
 		transition: opacity 400ms ease-in-out;
-		opacity: 1;
 		
 		&:hover {
 			opacity: 0.9;
@@ -672,6 +676,7 @@ body:not(.single-product):not(.single-post) {
 			font-size: 60px;
 			line-height: 85%;
 			word-break: break-word;
+			hyphens: auto;
 			max-width: 100%;
 			// text-shadow: 1px 1px 3px $grey-text;
 		}
@@ -740,12 +745,11 @@ div.wpcf7 {
 	input.wpcf7-form-control.wpcf7-submit {
 		-webkit-font-smoothing: antialiased;
 		transition: opacity 400ms ease-in-out;
-		opacity: 1;
 	}
 
 	input.wpcf7-form-control.wpcf7-submit:hover {
-		opacity: 0.75;
-		filter: alpha(opacity=75);
+		opacity: 0.9;
+		filter: alpha(opacity=9);
 	}
 
 	.ajax-loader {
