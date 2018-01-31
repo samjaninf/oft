@@ -1111,7 +1111,7 @@
 			return;
 		}
 
-		if ( ! $product = wc_get_product( $post ) ) {
+		if ( ! $product = wc_get_product( $post_id ) ) {
 			return;
 		}
 
@@ -1845,11 +1845,11 @@
 	// Definieer extra element met post data voor grids
 	add_filter( 'vc_grid_item_shortcodes', 'add_grid_shortcodes_to_wpbakery' );
 	function add_grid_shortcodes_to_wpbakery( $shortcodes ) {
-		$shortcodes['list_post_date_tags'] = array(
-			'name' => 'Post Tags',
-			'base' => 'list_post_date_tags',
+		$shortcodes['list_post_date_categories'] = array(
+			'name' => 'Datum en categorie',
+			'base' => 'list_post_date_categories',
 			'category' => 'Post',
-			'description' => __( 'Toon de datum en eventuele tags van de post.', 'oft-admin' ),
+			'description' => __( 'Toon de datum en eventuele categorieën van de post.', 'oft-admin' ),
 			'post_type' => Vc_Grid_Item_Editor::postType(),
 			'params' => array(
 				array(
@@ -1864,19 +1864,19 @@
 	}
 
 	// Haal extra data op die hier beschikbaar is op basis van global $post!
-	add_filter( 'vc_gitem_template_attribute_post_date_tags', 'vc_gitem_template_attribute_post_date_tags', 10, 2 );
-	function vc_gitem_template_attribute_post_date_tags( $value, $data ) {
+	add_filter( 'vc_gitem_template_attribute_post_date_categories', 'vc_gitem_template_attribute_post_date_categories', 10, 2 );
+	function vc_gitem_template_attribute_post_date_categories( $value, $data ) {
 		extract( array_merge( array(
 			'post' => null,
 			'data' => '',
 		), $data ) );
-		return __( 'Datum: ', 'oft' ).get_the_date( 'd/m/Y' ).'<br>'.get_the_tag_list( __( 'Tags: ', 'oft' ), ', ', '' );
+		return __( 'Datum: ', 'oft' ).get_the_date( 'd/m/Y' ).'<br>'.__( 'Category:', 'woocommerce' ).' '.get_the_category_list( ', ' );
 	}
 
 	// Output
-	add_shortcode( 'list_post_date_tags', 'vc_list_post_date_tags' );
-	function vc_list_post_date_tags() {
-		return '<p class="oft-grid-post-date-tags">{{ post_data:post_date_tags }}</p>';
+	add_shortcode( 'list_post_date_categories', 'vc_list_post_date_categories' );
+	function vc_list_post_date_categories() {
+		return '<p class="oft-grid-post-date-tags">{{ post_data:post_date_categories }}</p>';
 	}
 
 	remove_action( 'woocommerce_archive_description', 'woocommerce_taxonomy_archive_description', 10 );
