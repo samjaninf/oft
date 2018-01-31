@@ -499,17 +499,32 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 
 
 
-/*************/
-/*  OLDIES?  */
-/*************/
+/***************/
+/*  ERROR 404  */
+/***************/
 
 .error404 {
 	background: url("assets/background-404.jpg") center top / cover no-repeat;
-}
 
-.feedback,
-.fa-spinner {
-	display: none;
+	p {
+		color: white;
+	}
+
+	.bt-header-top-bar {
+		display: none;
+	}
+
+	&::before {
+		background-image: linear-gradient( to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.1) 125px, rgba(0,0,0,0.1) );
+		content: '';
+		position: absolute;
+		top: 0;
+		right: 0;
+		height: 100%;
+		left: 0;
+		opacity: 1;
+		z-index: 100;
+	}
 }
 
 
@@ -522,13 +537,13 @@ body.home {
 	.rev_slider_wrapper {
 		h2.tp-caption {
 			display: inline;
-			text-shadow: 3px 3px 6px $grey-text;
+			// text-shadow: 1px 1px 3px $grey-text;
 			background-color: rgba(0,0,0,0.5);
 		}
 		
 		h4.tp-caption {
-			text-shadow: 2px 2px 4px $grey-text;
-			background-color: rgba(0,0,0,0.5);
+			// text-shadow: 1px 1px 3px $grey-text;
+			// background-color: rgba(0,0,0,0.5);
 		}
 	}
 
@@ -641,7 +656,7 @@ body:not(.single-product):not(.single-post) {
 			line-height: 85%;
 			word-break: break-word;
 			max-width: 100%;
-			// text-shadow: 3px 3px $grey-text;
+			// text-shadow: 1px 1px 3px $grey-text;
 		}
 
 		.fw-special-title::after {
@@ -809,6 +824,11 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 }
 
 .woocommerce.columns-4 > ul.products > div.product div.woocommerce-taxonomy-loop {
+	display: none;
+}
+
+.feedback,
+.fa-spinner {
 	display: none;
 }
 
