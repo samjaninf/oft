@@ -256,7 +256,7 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 		bottom: 0px;
 		box-sizing: border-box;
 		// Bovenstaande helpt niet, dus rare fix tegen uitbreken van achtergrond
-		margin-right: 19px;
+		margin-right: 17px;
 		padding: 0 20px 20px 20px;
 		background-color: rgba(0,0,0,0.5);
 		
@@ -556,16 +556,16 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 body.home {
 	.rev_slider_wrapper {
 		h2.tp-caption {
-			// display: inline;
 			line-height: 90%;
-			background-color: rgba(0,0,0,0.5);
 			word-break: break-word;
 			hyphens: auto;
+			// display: inline;
+			// background-color: rgba(0,0,0,0.5);
 		}
 		
 		h4.tp-caption {
-			// text-shadow: 1px 1px 3px $grey-text;
-			background-color: rgba(0,0,0,0.5);
+			// display: inline;
+			// background-color: rgba(0,0,0,0.5);
 		}
 	}
 
@@ -892,7 +892,7 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	.rev_slider_wrapper {
 		h2.tp-caption {
 			font-size: 32px !important;
-			line-height: 32px !important;
+			line-height: 90% !important;
 			max-width: 100%;
 			position: relative;
 			top: 20px;
@@ -900,7 +900,7 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 
 		h4.tp-caption {
 			font-size: 24px !important;
-			line-height: 24px !important;
+			line-height: 90% !important;
 			max-width: 100%;
 			position: relative;
 			bottom: 20px;

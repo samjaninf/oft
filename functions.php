@@ -19,6 +19,9 @@
 		load_child_theme_textdomain( 'oft', get_stylesheet_directory().'/languages' );
 	}
 
+	// Zoombox voorlopig uitschakelen
+	remove_theme_support( 'wc-product-gallery-zoom' );
+
 	// Voeg custom styling toe aan de adminomgeving
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
@@ -104,14 +107,14 @@
 			jQuery(document).ready( function() {
 				jQuery( '.oft-link-target' ).click( function() {
 					var href = jQuery(this).find( '.vc_btn3-shape-rounded.vc_btn3-style-flat' ).attr('href');
-					if ( href.count > 5 ) {
+					if ( href.length > 5 ) {
 						window.location.href = href;
 						return false;
 					}
 				});
 				jQuery( '.oft-link-target-title' ).click( function() {
 					var href = jQuery(this).find( '.wpb_text_column > .wpb_wrapper > h2 > a' ).attr('href');
-					if ( href.count > 5 ) {
+					if ( href.length > 5 ) {
 						window.location.href = href;
 						return false;
 					}
@@ -1115,9 +1118,11 @@
 		if ( $product->get_attribute('merk') !== 'Oxfam Fair Trade' ) {
 			$product->set_status( 'private' );
 			$product->save();
-		} elseif ( get_option('oft_import_active') !== 'yes' ) {
+		}
+
+		if ( get_option('oft_import_active') !== 'yes' ) {
 			// Update de productfiches niet indien er een import bezig is (te langzaam)
-			create_product_pdf( $product, 'nl' );
+			// create_product_pdf( $product, 'nl' );
 			// create_product_pdf( $product, 'fr' );
 			// create_product_pdf( $product, 'en' );
 		}
@@ -1667,7 +1672,7 @@
 
 		?>
 			<p>
-				<label for="oft-post-product" class=""><?php printf( __( 'Selecteer 1 van de %d actuele producten waarover dit bericht gaat:', 'oft' ), count($list) ); ?></label>
+				<label for="oft-post-product" class=""><?php printf( __( 'Selecteer 1 van de %d actuele en publiek te raadplegen producten waarover dit bericht gaat:', 'oft' ), count($list) ); ?></label>
 				<select name="oft-post-product" id="oft-post-product">
 					<option value="EMPTY"><?php _e( '(geen)', 'oft' ); ?></option>
 					<?php foreach ( $list as $sku => $title ) : ?>
