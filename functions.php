@@ -1118,6 +1118,10 @@
 		if ( $product->get_attribute('merk') !== 'Oxfam Fair Trade' ) {
 			$product->set_status( 'private' );
 			$product->save();
+		} else {
+			// TIJDELIJK
+			$product->set_status( 'publish' );
+			$product->save();
 		}
 
 		if ( get_option('oft_import_active') !== 'yes' ) {
