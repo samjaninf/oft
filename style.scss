@@ -314,7 +314,7 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 	font-weight: 300;
 
 	.post-date,
-	#page .wpcf7-form label {
+	.wpcf7-form label {
 		font-weight: 300 !important;
 	}
 }
@@ -554,13 +554,13 @@ body.home {
 	.rev_slider_wrapper {
 		h2.tp-caption {
 			display: inline;
-			// text-shadow: 1px 1px 3px $grey-text;
+			line-height: 110%;
 			background-color: rgba(0,0,0,0.5);
 		}
 		
 		h4.tp-caption {
 			// text-shadow: 1px 1px 3px $grey-text;
-			// background-color: rgba(0,0,0,0.5);
+			background-color: rgba(0,0,0,0.5);
 		}
 	}
 
@@ -726,7 +726,7 @@ body.single-post {
 
 div.wpcf7 {
 	p:not(:first-of-type) > label {
-		padding-top: 1em;
+		padding-top: 0.5em;
 	}
 
 	sup.required {
@@ -735,6 +735,17 @@ div.wpcf7 {
 
 	.wpcf7-form-control-wrap {
 		color: $black-title;
+	}
+
+	input.wpcf7-form-control.wpcf7-submit {
+		-webkit-font-smoothing: antialiased;
+		transition: opacity 400ms ease-in-out;
+		opacity: 1;
+	}
+
+	input.wpcf7-form-control.wpcf7-submit:hover {
+		opacity: 0.75;
+		filter: alpha(opacity=75);
 	}
 
 	.ajax-loader {
@@ -753,10 +764,12 @@ div.wpcf7 {
 
 	.wpcf7-validation-errors {
 		border: 2px solid $red;
+		color: $red;
 	}
 
 	.wpcf7-mail-sent-ok {
 		border: 2px solid $grey-text;
+		color: $grey-text;
 	}
 }
 
