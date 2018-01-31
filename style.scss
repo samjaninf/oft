@@ -127,7 +127,7 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 #nav_menu-4 {
 	display: inline-block !important;
 
-	#menu-menu-top.menu {
+	ul.menu {
 		margin-top: 3px;
 	}
 }
@@ -248,7 +248,7 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 		bottom: 0px;
 		box-sizing: border-box;
 		// Bovenstaande helpt niet, dus rare fix tegen uitbreken van achtergrond
-		margin-right: 18px;
+		margin-right: 19px;
 		padding: 0 20px 20px 20px;
 		background-color: rgba(0,0,0,0.5);
 		
@@ -312,7 +312,8 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 .fw-side-posts-list li .posts-content a.post-title {
 	letter-spacing: 1px !important;
 	color: $black-title;
-	font-weight: 500;
+	font-weight: 700;
+	width: 100%;
 }
 
 /* Copyright iets kleiner en bleker */
@@ -520,12 +521,13 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 body.home {
 	.rev_slider_wrapper {
 		h2.tp-caption {
-			text-shadow: 3px 6px $grey-text;
+			display: inline;
+			text-shadow: 3px 3px 6px $grey-text;
 			background-color: rgba(0,0,0,0.5);
 		}
 		
 		h4.tp-caption {
-			text-shadow: 2px 4px $lightgrey-text;
+			text-shadow: 2px 2px 4px $grey-text;
 			background-color: rgba(0,0,0,0.5);
 		}
 	}
@@ -636,7 +638,7 @@ body:not(.single-product):not(.single-post) {
 		.fw-special-title {
 			color: white !important;
 			font-size: 60px;
-			line-height: 90%;
+			line-height: 85%;
 			word-break: break-word;
 			max-width: 100%;
 			// text-shadow: 3px 3px $grey-text;
@@ -711,6 +713,10 @@ div.wpcf7 {
 		margin: 1em 0em;
 		padding: 0.5em;
 		border-radius: 3px;
+	}
+
+	.wpcf7-not-valid-tip {
+		color: $red;
 	}
 
 	.wpcf7-validation-errors {
