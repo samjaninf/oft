@@ -229,7 +229,7 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 /*************/
 
 .woocommerce-page {
-	.bt-woo-container {
+	#bt-woo-container {
 		padding-top: 25px;
 		padding-bottom: 25px;
 	}
@@ -240,6 +240,19 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 		.bt-col-inner {
 			background-color: $grey-background;
 		}
+	}
+}
+
+
+
+/********************/
+/*  ZOEKRESULTATEN  */
+/********************/
+
+body.search-results {
+	.bt-content-area {
+		padding-top: 50px;
+		padding-bottom: 50px;
 	}
 }
 

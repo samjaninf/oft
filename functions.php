@@ -1051,7 +1051,7 @@
 		if ( $pagenow === 'edit.php' and $post_type === 'product' ) {
 			// FILTER OP STOCK_STATUS WORDT OPGENOMEN IN CORE VANAF WC 3.3
 			
-			$args = array( 'taxonomy' => 'pa_merk', 'hide_empty' => true );
+			$args = array( 'taxonomy' => 'pa_merk', 'hide_empty' => false );
 			$terms = get_terms( $args );
 			$values_brand = array();
 			foreach ( $terms as $term ) {
@@ -1750,7 +1750,7 @@
 			'orderby' => 'date',
 			'order' => 'DESC',
 			'meta_key' => 'oft-post-product',
-			'meta_value' => $product->get_id(),
+			'meta_value' => $product->get_sku(),
 			'meta_compare' => '=',
 			'numberposts' => 1,
 		);
@@ -1759,7 +1759,7 @@
 		if ( $news_posts->have_posts() ) {
 			while ( $news_posts->have_posts() ) {
 				$news_posts->the_post();
-				echo "<div class='latest-news'><h4>".get_the_title()."</h4><p>".apply_filters( 'the_content', get_the_excerpt() )."</p></div>";
+				echo "<div class='latest-news'><h4>".get_the_title()."</h4><p>".apply_filters( 'the_content', preg_replace( '#\[[^\]]+\]#', '', get_the_excerpt() ) )."</p></div>";
 			}
 			wp_reset_postdata();
 		}
