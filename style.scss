@@ -157,6 +157,11 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 	max-height: 36px;
 	float: right;
 
+	.widget_search label:after {
+		background-image: url('assets/icon-organic.png') !important;
+		content: ' ' !important;
+	}
+
 	h2.widget-title {
 		display: none;
 	}
@@ -511,19 +516,23 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 	}
 
 	.bt-header-top-bar {
-		display: none;
+		// display: none;
 	}
 
-	&::before {
-		background-image: linear-gradient( to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.1) 125px, rgba(0,0,0,0.1) );
-		content: '';
-		position: absolute;
-		top: 0;
-		right: 0;
-		height: 100%;
-		left: 0;
-		opacity: 1;
-		z-index: 100;
+	.bt-404-page {
+		background-image: linear-gradient( to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.3) 150px, rgba(0,0,0,0.3) );
+
+		a {
+			color: white;
+			text-decoration: none !important;
+		}
+
+		a:hover {
+			color: white !important;
+			text-decoration: underline !important;
+			text-underline-position: under !important;
+			-webkit-text-underline-position: under !important;
+		}
 	}
 }
 
