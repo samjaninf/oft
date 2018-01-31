@@ -236,20 +236,20 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 	}
 
 	.oft-products-text-black {
-		padding: 0 20px;
-		margin-bottom: 20px;
+		padding: 0 20px 20px 20px;
 
 		h2 {
 			font-size: 26px !important;
-			margin-top: 0px;
 		}
 	}
 
 	.oft-products-text-white {
 		position: absolute;
 		bottom: 0px;
-		padding: 20px;
 		box-sizing: border-box;
+		// Bovenstaande helpt niet, dus rare fix tegen uitbreken van achtergrond
+		margin-right: 18px;
+		padding: 0 20px 20px 20px;
 		background-color: rgba(0,0,0,0.5);
 		
 		h2, p, a {
@@ -258,7 +258,6 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 
 		h2 {
 			font-size: 26px !important;
-			margin-top: 0px;
 		}
 	}
 }
@@ -520,9 +519,14 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 
 body.home {
 	.rev_slider_wrapper {
-		h2.tp-caption,
+		h2.tp-caption {
+			text-shadow: 3px 6px $grey-text;
+			background-color: rgba(0,0,0,0.5);
+		}
+		
 		h4.tp-caption {
-			text-shadow: 3px 3px $grey-text;
+			text-shadow: 2px 4px $lightgrey-text;
+			background-color: rgba(0,0,0,0.5);
 		}
 	}
 
@@ -593,7 +597,7 @@ body:not(.single-product):not(.single-post) {
 	
 	.fw-title-bar::before,
 	.rev_slider_wrapper.fullwidthbanner-container::before {
-		background-image: linear-gradient( to bottom, rgba(0,0,0,0.50), rgba(0,0,0,0.1) 125px, rgba(0,0,0,0) );
+		background-image: linear-gradient( to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.1) 125px, rgba(0,0,0,0) );
 		content: '';
 		position: absolute;
 		top: 0;
@@ -829,15 +833,17 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 		h2.tp-caption {
 			font-size: 32px !important;
 			line-height: 32px !important;
+			max-width: 100%;
 			position: relative;
-			top: 25px;
+			top: 20px;
 		}
 
 		h4.tp-caption {
 			font-size: 24px !important;
 			line-height: 24px !important;
+			max-width: 100%;
 			position: relative;
-			bottom: 25px;
+			bottom: 20px;
 		}
 	}
 }
