@@ -312,13 +312,21 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 
 .widget {
 	font-weight: 300;
+
+	.post-date,
+	#page .wpcf7-form label {
+		font-weight: 300 !important;
+	}
 }
 
-.fw-side-posts-list li .posts-content a.post-title {
-	letter-spacing: 1px !important;
-	color: $black-title;
-	font-weight: 700;
+.fw-side-posts-list li .posts-content {
 	width: 100%;
+
+	a.post-title {
+		letter-spacing: 1px !important;
+		color: $black-title;
+		font-weight: 700;
+	}
 }
 
 /* Copyright iets kleiner en bleker */
