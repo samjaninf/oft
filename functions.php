@@ -19,9 +19,6 @@
 		load_child_theme_textdomain( 'oft', get_stylesheet_directory().'/languages' );
 	}
 
-	// Zoombox voorlopig uitschakelen
-	remove_theme_support( 'wc-product-gallery-zoom' );
-
 	// Voeg custom styling toe aan de adminomgeving
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 

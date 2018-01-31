@@ -228,8 +228,19 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 /*  SIDEBAR  */
 /*************/
 
-.woocommerce-page .bt-sidebar {
-	margin-top: 3em;
+.woocommerce-page {
+	.bt-woo-container {
+		padding-top: 25px;
+		padding-bottom: 25px;
+	}
+
+	.bt-sidebar {
+		margin-top: 5em;
+
+		.bt-col-inner {
+			background-color: $grey-background;
+		}
+	}
 }
 
 
@@ -464,6 +475,7 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 
 .woocommerce-imagewrapper > a.woocommerce-product-link > img {
 	border: none !important;
+	max-width: 100% !important;
 }
 
 .woocommerce .products .product-item:hover .woocommerce-imagewrapper a.woocommerce-product-link::after {
@@ -661,8 +673,8 @@ body:not(.single-product):not(.single-post) {
 
 	section.bt-main-row {
 		// NIET DOEN, GEEFT WIT RANDJE OP MOBIEL
-		// padding-top: 0.5em;
-		// padding-bottom: 0.5em;
+		padding-top: 0.5em;
+		padding-bottom: 0.5em;
 	}
 
 	/* Verberg het volledige titelblok in de banners */
@@ -690,11 +702,6 @@ body:not(.single-product):not(.single-post) {
 			// display: none;
 		}
 	}
-}
-
-.bt-section-space {
-	// Fix voor mobiel
-	padding-top: 0px;
 }
 
 body.single-product,
@@ -873,6 +880,12 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 /*******************/
 
 @media (max-width: 768px) {
+	.bt-section-space {
+		// Fix voor mobiel
+		padding-top: 0px;
+		padding-bottom: 0px;
+	}
+
 	.oft-image-minimal-height {
 		min-height: 450px;
 	}

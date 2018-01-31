@@ -540,28 +540,28 @@ add_action( 'admin_enqueue_scripts', '_alone_admin_enqueue_scripts' );
 
 if(! function_exists('_alone_woocommerce_init_hook')) :
 	function _alone_woocommerce_init_hook() {
-		// woo 3.x
-		add_theme_support( 'wc-product-gallery-zoom' );
+		// GEWIJZIGD: Zoombox voorlopig uitschakelen
+		// add_theme_support( 'wc-product-gallery-zoom' );
 		add_theme_support( 'wc-product-gallery-lightbox' );
 		add_theme_support( 'wc-product-gallery-slider' );
 
 		// remove woocommerce breadcrumb
 		remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20, 0 );
 
+		// GEWIJZIGD: Eventueel de standaard WooCommerce-afbeeldingen gebruiken, maar dan wijzigingen nodig aan SASS-file
 		remove_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail', 10);
 		add_action( 'woocommerce_before_shop_loop_item_title', '_alone_woocommerce_template_loop_product_thumbnail', 10);
 
 		//remove link wrap product loop
-	  remove_action( 'woocommerce_before_shop_loop_item', 'woocommerce_template_loop_product_link_open', 10 );
-	  remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_product_link_close', 5 );
+		remove_action( 'woocommerce_before_shop_loop_item', 'woocommerce_template_loop_product_link_open', 10 );
+		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_product_link_close', 5 );
 
 		// wrap link -> title
 		add_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_link_open', 10 );
 		add_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_product_link_close', 5 );
 		add_action( 'woocommerce_after_shop_loop_item_title', '_bearsthemes_woocommerce_get_taxonomy_loop', 10 );
 
-
-	  remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
+		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
 
 		add_action( 'bearsthemes_woocommerce_after_thumbnail_loop', 'woocommerce_template_loop_add_to_cart', 10 );
 		if(function_exists('YITH_WCQV_Frontend')) :

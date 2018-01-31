@@ -2637,6 +2637,7 @@ if ( ! function_exists( 'alone_woocommerce_get_product_thumbnail' ) ) :
 		<div class="woocommerce-imagewrapper">
 			<?php echo '<div class="woocommerce_before_thumbnail_loop">'; do_action( 'bearsthemes_woocommerce_before_thumbnail_loop' ); echo '</div>'; ?>
 			<?php
+			// GEWIJZIGD: Eventueel andere placeholder tonen
 			$thumbnail_html = "<img src='". get_template_directory_uri() . '/assets/images/image-default.jpg' ."' alt=''>";
 			if ( has_post_thumbnail() ) {
 		    // echo get_the_post_thumbnail( $post->ID, $size );
