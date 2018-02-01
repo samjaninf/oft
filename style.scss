@@ -248,6 +248,11 @@ body.woocommerce-page:not(.single-product) {
 		.bt-col-inner {
 			background-color: $grey-background;
 		}
+
+		.widget:not(:last-child) {
+			border-bottom-width: 1px;
+			border-bottom-color: $grey-text;
+		}
 	}
 }
 
@@ -684,7 +689,7 @@ body:not(.single-product):not(.single-post) {
 		top: 0;
 		right: 0;
 		height: 100%;
-		max-height: 250px;
+		max-height: 300px;
 		left: 0;
 		opacity: 1;
 		z-index: 100;

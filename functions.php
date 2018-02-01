@@ -1898,7 +1898,6 @@
 	
 	function output_oft_partner_info() {
 		if ( is_tax('product_partner') ) {
-			global $wp_query;
 			$term_id = get_queried_object()->term_id;
 			$parent_term_id = absint( get_term( $term_id, 'product_partner' )->parent );
 			if ( $parent_term_id > 0 ) {
@@ -1925,7 +1924,13 @@
 						echo '<h4><a href="https://www.oxfamwereldwinkels.be/node/'.$partner_node.'" target="_blank">Lees meer over deze producent op oxfamwereldwinkels.be</a></h3>';
 					}
 
-					echo '<h4>'.sprintf( __( 'Momenteel verkopen wij %s producten van deze partner:', 'oft' ), $wp_query->found_posts ).'</h4>';
+					global $wp_query;
+					$cnt = $wp_query->found_posts;
+					if ( $cnt > 0 ) {
+						echo '<p></p>';
+						echo '<h4>'.sprintf( _n( 'Momenteel verkopen wij %s product van deze partner:', 'Momenteel verkopen wij %s producten van deze partner:', $cnt, 'oft' ), $cnt ).'</h4>';
+						echo '<p></p>';
+					}
 				} else {
 					// Er is geen parent dus de oorspronkelijke term is een land
 				}
