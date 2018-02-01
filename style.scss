@@ -81,6 +81,28 @@ blockquote {
 	border-left: none;
 }
 
+.bt-section-space {
+	padding-top: 10px;
+	padding-bottom: 25px;
+}
+
+article.post {
+	h3 {
+		font-size: 24px;
+	}
+
+	h4 {
+		font-size: 18px;
+		font-weight: 700;
+		margin-top: 2em;
+	}
+
+	ul > li,
+	ol > li {
+		line-height: 1.75em !important;
+	}
+}
+
 .widget .widget-title span::after {
 	display: none;
 }
@@ -97,18 +119,6 @@ blockquote {
 
 .oft-center-text {
 	text-align: center;
-}
-
-article.post .wpb_text_column {
-	h3 {
-		font-size: 24px;
-	}
-
-	h4 {
-		font-size: 18px;
-		font-weight: 700;
-		margin-top: 2em;
-	}
 }
 
 #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-title {
@@ -130,12 +140,6 @@ article.post .wpb_text_column {
 body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-title {
 	margin-bottom: 1em !important;
 }
-
-.bt-section-space {
-	padding-top: 10px;
-	padding-bottom: 25px;
-}
-
 
 
 
@@ -276,19 +280,26 @@ body.woocommerce-page:not(.single-product) {
 
 .post-single-entry-header {
 	.post-sing-image-background {
-		// WORDT GEMANIPULEERD DOOR JAVASCRIPT
-		background-position: center center !important;
+		background-position: 50% 20% !important;
+		// background-repeat: no-repeat !important;
 	}
 
-	.post-category::after {
-		display: none;
-	}
+	.post-category {
+		/* Randje verbergen */
+		padding-left: 0 !important;
+		&::after {
+			display: none;
+		}
 
-	/* Alles behalve publicatiedatum verbergen */
-	.extra-meta > div:not(.post-date) {
-		display: none;
+		& > a:hover {
+			color: white !important;
+			transition-property: none !important;
+		}
 	}
+}
 
+.post-single-content-text {
+	
 }
 
 

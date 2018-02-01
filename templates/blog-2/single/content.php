@@ -38,23 +38,8 @@ $article_classes = array(
 				      <?php echo "{$alone_post_options['date']}"; ?>
 				    </div>
 
-				    <!-- post author -->
-				    <div class="post-author" title="<?php _e('Author', 'alone'); ?>">
-				      <span><?php echo esc_html__('By ', 'alone') ?></span>
-				      <?php echo "{$alone_post_options['author_link']}"; ?>
-				    </div>
+				    <!-- GEWIJZIGD: Andere metadata niet tonen -->
 
-				    <!-- post comment -->
-				    <div class="post-total-comment" title="<?php _e('Comment', 'alone'); ?>">
-				      <?php echo "{$alone_post_options['comments']}"; ?>
-				      <?php echo ((int) $alone_post_options['comments'] <= 1) ? esc_html__('Comment', 'alone') : esc_html__('Comments', 'alone')  ?>
-				    </div>
-
-				    <!-- post view -->
-				    <div class="post-total-view" title="<?php _e('View', 'alone'); ?>">
-				      <?php echo "{$alone_post_options['views']}"; ?>
-				      <?php echo ((int) $alone_post_options['views'] <= 1) ? esc_html__('View', 'alone') : esc_html__('Views', 'alone')  ?>
-				    </div>
 				  </div>
 				</div>
 			</div> <!-- End .single-entry-header -->
@@ -68,12 +53,7 @@ $article_classes = array(
 						/* content */
 						the_content();
 
-						wp_link_pages( array(
-							'before'      => '<div class="page-links"><span class="page-links-title">' . esc_html__( 'Pages:', 'alone' ) . '</span>',
-							'after'       => '</div>',
-							'link_before' => '<span>',
-							'link_after'  => '</span>',
-						) );
+						// GEWIJZIGD: Link naar vorige / volgende post niet tonen
 
 						/* tags */
 						if(isset($alone_post_options['tag_list']) && ! empty($alone_post_options['tag_list'])) {
@@ -86,8 +66,5 @@ $article_classes = array(
 		</div>
 	</div>
 </article>
-<?php get_template_part( 'content', 'author' ); ?>
 <hr />
-<!-- GEWIJZIGD: Navigatie uitschakelen (respecteer instelling in Customizer toch niet) -->
-<?php // get_template_part( 'post', 'navigation' ); ?>
 <?php get_template_part( 'templates/related-articles/'.$alone_related_articles_type ); ?>
