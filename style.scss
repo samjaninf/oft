@@ -270,6 +270,29 @@ body.woocommerce-page:not(.single-product) {
 
 
 
+/***************/
+/*  BLOGPOSTS  */
+/***************/
+
+.post-single-entry-header {
+	.post-sing-image-background {
+		// WORDT GEMANIPULEERD DOOR JAVASCRIPT
+		background-position: center center !important;
+	}
+
+	.post-category::after {
+		display: none;
+	}
+
+	/* Alles behalve publicatiedatum verbergen */
+	.extra-meta > div:not(.post-date) {
+		display: none;
+	}
+
+}
+
+
+
 /********************/
 /*  ZOEKRESULTATEN  */
 /********************/
