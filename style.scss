@@ -236,7 +236,7 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 /*  SIDEBAR  */
 /*************/
 
-body:not(.single-product) .woocommerce-page {
+body.woocommerce-page:not(.single-product) {
 	#bt-woo-container {
 		padding-top: 25px;
 		padding-bottom: 25px;
@@ -678,13 +678,13 @@ body:not(.single-product):not(.single-post) {
 	/* Dégradé eventueel niet op homepage (met slider) toepassen met &:not(.home) */
 	.fw-title-bar::before,
 	.rev_slider_wrapper.fullwidthbanner-container::before {
-		background-image: linear-gradient( to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.1) 100px, rgba(0,0,0,0) );
+		background-image: linear-gradient( to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.15) 110px, rgba(0,0,0,0.1) );
 		content: '';
 		position: absolute;
 		top: 0;
 		right: 0;
 		height: 100%;
-		max-height: 300px;
+		max-height: 250px;
 		left: 0;
 		opacity: 1;
 		z-index: 100;
