@@ -53,9 +53,27 @@ body {
 	// hyphens: auto !important;
 }
 
+a:hover,
+h2.woocommerce-loop-product__title:hover {
+	text-decoration: underline !important;
+	text-underline-position: under !important;
+	-webkit-text-underline-position: under !important;
+}
+
 p {
 	line-height: 1.75em !important;
 	color: $grey-text;
+
+	// Laatste styles tellen!
+	& > a {
+		text-decoration: underline !important;
+		text-underline-position: under !important;
+		-webkit-text-underline-position: under !important;
+		
+		&:hover {
+			text-decoration: none !important;
+		}
+	}
 }
 
 blockquote {
@@ -65,13 +83,6 @@ blockquote {
 
 .widget .widget-title span::after {
 	display: none;
-}
-
-a:hover,
-h2.woocommerce-loop-product__title:hover {
-	text-decoration: underline !important;
-	text-underline-position: under !important;
-	-webkit-text-underline-position: under !important;
 }
 
 .oft-grid-post-date,
@@ -121,7 +132,7 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 }
 
 .bt-section-space {
-	padding-top: 25px;
+	padding-top: 10px;
 	padding-bottom: 25px;
 }
 
@@ -602,6 +613,10 @@ body.search-results {
 /**************/
 
 body.home {
+	.bt-section-space {
+		padding-top: 0px;
+	}
+	
 	.rev_slider_wrapper {
 		h2.tp-caption {
 			line-height: 90%;
