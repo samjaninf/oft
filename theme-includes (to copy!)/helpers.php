@@ -1709,12 +1709,15 @@ if(!function_exists('alone_title_bar')) :
 		if( is_page() ){
 			// for page (default template)
 			$post_id = $post->ID;
-			$image   = fw_get_db_post_option($post_id, 'header_image', '');
-			if($image == ''){
-				// if image from page is empty - get image from general theme settings
-				$image = isset($general_title_bar_options['title_bar_image']) ? $general_title_bar_options['title_bar_image'] : array();
-				// GEWIJZIGD: Geen title bar tonen indien header image niet expliciet ingevuld
-				return;
+			$image = fw_get_db_post_option( $post_id, 'header_image', '' );
+			if ( $image == '' ) {
+				// GEWIJZIGD: Probeer het ook nog eens met de moederpagina
+				$image = fw_get_db_post_option( wp_get_post_parent_id( $post_id ), 'header_image', '' );
+
+				// GEWIJZIGD: Geen title bar tonen indien geen van beide lukte
+				if ( $image == '' ) {
+					return;
+				}
 			}
 			$title = get_the_title($post_id);
 
@@ -1804,7 +1807,7 @@ if(!function_exists('alone_title_bar')) :
 					$header_image_data = fw_akg('custom_header_image', $category_options);
 					$header_title = fw_akg('custom_category_title', $category_options);
 
-					// GEWIJZIGD: PROBEER HET OOK NOG EENS MET DE MOEDERCATEGORIE
+					// GEWIJZIGD: Probeer het ook nog eens met de moedercategorie
 					if ( empty($header_image_data) ) {
 						$parent_term_id = absint( get_term( $term_id, 'product_cat' )->parent );
 						$category_options = fw_get_db_term_option( $parent_term_id, $taxonomy, '', '' );
