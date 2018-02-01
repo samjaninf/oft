@@ -254,17 +254,18 @@
 		if ( ! empty($_POST['partner_node']) ) {
 			update_term_meta( $term_id, 'partner_node', absint($_POST['partner_node']) );
 		} else {
-			delete_term_meta( $term_id, 'partner_node' );
+			// VEROORZAAKT PROBLEMEN BIJ IMPORTS
+			// delete_term_meta( $term_id, 'partner_node' );
 		}
 		if ( ! empty($_POST['partner_type']) ) {
 			update_term_meta( $term_id, 'partner_type', sanitize_text_field($_POST['partner_type']) );
 		} else {
-			delete_term_meta( $term_id, 'partner_type' );
+			// delete_term_meta( $term_id, 'partner_type' );
 		}
 		if ( ! empty($_POST['partner_image_id']) ) {
 			update_term_meta( $term_id, 'partner_image_id', absint($_POST['partner_image_id']) );
 		} else {
-			delete_term_meta( $term_id, 'partner_image_id' );
+			// delete_term_meta( $term_id, 'partner_image_id' );
 		}
 	}
 
