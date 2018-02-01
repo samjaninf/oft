@@ -2183,9 +2183,6 @@
 				$body = json_decode($status['body']);
 
 				if ( $body->status === "subscribed" ) {
-					// REEDS INGESCHREVEN
-					// TOON LINK OM PROFIEL TE BEKIJKEN
-					// PATCH BESTAANDE GEGEVENS?
 					$timestamp = strtotime($body->timestamp_signup);
 					if ( $timestamp !== false ) {
 						$signup_text = ' sinds '.date_i18n( 'j F Y', $timestamp );
@@ -2193,12 +2190,12 @@
 						$signup_text = '';
 					}
 					$id = $body->unique_email_id;
-					$posted_data['validation_error'] = sprintf( __( 'U bent%1$s reeds geabonneerd op onze nieuwsbrief! <a href="%2$s" target="_blank">Kijk hier uw profiel in.</a>', 'oft' ), $signup_text, 'http://oxfamwereldwinkels.us3.list-manage.com/profile?u=d66c099224e521aa1d87da403&id='.MC_LIST_ID.'&e='.$id );
+					// LINK OM PROFIEL TE BEKIJKEN = VEILIGHEIDSISSUE
+					// PATCH BESTAANDE GEGEVENS?
+					$posted_data['validation_error'] = sprintf( __( 'Je bent%1$s reeds geabonneerd op onze nieuwsbrief! <a href="%2$s" target="_blank">Kijk hier je profiel in.</a>', 'oft' ), $signup_text, 'http://oxfamwereldwinkels.us3.list-manage.com/profile?u=d66c099224e521aa1d87da403&id='.MC_LIST_ID.'&e='.$id );
 				} else {
-					// NIET LANGER INGESCHREVEN
-					// TOON LINK NAAR EXPLICIET INSCHRIJVINGSFORMULIER
 					// PATCH BESTAANDE MEMBER?
-					$posted_data['validation_error'] = sprintf( __( 'U was vroeger al eens geabonneerd op onze nieuwsbrief! Daarom dient u uw expliciete toestemming te geven. <a href="%s" target="_blank">Gelieve dit algemene inschrijvingsformulier te gebruiken.</a>', 'oft' ), 'http://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id='.MC_LIST_ID.'&FNAME='.$_POST['newsletter-name'].'&EMAIL='.$_POST['newsletter-email'] );
+					$posted_data['validation_error'] = sprintf( __( 'Je was vroeger al eens geabonneerd op onze nieuwsbrief! Daarom dient je expliciet opnieuw je toestemming te geven. <a href="%s" target="_blank">Gelieve dit algemene inschrijvingsformulier te gebruiken</a> en op de bevestigingslink te klikken.', 'oft' ), 'http://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id='.MC_LIST_ID.'&FNAME='.$_POST['newsletter-name'].'&EMAIL='.$_POST['newsletter-email'] );
 				}
 			}
 		}
@@ -2238,7 +2235,7 @@
 					if ( $subscription['response']['code'] == 200 ) {
 						$body = json_decode($subscription['body']);
 						if ( $body->status === "subscribed" ) {
-							$posted_data['success'] = __( 'U bent vanaf nu geabonneerd op de OFT-nieuwsbrief.', 'oft' );
+							$posted_data['success'] = __( 'Je bent vanaf nu geabonneerd op de OFT-nieuwsbrief.', 'oft' );
 						}
 					} else {
 						$posted_data['success'] = __( 'Er was een onbekend probleem met MailChimp!', 'oft' );
