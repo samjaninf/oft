@@ -5,7 +5,7 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.1.6
+	Version:		1.1.7
 	Text Domain:	oft
 */
 
@@ -148,10 +148,10 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 /************/
 
 .header-top-sidebar-item.fw-sidebar-content-align-left {
-	max-width: 600px;
+	// max-width: 500px;
 
 	.widget_nav_menu {
-		display: inline-block !important;
+		display: inline !important;
 
 		ul.menu {
 			margin-top: 3px;
@@ -295,6 +295,15 @@ body.woocommerce-page:not(.single-product) {
 			color: white !important;
 			transition-property: none !important;
 		}
+	}
+}
+
+.share-post-wrap {
+	.share-post-item {
+		border-radius: 50%;
+		width: 60px;
+		height: 60px;
+		margin-bottom: 20px;
 	}
 }
 
@@ -953,12 +962,14 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 /*  MOBILE TWEAKS  */
 /*******************/
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
 
 	.oft-image-minimal-height {
 		min-height: 450px;
 	}
+}
 
+@media (max-width: 768px) {
 	.oft-coffee-featured {
 		.wpb_column:not(.oft-coffee-first) .vc_column-inner {
 			/* Marge boven kolommen wat verhogen, aangezien ze nu collapsen */

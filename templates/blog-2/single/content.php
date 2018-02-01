@@ -55,6 +55,24 @@ $article_classes = array(
 
 						// GEWIJZIGD: Link naar vorige / volgende post niet tonen
 
+						$skus = explode( ',', get_post_meta( get_the_ID(), 'oft-post-product', true ) );
+						if ( count($skus) > 0 ) {
+							echo '<div class="woocommerce columns-4">';
+							woocommerce_product_loop_start();
+							foreach ( $skus as $sku ) {
+								// Kan het een geldig artikelnummer zijn?
+								if ( intval($sku) > 10000 ) {
+									$post_object = get_post( wc_get_product_id_by_sku($sku) );
+									if ( $post_object !== NULL ) {
+										setup_postdata( $GLOBALS['post'] =& $post_object );
+										wc_get_template_part( 'content', 'product' );
+									}
+								}
+							}
+							woocommerce_product_loop_end();
+							echo '</div>';
+						}
+
 						/* tags */
 						if(isset($alone_post_options['tag_list']) && ! empty($alone_post_options['tag_list'])) {
 							echo "<div class='single-entry-tag'>". esc_html__('Tags: ', 'alone') . "{$alone_post_options['tag_list']}</div>";
