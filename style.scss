@@ -121,8 +121,8 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 }
 
 .bt-section-space {
-	padding-top: 0px;
 	padding-top: 25px;
+	padding-bottom: 25px;
 }
 
 
@@ -739,7 +739,6 @@ body.single-post {
 	// Door absolute header moeten we genoeg padding voorzien bovenaan hoofdinhoud!
 	.bt-section-space {
 		padding-top: 100px;
-		padding-bottom: 0;
 	}
 
 	/* Toon meteen alternatief logo */
