@@ -1125,8 +1125,8 @@
 
 		if ( get_option('oft_import_active') !== 'yes' ) {
 			// Update de productfiches niet indien er een import bezig is (te langzaam)
-			// create_product_pdf( $product, 'nl' );
-			// create_product_pdf( $product, 'fr' );
+			create_product_pdf( $product, 'nl' );
+			create_product_pdf( $product, 'fr' );
 			// create_product_pdf( $product, 'en' );
 		}
 	}
@@ -1759,7 +1759,9 @@
 		if ( $news_posts->have_posts() ) {
 			while ( $news_posts->have_posts() ) {
 				$news_posts->the_post();
-				echo "<div class='latest-news'><h4>".get_the_title()."</h4><p>".apply_filters( 'the_content', preg_replace( '#\[[^\]]+\]#', '', get_the_excerpt() ) )."</p></div>";
+				echo "<div class='oft-latest-news'>";
+					echo "<p>".apply_filters( 'the_content', preg_replace( '#\[[^\]]+\]#', '', get_the_excerpt() ) )."</p>";
+				echo "</div>";
 			}
 			wp_reset_postdata();
 		}
