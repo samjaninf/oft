@@ -94,7 +94,7 @@ article.post {
 	h4 {
 		font-size: 18px;
 		font-weight: 700;
-		margin-top: 2em;
+		margin-top: 1.5em;
 	}
 
 	ul > li,
@@ -137,10 +137,6 @@ article.post {
 	margin-top: 150px;
 }
 
-body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-title {
-	margin-bottom: 1em !important;
-}
-
 
 
 /************/
@@ -148,10 +144,10 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 /************/
 
 .header-top-sidebar-item.fw-sidebar-content-align-left {
-	// max-width: 500px;
+	max-width: 50%;
 
 	.widget_nav_menu {
-		display: inline !important;
+		display: inline-block !important;
 
 		ul.menu {
 			margin-top: 3px;
@@ -200,7 +196,7 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 	}
 }
 
-#menu-oft-hoofdmenu {
+#bt-menu-primary > .bt-nav-menu  {
 	/* Menu-items onderlijnen bij aanwijzen */
 	.menu-item:hover > a > span {
 		text-decoration: underline;
@@ -335,7 +331,13 @@ body.search-results {
 		margin: 0px;
 	}
 
+	// Zorg ervoor dat de position: absolute op .oft-products-text-white de juiste referentie gebruikt
+	.oft-image-minimal-height > .vc_column-inner {
+		position: relative;
+	}
+
 	.oft-products-text-black {
+		margin-bottom: 0px;
 		padding: 0 20px 20px 20px;
 
 		h2 {
@@ -346,9 +348,10 @@ body.search-results {
 	.oft-products-text-white {
 		position: absolute;
 		bottom: 0px;
-		box-sizing: border-box;
-		// Bovenstaande helpt niet, dus rare fix tegen uitbreken van achtergrond
-		margin-right: 17px;
+		margin-bottom: 0px;
+		// Fix tegen uitbreken van achtergrond, hangt af van de column gap!
+		// width: calc(100% - 20px);
+		width: 100%;
 		padding: 0 20px 20px 20px;
 		background-color: rgba(0,0,0,0.5);
 		
@@ -357,6 +360,7 @@ body.search-results {
 		}
 
 		h2 {
+			margin-top: 10px !important;
 			font-size: 26px !important;
 		}
 	}
@@ -701,10 +705,9 @@ body.home {
 		margin: 0 auto;
 	}
 
-}
-
-.oft-on-top {
-	// ANDERS OPGELOST
+	#page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap .featured-box-alignment .entry-box-wrap .featured-box-title {
+		margin-bottom: 1em !important;
+	}
 }
 
 .oft-link-target-title {
