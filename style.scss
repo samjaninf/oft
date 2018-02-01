@@ -122,7 +122,6 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 
 .bt-section-space {
 	padding-top: 0px;
-	padding-bottom: 0px;
 }
 
 
@@ -145,8 +144,8 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 
 	.widget_icl_lang_sel_widget {
 		display: inline-block !important;
-		top: -1px;
-		position: relative;
+		// position: relative;
+		// top: 1px;
 		margin-left: 20px;
 
 		.wpml-ls-legacy-list-horizontal {
