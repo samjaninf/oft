@@ -5,7 +5,7 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.1.5
+	Version:		1.1.6
 	Text Domain:	oft
 */
 
@@ -127,8 +127,9 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 /*  HEADER  */
 /************/
 
-#nav_menu-4 {
+.header-top-sidebar-item {
 	display: inline-block !important;
+	max-width: 400px !important;
 
 	ul.menu {
 		margin-top: 3px;
@@ -695,8 +696,8 @@ body:not(.single-product):not(.single-post) {
 
 	section.bt-main-row {
 		// NIET DOEN, GEEFT WIT RANDJE OP MOBIEL
-		padding-top: 0.5em;
-		padding-bottom: 0.5em;
+		// padding-top: 0.5em;
+		// padding-bottom: 0.5em;
 	}
 
 	/* Verberg het volledige titelblok in de banners */
@@ -858,6 +859,10 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	background-color: transparent !important;
 	color: $link-blue !important;
 	font-size: 1em !important;
+
+	&.vc_btn3-size-lg {
+		font-size: 1.25em !important;
+	}
 }
 
 #page .wpb_theme_custom_element.wpb_posts_grid_resizable .vc-custom-inner-wrap .grid-item.item-skin-products-default .grid-item-inner .background-image-backend::after {
