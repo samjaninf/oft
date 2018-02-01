@@ -120,6 +120,11 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 	margin-bottom: 1em !important;
 }
 
+.bt-section-space {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
 
 
 
@@ -127,32 +132,35 @@ body.home #page .wpb_theme_custom_element.wpb_featured_box .vc-custom-inner-wrap
 /*  HEADER  */
 /************/
 
-.header-top-sidebar-item {
-	display: inline-block !important;
-	max-width: 400px !important;
+.header-top-sidebar-item.fw-sidebar-content-align-left {
+	max-width: 600px;
 
-	ul.menu {
-		margin-top: 3px;
-	}
-}
+	.widget_nav_menu {
+		display: inline-block !important;
 
-#icl_lang_sel_widget-2 {
-	display: inline-block !important;
-	top: -1px;
-	position: relative;
-	margin-left: 20px;
-
-	.wpml-ls-legacy-list-horizontal {
-		padding: 0;
-		border-left: 1px solid black;
+		ul.menu {
+			margin-top: 3px;
+		}
 	}
 
-	.wpml-ls-link {
-		padding: 0 !important;
-	}
+	.widget_icl_lang_sel_widget {
+		display: inline-block !important;
+		top: -1px;
+		position: relative;
+		margin-left: 20px;
 
-	.wpml-ls-native {
-		padding-left: 20px;
+		.wpml-ls-legacy-list-horizontal {
+			padding: 0;
+			border-left: 1px solid black;
+		}
+
+		.wpml-ls-link {
+			padding: 0 !important;
+		}
+
+		.wpml-ls-native {
+			padding-left: 20px;
+		}
 	}
 }
 
@@ -907,11 +915,6 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 /*******************/
 
 @media (max-width: 768px) {
-	.bt-section-space {
-		// Fix voor mobiel
-		padding-top: 0px;
-		padding-bottom: 0px;
-	}
 
 	.oft-image-minimal-height {
 		min-height: 450px;
