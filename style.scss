@@ -295,11 +295,16 @@ body.woocommerce-page:not(.single-product) {
 }
 
 .share-post-wrap {
+	width: 100%;
+
 	.share-post-item {
 		border-radius: 50%;
-		width: 60px;
-		height: 60px;
-		margin-bottom: 20px;
+		width: 50px !important;
+		height: 50px !important;
+		margin: 20px auto !important;
+		color: $lightgrey-text !important;
+		border-color: $lightgrey-text !important;
+		border-width: 2px !important;
 	}
 }
 
