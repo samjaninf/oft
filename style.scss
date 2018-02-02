@@ -5,14 +5,14 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.1.7
+	Version:		1.2.0
 	Text Domain:	oft
 */
 
 $red: #eb476f;
 $yellow: #ffcd66;
 $green: #06d29c;
-$blue: #06d29c;
+$blue: #0091cd;
 $beige: #f4f4f4;
 $oxfam-green: #61a534;
 
@@ -787,6 +787,11 @@ body:not(.single-product):not(.single-post) {
 		}
 
 		.fw-special-title::after {
+			display: none;
+		}
+
+		/* Ondertitel niet tonen (eventueel enkel bij partners m.b.v. body.tax-product_partner) */
+		.fw-special-subtitle {
 			display: none;
 		}
 	}
