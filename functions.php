@@ -1760,10 +1760,10 @@
 		if ( $news_posts->have_posts() ) {
 			while ( $news_posts->have_posts() ) {
 				$news_posts->the_post();
-				echo "<div class='oft-latest-news'>";
-					echo "<a href=".get_permalink()."><h4>".get_the_title()."</h4></a>";
-					echo "<p>".apply_filters( 'the_content', preg_replace( '#\[[^\]]+\]#', '', get_the_excerpt() ) )."</p>";
-				echo "</div>";
+				echo '<p>Lees zeker ook de blogpost "<a href='.get_permalink().'>'.get_the_title().'</a>".</p>';
+				// echo "<div class='oft-latest-news'>";
+				// echo '<p>'.apply_filters( 'the_content', preg_replace( '#\[[^\]]+\]#', '', get_the_excerpt() ) ).'</p>';
+				// echo "</div>";
 			}
 			wp_reset_postdata();
 		}
