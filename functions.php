@@ -1909,28 +1909,27 @@
 					// Er is opnieuw een parent dus de oorspronkelijke term is een partner
 					$grandparent_term = get_term( $grandparent_term_id, 'product_partner' );
 					
-					echo '<p>'.__( 'Deze boeren zijn voor ons geen leveranciers, het zijn partners. Dankzij jullie steun kunnen coöperaties uitgroeien tot bloeiende ondernemingen die hun fairtradeproducten wereldwijd verkopen.', 'oft' ).'</p>';
-
 					if ( strlen(term_description()) > 10 ) {
-						echo '<blockquote>'.wc_format_content( term_description() ).'</blockquote>';
-						echo '<h5 style="text-align: right;">'.single_term_title( '', false ).' &mdash; '.$parent_term->name.', '.$grandparent_term->name.'</h5>';
+						echo '<blockquote>&laquo; '.wc_format_content( term_description() ).' &raquo;</blockquote>';
+						echo '<p style="text-align: right;">'.single_term_title( '', false ).' &mdash; '.$parent_term->name.', '.$grandparent_term->name.'</p>';
 						$image_id = get_term_meta( get_queried_object()->term_id, 'partner_image_id', true );
 						if ($image_id) {
 							echo wp_get_attachment_image( $image_id, array(300,300), false, array( 'class' => 'partner-quote-icon' ) );
 						}
 					}
 
-					$partner_node = get_term_meta( get_queried_object()->term_id, 'partner_node', true );
-					if ( $partner_node > 0 ) {
-						echo '<h4><a href="https://www.oxfamwereldwinkels.be/node/'.$partner_node.'" target="_blank">Lees meer over deze producent op oxfamwereldwinkels.be</a></h3>';
-					}
+					echo '<p style="margin: 2em 0;">';
+						_e( 'Deze boeren zijn voor ons geen leveranciers, het zijn partners. Dankzij jullie steun kunnen coöperaties uitgroeien tot bloeiende ondernemingen die hun fairtradeproducten wereldwijd verkopen.', 'oft' );
+						$partner_node = get_term_meta( get_queried_object()->term_id, 'partner_node', true );
+						if ( $partner_node > 0 ) {
+							echo ' <a href="https://www.oxfamwereldwinkels.be/node/'.$partner_node.'" target="_blank">(lees meer over deze producent op oxfamwereldwinkels.be)</a>';
+						}
+					echo '</p>';
 
 					global $wp_query;
 					$cnt = $wp_query->found_posts;
 					if ( $cnt > 0 ) {
-						echo '<p></p>';
-						echo '<h4>'.sprintf( _n( 'Momenteel verkopen wij %s product van deze partner:', 'Momenteel verkopen wij %s producten van deze partner:', $cnt, 'oft' ), $cnt ).'</h4>';
-						echo '<p></p>';
+						echo '<h4 style="margin: 2em 0;">'.sprintf( _n( 'Momenteel verkopen wij %s product van deze partner:', 'Momenteel verkopen wij %s producten van deze partner:', $cnt, 'oft' ), $cnt ).'</h4>';
 					}
 				} else {
 					// Er is geen parent dus de oorspronkelijke term is een land
