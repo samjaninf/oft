@@ -1910,8 +1910,10 @@
 					$grandparent_term = get_term( $grandparent_term_id, 'product_partner' );
 					
 					if ( strlen(term_description()) > 10 ) {
-						echo '<blockquote>&laquo; '.term_description().' &raquo;</blockquote>';
+						remove_filter( 'term_description', 'wpautop' );
+						echo '<blockquote>&laquo; '.wc_format_content( term_description() ).' &raquo;</blockquote>';
 						echo '<p style="text-align: right;">'.single_term_title( '', false ).' &mdash; '.$parent_term->name.', '.$grandparent_term->name.'</p>';
+						add_filter( 'term_description', 'wpautop' );
 						$image_id = get_term_meta( get_queried_object()->term_id, 'partner_image_id', true );
 						if ($image_id) {
 							echo wp_get_attachment_image( $image_id, array(300,300), false, array( 'class' => 'partner-quote-icon' ) );
