@@ -1911,7 +1911,7 @@
 					
 					if ( strlen(term_description()) > 10 ) {
 						remove_filter( 'term_description', 'wpautop' );
-						echo '<blockquote>&laquo; '.wc_format_content( term_description() ).' &raquo;</blockquote>';
+						echo '<blockquote>&laquo; '.term_description().' &raquo;</blockquote>';
 						echo '<p style="text-align: right;">'.single_term_title( '', false ).' &mdash; '.$parent_term->name.', '.$grandparent_term->name.'</p>';
 						add_filter( 'term_description', 'wpautop' );
 						$image_id = get_term_meta( get_queried_object()->term_id, 'partner_image_id', true );
