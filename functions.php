@@ -1910,7 +1910,7 @@
 					$grandparent_term = get_term( $grandparent_term_id, 'product_partner' );
 					
 					if ( strlen(term_description()) > 10 ) {
-						echo '<blockquote>&laquo; '.wc_format_content( term_description() ).' &raquo;</blockquote>';
+						echo '<blockquote>&laquo; '.term_description().' &raquo;</blockquote>';
 						echo '<p style="text-align: right;">'.single_term_title( '', false ).' &mdash; '.$parent_term->name.', '.$grandparent_term->name.'</p>';
 						$image_id = get_term_meta( get_queried_object()->term_id, 'partner_image_id', true );
 						if ($image_id) {
@@ -1922,7 +1922,7 @@
 						_e( 'Deze boeren zijn voor ons geen leveranciers, het zijn partners. Dankzij jullie steun kunnen coöperaties uitgroeien tot bloeiende ondernemingen die hun fairtradeproducten wereldwijd verkopen.', 'oft' );
 						$partner_node = get_term_meta( get_queried_object()->term_id, 'partner_node', true );
 						if ( $partner_node > 0 ) {
-							echo ' <a href="https://www.oxfamwereldwinkels.be/node/'.$partner_node.'" target="_blank">(lees meer over deze producent op oxfamwereldwinkels.be)</a>';
+							echo ' (<a href="https://www.oxfamwereldwinkels.be/node/'.$partner_node.'" target="_blank">lees meer over deze producent op oxfamwereldwinkels.be</a>)';
 						}
 					echo '</p>';
 
