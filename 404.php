@@ -1,4 +1,4 @@
-<?php get_header(); ?>
+<?php get_header('404'); ?>
 <?php $alone_sidebar_position = function_exists( 'fw_ext_sidebars_get_current_position' ) ? fw_ext_sidebars_get_current_position() : 'right'; ?>
 <div class="no-header-image"></div>
 <section class="bt-default-page bt-404-page bt-main-row <?php alone_get_content_class( 'main', $alone_sidebar_position ); ?>">

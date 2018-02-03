@@ -643,6 +643,7 @@ body.search-results {
 
 	.bt-404-page {
 		background-image: linear-gradient( to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.3) 150px, rgba(0,0,0,0.3) );
+		height: 100%;
 
 		a {
 			color: white;
@@ -946,6 +947,7 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	width: 24%;
 	display: inline-block;
 	margin-bottom: 2em;
+	vertical-align: top;
 }
 
 .woocommerce.columns-4 > ul.products > div.product h2.woocommerce-loop-product__title {

@@ -2572,8 +2572,8 @@
 		wp_enqueue_script( 'wp-api' );
 	}
 
-	// Verhinder het lekken van gegevens via de WP API
-	add_filter( 'rest_authentication_errors', 'only_allow_administrator_rest_access' );
+	// Verhinder het lekken van gegevens via de WP API NIET DOEN, BLOKKEERT DE WERKING VAN CF7
+	// add_filter( 'rest_authentication_errors', 'only_allow_administrator_rest_access' );
 
 	function only_allow_administrator_rest_access( $access ) {
 		if( ! is_user_logged_in() or ! current_user_can( 'update_core' ) ) {
