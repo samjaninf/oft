@@ -1769,10 +1769,9 @@
 		}
 
 		if ( file_exists( WP_CONTENT_DIR.'/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ) ) {
-			echo '<div class="vc_btn3-container oft-minimal-button vc_btn3-center">';
+			echo '<div class="vc_btn3-container oft-product-sheet vc_btn3-center">';
 			echo '<a class="vc_general vc_btn3 vc_btn3-size-md vc_btn3-shape-rounded vc_btn3-style-flat vc_btn3-color-blue" href="'.content_url( '/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ).'" target="_blank">'.__( 'Download de productfiche', 'oft' ).'</a>';
 			echo '</div>';
-			// echo '<a href="'.content_url( '/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ).'" target="_blank"><p class="oft-product-sheet">'.__( 'Download de productfiche', 'oft' ).'</p></a>';
 		}
 
 		echo '<div class="oft-icons">';
