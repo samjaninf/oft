@@ -602,18 +602,24 @@ body.search-results {
 	}
 
 	.shop_attributes {
+		border-top-width: 0px;
+
 		th {
 			text-align: right;
 			width: 40%;
 			padding-right: 15px;
 			min-width: 300px;
+			border-width: 0px;
+			border-right-width: 1px;
+			border-style: solid;
+			border-color: $black-title;
 			// visibility: collapse;
 
-			.primary {
-				text-align: left;
+			&.primary {
+				// text-align: left;
 			}
 
-			.left {
+			&.secondary {
 				font-style: italic;
 			}
 		}
@@ -621,7 +627,21 @@ body.search-results {
 		td {
 			width: 60%;
 			padding-left: 15px;
+			border-width: 0px;
+			border-left-width: 1px;
+			border-style: solid;
+			border-color: $black-title;
 			// visibility: collapse;
+		}
+
+		tr:not(:last-child) > th,
+		tr:not(:last-child) > td {
+			// border-bottom-width: 1px;
+		}
+
+		th.primary,
+		td.primary {
+			border-top-width: 1px;
 		}
 	}
 }

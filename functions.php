@@ -528,9 +528,9 @@
 
 		if ( $type === 'food' ) {
 			// Blokje tonen van zodra energie ingevuld?
-			// if ( intval( $product->get_meta('_energy') ) > 0 ) {
+			if ( intval( $product->get_meta('_energy') ) > 0 ) {
 				$has_row = true;
-			// }
+			}
 			
 			if ( $product->get_meta('_net_unit') === 'cl' ) {
 				$unit = 'ml';
@@ -572,13 +572,13 @@
 								echo '<th class="primary">'.$meta_label.'</th>';
 							}
 						?>
-						<td><?php
+						<?php
 							if ( in_array( $meta_key, $submetas ) ) {
-								echo '<i>'.$product->get_meta($meta_key).' g</i>';
+								echo '<td class="secondary">'.$product->get_meta($meta_key).' g</td>';
 							} else {
-								echo $product->get_meta($meta_key).' g';
+								echo '<td class="primary">'.$product->get_meta($meta_key).' g</td>';
 							}
-						?></td>
+						?>
 					</tr>
 					<?php
 				}
