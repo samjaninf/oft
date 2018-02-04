@@ -162,7 +162,7 @@ article.post {
 
 		.wpml-ls-legacy-list-horizontal {
 			padding: 0;
-			border-left: 1px solid black;
+			border-left: 1px solid $black-title;
 		}
 
 		.wpml-ls-link {
@@ -263,7 +263,7 @@ body.woocommerce-page:not(.single-product) {
 
 		.widget:not(:last-child) {
 			border-bottom-width: 1px;
-			border-bottom-color: $grey-text;
+			border-bottom-color: $lightgrey-text;
 		}
 	}
 }
@@ -608,11 +608,11 @@ body.search-results {
 			text-align: right;
 			width: 40%;
 			padding-right: 15px;
-			min-width: 300px;
 			border-width: 0px;
 			border-right-width: 1px;
 			border-style: solid;
-			border-color: $black-title;
+			border-color: $grey-text;
+			// min-width: 250px;
 			// visibility: collapse;
 
 			&.primary {
@@ -630,7 +630,7 @@ body.search-results {
 			border-width: 0px;
 			border-left-width: 1px;
 			border-style: solid;
-			border-color: $black-title;
+			border-color: $grey-text;
 			// visibility: collapse;
 		}
 

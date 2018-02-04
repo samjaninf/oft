@@ -488,7 +488,7 @@
 	function add_extra_product_tabs( $tabs ) {
 		global $product;
 		// Schakel lange beschrijving uit (werd naar boven verplaatst)
-		unset($tabs['description']);
+		// unset($tabs['description']);
 
 		// Voeg tabje met voedingswaardes toe (indien niet leeg)
 		if ( get_tab_content('food') !== false ) {
