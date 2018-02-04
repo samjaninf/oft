@@ -1016,13 +1016,17 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	}
 }
 
-@media (max-width: 600px) {
+@media (max-width: 580px) {
 	.error404 {
 		.bt-404-page {
-			padding: 85px 0px;
+			padding: 100px 0px 50px 0px;
 
 			.fw-title-404 {
-				font-size: 60px;
+				font-size: 50px;
+			}
+
+			.fw-title-404-sub {
+				font-size: 24px;
 			}
 		}
 	}
