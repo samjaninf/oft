@@ -5,7 +5,7 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.1
+	Version:		1.2.2
 	Text Domain:	oft
 */
 
@@ -643,8 +643,7 @@ body.search-results {
 
 	.bt-404-page {
 		background-image: linear-gradient( to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.3) 150px, rgba(0,0,0,0.3) );
-		min-height: 100%;
-		padding: 85px 0px;
+		height: 100%;
 
 		a {
 			color: white;
