@@ -5,7 +5,7 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.3
+	Version:		1.2.4
 	Text Domain:	oft
 */
 
@@ -1007,8 +1007,8 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 
 	body:not(.single-product):not(.single-post) {
 		.fw-title-bar > .container {
-			padding-top: 75px !important;
-			padding-bottom: 75px !important;
+			padding-top: 80px !important;
+			padding-bottom: 60px !important;
 		}
 	}
 
@@ -1053,13 +1053,13 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	.rev_slider_wrapper {
 		h2.tp-caption {
 			font-size: 32px !important;
-			// line-height: 90% !important;
+			line-height: 100% !important;
 			max-width: 100%;
 		}
 
 		h4.tp-caption {
 			font-size: 24px !important;
-			// line-height: 90% !important;
+			line-height: 100% !important;
 			max-width: 100%;
 			position: relative;
 			bottom: 20px;
