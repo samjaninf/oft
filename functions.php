@@ -487,7 +487,7 @@
 	
 	function add_extra_product_tabs( $tabs ) {
 		global $product;
-		// Schakel lange beschrijving uit (werd naar boven verplaatst) TENZIJ VOOR WIJNEN => SOMMELIERINFO?
+		// Schakel lange beschrijving uit (werd naar boven verplaatst)
 		unset($tabs['description']);
 
 		// Voeg tabje met voedingswaardes toe (indien niet leeg)
@@ -604,6 +604,21 @@
 			$contains = array();
 			$traces = array();
 			
+			// Sommelierinfo uit korte beschrijving tonen boven tabel 
+			$categories = $product->get_category_ids();
+			if ( is_array( $categories ) ) {
+				foreach ( $categories as $category_id ) {
+					$category = get_term( $category_id, 'product_cat' );
+					while ( intval($category->parent) !== 0 ) {
+						$parent = get_term( $category->parent, 'product_cat' );
+						$category = $parent;
+					}
+				}
+				if ( $parent->slug === 'wijn' ) {
+					echo '<p>'.$product->get_short_description().'</p>';
+				}
+			}
+
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php _e( 'Inhoud', 'oft' ); ?></th>
@@ -853,7 +868,7 @@
 			$categories = isset( $_GET['post'] ) ? get_the_terms( $_GET['post'], 'product_cat' ) : false;
 			if ( is_array( $categories ) ) {
 				foreach ( $categories as $category ) {
-					while ( $category->parent !== 0 ) {
+					while ( intval($category->parent) !== 0 ) {
 						$parent = get_term( $category->parent, 'product_cat' );
 						$category = $parent;
 					}
@@ -905,7 +920,7 @@
 			$categories =  get_the_terms( $_GET['post'], 'product_cat' );
 			if ( is_array( $categories ) ) {
 				foreach ( $categories as $category ) {
-					while ( $category->parent !== 0 ) {
+					while ( intval($category->parent) !== 0 ) {
 						$parent = get_term( $category->parent, 'product_cat' );
 						$category = $parent;
 					}
