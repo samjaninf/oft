@@ -528,9 +528,9 @@
 
 		if ( $type === 'food' ) {
 			// Blokje tonen van zodra energie ingevuld?
-			if ( intval( $product->get_meta('_energy') ) > 0 ) {
+			// if ( intval( $product->get_meta('_energy') ) > 0 ) {
 				$has_row = true;
-			}
+			// }
 			
 			if ( $product->get_meta('_net_unit') === 'cl' ) {
 				$unit = 'ml';
@@ -616,11 +616,11 @@
 			<?php
 			
 			if ( $grapes = get_grape_terms_by_product($product) ) {
-				$ingredients_th .= __( 'Samenstelling', 'oft' );
-				$ingredients_td .= implode( ', ', $grapes );
+				$ingredients_th = __( 'Samenstelling', 'oft' );
+				$ingredients_td = implode( ', ', $grapes );
 			} elseif ( ! empty( $product->get_meta('_ingredients') ) ) {
-				$ingredients_th .= __( 'Ingrediënten', 'oft' );
-				$ingredients_td .= $product->get_meta('_ingredients');
+				$ingredients_th = __( 'Ingrediënten', 'oft' );
+				$ingredients_td = $product->get_meta('_ingredients');
 			} else {
 				$ingredients_th = false;
 			}
@@ -2566,7 +2566,7 @@
 	function get_grape_terms_by_product( $product ) {
 		$terms = get_the_terms( $product->get_id(), 'product_grape' );
 		
-		if ( count($terms) > 0 ) {
+		if ( is_array($terms) and count($terms) > 0 ) {
 			$grapes = array();
 			foreach ( $terms as $term ) {
 				$grapes[$term->term_id] = $term->name;
