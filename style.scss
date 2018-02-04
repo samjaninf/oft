@@ -5,7 +5,7 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.5
+	Version:		1.2.6
 	Text Domain:	oft
 */
 
@@ -110,6 +110,13 @@ article.post {
 .oft-grid-post-date,
 .oft-grid-post-date-tags {
 	font-size: 80%;
+}
+
+.vc_gitem-post-data-source-post_title,
+.oft-products-text-black,
+.oft-products-text-white {
+	word-break: break-word;
+	hyphens: auto;
 }
 
 .oft-reduce-width {
@@ -1095,17 +1102,6 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 		}
 	}
 
-	body:not(.single-product):not(.single-post) {
-		.fw-title-bar > .container {
-			padding-top: 50px !important;
-			padding-bottom: 50px !important;
-		}
-
-		.fw-special-title {
-			font-size: 50px;
-		}
-	}
-
 	.rev_slider_wrapper {
 		h2.tp-caption {
 			font-size: 32px !important;
@@ -1148,6 +1144,17 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	.woocommerce.single-product {
 		.woocommerce-product-gallery.images {
 			width: 100%;
+		}
+	}
+
+	body:not(.single-product):not(.single-post) {
+		.fw-title-bar > .container {
+			padding-top: 50px !important;
+			padding-bottom: 50px !important;
+		}
+
+		.fw-special-title {
+			font-size: 50px;
 		}
 	}
 

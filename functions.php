@@ -12,7 +12,7 @@
 
 	function load_child_theme() {
 		// Zorgt ervoor dat de stylesheet van het child theme ZEKER NA alone.css ingeladen wordt
-		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.5' );
+		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.6' );
 		// BOOTSTRAP REEDS INGELADEN DOOR ALONE
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
@@ -620,7 +620,7 @@
 			$contains = array();
 			$traces = array();
 			// echo '<p>'.$product->get_short_description().'</p>';
-			
+
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php _e( 'Inhoud', 'oft' ); ?></th>
