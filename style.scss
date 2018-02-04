@@ -1053,13 +1053,13 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	.rev_slider_wrapper {
 		h2.tp-caption {
 			font-size: 32px !important;
-			line-height: 90% !important;
+			// line-height: 90% !important;
 			max-width: 100%;
 		}
 
 		h4.tp-caption {
 			font-size: 24px !important;
-			line-height: 90% !important;
+			// line-height: 90% !important;
 			max-width: 100%;
 			position: relative;
 			bottom: 20px;
@@ -1075,9 +1075,23 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 }
 
 @media (max-width: 580px) {
+	.woocommerce {
+		/* Naar 1 kolom collapsen in hoofdpagina's */
+		&.columns-4 > ul.products > div.product,
+		&.columns-3 > ul.products > div.product {
+			width: 100%;
+		}
+
+		/* Naar 1 kolom gaan in overzichtspagina's */
+		.products .product-item.bt-col-3 {
+			width: calc(100%);
+		}
+	}
+
 	.rev_slider_wrapper {
 		h2.tp-caption {
 			font-size: 26px !important;
+			position: relative;
 			top: 40px;
 		}
 
