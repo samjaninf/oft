@@ -57,7 +57,7 @@ $article_classes = array(
 
 						$skus = explode( ',', get_post_meta( get_the_ID(), 'oft-post-product', true ) );
 						if ( count($skus) > 0 ) {
-							echo '<div class="woocommerce columns-4">';
+							echo '<div class="woocommerce columns-3">';
 							woocommerce_product_loop_start();
 							foreach ( $skus as $sku ) {
 								// Kan het een geldig artikelnummer zijn?

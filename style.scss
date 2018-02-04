@@ -295,13 +295,13 @@ body.woocommerce-page:not(.single-product) {
 }
 
 .share-post-wrap {
-	width: 100%;
+	margin: auto;
 
 	.share-post-item {
 		border-radius: 50%;
-		width: 50px !important;
-		height: 50px !important;
-		margin: 20px auto !important;
+		width: 45px !important;
+		height: 45px !important;
+		margin: 20px 10px !important;
 		color: $lightgrey-text !important;
 		border-color: $lightgrey-text !important;
 		border-width: 2px !important;
@@ -445,17 +445,55 @@ body.search-results {
 /*  PRODUCTS  */
 /**************/
 
-.woocommerce .products .product-item .wp-post-image img {
-	border-width: 0px !important;
-}
-
 /* Verberg de automatisch toegevoegde categorieën op de hoofdpagina van de shop NOG NIET SPECIFIEK GENOEG */
 .woocommerce-page .woocommerce-product-subcategories-wrap {
 	display: none;
 }
 
-.woocommerce.single-product {
+/* Overzichtspagina */
+.woocommerce {
+	& > ul.products {
+		text-align: center;
 
+		.product-item .wp-post-image img {
+			// MAG WEG?
+			// border-width: 0px !important;
+		}
+
+		& > div.product {
+			display: inline-block;
+			margin-bottom: 2em;
+			vertical-align: top;
+
+			h2.woocommerce-loop-product__title {
+				font-size: 1.2em;
+				line-height: 1em;
+				text-align: center;
+			}
+
+			span.price {
+				text-align: center;
+				display: block;
+				font-size: 1em;
+			}
+
+			div.woocommerce-taxonomy-loop {
+				display: none;
+			}
+		}
+	}
+
+	&.columns-4 > ul.products > div.product {
+		width: 24%;
+	}
+
+	&.columns-3 > ul.products > div.product {
+		width: 33%;
+	}
+}
+
+/* Detailpagina */
+.woocommerce.single-product {
 	.woocommerce-breadcrumb {
 		margin-bottom: 25px;
 	}
@@ -939,36 +977,10 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	background-color: transparent;
 }
 
-.woocommerce.columns-4 > ul.products {
-	text-align: center;	
-}
-
-.woocommerce.columns-4 > ul.products > div.product {
-	width: 24%;
-	display: inline-block;
-	margin-bottom: 2em;
-	vertical-align: top;
-}
-
-.woocommerce.columns-4 > ul.products > div.product h2.woocommerce-loop-product__title {
-	font-size: 1.2em;
-	line-height: 1em;
-	text-align: center;
-}
-
-.woocommerce.columns-4 > ul.products > div.product span.price {
-	text-align: center;
-	display: block;
-	font-size: 1em;
-}
-
-.woocommerce.columns-4 > ul.products > div.product div.woocommerce-taxonomy-loop {
-	display: none;
-}
-
 .feedback,
 .fa-spinner {
-	display: none;
+	// WAT IS DIT?
+	// display: none;
 }
 
 
@@ -977,10 +989,33 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 /*  MOBILE TWEAKS  */
 /*******************/
 
-@media (max-width: 992px) {
+@media (max-width: 1200px) {
+	.woocommerce {
+		.bt-sidebar {
+			.bt-col-inner {
+				/* Iets minder padding */
+				padding: 20px;
+			}
+		}
+	}
+}
 
+@media (max-width: 992px) {
 	.oft-image-minimal-height {
 		min-height: 450px;
+	}
+
+	.woocommerce {
+		/* Naar 2 kolommen collapsen in hoofdpagina's (default = rijen van 4) */
+		&.columns-4 > ul.products > div.product,
+		&.columns-3 > ul.products > div.product {
+			width: 49%;
+		}
+
+		/* Niet meteen naar 2 kolommen gaan in overzichtspagina's (default = rijen van 3) */
+		.products .product-item.bt-col-3 {
+			width: calc(33%);
+		}
 	}
 }
 
@@ -1014,15 +1049,22 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 			bottom: 20px;
 		}
 	}
+
+	.woocommerce {
+		/* Nu wel naar 2 kolommen gaan */
+		.products .product-item.bt-col-3 {
+			width: calc(50%);
+		}
+	}
 }
 
 @media (max-width: 580px) {
 	.error404 {
 		.bt-404-page {
-			padding: 100px 0px 50px 0px;
+			padding: 75px 0px;
 
 			.fw-title-404 {
-				font-size: 50px;
+				font-size: 60px;
 			}
 
 			.fw-title-404-sub {
