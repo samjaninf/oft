@@ -986,16 +986,6 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 }
 
 @media (max-width: 768px) {
-	.error404 {
-		.bt-404-page {
-			padding: 85px 0px;
-
-			.fw-title-404 {
-				font-size: 60px;
-			}
-		}
-	}
-
 	.oft-coffee-featured {
 		.wpb_column:not(.oft-coffee-first) .vc_column-inner {
 			/* Marge boven kolommen wat verhogen, aangezien ze nu collapsen */
@@ -1023,6 +1013,18 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 			max-width: 100%;
 			position: relative;
 			bottom: 20px;
+		}
+	}
+}
+
+@media (max-width: 600px) {
+	.error404 {
+		.bt-404-page {
+			padding: 85px 0px;
+
+			.fw-title-404 {
+				font-size: 60px;
+			}
 		}
 	}
 }

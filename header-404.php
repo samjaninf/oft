@@ -1,4 +1,5 @@
 <!doctype html>
+<html style="min-height: 100%">
 <head>
 	<meta charset="<?php bloginfo('charset'); ?>">
 	<link rel="profile" href="http://gmpg.org/xfn/11">
