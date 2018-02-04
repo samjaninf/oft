@@ -540,10 +540,6 @@
 
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php echo __( 'Inhoud', 'oft' ); ?></th>
-				<td><?php echo $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'); ?></td>
-			</tr>
-			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php echo __( 'Energie', 'oft' ); ?></th>
 				<td><?php echo $product->get_meta('_energy').' kJ' ?></td>
 			</tr>
@@ -568,14 +564,14 @@
 				if ( $product->get_meta($meta_key) !== false ) {
 					?>
 					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-						<th><?php
+						<?php
 							$submetas = array( '_fapucis', '_famscis', '_fasat', '_polyl', '_starch', '_sugar' );
 							if ( in_array( $meta_key, $submetas ) ) {
-								echo '<i style="padding-left: 20px;">waarvan '.mb_strtolower($meta_label).'</i>';
+								echo '<th class="secondary">waarvan '.mb_strtolower($meta_label).'</th>';
 							} else {
-								echo $meta_label;
+								echo '<th class="primary">'.$meta_label.'</th>';
 							}
-						?></th>
+						?>
 						<td><?php
 							if ( in_array( $meta_key, $submetas ) ) {
 								echo '<i>'.$product->get_meta($meta_key).' g</i>';
@@ -589,7 +585,7 @@
 			}
 
 			$product_attributes = array(
-				'fairtrade' => 'Fairtradegelabeld',
+				// 'fairtrade' => 'Fairtradegelabeld',
 			);
 
 			foreach ( $product_attributes as $attribute_key => $attribute_label ) {
@@ -610,7 +606,11 @@
 			
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php echo __( 'Fairtradepercentage', 'oft' ); ?></th>
+				<th><?php _e( 'Inhoud', 'oft' ); ?></th>
+				<td><?php echo $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'); ?></td>
+			</tr>
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th><?php _e( 'Fairtradepercentage', 'oft' ); ?></th>
 				<td><?php echo $product->get_meta('_fairtrade_share').' %' ?></td>
 			</tr>
 			<?php

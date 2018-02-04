@@ -608,6 +608,14 @@ body.search-results {
 			padding-right: 15px;
 			min-width: 300px;
 			// visibility: collapse;
+
+			.primary {
+				text-align: left;
+			}
+
+			.left {
+				font-style: italic;
+			}
 		}
 
 		td {
