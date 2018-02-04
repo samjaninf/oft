@@ -1055,8 +1055,6 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 			font-size: 32px !important;
 			line-height: 90% !important;
 			max-width: 100%;
-			position: relative;
-			top: 20px;
 		}
 
 		h4.tp-caption {
@@ -1077,6 +1075,18 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 }
 
 @media (max-width: 580px) {
+	.rev_slider_wrapper {
+		h2.tp-caption {
+			font-size: 26px !important;
+			top: 50px;
+		}
+
+		h4.tp-caption {
+			font-size: 22px !important;
+			bottom: 10px;
+		}
+	}
+
 	.error404 {
 		.bt-404-page {
 			padding: 75px 0px;
