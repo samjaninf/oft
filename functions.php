@@ -487,8 +487,24 @@
 	
 	function add_extra_product_tabs( $tabs ) {
 		global $product;
-		// Schakel lange beschrijving uit (werd naar boven verplaatst)
-		// unset($tabs['description']);
+		
+		$categories = $product->get_category_ids();
+		if ( is_array( $categories ) ) {
+			foreach ( $categories as $category_id ) {
+				$category = get_term( $category_id, 'product_cat' );
+				while ( intval($category->parent) !== 0 ) {
+					$parent = get_term( $category->parent, 'product_cat' );
+					$category = $parent;
+				}
+			}
+			if ( $parent->slug === 'wijn' ) {
+				// Sommelierinfo uit korte beschrijving tonen
+				$tabs['description']['title'] = __( 'Sommelierinfo', 'oft' );
+			} else {
+				// Schakel lange beschrijving uit (werd naar boven verplaatst)
+				unset($tabs['description']);
+			}
+		}
 
 		// Voeg tabje met voedingswaardes toe (indien niet leeg)
 		if ( get_tab_content('food') !== false ) {
@@ -603,22 +619,8 @@
 			$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
 			$contains = array();
 			$traces = array();
+			// echo '<p>'.$product->get_short_description().'</p>';
 			
-			// Sommelierinfo uit korte beschrijving tonen boven tabel 
-			$categories = $product->get_category_ids();
-			if ( is_array( $categories ) ) {
-				foreach ( $categories as $category_id ) {
-					$category = get_term( $category_id, 'product_cat' );
-					while ( intval($category->parent) !== 0 ) {
-						$parent = get_term( $category->parent, 'product_cat' );
-						$category = $parent;
-					}
-				}
-				if ( $parent->slug === 'wijn' ) {
-					echo '<p>'.$product->get_short_description().'</p>';
-				}
-			}
-
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php _e( 'Inhoud', 'oft' ); ?></th>
