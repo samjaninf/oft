@@ -1005,6 +1005,13 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 		min-height: 450px;
 	}
 
+	body:not(.single-product):not(.single-post) {
+		.fw-title-bar > .container {
+			padding-top: 75px !important;
+			padding-bottom: 75px !important;
+		}
+	}
+
 	.woocommerce {
 		/* Naar 2 kolommen collapsen in hoofdpagina's (default = rijen van 4) */
 		&.columns-4 > ul.products > div.product,
@@ -1029,6 +1036,17 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 		.wpb_column.oft-coffee-first .vc_column-inner  {
 			/* Marge bovenaan eerste kolom daarentegen een beetje verminderen */
 			margin-top: 100px;
+		}
+	}
+
+	body:not(.single-product):not(.single-post) {
+		.fw-title-bar > .container {
+			padding-top: 50px !important;
+			padding-bottom: 50px !important;
+		}
+
+		.fw-special-title {
+			font-size: 50px;
 		}
 	}
 
