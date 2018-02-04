@@ -5,7 +5,7 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.4
+	Version:		1.2.5
 	Text Domain:	oft
 */
 
@@ -494,17 +494,20 @@ body.search-results {
 
 /* Detailpagina */
 .woocommerce.single-product {
+	box-sizing: border-box;
+
 	.woocommerce-breadcrumb {
 		margin-bottom: 25px;
 	}
 
 	.woocommerce-product-gallery.images {
-		// width: 35%;
+		width: 40%;
 	}
 
 	.summary.entry-summary {
-		// width: 60%;
-		// margin-left: 2em;
+		width: 60%;
+		padding-left: 2em;
+		margin-left: 0;
 
 		.product_title {
 			display: inline;
@@ -599,9 +602,18 @@ body.search-results {
 	}
 
 	.shop_attributes {
-		th,
+		th {
+			text-align: right;
+			width: 40%;
+			padding-right: 15px;
+			min-width: 300px;
+			// visibility: collapse;
+		}
+
 		td {
-			width: 50%;
+			width: 60%;
+			padding-left: 15px;
+			// visibility: collapse;
 		}
 	}
 }
@@ -1039,6 +1051,21 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 		}
 	}
 
+	/* Detailpagina */
+	.woocommerce.single-product {
+		.woocommerce-product-gallery.images {
+			width: 75%;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		.summary.entry-summary {
+			width: 100%;
+			padding-left: 0;
+			margin-left: 0;
+		}
+	}
+
 	body:not(.single-product):not(.single-post) {
 		.fw-title-bar > .container {
 			padding-top: 50px !important;
@@ -1085,6 +1112,13 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 		/* Naar 1 kolom gaan in overzichtspagina's */
 		.products .product-item.bt-col-3 {
 			width: calc(100%);
+		}
+	}
+
+	/* Detailpagina */
+	.woocommerce.single-product {
+		.woocommerce-product-gallery.images {
+			width: 100%;
 		}
 	}
 

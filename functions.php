@@ -12,7 +12,7 @@
 
 	function load_child_theme() {
 		// Zorgt ervoor dat de stylesheet van het child theme ZEKER NA alone.css ingeladen wordt
-		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.4' );
+		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.5' );
 		// BOOTSTRAP REEDS INGELADEN DOOR ALONE
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
@@ -479,6 +479,9 @@
 		return $args;
 	}
 
+	// Titel uitschakelen bij technische fiche
+	add_filter( 'woocommerce_product_additional_information_heading', '__return_false' );
+
 	// Registreer een extra tabje op de productdetailpagina voor de voedingswaardes
 	add_filter( 'woocommerce_product_tabs', 'add_extra_product_tabs' );
 	
@@ -604,17 +607,32 @@
 			$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
 			$contains = array();
 			$traces = array();
-
+			
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php echo __( 'Fairtradepercentage', 'oft' ); ?></th>
 				<td><?php echo $product->get_meta('_fairtrade_share').' %' ?></td>
 			</tr>
-			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php echo __( 'Ingrediënten', 'oft' ); ?></th>
-				<td><?php echo $product->get_meta('_ingredients'); ?></td>
-			</tr>
 			<?php
+			
+			if ( $grapes = get_grape_terms_by_product($product) ) {
+				$ingredients_th .= __( 'Samenstelling', 'oft' );
+				$ingredients_td .= implode( ', ', $grapes );
+			} elseif ( ! empty( $product->get_meta('_ingredients') ) ) {
+				$ingredients_th .= __( 'Ingrediënten', 'oft' );
+				$ingredients_td .= $product->get_meta('_ingredients');
+			} else {
+				$ingredients_th = false;
+			}
+			
+			if ( $ingredients_th !== false ) {
+				?>
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th><?php echo $ingredients_th; ?></th>
+					<td><?php echo $ingredients_td; ?></td>
+				</tr>
+				<?php
+			}
 
 			if ( $allergens !== false ) {
 				foreach ( $allergens as $allergen ) {
@@ -627,11 +645,11 @@
 			}
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php echo 'Dit product bevat'; ?></th>
+				<th><?php _e( 'Dit product bevat', 'oft' ); ?></th>
 				<td>
 				<?php
 					$i = 0;
-					$str = '/';
+					$str = __( 'geen meldingsplichtige allergenen', 'oft' );
 					if ( count( $contains ) > 0 ) {
 						foreach ( $contains as $substance ) {
 							$i++;
@@ -648,11 +666,11 @@
 			</tr>
 
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php echo 'Kan sporen bevatten van'; ?></th>
+				<th><?php _e( 'Kan sporen bevatten van', 'oft' ); ?></th>
 				<td>
 				<?php
 					$i = 0;
-					$str = '/';
+					$str = __( 'geen meldingsplichtige allergenen', 'oft' );
 					if ( count( $traces ) > 0 ) {
 						foreach ( $traces as $substance ) {
 							$i++;
