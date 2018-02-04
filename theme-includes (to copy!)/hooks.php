@@ -767,7 +767,7 @@ if (!function_exists('_alone_action_print_google_fonts_link')) :
 
 		// GEWIJZIGD: Uitgeschakeld wegens 'Trying to get property of non-object'-notice
 		// $off_googlefont = get_post_meta($post->ID, 'off-googlefont', true);
-		if (! empty($fw_theme_google_fonts_list) && isset($off_googlefont) && $off_googlefont !== 'true') {
+		if ( ! empty($fw_theme_google_fonts_list) ) {
 			wp_register_style('fw-googleFonts', alone_get_remote_fonts($fw_theme_google_fonts_list));
 			wp_enqueue_style('fw-googleFonts');
 		}
