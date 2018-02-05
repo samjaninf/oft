@@ -616,7 +616,8 @@
 		} elseif ( $type === 'ingredients' ) {
 			// Allergenentab altijd tonen!
 			$has_row = true;
-			$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
+			// $allergens = get_the_terms( $product->get_id(), 'product_allergen' );
+			$allergens = false;
 			$contains = array();
 			$traces = array();
 			// echo '<p>'.$product->get_short_description().'</p>';
