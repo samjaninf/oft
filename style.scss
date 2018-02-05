@@ -69,6 +69,7 @@ p {
 		text-decoration: underline !important;
 		text-underline-position: under !important;
 		-webkit-text-underline-position: under !important;
+		letter-spacing: 1px !important;
 		
 		&:hover {
 			text-decoration: none !important;
@@ -429,6 +430,17 @@ body.search-results {
 	.post-date,
 	.wpcf7-form label {
 		font-weight: 300 !important;
+	}
+
+	.textwidget > a {
+		text-decoration: underline !important;
+		text-underline-position: under !important;
+		-webkit-text-underline-position: under !important;
+		letter-spacing: 1px !important;
+		
+		&:hover {
+			text-decoration: none !important;
+		}
 	}
 }
 
