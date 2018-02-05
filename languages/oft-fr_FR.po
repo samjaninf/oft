@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam Fair Trade\n"
-"POT-Creation-Date: 2018-02-05 15:28+0100\n"
-"PO-Revision-Date: 2018-02-05 15:29+0100\n"
+"POT-Creation-Date: 2018-02-05 15:46+0100\n"
+"PO-Revision-Date: 2018-02-05 15:47+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language: fr_FR\n"
@@ -78,8 +78,8 @@ msgid "Ken het product toe aan een partner/land"
 msgstr ""
 
 #: functions.php:168
-msgid "herkomst"
-msgstr "origine"
+msgid "producten/herkomst"
+msgstr "produits/origine"
 
 #: functions.php:188 functions.php:218
 msgid "Node OWW-site"
