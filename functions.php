@@ -2036,11 +2036,12 @@
 		}
 
 		$labels = array();
-		if ( $product->get_attribute('bio') === 'Ja' ) {
-			$labels[] = 'Biolabel (EU)';
+		// Labels vereisen 'pa_'-voorvoegsel!
+		if ( $product->get_attribute('pa_bio') === 'Ja' ) {
+			$labels[] = wc_attribute_label('pa_bio');
 		}
-		if ( $product->get_attribute('fairtrade') === 'Ja' ) {
-			$labels[] = 'Fairtrade (FLO-CERT)';
+		if ( $product->get_attribute('pa_fairtrade') === 'Ja' ) {
+			$labels[] = wc_attribute_label('pa_fairtrade');
 		}
 		if ( count($labels) > 0 ) {
 			$labels_text = format_pdf_block( 'Labels', implode( ', ', $labels ) );
