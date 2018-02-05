@@ -165,7 +165,7 @@
 			'query_var' => true,
 			// Compacter maar we verliezen de ingebouwde beperkingen op de checkboxes!
 			// 'meta_box_cb' => 'post_tags_meta_box',
-			'rewrite' => array( 'slug' => 'herkomst', 'with_front' => true, 'hierarchical' => true ),
+			'rewrite' => array( 'slug' => __( 'herkomst', 'oft' ), 'with_front' => true, 'hierarchical' => true ),
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
 		);
