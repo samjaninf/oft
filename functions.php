@@ -163,9 +163,8 @@
 			'description' => __( 'Ken het product toe aan een partner/land', 'oft' ),
 			'hierarchical' => true,
 			'query_var' => true,
-			// Compacter maar we verliezen de ingebouwde beperkingen op de checkboxes!
-			// 'meta_box_cb' => 'post_tags_meta_box',
-			'rewrite' => array( 'slug' => __( 'producten/herkomst', 'oft' ), 'with_front' => true, 'hierarchical' => true ),
+			// Slugs van custom taxonomieën kunnen helaas niet vertaald worden 
+			'rewrite' => array( 'slug' => 'herkomst', 'with_front' => true, 'hierarchical' => true ),
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
 		);
