@@ -2209,7 +2209,6 @@
 				}
 			}
 		}
-		write_log($result);
 		return $result;
 	}
 
@@ -2220,9 +2219,9 @@
 		// Nederlandstalige inschrijvingsformulier
 		if ( $posted_data['_wpcf7'] == 1054 ) {
 			$posted_data['validation_error'] = __( 'Gelieve de fouten op te lossen.', 'oft' );
-
-			$status = get_status_in_mailchimp_list( $_POST['newsletter-email'] );
-			
+			$posted_data['newsletter-email'] = strtolower( trim($posted_data['newsletter-email']) );
+			$status = get_status_in_mailchimp_list( $posted_data['newsletter-email'] );
+						
 			if ( $status['response']['code'] == 200 ) {
 				$body = json_decode($status['body']);
 
@@ -2233,62 +2232,71 @@
 					} else {
 						$signup_text = '';
 					}
-					$id = $body->unique_email_id;
-					// LINK OM PROFIEL TE BEKIJKEN = VEILIGHEIDSISSUE
+					// Niet meer nodig
+					// $id = $body->unique_email_id;
 					// PATCH BESTAANDE GEGEVENS?
-					$posted_data['validation_error'] = sprintf( __( 'Je bent%1$s reeds geabonneerd op onze nieuwsbrief! <a href="%2$s" target="_blank">Kijk hier je profiel in.</a>', 'oft' ), $signup_text, 'http://oxfamwereldwinkels.us3.list-manage.com/profile?u=d66c099224e521aa1d87da403&id='.MC_LIST_ID.'&e='.$id );
+					$posted_data['validation_error'] = sprintf( __( 'Je bent%s reeds geabonneerd op onze nieuwsbrief! We werkten je gegevens bij.', 'oft' ), $signup_text );
 				} else {
-					// PATCH BESTAANDE MEMBER?
-					$posted_data['validation_error'] = sprintf( __( 'Je was vroeger al eens geabonneerd op onze nieuwsbrief! Daarom dient je expliciet opnieuw je toestemming te geven. <a href="%s" target="_blank">Gelieve dit algemene inschrijvingsformulier te gebruiken</a> en op de bevestigingslink te klikken.', 'oft' ), 'http://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id='.MC_LIST_ID.'&FNAME='.$_POST['newsletter-name'].'&EMAIL='.$_POST['newsletter-email'] );
+					// PATCH BESTAANDE MEMBER ONMOGELIJK?
+					$posted_data['validation_error'] = sprintf( __( 'Je was vroeger al eens geabonneerd op onze nieuwsbrief! Daarom dien je expliciet opnieuw toestemming te geven. <a href="%s" target="_blank">Gelieve dit algemene inschrijvingsformulier te gebruiken</a> en op de bevestigingslink te klikken.', 'oft' ), 'https://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id='.MC_LIST_ID.'&EMAIL='.$posted_data['newsletter-email'] );
 				}
 			}
 		}
-		write_log("wpcf7_posted_data");
 		return $posted_data;
+	}
+
+	// Filter om mail tegen te houden ondanks succesvolle validatie
+	// add_filter( 'wpcf7_skip_mail', 'abort_mail_sending' );
+	function abort_mail_sending( $wpcf7 ){
+		return true;
 	}
 
  	// BIJ HET AANROEPEN VAN DEZE FILTER ZIJN WE ZEKER DAT ALLES AL GEVALIDEERD IS
  	add_filter( 'wpcf7_before_send_mail', 'handle_mailchimp_subscribe', 20, 1 );
 
-	function handle_mailchimp_subscribe( $WPCF7_ContactForm ) {
+	function handle_mailchimp_subscribe( $wpcf7 ) {
+		write_log($wpcf7);
+		$submission = WPCF7_Submission::get_instance();
+		if ( $submission ) {
+			$posted_data = $submission->get_posted_data();
+		}
+		write_log($posted_data);
 		// Nederlandstalige inschrijvingsformulier
-		write_log($WPCF7_ContactForm);
-		if ( $WPCF7_ContactForm->id() == 1054 ) {
-			$submission = WPCF7_Submission::get_instance();
-			if ( $submission ) {
-				$posted_data = $submission->get_posted_data();
-				write_log($posted_data);
-				if ( empty ($posted_data) ) {
-					return;
-				}
-				$mail = $WPCF7_ContactForm->prop('mail');
-				$mail['subject'] = "This is an alternate subject";
-				$WPCF7_ContactForm->set_properties( array( 'mail' => $mail ) );
+		if ( $wpcf7->id() == 1054 ) {
+			if ( empty($posted_data) ) {
+				return;
+			}
+			$mail = $wpcf7->prop('mail');
+			$mail['subject'] = 'Dit is een alternatief onderwerp';
+			$wpcf7->set_properties( array( 'mail' => $mail ) );
+			// $posted_data['send_error'] = __( 'Er was een onbekend probleem met Contact Form 7!', 'oft' );
 			
-				// AAN TE PASSEN AAN NIEUWE API VAN CF7
-				$posted_data['send_error'] = __( 'Er was een onbekend probleem met Contact Form 7!', 'oft' );
-				$status = get_status_in_mailchimp_list( $_POST['newsletter-email'] );
-				
-				if ( $status['response']['code'] !== 200 ) {
-					$body = json_decode($status['body']);
+			$posted_data['newsletter-email'] = strtolower( trim($posted_data['newsletter-email']) );
+			// Verruim tot hoofdletters na liggende streepjes
+			$posted_data['newsletter-name'] = ucwords( strtolower( trim($posted_data['newsletter-name']) ) );
+			$status = get_status_in_mailchimp_list( $posted_data['newsletter-email'] );
+			
+			if ( $status['response']['code'] !== 200 ) {
+				$body = json_decode($status['body']);
 
-					// NOG NOOIT INGESCHREVEN, VOER INSCHRIJVING UIT
-					// Probleem: naam zit hier nog in 1 veld, moeten er 2 worden
-					$subscription = subscribe_user_to_mailchimp_list( $posted_data['newsletter-email'], $posted_data['newsletter-name'] );
-					
-					if ( $subscription['response']['code'] == 200 ) {
-						$body = json_decode($subscription['body']);
-						if ( $body->status === "subscribed" ) {
-							$posted_data['success'] = __( 'Je bent vanaf nu geabonneerd op de OFT-nieuwsbrief.', 'oft' );
-						}
-					} else {
-						$posted_data['success'] = __( 'Er was een onbekend probleem met MailChimp!', 'oft' );
+				// NOG NOOIT INGESCHREVEN, VOER INSCHRIJVING UIT
+				$subscription = subscribe_user_to_mailchimp_list( $posted_data['newsletter-email'], $posted_data['newsletter-name'] );
+				
+				$msgs = $wpcf7->prop('messages');
+				write_log($msgs);
+				if ( $subscription['response']['code'] == 200 ) {
+					$body = json_decode($subscription['body']);
+					if ( $body->status === "subscribed" ) {
+						$msgs['success'] = __( 'Je bent vanaf nu geabonneerd op de OFT-nieuwsbrief.', 'oft' );
 					}
+				} else {
+					$msgs['success'] = __( 'Er was een onbekend probleem met MailChimp!', 'oft' );
 				}
+				$wpcf7->set_properties( array( 'messages' => $msgs ) );
 			}
 		}
 		
-		return $WPCF7_ContactForm;
+		return $wpcf7;
 	}
 
 	// Sta HTML-tags weer toe in resultaatboodschappen
@@ -2311,12 +2319,16 @@
 		return $response;
 	}
 
-	function subscribe_user_to_mailchimp_list( $email, $fname = '', $lname = '', $company = '', $list_id = MC_LIST_ID ) {
+	function subscribe_user_to_mailchimp_list( $email, $name = '', $company = '', $list_id = MC_LIST_ID ) {
 		global $sitepress;
 		$language = $sitepress->get_current_language();
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
 		$member = md5( strtolower( trim( $email ) ) );
 		$merge_fields = array( 'LANGUAGE' => 'Nederlands', 'SOURCE' => 'OFT-site', );
+		// Probleem: naam zit hier nog in 1 veld, moeten er 2 worden
+		$parts = explode( ' ', $name, 2 );
+		$fname = trim($parts[0]);
+		$lname = trim($parts[1]);
 		if ( strlen($fname) > 2 ) {
 			$merge_fields['FNAME'] = $fname;
 		}
@@ -2342,7 +2354,7 @@
 		return $response;
 	}
 
-	function update_user_in_mailchimp_list( $email, $fname = '', $lname = '', $company = '', $list_id = MC_LIST_ID ) {
+	function update_user_in_mailchimp_list( $email, $name = '', $company = '', $list_id = MC_LIST_ID ) {
 		global $sitepress;
 		$language = $sitepress->get_current_language();
 		
@@ -2352,6 +2364,10 @@
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
 		$member = md5( strtolower( trim( $email ) ) );
 		$merge_fields = array( 'LANGUAGE' => 'Nederlands', 'SOURCE' => 'OFT-site', );
+		// Probleem: naam zit hier nog in 1 veld, moeten er 2 worden
+		$parts = explode( ' ', $name, 2 );
+		$fname = trim($parts[0]);
+		$lname = trim($parts[1]);
 		if ( strlen($fname) > 2 ) {
 			$merge_fields['FNAME'] = $fname;
 		}
@@ -2378,7 +2394,9 @@
 		return $response;
 	}
 
-	function get_latest_newsletters() {
+	add_shortcode( 'latest_newsletter', 'get_latest_newsletter', 2 );
+
+	function get_latest_newsletter() {
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
 		$folder_id = 'd302e08412';
 
@@ -2388,21 +2406,16 @@
 			),
 		);
 
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date_i18n( 'Y-m-d', strtotime('-3 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=ASC', $args );
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?status=sent&list_id='.MC_LIST_ID.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=DESC&count=1', $args );
 		
-		$mailings = "";
 		if ( $response['response']['code'] == 200 ) {
 			$body = json_decode($response['body']);
-			$mailings .= "<p>Dit zijn de nieuwsbrieven van de afgelopen drie maanden:</p><ul>";
-
-			foreach ( array_reverse($body->campaigns) as $campaign ) {
-				$mailings .= '<li><a href="'.$campaign->long_archive_url.'" target="_blank">'.$campaign->settings->subject_line.'</a> ('.trim( date_i18n( 'j F Y', strtotime($campaign->send_time) ) ).')</li>';
-			}
-
-			$mailings .= "</ul>";
+			$campaign = reset($body->campaigns);
+			write_log($campaign);
+			$mailing = sprintf( __( 'Bekijk <a href="%s" target="_blank">de recentste nieuwsbrief</a>.', 'oft' ), $campaign->long_archive_url );
 		}		
 
-		return $mailings;
+		return $mailing;
 	}
 
 
