@@ -660,50 +660,50 @@
 						$traces[] = $allergen;
 					}
 				}
-			}
-			?>
-			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php _e( 'Dit product bevat', 'oft' ); ?></th>
-				<td>
-				<?php
-					$i = 0;
-					$str = __( 'geen meldingsplichtige allergenen', 'oft' );
-					if ( count( $contains ) > 0 ) {
-						foreach ( $contains as $substance ) {
-							$i++;
-							if ( $i === 1 ) {
-								$str = $substance->name;
-							} else {
-								$str .= ', '.$substance->name;
+				?>
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th><?php _e( 'Dit product bevat', 'oft' ); ?></th>
+					<td>
+					<?php
+						$i = 0;
+						$str = __( 'geen meldingsplichtige allergenen', 'oft' );
+						if ( count( $contains ) > 0 ) {
+							foreach ( $contains as $substance ) {
+								$i++;
+								if ( $i === 1 ) {
+									$str = $substance->name;
+								} else {
+									$str .= ', '.$substance->name;
+								}
 							}
 						}
-					}
-					echo $str;
-				?>
-				</td>
-			</tr>
+						echo $str;
+					?>
+					</td>
+				</tr>
 
-			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php _e( 'Kan sporen bevatten van', 'oft' ); ?></th>
-				<td>
-				<?php
-					$i = 0;
-					$str = __( 'geen meldingsplichtige allergenen', 'oft' );
-					if ( count( $traces ) > 0 ) {
-						foreach ( $traces as $substance ) {
-							$i++;
-							if ( $i === 1 ) {
-								$str = $substance->name;
-							} else {
-								$str .= ', '.$substance->name;
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th><?php _e( 'Kan sporen bevatten van', 'oft' ); ?></th>
+					<td>
+					<?php
+						$i = 0;
+						$str = __( 'geen meldingsplichtige allergenen', 'oft' );
+						if ( count( $traces ) > 0 ) {
+							foreach ( $traces as $substance ) {
+								$i++;
+								if ( $i === 1 ) {
+									$str = $substance->name;
+								} else {
+									$str .= ', '.$substance->name;
+								}
 							}
 						}
-					}
-					echo $str;
-				?>
-				</td>
-			</tr>
-			<?php
+						echo $str;
+					?>
+					</td>
+				</tr>
+				<?php
+			}
 		}
 		
 		echo '</table>';
