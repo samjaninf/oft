@@ -2256,7 +2256,6 @@
  	add_filter( 'wpcf7_before_send_mail', 'handle_mailchimp_subscribe', 20, 1 );
 
 	function handle_mailchimp_subscribe( $wpcf7 ) {
-		write_log($wpcf7);
 		$submission = WPCF7_Submission::get_instance();
 		if ( $submission ) {
 			$posted_data = $submission->get_posted_data();
@@ -2267,11 +2266,11 @@
 			if ( empty($posted_data) ) {
 				return;
 			}
-			$mail = $wpcf7->prop('mail');
-			$mail['subject'] = 'Dit is een alternatief onderwerp';
-			$wpcf7->set_properties( array( 'mail' => $mail ) );
-			// $posted_data['send_error'] = __( 'Er was een onbekend probleem met Contact Form 7!', 'oft' );
+			// $mail = $wpcf7->prop('mail');
+			// $mail['subject'] = 'Dit is een alternatief onderwerp';
+			// $wpcf7->set_properties( array( 'mail' => $mail ) );
 			
+			// $posted_data['send_error'] = __( 'Er was een onbekend probleem met Contact Form 7!', 'oft' );
 			$posted_data['newsletter-email'] = strtolower( trim($posted_data['newsletter-email']) );
 			// Verruim tot hoofdletters na liggende streepjes
 			$posted_data['newsletter-name'] = ucwords( strtolower( trim($posted_data['newsletter-name']) ) );
@@ -2412,7 +2411,6 @@
 		if ( $response['response']['code'] == 200 ) {
 			$body = json_decode($response['body']);
 			$campaign = reset($body->campaigns);
-			write_log($campaign);
 			$mailing = sprintf( __( 'Bekijk <a href="%s" target="_blank">de recentste nieuwsbrief</a>.', 'oft' ), $campaign->long_archive_url );
 		}		
 
