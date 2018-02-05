@@ -344,7 +344,7 @@ body.search-results {
 /*  ONZE PRODUCTEN  */
 /********************/
 
-.page-id-3403 {
+.oft-products-grid {
 	.wpb_single_image {
 		margin: 0px;
 	}
@@ -367,8 +367,6 @@ body.search-results {
 		position: absolute;
 		bottom: 0px;
 		margin-bottom: 0px;
-		// Fix tegen uitbreken van achtergrond, hangt af van de column gap!
-		// width: calc(100% - 20px);
 		width: 100%;
 		padding: 0 20px 20px 20px;
 		background-color: rgba(0,0,0,0.5);
@@ -390,34 +388,32 @@ body.search-results {
 /*  CONTACT  */
 /*************/
 
-.page-id-9 {
-	.oft-contact-map {
-		.wpb_gmaps_widget {
-			position: relative !important;
-			top: 25px !important;
-		}
-
-		.wpb_map_wraper {
-			overflow: hidden !important;
-			background-color: white;
-		}
-
-		iframe {
-			position: relative !important;
-			top: -50px !important;
-			pointer-events: auto !important;
-		}
+.oft-contact-map {
+	.wpb_gmaps_widget {
+		position: relative !important;
+		top: 25px !important;
 	}
 
-	.oft-contact-representative {
-		.featured-box-title {
-			font-size: 26px !important;
-		}
+	.wpb_map_wraper {
+		overflow: hidden !important;
+		background-color: white;
+	}
 
-		.featured-box-text {
-			font-size: 1em !important;
-			font-weight: 700 !important;
-		}
+	iframe {
+		position: relative !important;
+		top: -50px !important;
+		pointer-events: auto !important;
+	}
+}
+
+.oft-contact-representative {
+	.featured-box-title {
+		font-size: 26px !important;
+	}
+
+	.featured-box-text {
+		font-size: 1em !important;
+		font-weight: 700 !important;
 	}
 }
 
