@@ -558,7 +558,7 @@
 				<th><?php echo __( 'Energie', 'oft' ); ?></th>
 				<td><?php
 					$en = intval( $product->get_meta('_energy') );
-					echo $en.' kJ (= '.number_format( $en*4.184, 0 ).' kcal)' ?></td>
+					echo $en.' kJ (= '.number_format( $en*4.184, 0, ',', '' ).' kcal)' ?></td>
 			</tr>
 			<?php
 
@@ -626,12 +626,12 @@
 
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php _e( 'Inhoud', 'oft' ); ?></th>
-				<td><?php echo $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'); ?></td>
-			</tr>
-			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php _e( 'Fairtradepercentage', 'oft' ); ?></th>
 				<td><?php echo $product->get_meta('_fairtrade_share').' %' ?></td>
+			</tr>
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th><?php _e( 'Inhoud', 'oft' ); ?></th>
+				<td><?php echo $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'); ?></td>
 			</tr>
 			<?php
 			
