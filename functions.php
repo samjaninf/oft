@@ -2326,10 +2326,13 @@
 
 	function subscribe_user_to_mailchimp_list( $email, $name = '', $company = '', $list_id = MC_LIST_ID ) {
 		global $sitepress;
-		$language = $sitepress->get_current_language();
+		$language_code = $sitepress->get_current_language();
+		$language_details = $sitepress->get_language_details($language_code);
+		
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
 		$member = md5( strtolower( trim( $email ) ) );
-		$merge_fields = array( 'LANGUAGE' => 'Nederlands', 'SOURCE' => 'OFT-site', );
+		$merge_fields = array( $language_details['native_name'], 'SOURCE' => 'OFT-site', );
+		
 		// Probleem: naam zit hier nog in 1 veld, moeten er 2 worden
 		$parts = explode( ' ', $name, 2 );
 		$fname = trim($parts[0]);
@@ -2369,7 +2372,8 @@
 
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
 		$member = md5( strtolower( trim( $email ) ) );
-		$merge_fields = array( 'LANGUAGE' => $language_details['native_name'], 'SOURCE' => 'OFT-site' );
+		$merge_fields = array( 'LANGUAGE' => $language_details['native_name'], );
+		
 		// Probleem: naam zit hier nog in 1 veld, moeten er 2 worden
 		$parts = explode( ' ', $name, 2 );
 		$fname = trim($parts[0]);
@@ -2404,6 +2408,7 @@
 
 	function get_latest_newsletter() {
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
+		// Map met enkel de productnieuwsbrieven
 		$folder_id = 'd302e08412';
 
 		$args = array(
