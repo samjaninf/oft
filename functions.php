@@ -116,7 +116,6 @@
 						return false;
 					}
 				});
-				// jQuery( '.featured-box-title' ).addClass( 'oft-title-size' );
 			});
 		</script>
 		<?php
@@ -294,7 +293,7 @@
 							if( _custom_media ) {
 								$('#partner_image_id').val(attachment.id);
 								$('#partner-image-wrapper').html('<img class="custom_media_image" src="" style="margin:0;padding:0;max-height:100px;float:none;" />');
-								$( '#partner-image-wrapper .custom_media_image' ).attr( 'src',attachment.url ).css( 'display','block' );
+								$('#partner-image-wrapper .custom_media_image').attr( 'src',attachment.url ).css( 'display','block' );
 							} else {
 								return _orig_send_attachment.apply( button_id, [props, attachment] );
 							}
@@ -756,17 +755,24 @@
 			?>
 			<script>
 				jQuery(document).ready( function() {
-					/* Disable enkele standaard WC-velden */
+					/* Disable enkele core WC-velden én een custom select waarop het attribuut 'readonly' niet werkt */
+					/* Door opgeven van 'disabled'-attribuut in velddefinitie verdwijnt de waarde tijdens het opslaan, dus via jQuery oplossen */
 					jQuery( '#general_product_data' ).find( 'input#_regular_price' ).prop( 'readonly', true );
 					jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', true );
 					jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', true );
 					jQuery( '#general_product_data' ).find( 'select#_net_unit' ).prop( 'disabled', true );
 					jQuery( '#inventory_product_data' ).find( 'select#_stock_status' ).prop( 'disabled', true );
+					jQuery( '#inventory_product_data' ).find( 'input[name=_sold_individually]' ).prop( 'readonly', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_weight]' ).prop( 'readonly', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_length]' ).prop( 'readonly', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_width]' ).prop( 'readonly', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_height]' ).prop( 'readonly', true );
 					jQuery( '#shipping_product_data' ).find( 'select#product_shipping_class' ).prop( 'disabled', true );
+
+					/* Artikelnummer enkel bewerkbaar in hoofdtaal! */
+					<?php if ( ! post_language_equals_site_language() ) : ?>
+						jQuery( '#inventory_product_data' ).find( 'input#_sku' ).prop( 'readonly', true );
+					<?php endif; ?>
 					
 					/* Disable en verberg checkboxes hoofdcategorieën */
 					<?php foreach ( $categories as $id ) : ?>
@@ -1213,7 +1219,6 @@
 					'description' => __( 'Deze waarde wordt automatisch berekend bij het opslaan, op voorwaarde dat zowel prijs, inhoudsmaat als netto-inhoud ingevuld zijn.', 'oft-admin' ),
 					'data_type' => 'price',
 					'custom_attributes' => array(
-						// Nooit handmatig laten bewerken!
 						'readonly' => true,
 					),
 				)
@@ -1228,16 +1233,8 @@
 						'g' => __( 'gram (vast product)', 'oft-admin' ),
 						'cl' => __( 'centiliter (vloeibaar product)', 'oft-admin' ),
 					),
-					'custom_attributes' => array(
-						// Readonly werkt niet op een select en disabled verdwijdert de waarde, dus ongemoeid laten!
-						// 'disabled' => true,
-					),
 				)
 			);
-
-			// if ( ! post_language_equals_site_language() ) {
-			// 	$number_args['custom_attributes']['readonly'] = true;
-			// }
 
 			// Toon het veld voor de netto-inhoud pas na het instellen van de eenheid!
 			if ( ! empty( $product->get_meta('_net_unit') ) ) {
@@ -1260,6 +1257,13 @@
 				)
 			);
 
+			// Enkel bewerkbaar maken in hoofdtaal, veld wordt gekopieerd naar andere talen
+			if ( ! post_language_equals_site_language() ) {
+				$locked = true;
+			} else {
+				$locked = false;
+			}
+
 			woocommerce_wp_text_input(
 				array( 
 					'id' => '_fairtrade_share',
@@ -1267,9 +1271,10 @@
 					'type' => 'number',
 					'wrapper_class' => 'important-for-catman',
 					'custom_attributes' => array(
-						'step'	=> '1',
-						'min'	=> '25',
-						'max'	=> '100',
+						'step' => '1',
+						'min' => '25',
+						'max' => '100',
+						'readonly' => $locked,
 					),
 				)
 			);
@@ -1308,12 +1313,13 @@
 	function add_oft_inventory_fields() {
 		echo '<div class="options_group oft">';
 			
-			// BLOKKEREN VAN NIET TE VERTALEN GETALVELDEN GEBEURT NIET AUTOMATISCH DOOR WPML
-
 			woocommerce_wp_text_input(
 				array( 
 					'id' => '_shopplus_sku',
 					'label' => __( 'ShopPlus', 'oft-admin' ),
+					'custom_attributes' => array(
+						'readonly' => true,
+					),
 				)
 			);
 
@@ -1326,6 +1332,7 @@
 						'step'	=> '1',
 						'min'	=> '1',
 						'max'	=> '10000',
+						'readonly' => true,
 					),
 				)
 			);
@@ -1357,11 +1364,6 @@
 				'readonly' => true,
 			),
 		);
-
-		// if ( ! post_language_equals_site_language() ) {
-		// 	$barcode_args['custom_attributes']['readonly'] = true;
-		// 	$number_args['custom_attributes']['readonly'] = true;
-		// }
 
 		$cu_ean = array(
 			'id' => '_cu_ean',
@@ -1457,20 +1459,23 @@
 		$suffix = ' (g)';
 		$hint = ' &nbsp; <small><u>'.mb_strtoupper( __( 'per 100 gram', 'oft-admin' ) ).'</u></small>';
 		
+		if ( ! post_language_equals_site_language() ) {
+			$locked = true;
+		} else {
+			$locked = false;
+		}
+
 		$one_decimal_args = array( 
 			// Niet doen, zorgt ervoor dat waardes met een punt niet goed uitgelezen worden in back-endformulier
 			// 'data_type' => 'decimal',
 			'type' => 'number',
 			'custom_attributes' => array(
-				'step'	=> '0.1',
-				'min'	=> '0.0',
-				'max'	=> '100.0',
+				'step' => '0.1',
+				'min' => '0.0',
+				'max' => '100.0',
+				'readonly' => $locked,
 			),
 		);
-
-		// if ( ! post_language_equals_site_language() ) {
-		// 	$one_decimal_args['custom_attributes']['readonly'] = true;
-		// }
 
 		$primary = array(
 			'wrapper_class' => 'primary',
@@ -2029,17 +2034,18 @@
 			}
 			$allergens_text = '';
 			if ( count($c) > 0 ) {
-				$allergens_text .= 'Bevat '.implode( ', ', $c ).'. ';
+				$allergens_text .= _( 'Bevat', 'oft' ).' '.implode( ', ', $c ).'. ';
 			}
 			if ( count($mc) > 0 ) {
-				$allergens_text .= 'Kan sporen bevatten van '.implode( ', ', $mc ).'. ';
+				$allergens_text .= __( 'Kan sporen bevatten van', 'oft' ).' '.implode( ', ', $mc ).'. ';
 			}
 		} else {
-			$allergens_text = 'Geen meldingsplichtige allergenen.';
+			$allergens_text = __( 'geen meldingsplichtige allergenen', 'oft' );
 		}
 
 		$labels = array();
 		// Labels vereisen 'pa_'-voorvoegsel!
+		// Wordt dit altijd in het Nederlands gecheckt?
 		if ( $product->get_attribute('pa_bio') === 'Ja' ) {
 			$labels[] = wc_attribute_label('pa_bio');
 		}
