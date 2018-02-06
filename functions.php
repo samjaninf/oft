@@ -756,11 +756,6 @@
 					jQuery( '#shipping_product_data' ).find( 'input[name=_height]' ).prop( 'readonly', true );
 					jQuery( '#shipping_product_data' ).find( 'select#product_shipping_class' ).prop( 'disabled', true );
 
-					/* Artikelnummer enkel bewerkbaar in hoofdtaal! */
-					<?php if ( ! post_language_equals_site_language() ) : ?>
-						jQuery( '#inventory_product_data' ).find( 'input#_sku' ).prop( 'readonly', true );
-					<?php endif; ?>
-					
 					/* Disable en verberg checkboxes hoofdcategorieën */
 					<?php foreach ( $categories as $id ) : ?>
 						jQuery( '#in-product_cat-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
@@ -1566,7 +1561,7 @@
 				);
 
 				if ( ! post_language_equals_site_language() ) {
-					$args_energy['custom_attributes']['readonly'] = true;
+					$args_salteq['custom_attributes']['readonly'] = true;
 				}
 
 				woocommerce_wp_text_input( $args_salteq );
