@@ -498,7 +498,7 @@
 			}
 			if ( $parent->slug === 'wijn' ) {
 				// Sommelierinfo uit korte beschrijving tonen
-				$tabs['description']['title'] = __( 'Sommelierinfo', 'oft' );
+				$tabs['description']['title'] = __( 'Wijnbeschrijving', 'oft' );
 			} else {
 				// Schakel lange beschrijving uit (werd naar boven verplaatst)
 				unset($tabs['description']);
@@ -514,7 +514,7 @@
 				$suffix = 'g';
 			}
 			$tabs['food_info'] = array(
-				'title' 	=> 'Voedingswaarde per 100 '.$suffix,
+				'title' 	=> sprintf( __( 'Voedingswaarde per 100 %s', 'oft' ), $suffix ),
 				'priority' 	=> 14,
 				'callback' 	=> function() { output_tab_content('food'); },
 			);
@@ -528,7 +528,7 @@
 		);
 
 		// Titel wijzigen van standaardtabs kan maar prioriteit niet! (description = 10, additional_information = 20)
-		$tabs['additional_information']['title'] = 'Technische fiche';
+		$tabs['additional_information']['title'] = __( 'Technische fiche', 'oft' );
 		
 		return $tabs;
 	}
@@ -556,22 +556,24 @@
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php echo __( 'Energie', 'oft' ); ?></th>
-				<td><?php echo $product->get_meta('_energy').' kJ' ?></td>
+				<td><?php
+					$en = intval( $product->get_meta('_energy') );
+					echo $en.' kJ (= '.number_format( $en*4.184, 0 ).' kcal)' ?></td>
 			</tr>
 			<?php
 
 			$product_metas = array(
-				'_fat' => 'Vetten',
-				'_fapucis' => 'Meervoudig onverzadigde vetzuren',
-				'_famscis' => 'Enkelvoudig onverzadigde vetzuren',
-				'_fasat' => 'Verzadigd vetzuren',
-				'_polyl' => 'Polyolen',
-				'_choavl' => 'Koolhydraten',
-				'_starch' => 'Zetmeel',
-				'_sugar' => 'Suikers',
-				'_fibtg' => 'Vezels',
-				'_pro' => 'Eiwitten',
-				'_salteq' => 'Zout',
+				'_fat' => __( 'Vetten', 'oft' ),
+				'_fasat' => __( 'waarvan verzadigde vetzuren', 'oft' ),
+				'_famscis' => __( 'waarvan enkelvoudig onverzadigde vetzuren', 'oft' ),
+				'_fapucis' => __( 'waarvan meervoudig onverzadigde vetzuren', 'oft' ),
+				'_choavl' => __( 'Koolhydraten', 'oft' ),
+				'_sugar' => __( 'waarvan suikers', 'oft' ),
+				'_polyl' => __( 'waarvan polyolen', 'oft' ),
+				'_starch' => __( 'waarvan zetmeel', 'oft' ),
+				'_fibtg' => __( 'Vezels', 'oft' ),
+				'_pro' => __( 'Eiwitten', 'oft' ),
+				'_salteq' => __( 'Zout', 'oft' ),
 			);
 
 			foreach ( $product_metas as $meta_key => $meta_label ) {
@@ -580,9 +582,9 @@
 					?>
 					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 						<?php
-							$submetas = array( '_fapucis', '_famscis', '_fasat', '_polyl', '_starch', '_sugar' );
+							$submetas = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
 							if ( in_array( $meta_key, $submetas ) ) {
-								echo '<th class="secondary">waarvan '.mb_strtolower($meta_label).'</th>';
+								echo '<th class="secondary">'.$meta_label.'</th>';
 							} else {
 								echo '<th class="primary">'.$meta_label.'</th>';
 							}
@@ -615,6 +617,7 @@
 		} elseif ( $type === 'ingredients' ) {
 			// Allergenentab altijd tonen!
 			$has_row = true;
+			// TIJDELIJK UITSCHAKELEN
 			// $allergens = get_the_terms( $product->get_id(), 'product_allergen' );
 			$allergens = false;
 			$contains = array();
@@ -633,7 +636,7 @@
 			<?php
 			
 			if ( $grapes = get_grape_terms_by_product($product) ) {
-				$ingredients_th = __( 'Samenstelling', 'oft' );
+				$ingredients_th = __( 'Druivensoorten', 'oft' );
 				$ingredients_td = implode( ', ', $grapes );
 			} elseif ( ! empty( $product->get_meta('_ingredients') ) ) {
 				$ingredients_th = __( 'Ingrediënten', 'oft' );
@@ -720,7 +723,7 @@
 		if ( get_tab_content( $type ) !== false ) {
 			echo get_tab_content( $type );
 		} else {
-			echo '<i>Geen info beschikbaar.</i>';
+			echo '<i>'.__( 'Geen info beschikbaar.', 'oft' ).'</i>';
 		}
 	}
 
@@ -988,9 +991,9 @@
 	#  WOOCOMMERCE  #
 	#################
 
-	add_filter( 'woocommerce_breadcrumb_defaults', 'jk_change_breadcrumb_delimiter' );
+	add_filter( 'woocommerce_breadcrumb_defaults', 'change_woocommerce_breadcrumb_delimiter' );
 	
-	function jk_change_breadcrumb_delimiter( $defaults ) {
+	function change_woocommerce_breadcrumb_delimiter( $defaults ) {
 		$defaults['delimiter'] = ' &rarr; ';
 		return $defaults;
 	}
@@ -1032,13 +1035,13 @@
 	function sku_sorting_orderby( $sortby ) {
 		unset( $sortby['popularity'] );
 		unset( $sortby['rating'] );
-		$sortby['date'] = 'Laatst toegevoegd';
-		$sortby['alpha'] = 'Van A tot Z';
-		$sortby['alpha-desc'] = 'Van Z tot A';
-		$sortby['price'] = 'Stijgende prijs';
-		$sortby['price-desc'] = 'Dalende prijs';
-		$sortby['sku'] = 'Stijgend artikelnummer';
-		$sortby['sku-desc'] = 'Dalend artikelnummer';
+		$sortby['date'] = __( 'Laatst toegevoegd', 'oft-admin' );
+		$sortby['alpha'] = __( 'Van A tot Z', 'oft-admin' );
+		$sortby['alpha-desc'] = __( 'Van Z tot A', 'oft-admin' );
+		$sortby['price'] = __( 'Stijgende prijs', 'oft-admin' );
+		$sortby['price-desc'] = __( 'Dalende prijs', 'oft-admin' );
+		$sortby['sku'] = __( 'Stijgend artikelnummer', 'oft-admin' );
+		$sortby['sku-desc'] = __( 'Dalend artikelnummer', 'oft-admin' );
 		return $sortby;
 	}
 
@@ -1146,16 +1149,16 @@
 	add_action( 'save_post', 'change_product_visibility_on_save', 10, 3 );
 
 	function change_product_visibility_on_save( $post_id, $post, $update ) {
-		if ( $post->post_status === 'trash' or $post->post_status === 'draft' or $post->post_type !== 'product' or ! $product = wc_get_product( $post_id ) ) {
+		if ( $post->post_status === 'trash' or $post->post_status === 'draft' ) {
+			return;
+		}
+
+		if ( $post->post_type !== 'product' or ! $product = wc_get_product( $post_id ) ) {
 			return;
 		}
 
 		if ( $product->get_attribute('merk') !== 'Oxfam Fair Trade' ) {
 			$product->set_status( 'private' );
-			$product->save();
-		} else {
-			// TIJDELIJK
-			$product->set_status( 'publish' );
 			$product->save();
 		}
 
@@ -1163,7 +1166,7 @@
 			// Update de productfiches niet indien er een import bezig is (te langzaam)
 			create_product_pdf( $product, 'nl' );
 			create_product_pdf( $product, 'fr' );
-			// create_product_pdf( $product, 'en' );
+			create_product_pdf( $product, 'en' );
 		}
 	}
 
@@ -1195,7 +1198,7 @@
 				woocommerce_wp_text_input(
 					array( 
 						'id' => '_empty_fee',
-						'label' => sprintf( __( 'Leeggoed (&euro;)', 'oft-admin' ), $suffix ),
+						'label' => __( 'Leeggoed (&euro;)', 'oft-admin' ),
 						'data_type' => 'price',
 					)
 				);
@@ -1296,7 +1299,7 @@
 			foreach ( $languages as $language ) {
 				$path = '/fiches/'.$language.'/'.$product->get_sku().'.pdf';
 				if ( file_exists( WP_CONTENT_DIR.$path ) ) {
-					echo '<p class="form-field"><label>Productfiche</label><a href="'.content_url($path).'" target="_blank">'.sprintf( __( 'Download PDF (%s)', 'oft-admin' ), mb_strtoupper($language) ).'</a> ('.get_date_from_gmt( date_i18n( 'Y-m-d H:i:s', filemtime(WP_CONTENT_DIR.$path) ), 'd/m/Y @ H:i' ).')</p>';
+					echo '<p class="form-field"><label>Productfiche '.mb_strtoupper($language).'</label><a href="'.content_url($path).'" target="_blank">'.__( 'Download PDF', 'oft-admin' ).'</a> ('.get_date_from_gmt( date_i18n( 'Y-m-d H:i:s', filemtime(WP_CONTENT_DIR.$path) ), 'd/m/Y @ H:i' ).')</p>';
 				}
 			}
 		echo '</div>';
@@ -1305,7 +1308,7 @@
 	function add_oft_inventory_fields() {
 		echo '<div class="options_group oft">';
 			
-			// BLOKKEREN VAN NIET TE VERTALEN GETALVELDEN AUTOMATISCH DOOR WPML?
+			// BLOKKEREN VAN NIET TE VERTALEN GETALVELDEN GEBEURT NIET AUTOMATISCH DOOR WPML
 
 			woocommerce_wp_text_input(
 				array( 
@@ -1451,7 +1454,8 @@
 	function add_oft_quality_fields() {
 		global $post;
 
-		$suffix = ' &nbsp; <small><u>'.mb_strtoupper( __( 'per 100 gram', 'oft-admin' ) ).'</u></small>';
+		$suffix = ' (g)';
+		$hint = ' &nbsp; <small><u>'.mb_strtoupper( __( 'per 100 gram', 'oft-admin' ) ).'</u></small>';
 		
 		$one_decimal_args = array( 
 			// Niet doen, zorgt ervoor dat waardes met een punt niet goed uitgelezen worden in back-endformulier
@@ -1478,22 +1482,22 @@
 
 		$fat = array(
 			'id' => '_fat',
-			'label' => __( 'Vetten (g)', 'oft-admin' ).$suffix,
+			'label' => __( 'Vetten', 'oft' ).$suffix.$hint,
 		);
 		
 		$fasat = array(
 			'id' => '_fasat',
-			'label' => __( 'waarvan verzadigde vetzuren (g)', 'oft-admin' ),
+			'label' => __( 'waarvan verzadigde vetzuren', 'oft' ).$suffix,
 		);
 
 		$famscis = array(
 			'id' => '_famscis',
-			'label' => __( 'waarvan enkelvoudig onverzadigde vetzuren (g)', 'oft-admin' ),
+			'label' => __( 'waarvan enkelvoudig onverzadigde vetzuren', 'oft' ).$suffix,
 		);
 
 		$fapucis = array(
 			'id' => '_fapucis',
-			'label' => __( 'waarvan meervoudig onverzadigde vetzuren (g)', 'oft-admin' ),
+			'label' => __( 'waarvan meervoudig onverzadigde vetzuren', 'oft' ).$suffix,
 		);
 		
 		// Beter via JavaScript checken of de som van alle secondaries de primary niet overschrijdt!
@@ -1505,22 +1509,22 @@
 
 		$choavl = array(
 			'id' => '_choavl',
-			'label' => __( 'Koolhydraten (g)', 'oft-admin' ).$suffix,
+			'label' => __( 'Koolhydraten', 'oft' ).$suffix.$hint,
 		);
 
 		$sugar = array(
 			'id' => '_sugar',
-			'label' => __( 'waarvan suikers (g)', 'oft-admin' ),
+			'label' => __( 'waarvan suikers', 'oft' ).$suffix,
 		);
 
 		$polyl = array(
 			'id' => '_polyl',
-			'label' => __( 'waarvan polyolen (g)', 'oft-admin' ),
+			'label' => __( 'waarvan polyolen', 'oft' ).$suffix,
 		);
 
 		$starch = array(
 			'id' => '_starch',
-			'label' => __( 'waarvan zetmeel (g)', 'oft-admin' ),
+			'label' => __( 'waarvan zetmeel', 'oft' ).$suffix,
 		);
 
 		// Beter via JavaScript checken of de som van alle secondaries de primary niet overschrijdt!
@@ -1532,12 +1536,12 @@
 		
 		$fibtg = array(
 			'id' => '_fibtg',
-			'label' => __( 'Vezels (g)', 'oft-admin' ).$suffix,
+			'label' => __( 'Vezels', 'oft' ).$suffix.$hint,
 		);
 
 		$pro = array(
 			'id' => '_pro',
-			'label' => __( 'Eiwitten (g)', 'oft-admin' ).$suffix,
+			'label' => __( 'Eiwitten', 'oft' ).$suffix.$hint,
 		);
 
 		echo '<div id="quality_product_data" class="panel woocommerce_options_panel">';
@@ -1545,7 +1549,7 @@
 				woocommerce_wp_text_input(
 					array( 
 						'id' => '_energy',
-						'label' => __( 'Energie (kJ)', 'oft-admin' ).$suffix,
+						'label' => __( 'Energie', 'oft' ).' (kJ)'.$hint,
 						'type' => 'number',
 						'custom_attributes' => array(
 							'step' => 'any',
@@ -1576,7 +1580,7 @@
 				woocommerce_wp_text_input(
 					array( 
 						'id' => '_salteq',
-						'label' => __( 'Zout (g)', 'oft-admin' ).$suffix,
+						'label' => __( 'Zout', 'oft' ).$suffix.$hint,
 						'type' => 'number',
 						'custom_attributes' => array(
 							'step' => '0.001',
@@ -1992,18 +1996,18 @@
 		$sku = $product->get_sku();
 
 		if ( $partners = get_partner_terms_by_product($product) ) {
-			$origin_text = 'Herkomst: '.strip_tags( implode( ', ', $partners ) );
+			$origin_text = __( 'Herkomst:', 'oft' ).' '.strip_tags( implode( ', ', $partners ) );
 		} else {
 			// Val terug op de landeninfo ENKEL NODIG VOOR EXTERNE PRODUCTEN, PER DEFINITIE GEEN FICHE NODIG
 			$countries = get_country_terms_by_product($product);
-			$origin_text = 'Herkomst: '.implode( ', ', $countries );
+			$origin_text = __( 'Herkomst:', 'oft' ).' '.implode( ', ', $countries );
 		}
 
 		// ALGEMENE GET_INGREDIENTS FUNCTIE MAKEN?
 		// Druiven kunnen door de meta_boxlogica enkel op wijn ingesteld worden, dus geen nood om de categorie te checken
 		$ingredients_text = '<p style="font-size: 11pt;">';
 		if ( $grapes = get_grape_terms_by_product($product) ) {
-			$ingredients_text .= __( 'Samenstelling:', 'oft' ).' '.implode( ', ', $grapes ).'</p>';
+			$ingredients_text .= __( 'Druivensoorten:', 'oft' ).' '.implode( ', ', $grapes ).'</p>';
 		} elseif ( ! empty( $product->get_meta('_ingredients') ) ) {
 			$ingredients_text .= __( 'Ingrediënten:', 'oft' ).' '.$product->get_meta('_ingredients').'.</p>';
 		} else {
@@ -2287,10 +2291,10 @@
 				if ( $subscription['response']['code'] == 200 ) {
 					$body = json_decode($subscription['body']);
 					if ( $body->status === "subscribed" ) {
-						$msgs['success'] = __( 'Je bent vanaf nu geabonneerd op de OFT-nieuwsbrief.', 'oft' );
+						$msgs['success'] = __( 'Bedankt, je bent vanaf nu geabonneerd op de nieuwsbrief Oxfam Fair Trade!', 'oft' );
 					}
 				} else {
-					$msgs['success'] = __( 'Er was een onbekend probleem met MailChimp!', 'oft' );
+					$msgs['success'] = __( 'Er was een onbekend probleem met MailChimp.', 'oft' );
 				}
 				$wpcf7->set_properties( array( 'messages' => $msgs ) );
 			}
@@ -2932,6 +2936,7 @@
 			'_steh_length',
 			'_steh_width',
 			'_steh_height',
+			'_steh_weight',
 			'_energy',
 			'_fat',
 			'_fasat',
@@ -2943,7 +2948,6 @@
 			'_starch',
 			'_fibtg',
 			'_pro',
-			'_steh_weight',
 			'_salteq',
 		);
 		

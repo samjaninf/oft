@@ -39,7 +39,7 @@
 						echo '<h2>'.$category['name'].' ('.$category['count'].' producten)</h2>';
 					echo '</div>';
 					// Parameter 'per_page' mag niet te groot zijn, anders error!
-					// Er kan slechts één status doorgegeven worden
+					// Er kan slechts één status doorgegeven worden dus 'private' (voor niet-OFT-producten) moet via een aparte query geregeld worden
 					$prod_parameters = array( 'category' => $category['id'], 'status' => 'publish', 'orderby' => 'title', 'order' => 'asc', 'per_page' => 100, );
 					$products = $woocommerce->get( 'products', $prod_parameters );
 
@@ -72,10 +72,9 @@
 										break;
 									}
 								}
-								// echo '<pre>'.var_export($product['attributes'], true).'</pre>';
 								echo '<small style="color: vampire grey; font-style: italic;">'.$merk.' '.$product['sku'].'</small><br>';
 								echo '<div style="padding: 0; height: 50px; display: flex; align-items: center;"><p style="font-weight: bold; margin: 0; text-align: center; width: 100%;">'.$product['name'].'</p></div>';
-								echo '<a href="'.str_replace( 'shop.oxfamwereldwinkels.be/', 'shop.oxfamwereldwinkels.be/regiobrugge/', $product['permalink'] ).'" title="Bekijk in webshop van Brugge" target="_blank"><img style="max-width: 100%;" src="'.$shop_catalog[0].'"></a><br>';
+								echo '<a href="'.$product['permalink'].'" title="Bekijk product op OFT-site" target="_blank"><img style="max-width: 100%;" src="'.$shop_catalog[0].'"></a><br>';
 								echo '<u>Downloads:</u><br>';
 								echo '<a href="'.$wp_full[0].'" title="Download" target="_blank">Full</a> ('.$wp_full[1].' x '.$wp_full[2].' pixels)<br>';
 								if ( $wp_full[1] !== $wp_large[1] ) {
