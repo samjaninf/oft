@@ -39,10 +39,13 @@
 						echo '<h2>'.$category['name'].' ('.$category['count'].' producten)</h2>';
 					echo '</div>';
 					// Parameter 'per_page' mag niet te groot zijn, anders error!
+					$prod_parameters_oft = array( 'category' => $category['id'], 'status' => 'publish', 'orderby' => 'title', 'order' => 'asc', 'per_page' => 100, );
 					// Er kan slechts één status doorgegeven worden dus 'private' (voor niet-OFT-producten) moet via een aparte query geregeld worden
-					$prod_parameters = array( 'category' => $category['id'], 'status' => 'publish', 'orderby' => 'title', 'order' => 'asc', 'per_page' => 100, );
-					$products = $woocommerce->get( 'products', $prod_parameters );
-
+					$prod_parameters_ext = array( 'category' => $category['id'], 'status' => 'private', 'orderby' => 'title', 'order' => 'asc', 'per_page' => 100, );
+					$products_oft = $woocommerce->get( 'products', $prod_parameters_oft );
+					$products_ext = $woocommerce->get( 'products', $prod_parameters_ext );
+					// OFT-producten als 2de zodat ze zeker behouden blijven
+					$products = array_merge( $products_ext, $products_oft );
 					// Stop alle producten in een array met als key hun artikelnummer
 					foreach ( $products as $product ) {
 						$ordered_products[$product['sku']] = $product;
@@ -98,7 +101,7 @@
 		echo '</div>';
 
 		echo '<p style="text-align: right; width: 100%;">';
-			echo '<i>Deze pagina toont '.$photo_count.' packshots uit een totaal van '.$product_count.' actuele OFT-producten.</i>';
+			echo '<i>Deze pagina toont '.$photo_count.' packshots uit een totaal van '.$product_count.' actuele producten.</i>';
 		echo '</p>';
 
 	?>

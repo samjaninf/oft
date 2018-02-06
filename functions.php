@@ -2221,8 +2221,9 @@
  	add_filter( 'wpcf7_posted_data', 'handle_validation_errors', 20, 1 );
 	
 	function handle_validation_errors( $posted_data ) {
-		// Nederlandstalige inschrijvingsformulier
-		if ( $posted_data['_wpcf7'] == 1054 ) {
+		// Nieuwsbriefformulieren
+		$mc_forms = array( 1054, 6757, 6756 );
+		if ( in_array( $posted_data['_wpcf7'], $mc_forms ) ) {
 			$posted_data['validation_error'] = __( 'Gelieve de fouten op te lossen.', 'oft' );
 			$posted_data['newsletter-email'] = strtolower( trim($posted_data['newsletter-email']) );
 			$status = get_status_in_mailchimp_list( $posted_data['newsletter-email'] );
