@@ -541,6 +541,7 @@
 		echo '<table class="shop_attributes">';
 
 		if ( $type === 'food' ) {
+			
 			// Blokje tonen van zodra energie ingevuld?
 			if ( intval( $product->get_meta('_energy') ) > 0 ) {
 				$has_row = true;
@@ -588,18 +589,8 @@
 				}
 			}
 
-			$product_attributes = array( 'pa_fairtrade', 'pa_bio' );
-
-			foreach ( $product_attributes as $attribute_key ) {
-				?>
-				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th><?php echo wc_attribute_label($attribute_key); ?></th>
-					<td><?php echo $product->get_attribute($attribute_key); ?></td>
-				</tr>
-				<?php
-			}
-
 		} elseif ( $type === 'ingredients' ) {
+			
 			// Allergenentab altijd tonen!
 			$has_row = true;
 			// TIJDELIJK UITSCHAKELEN
@@ -608,8 +599,6 @@
 			$contains = array();
 			$traces = array();
 			
-			echo '<p>'.$product->get_meta('_ingredients').'</p>';
-
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php _e( 'Fairtradepercentage', 'oft' ); ?></th>
@@ -620,6 +609,17 @@
 				<td><?php echo $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'); ?></td>
 			</tr>
 			<?php
+
+			$product_attributes = array( 'pa_fairtrade', 'pa_bio' );
+
+			foreach ( $product_attributes as $attribute_key ) {
+				?>
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th><?php echo wc_attribute_label($attribute_key); ?></th>
+					<td><?php echo $product->get_attribute($attribute_key); ?></td>
+				</tr>
+				<?php
+			}
 			
 			if ( $grapes = get_grape_terms_by_product($product) ) {
 				$ingredients_th = __( 'Druivensoorten', 'oft' );
@@ -692,6 +692,7 @@
 				</tr>
 				<?php
 			}
+
 		}
 		
 		echo '</table>';
