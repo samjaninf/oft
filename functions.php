@@ -578,36 +578,22 @@
 			foreach ( $product_metas as $meta_key => $meta_label ) {
 				// Check of er een (nul)waarde ingesteld is
 				if ( $product->get_meta($meta_key) !== false ) {
+					$submetas = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
 					?>
 					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-						<?php
-							$submetas = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
-							if ( in_array( $meta_key, $submetas ) ) {
-								echo '<th class="secondary">'.$meta_label.'</th>';
-							} else {
-								echo '<th class="primary">'.$meta_label.'</th>';
-							}
-						?>
-						<?php
-							if ( in_array( $meta_key, $submetas ) ) {
-								echo '<td class="secondary">'.$product->get_meta($meta_key).' g</td>';
-							} else {
-								echo '<td class="primary">'.$product->get_meta($meta_key).' g</td>';
-							}
-						?>
+						<th class="<?php echo in_array( $meta_key, $submetas ) ? 'secondary' : 'primary'; ?>"><?php echo $meta_label; ?></th>
+						<td class="<?php echo in_array( $meta_key, $submetas ) ? 'secondary' : 'primary'; ?>"><?php echo str_replace( '.', ',', $product->get_meta($meta_key) ); ?> g</td>
 					</tr>
 					<?php
 				}
 			}
 
-			$product_attributes = array(
-				// 'fairtrade' => 'Fairtradegelabeld',
-			);
+			$product_attributes = array( 'pa_fairtrade', 'pa_bio' );
 
-			foreach ( $product_attributes as $attribute_key => $attribute_label ) {
+			foreach ( $product_attributes as $attribute_key ) {
 				?>
 				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th><?php echo $attribute_label; ?></th>
+					<th><?php echo wc_attribute_label($attribute_key); ?></th>
 					<td><?php echo $product->get_attribute($attribute_key); ?></td>
 				</tr>
 				<?php
@@ -621,7 +607,8 @@
 			$allergens = false;
 			$contains = array();
 			$traces = array();
-			// echo '<p>'.$product->get_short_description().'</p>';
+			
+			echo '<p>'.$product->get_meta('_ingredients').'</p>';
 
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
