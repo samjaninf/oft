@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam Fair Trade\n"
-"POT-Creation-Date: 2018-02-06 12:43+0100\n"
-"PO-Revision-Date: 2018-02-06 12:47+0100\n"
+"POT-Creation-Date: 2018-02-06 14:10+0100\n"
+"PO-Revision-Date: 2018-02-06 14:12+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language: fr_FR\n"
@@ -667,17 +667,24 @@ msgstr "Cette adresse est déjà inscrite !"
 msgid "Dit e-mailadres was al eens ingeschreven!"
 msgstr "Cette adresse a déjà été inscrite auparavant !"
 
-#: functions.php:2226
+#: functions.php:2227
 msgid "Gelieve de fouten op te lossen."
 msgstr "Veuillez éliminer les erreurs."
 
-#: functions.php:2243
+#: functions.php:2237
+#, php-format
+msgid "sinds %s"
+msgstr "depuis le %s"
+
+#: functions.php:2244
 #, php-format
 msgid ""
 "Je bent%s reeds geabonneerd op onze nieuwsbrief! We werkten je gegevens bij."
 msgstr ""
+"Vous êtes déjà inscrit à notre bulletin d'information%s. Nous avons "
+"actualisé vos données."
 
-#: functions.php:2246
+#: functions.php:2247
 #, php-format
 msgid ""
 "Je was vroeger al eens geabonneerd op onze nieuwsbrief! Daarom dien je "
@@ -686,23 +693,23 @@ msgid ""
 "bevestigingslink te klikken."
 msgstr ""
 
-#: functions.php:2294
+#: functions.php:2295
 msgid ""
 "Bedankt, je bent vanaf nu geabonneerd op de nieuwsbrief Oxfam Fair Trade!"
 msgstr ""
 "Merci, désormais vous êtes inscrit au bulletin d'information d'Oxfam Fair "
 "Trade !"
 
-#: functions.php:2297
+#: functions.php:2298
 msgid "Er was een onbekend probleem met MailChimp."
 msgstr "Il s'est produit un problème inconnu dans MailChimp."
 
-#: functions.php:2418
+#: functions.php:2419
 #, php-format
 msgid "Bekijk <a href=\"%s\" target=\"_blank\">de recentste nieuwsbrief</a>."
 msgstr "Consultez <a href=\"%s\" target=\"_blank\">le dernier bulletin</a>."
 
-#: functions.php:3022
+#: functions.php:3023
 msgid "Zoekresultaten"
 msgstr "Résultats de récherche"
 

@@ -2233,11 +2233,10 @@
 
 				if ( $body->status === "subscribed" ) {
 					$timestamp = strtotime($body->timestamp_signup);
+					$signup_text = '';
 					if ( $timestamp !== false ) {
-						$signup_text = ' sinds '.date_i18n( 'j F Y', $timestamp );
-					} else {
-						$signup_text = '';
-					}
+						$signup_text = ' '.sprintf( __( 'sinds %s', 'oft' ), date_i18n( 'j F Y', $timestamp ) );
+					};
 					// Niet meer nodig
 					// $id = $body->unique_email_id;
 					// PATCH BESTAANDE GEGEVENS?
@@ -2266,8 +2265,9 @@
 			$posted_data = $submission->get_posted_data();
 		}
 		write_log($posted_data);
-		// Nederlandstalige inschrijvingsformulier
-		if ( $wpcf7->id() == 1054 ) {
+		// Nieuwsbriefformulieren
+		$mc_forms = array( 1054, 6757, 6756 );
+		if ( in_array( $wpcf7->id(), $mc_forms ) ) {
 			if ( empty($posted_data) ) {
 				return;
 			}
@@ -2361,14 +2361,15 @@
 
 	function update_user_in_mailchimp_list( $email, $name = '', $company = '', $list_id = MC_LIST_ID ) {
 		global $sitepress;
-		$language = $sitepress->get_current_language();
+		$language_code = $sitepress->get_current_language();
+		$language_details = $sitepress->get_language_details($language_code);
 		
 		// VERGELIJK MET BESTAANDE WAARDES
 		$member = get_status_in_mailchimp_list( $email );
 
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
 		$member = md5( strtolower( trim( $email ) ) );
-		$merge_fields = array( 'LANGUAGE' => 'Nederlands', 'SOURCE' => 'OFT-site', );
+		$merge_fields = array( 'LANGUAGE' => $language_details['native_name'], 'SOURCE' => 'OFT-site' );
 		// Probleem: naam zit hier nog in 1 veld, moeten er 2 worden
 		$parts = explode( ' ', $name, 2 );
 		$fname = trim($parts[0]);
