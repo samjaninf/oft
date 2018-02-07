@@ -2416,8 +2416,8 @@
 	add_action( 'pmxi_before_xml_import', 'set_all_out_of_stock', 10, 1 );
 
 	function set_all_out_of_stock( $import_id ) {
-		update_option( 'oft_import_active', 'yes' );
-		if ( $import_id == 14 ) {
+		// TIJDELIJK UITSCHAKELEN, B2CIMPORT.CSV GEEFT VOORRAADSTATUS NOG NIET DOOR
+		if ( $import_id == 14000 ) {
 			$args = array(
 				'post_type'	=> 'product',
 				'post_status' => array( 'publish', 'private', 'draft' ),
@@ -2435,6 +2435,8 @@
 				}
 				wp_reset_postdata();
 			}
+		} else {
+			update_option( 'oft_import_active', 'yes' );
 		}
 	}
 
