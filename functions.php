@@ -398,7 +398,7 @@
 			'show_in_rest' => true,
 			'show_tagcloud' => true,
 			'show_in_quick_edit' => false,
-			'show_admin_column' => false,
+			'show_admin_column' => true,
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
 			// In de praktijk niet bereikbaar op deze URL want niet publiek!
@@ -714,7 +714,7 @@
 		}
 	}
 
-	// Verhinder bepaalde selecties in de back-end AAN TE PASSEN NAAR DE NIEUWE ID'S
+	// Verhinder bepaalde selecties in de back-end
 	add_action( 'admin_footer', 'disable_custom_checkboxes' );
 
 	function disable_custom_checkboxes() {
@@ -931,7 +931,7 @@
 		}
 	}
 
-	// Creëer een custom hiërarchische taxonomie op producten om allergeneninfo in op te slaan
+	// Creëer een custom vlakke taxonomie op producten om hipsterinfo in op te slaan
 	add_action( 'init', 'register_hipster_taxonomy', 50 );
 
 	function register_hipster_taxonomy() {
@@ -968,6 +968,49 @@
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'eco', 'with_front' => false, 'hierarchical' => false ),
+		);
+
+		register_taxonomy( $taxonomy_name, 'product', $args );
+		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
+	}
+
+	// Creëer een custom hiërarchische taxonomie op producten om verpakkingsinfo in op te slaan
+	add_action( 'init', 'register_packaging_taxonomy', 50 );
+
+	function register_hipster_taxonomy() {
+		$taxonomy_name = 'product_packaging';
+		
+		$labels = array(
+			'name' => __( 'Verpakkingswijzes', 'oft' ),
+			'singular_name' => __( 'Verpakkingswijze', 'oft' ),
+			'all_items' => __( 'Alle verpakkingswijzes', 'oft' ),
+			'parent_item' => __( 'Type', 'oft' ),
+			'parent_item_colon' => __( 'Type:', 'oft' ),
+			'new_item_name' => __( 'Nieuwe verpakkingswijze', 'oft' ),
+			'add_new_item' => __( 'Voeg nieuwe verpakkingswijze toe', 'oft' ),
+			'view_item' => __( 'Verpakkingswijzes bekijken', 'oft' ),
+			'edit_item' => __( 'Verpakkingswijze bewerken', 'oft' ),
+			'update_item' => __( 'Verpakkingswijze bijwerken', 'oft' ),
+			'search_items' => __( 'Verpakkingswijzes doorzoeken', 'oft' ),
+		);
+
+		$args = array(
+			'labels' => $labels,
+			'description' => __( 'Duid de eigenschappen van het product aan', 'oft' ),
+			'public' => true,
+			'publicly_queryable' => true,
+			'hierarchical' => true,
+			'show_ui' => true,
+			'show_in_menu' => true,
+			'show_in_nav_menus' => false,
+			'show_in_rest' => true,
+			'show_tagcloud' => false,
+			'show_in_quick_edit' => false,
+			'show_admin_column' => true,
+			'query_var' => true,
+			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
+			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
+			'rewrite' => array( 'slug' => 'packaging', 'with_front' => false, 'hierarchical' => false ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
