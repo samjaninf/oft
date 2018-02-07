@@ -1282,7 +1282,7 @@
 		echo '<div class="options_group">';
 			$languages = array( 'nl', 'fr', 'en' );
 			foreach ( $languages as $language ) {
-				$path = '/fiches/'.$language.'/'.$product->get_sku().'.pdf';
+				$path = '/sheets/'.$language.'/'.$product->get_sku().'.pdf';
 				if ( file_exists( WP_CONTENT_DIR.$path ) ) {
 					echo '<p class="form-field"><label>Productfiche '.mb_strtoupper($language).'</label><a href="'.content_url($path).'" target="_blank">'.__( 'Download PDF', 'oft-admin' ).'</a> ('.get_date_from_gmt( date_i18n( 'Y-m-d H:i:s', filemtime(WP_CONTENT_DIR.$path) ), 'd/m/Y @ H:i' ).')</p>';
 				}
@@ -1784,9 +1784,9 @@
 			wp_reset_postdata();
 		}
 
-		if ( file_exists( WP_CONTENT_DIR.'/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ) ) {
+		if ( file_exists( WP_CONTENT_DIR.'/sheets/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ) ) {
 			echo '<div class="vc_btn3-container oft-product-sheet vc_btn3-center">';
-			echo '<a class="vc_general vc_btn3 vc_btn3-size-md vc_btn3-shape-rounded vc_btn3-style-flat vc_btn3-color-blue" href="'.content_url( '/fiches/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ).'" target="_blank">'.__( 'Download de productfiche', 'oft' ).'</a>';
+			echo '<a class="vc_general vc_btn3 vc_btn3-size-md vc_btn3-shape-rounded vc_btn3-style-flat vc_btn3-color-blue" href="'.content_url( '/sheets/'.$sitepress->get_current_language().'/'.$product->get_sku().'.pdf' ).'" target="_blank">'.__( 'Download de productfiche', 'oft' ).'</a>';
 			echo '</div>';
 		}
 
@@ -2092,7 +2092,7 @@
 			$pdffile->pdf->setAuthor('Oxfam Fair Trade cvba');
 			$pdffile->pdf->setTitle( __( 'Productfiche', 'oft' ).' '.$sku );
 			$pdffile->writeHTML($templatecontent);
-			$pdffile->output( WP_CONTENT_DIR.'/fiches/'.$language.'/'.$sku.'.pdf', 'F' );
+			$pdffile->output( WP_CONTENT_DIR.'/sheets/'.$language.'/'.$sku.'.pdf', 'F' );
 		} catch ( Html2PdfException $e ) {
 			$formatter = new ExceptionFormatter($e);
 			add_filter( 'redirect_post_location', 'add_html2pdf_notice_var', 99 );
