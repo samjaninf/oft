@@ -121,6 +121,16 @@
 		<?php
 	}
 
+	// Verberg de quick edit op producten
+	add_filter( 'post_row_actions', 'remove_row_actions', 10, 1 );
+	
+	function remove_row_actions( $actions ) {
+		if ( get_post_type() === 'product' ) {
+			unset( $actions['inline hide-if-no-js'] );
+		}
+		return $actions;
+	}
+
 
 
 	################
@@ -156,7 +166,7 @@
 			'show_in_menu' => true,
 			'show_in_nav_menus' => true,
 			'show_in_rest' => true,
-			'show_tagcloud' => true,
+			'show_tagcloud' => false,
 			'show_in_quick_edit' => false,
 			'show_admin_column' => true,
 			'description' => __( 'Ken het product toe aan een partner/land', 'oft' ),
@@ -977,7 +987,7 @@
 	// Creëer een custom hiërarchische taxonomie op producten om verpakkingsinfo in op te slaan
 	add_action( 'init', 'register_packaging_taxonomy', 50 );
 
-	function register_hipster_taxonomy() {
+	function register_packaging_taxonomy() {
 		$taxonomy_name = 'product_packaging';
 		
 		$labels = array(
@@ -1005,7 +1015,7 @@
 			'show_in_nav_menus' => false,
 			'show_in_rest' => true,
 			'show_tagcloud' => false,
-			'show_in_quick_edit' => false,
+			'show_in_quick_edit' => true,
 			'show_admin_column' => true,
 			'query_var' => true,
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
