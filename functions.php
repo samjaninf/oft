@@ -2412,7 +2412,7 @@
 	#  IMPORTING  #
 	###############
 
-	// NIET MEER NODIG, NU VIA VOORRAADSTATUS
+	// Alles uit voorraad zetten zodat we ook plotse verdwijnen uit BestelWeb kunnen opmerken
 	add_action( 'pmxi_before_xml_import', 'set_all_out_of_stock', 10, 1 );
 
 	function set_all_out_of_stock( $import_id ) {
@@ -2420,7 +2420,7 @@
 		if ( $import_id == 14 ) {
 			$args = array(
 				'post_type'	=> 'product',
-				'post_status' => array( 'publish', 'private', 'draft', 'trash' ),
+				'post_status' => array( 'publish', 'private', 'draft' ),
 				'posts_per_page' => -1,
 			);
 
