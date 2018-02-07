@@ -951,8 +951,6 @@
 			'name' => __( 'Hipstertermen', 'oft' ),
 			'singular_name' => __( 'Hipsterterm', 'oft' ),
 			'all_items' => __( 'Alle hipstertermen', 'oft' ),
-			'parent_item' => __( 'Hipsterterm', 'oft' ),
-			'parent_item_colon' => __( 'Hipsterterm:', 'oft' ),
 			'new_item_name' => __( 'Nieuwe hipsterterm', 'oft' ),
 			'add_new_item' => __( 'Voeg nieuwe hipsterterm toe', 'oft' ),
 			'view_item' => __( 'Hipsterterm bekijken', 'oft' ),
@@ -1021,6 +1019,47 @@
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'packaging', 'with_front' => false, 'hierarchical' => false ),
+		);
+
+		register_taxonomy( $taxonomy_name, 'product', $args );
+		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
+	}
+
+	// Creëer een custom vlakke taxonomie op producten om bewaar- en gebruiksvoorschriften in op te slaan
+	add_action( 'init', 'register_storage_taxonomy', 50 );
+
+	function register_storage_taxonomy() {
+		$taxonomy_name = 'product_storage';
+		
+		$labels = array(
+			'name' => __( 'Bewaarvoorschriften', 'oft' ),
+			'singular_name' => __( 'Bewaarvoorschrift', 'oft' ),
+			'all_items' => __( 'Alle bewaarvoorschriften', 'oft' ),
+			'new_item_name' => __( 'Nieuw bewaarvoorschrift', 'oft' ),
+			'add_new_item' => __( 'Voeg nieuw bewaarvoorschrift toe', 'oft' ),
+			'view_item' => __( 'Bewaarvoorschriften bekijken', 'oft' ),
+			'edit_item' => __( 'Bewaarvoorschrift bewerken', 'oft' ),
+			'update_item' => __( 'Bewaarvoorschrift bijwerken', 'oft' ),
+			'search_items' => __( 'Bewaarvoorschriften doorzoeken', 'oft' ),
+		);
+
+		$args = array(
+			'labels' => $labels,
+			'description' => __( 'Duid de eigenschappen van het product aan', 'oft' ),
+			'public' => true,
+			'publicly_queryable' => true,
+			'hierarchical' => false,
+			'show_ui' => true,
+			'show_in_menu' => true,
+			'show_in_nav_menus' => false,
+			'show_in_rest' => true,
+			'show_tagcloud' => false,
+			'show_in_quick_edit' => true,
+			'show_admin_column' => true,
+			'query_var' => true,
+			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
+			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
+			'rewrite' => array( 'slug' => 'storage', 'with_front' => false, 'hierarchical' => false ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
