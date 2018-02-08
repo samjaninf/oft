@@ -18,4 +18,5 @@ $heading = esc_html( apply_filters( 'woocommerce_product_description_heading', _
 
 ?>
 
-<?php the_excerpt(); ?>
+<!-- GEWIJZIGD: Heading verwijderd -->
+<?php the_content(); ?>

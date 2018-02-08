@@ -5,7 +5,7 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.6
+	Version:		1.2.7
 	Text Domain:	oft
 */
 
@@ -514,12 +514,27 @@ body.search-results {
 		}
 	}
 
+	/* Breedte van standaardkolommen passend maken */
 	&.columns-4 > ul.products > div.product {
 		width: 24%;
 	}
 
 	&.columns-3 > ul.products > div.product {
 		width: 33%;
+	}
+
+	&.single-product section.related.products {
+		h2 {
+			text-align: center;
+			text-decoration: none;
+			font-size: 40px;
+			line-height: 56px;
+		}
+
+		/* Gerelateerde producten naar vier kolommen forceren */
+		.bt-row .bt-col-3 {
+			width: 24%;
+		}
 	}
 }
 
@@ -1093,6 +1108,7 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 
 	.woocommerce {
 		/* Naar 2 kolommen collapsen in hoofdpagina's (default = rijen van 4) */
+		&.single-product section.related.products .bt-row .bt-col-3,
 		&.columns-4 > ul.products > div.product,
 		&.columns-3 > ul.products > div.product {
 			width: 49%;
@@ -1160,6 +1176,7 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 @media (max-width: 580px) {
 	.woocommerce {
 		/* Naar 1 kolom collapsen in hoofdpagina's */
+		&.single-product section.related.products .bt-row .bt-col-3,
 		&.columns-4 > ul.products > div.product,
 		&.columns-3 > ul.products > div.product {
 			width: 100%;
