@@ -973,7 +973,7 @@
 			'description' => __( 'Duid de eigenschappen van het product aan', 'oft' ),
 			'public' => false,
 			'publicly_queryable' => false,
-			'hierarchical' => false,
+			'hierarchical' => true,
 			'show_ui' => true,
 			'show_in_menu' => true,
 			'show_in_nav_menus' => true,
@@ -982,8 +982,8 @@
 			'show_in_quick_edit' => true,
 			'show_admin_column' => true,
 			'query_var' => true,
-			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
+			// Geef catmans rechten om zelf termen toe te kennen / te bewerken maar niet om toe te voegen / te verwijderen!
+			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'update_core', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'eco', 'with_front' => false, 'hierarchical' => false ),
 			// ZORGT ERVOOR DAT DE ID ALS TERM OPGESLAGEN WORDT, NIET BRUIKBAAR
 			// 'meta_box_cb' => 'post_categories_meta_box',
@@ -1059,7 +1059,7 @@
 			'description' => __( 'Duid de eigenschappen van het product aan', 'oft' ),
 			'public' => false,
 			'publicly_queryable' => false,
-			'hierarchical' => false,
+			'hierarchical' => true,
 			'show_ui' => true,
 			'show_in_menu' => true,
 			'show_in_nav_menus' => false,
@@ -1934,21 +1934,6 @@
 			// Switch terug naar gebruikerstaal
 			$sitepress->switch_lang( $prev_lang, true );
 		echo '</div>';
-	}
-
-	// add_action( 'woocommerce_single_product_summary', 'show_hipster_icons', 80 );
-	
-	function show_hipster_icons() {
-		global $product, $sitepress;
-		if ( in_array( intval( apply_filters( 'wpml_object_id', get_term_by( 'slug', 'veggie', 'product_tag' )->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
-			echo "<img class='veggie'>";
-		}
-		if ( in_array( intval( apply_filters( 'wpml_object_id', get_term_by( 'slug', 'vegan', 'product_tag' )->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
-			echo "<img class='vegan'>";
-		}
-		if ( in_array( intval( apply_filters( 'wpml_object_id', get_term_by( 'slug', 'gluten-free', 'product_tag' )->term_id, 'product_tag', true, $sitepress->get_current_language() ) ), $product->get_tag_ids() ) ) {
-			echo "<img class='gluten-free'>";
-		}
 	}
 
 	// Aantal producten per pagina wijzigen
