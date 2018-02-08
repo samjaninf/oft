@@ -1256,8 +1256,8 @@
 
 		// Update de productfiches niet indien er een import bezig is (behalve ERP-sync)
 		if ( get_option('oft_import_active') !== 'yes' ) {
-			// Enkel proberen aanmaken indien foto reeds aanwezig
-			if ( intval( $product->get_image_id() ) > 0 ) {
+			// Enkel proberen aanmaken indien OFT-product én foto reeds aanwezig
+			if ( $product->get_attribute('merk') === 'Oxfam Fair Trade' and intval( $product->get_image_id() ) > 0 ) {
 				create_product_pdf( $product->get_id(), 'nl' );
 				create_product_pdf( $product->get_id(), 'fr' );
 				create_product_pdf( $product->get_id(), 'en' );
@@ -2209,7 +2209,7 @@
 
 		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
 		$templatecontent = str_replace( "###PRICE###", wc_price( $product->get_regular_price() ), $templatecontent );
-		$templatecontent = str_replace( "###PERMALINK###", '<a href="'.$product->get_permalink().'">(bekijk product online)</a>', $templatecontent );
+		$templatecontent = str_replace( "###PERMALINK###", '<a href="'.$product->get_permalink().'">('.__( 'bekijk product online', 'oft' ).')</a>', $templatecontent );
 		$templatecontent = str_replace( "###NET_CONTENT###", $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'), $templatecontent );
 		// Verwijder eventuele enters door HTML-tags
 		$templatecontent = str_replace( "###DESCRIPTION###", preg_replace( '/<[^>]+>/', ' ', $product->get_description() ), $templatecontent );
@@ -2248,7 +2248,7 @@
 		$templatecontent = str_replace( "###STEH_EAN###", $steh_ean, $templatecontent );
 
 		if ( intval( $product->get_meta('_shelf_life') ) > 0 ) {
-			$shelf_text = format_pdf_block( 'Houdbaarheid na productie', $product->get_meta('_shelf_life').' dagen' );
+			$shelf_text = format_pdf_block( 'Houdbaarheid na productie', $product->get_meta('_shelf_life').' '.__( 'dagen', 'oft' ) );
 		} else {
 			$shelf_text = '';
 		}
