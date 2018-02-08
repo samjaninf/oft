@@ -929,6 +929,7 @@
 						$category = $parent;
 					}
 				}
+				// VERTALEN EN CHECKEN IN HOOFDTAAL
 				if ( $parent->slug === 'wijn' ) {
 					$remove = false;
 				}
@@ -962,8 +963,8 @@
 		$args = array(
 			'labels' => $labels,
 			'description' => __( 'Duid de eigenschappen van het product aan', 'oft' ),
-			'public' => true,
-			'publicly_queryable' => true,
+			'public' => false,
+			'publicly_queryable' => false,
 			'hierarchical' => false,
 			'show_ui' => true,
 			'show_in_menu' => true,
@@ -1005,8 +1006,8 @@
 		$args = array(
 			'labels' => $labels,
 			'description' => __( 'Duid de eigenschappen van het product aan', 'oft' ),
-			'public' => true,
-			'publicly_queryable' => true,
+			'public' => false,
+			'publicly_queryable' => false,
 			'hierarchical' => true,
 			'show_ui' => true,
 			'show_in_menu' => true,
@@ -1018,7 +1019,7 @@
 			'query_var' => true,
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
-			'rewrite' => array( 'slug' => 'packaging', 'with_front' => false, 'hierarchical' => false ),
+			'rewrite' => array( 'slug' => 'packaging', 'with_front' => false, 'hierarchical' => true ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -1046,8 +1047,8 @@
 		$args = array(
 			'labels' => $labels,
 			'description' => __( 'Duid de eigenschappen van het product aan', 'oft' ),
-			'public' => true,
-			'publicly_queryable' => true,
+			'public' => false,
+			'publicly_queryable' => false,
 			'hierarchical' => false,
 			'show_ui' => true,
 			'show_in_menu' => true,
