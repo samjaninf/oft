@@ -1909,7 +1909,7 @@
 			// $sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
 			
 			$icons = array();
-			foreach ( wp_get_object_terms( apply_filters( 'wpml_object_id' $product->get_id(), 'product', true, 'nl' ), 'product_hipster' ) as $term ) {
+			foreach ( wp_get_object_terms( apply_filters( 'wpml_object_id', $product->get_id(), 'product', true, 'nl' ), 'product_hipster' ) as $term ) {
 				$icons[] = $term->slug;
 			}
 			if ( in_array( 'veganistisch', $icons ) ) {
