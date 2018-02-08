@@ -506,7 +506,7 @@
 				}
 			}
 			if ( $parent->slug === 'wijn' ) {
-				// Sommelierinfo uit korte beschrijving tonen
+				// Sommelierinfo uit lange beschrijving tonen
 				$tabs['description']['title'] = __( 'Wijnbeschrijving', 'oft' );
 			} else {
 				// Schakel lange beschrijving uit (werd naar boven verplaatst)
@@ -2001,13 +2001,30 @@
 	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30 );
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
 	// ENKEL VERWIJDEREN INDIEN UPSELLS AANWEZIG?
-	remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20 );
+	// remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20 );
 	add_action( 'woocommerce_single_product_summary', 'output_full_product_description', 20 );
 	add_action( 'woocommerce_before_shop_loop', 'output_oft_partner_info', 10 );
 
 	function output_full_product_description() {
+		global $product;
+		$categories = $product->get_category_ids();
+		if ( is_array( $categories ) ) {
+			foreach ( $categories as $category_id ) {
+				$category = get_term( $category_id, 'product_cat' );
+				while ( intval($category->parent) !== 0 ) {
+					$parent = get_term( $category->parent, 'product_cat' );
+					$category = $parent;
+				}
+			}
+		}
 		echo '<div class="woocommerce-product-details__short-description">';
-		the_content();
+			if ( $parent->slug === 'wijn' ) {
+				// Korte 'Lekker bij' tonen
+				the_excerpt();
+			} else {
+				// Lange productbeschrijving tonen
+				the_content();
+			}
 		echo '</div>';
 	}
 	

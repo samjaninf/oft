@@ -66,33 +66,33 @@
 						
 						if ( ! empty($shop_thumbnail) ) {
 							$photo_count++;
-							
-							echo '<div class="col-sm-6 col-md-4 col-xl-3" style="padding: 2em 1em; text-align: center; border-bottom: 1px solid black;">';
-								// Het 'pa_merk'-attribuut stond slechts toevallig als eerste in de lijst, refactor!
-								foreach ( $product['attributes'] as $attribute ) {
-									if ( $attribute['name'] === 'Merk' ) {
-										$merk = $attribute['options'][0];
-										break;
-									}
-								}
-								echo '<small style="color: vampire grey; font-style: italic;">'.$merk.' '.$product['sku'].'</small><br>';
-								echo '<div style="padding: 0; height: 50px; display: flex; align-items: center;"><p style="font-weight: bold; margin: 0; text-align: center; width: 100%;">'.$product['name'].'</p></div>';
-								echo '<a href="'.$product['permalink'].'" title="Bekijk product op OFT-site" target="_blank"><img style="max-width: 100%;" src="'.$shop_catalog[0].'"></a><br>';
-								echo '<u>Downloads:</u><br>';
-								echo '<a href="'.$wp_full[0].'" title="Download" target="_blank">Full</a> ('.$wp_full[1].' x '.$wp_full[2].' pixels)<br>';
-								if ( $wp_full[1] !== $wp_large[1] ) {
-									echo '<a href="'.$wp_large[0].'" title="Download" target="_blank">Large</a> ('.$wp_large[1].' x '.$wp_large[2].' pixels)<br>';
-								}
-								if ( $wp_large[1] !== $wp_medium[1] ) {
-									echo '<a href="'.$wp_medium[0].'" title="Download" target="_blank">Medium</a> ('.$wp_medium[1].' x '.$wp_medium[2].' pixels)<br>';
-								}
-								if ( $wp_medium[1] !== $shop_single[1] ) {
-									echo '<a href="'.$shop_single[0].'" title="Download" target="_blank">Detail</a> ('.$shop_single[1].' x '.$shop_single[2].' pixels)<br>';
-								}
-								echo '<a href="'.$shop_catalog[0].'" title="Download" target="_blank">Catalog</a> ('.$shop_catalog[1].' x '.$shop_catalog[2].' pixels)<br>';
-								echo '<a href="'.$shop_thumbnail[0].'" title="Download" target="_blank">Thumbnail</a> ('.$shop_thumbnail[1].' x '.$shop_thumbnail[2].' pixels)';
-							echo '</div>';
 						}
+						
+						echo '<div class="col-sm-6 col-md-4 col-xl-3" style="padding: 2em 1em; text-align: center; border-bottom: 1px solid black;">';
+							// Het 'pa_merk'-attribuut stond slechts toevallig als eerste in de lijst, refactor!
+							foreach ( $product['attributes'] as $attribute ) {
+								if ( $attribute['name'] === 'Merk' ) {
+									$merk = $attribute['options'][0];
+									break;
+								}
+							}
+							echo '<small style="color: vampire grey; font-style: italic;">'.$merk.' '.$product['sku'].'</small><br>';
+							echo '<div style="padding: 0; height: 50px; display: flex; align-items: center;"><p style="font-weight: bold; margin: 0; text-align: center; width: 100%;">'.$product['name'].'</p></div>';
+							echo '<a href="'.$product['permalink'].'" title="Bekijk product op OFT-site" target="_blank"><img style="max-width: 100%;" src="'.$shop_catalog[0].'"></a><br>';
+							echo '<u>Downloads:</u><br>';
+							echo '<a href="'.$wp_full[0].'" title="Download" target="_blank">Full</a> ('.$wp_full[1].' x '.$wp_full[2].' pixels)<br>';
+							if ( $wp_full[1] !== $wp_large[1] ) {
+								echo '<a href="'.$wp_large[0].'" title="Download" target="_blank">Large</a> ('.$wp_large[1].' x '.$wp_large[2].' pixels)<br>';
+							}
+							if ( $wp_large[1] !== $wp_medium[1] ) {
+								echo '<a href="'.$wp_medium[0].'" title="Download" target="_blank">Medium</a> ('.$wp_medium[1].' x '.$wp_medium[2].' pixels)<br>';
+							}
+							if ( $wp_medium[1] !== $shop_single[1] ) {
+								echo '<a href="'.$shop_single[0].'" title="Download" target="_blank">Detail</a> ('.$shop_single[1].' x '.$shop_single[2].' pixels)<br>';
+							}
+							echo '<a href="'.$shop_catalog[0].'" title="Download" target="_blank">Catalog</a> ('.$shop_catalog[1].' x '.$shop_catalog[2].' pixels)<br>';
+							echo '<a href="'.$shop_thumbnail[0].'" title="Download" target="_blank">Thumbnail</a> ('.$shop_thumbnail[1].' x '.$shop_thumbnail[2].' pixels)';
+						echo '</div>';
 					}
 				echo '</div>';
 				// Zorg dat de producten niet opduiken in de volgende categorie
