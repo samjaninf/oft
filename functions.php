@@ -828,11 +828,6 @@
 						jQuery(this).closest( '#product_catchecklist' ).find( 'input[type=checkbox]' ).not(this).prop( 'checked', false );
 					});
 
-					/* Uncheck de vorige waarde indien je een nieuwe verpakkingswijze selecteert */
-					jQuery( '#product_packaging-all' ).find( 'input[type=checkbox]' ).on( 'change', function() {
-						jQuery(this).closest( '#product_packagingchecklist' ).find( 'input[type=checkbox]' ).not(this).prop( 'checked', false );
-					});
-
 					/* Vereis dat er één productcategorie en minstens één partner/land aangevinkt is voor het opslaan */
 					jQuery( 'input[type=submit]#publish, input[type=submit]#save-post' ).click( function() {
 						// ALLE DISABLED DROPDOWNS WEER ACTIVEREN, ANDERS GEEN WAARDE DOORGESTUURD
@@ -990,6 +985,7 @@
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'eco', 'with_front' => false, 'hierarchical' => false ),
+			'meta_box_cb' => 'post_categories_meta_box',
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -1372,8 +1368,9 @@
 			woocommerce_wp_textarea_input(
 				array( 
 					'id' => '_ingredients',
-					'label' => __( 'Ingrediëntenlijst', 'oft-admin' ).'<br>* = '.__( 'fair trade', 'oft-admin' ).'<br>° = '.__( 'biologisch', 'oft-admin' ),
+					'label' => __( 'Ingrediëntenlijst', 'oft-admin' ).'<br>* = '.__( 'fair trade', 'oft-admin' ).'<br>° = '.__( 'biologisch', 'oft-admin' ).'<br>'.mb_strtoupper( __( 'allergeen', 'oft-admin' ) ),
 					'wrapper_class' => 'important-for-catman',
+					'rows' => 4,
 				)
 			);
 
@@ -1903,12 +1900,16 @@
 		echo '<div class="oft-icons">';
 			$yes = array( 'Ja', 'Yes', 'Oui' );
 			// SLUGS VAN ATTRIBUTEN WORDEN NIET VERTAALD, ENKEL DE TERMEN
-			// TAGS ZIJN A.H.W. TERMEN VAN EEN WELBEPAALD ATTRIBUUT EN WORDEN DUS OOK VERTAALD
 			if ( in_array( $product->get_attribute('bio'), $yes ) ) {
 				echo "<div class='icon-organic'></div>";
 			}
+			// TAGS ZIJN A.H.W. TERMEN VAN EEN WELBEPAALD ATTRIBUUT EN SLUGS WORDEN DAAR DUS OOK VERTAALD
+			// VERGELIJK DE TERMEN ALTIJD IN HET NEDERLANDS
+			// $prev_lang = $sitepress->get_current_language();
+			// $sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
+			
 			$icons = array();
-			foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
+			foreach ( wp_get_object_terms( apply_filters( 'wpml_object_id' $product->get_id(), 'product', true, 'nl' ), 'product_hipster' ) as $term ) {
 				$icons[] = $term->slug;
 			}
 			if ( in_array( 'veganistisch', $icons ) ) {
@@ -1924,8 +1925,12 @@
 				echo "<div class='icon-lactose-free'></div>";
 			}
 			if ( in_array( 'eerlijke-verhandelde-palmolie', $icons ) ) {
-				echo "<div class='icon-fairly-traded-palm-oil'></div>";
+				// VOORLOPIG NIET GEBRUIKEN
+				// echo "<div class='icon-fairly-traded-palm-oil'></div>";
 			}
+
+			// Switch terug naar gebruikerstaal
+			// $sitepress->switch_lang( $prev_lang, true );
 		echo '</div>';
 	}
 
