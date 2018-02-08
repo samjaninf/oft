@@ -604,8 +604,8 @@
 			// Allergenentab altijd tonen!
 			$has_row = true;
 			// TIJDELIJK UITSCHAKELEN
-			$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
-			// $allergens = false;
+			// $allergens = get_the_terms( $product->get_id(), 'product_allergen' );
+			$allergens = false;
 			$contains = array();
 			$traces = array();
 			
@@ -749,6 +749,9 @@
 
 			$args['taxonomy'] = 'product_grape';
 			$grapes = get_terms($args);
+
+			$args['taxonomy'] = 'product_packaging';
+			$units = get_terms($args);
 			
 			?>
 			<script>
@@ -775,6 +778,11 @@
 					/* Disable en verberg checkboxes continenten */
 					<?php foreach ( $continents as $id ) : ?>
 						jQuery( '#in-product_partner-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
+					<?php endforeach; ?>
+
+					/* Disable en verberg checkboxes besteleenheid / consumenteneenheid */
+					<?php foreach ( $units as $id ) : ?>
+						jQuery( '#in-product_packaging-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
 					<?php endforeach; ?>
 
 					/* Disable en verberg checkboxes allergeenklasses */
@@ -815,9 +823,14 @@
 						});
 					});
 
-					/* Disable/enable het overeenkomstige allergeen in contains/may-contain bij aan/afvinken van may-contain/contains */
+					/* Uncheck de vorige waarde indien je een nieuwe productcategorie selecteert */
 					jQuery( '#product_cat-all' ).find( 'input[type=checkbox]' ).on( 'change', function() {
 						jQuery(this).closest( '#product_catchecklist' ).find( 'input[type=checkbox]' ).not(this).prop( 'checked', false );
+					});
+
+					/* Uncheck de vorige waarde indien je een nieuwe verpakkingswijze selecteert */
+					jQuery( '#product_packaging-all' ).find( 'input[type=checkbox]' ).on( 'change', function() {
+						jQuery(this).closest( '#product_packagingchecklist' ).find( 'input[type=checkbox]' ).not(this).prop( 'checked', false );
 					});
 
 					/* Vereis dat er één productcategorie en minstens één partner/land aangevinkt is voor het opslaan */
@@ -1020,6 +1033,7 @@
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'packaging', 'with_front' => false, 'hierarchical' => true ),
+			'meta_box_cb' => 'post_categories_meta_box',
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -1358,7 +1372,7 @@
 			woocommerce_wp_textarea_input(
 				array( 
 					'id' => '_ingredients',
-					'label' => __( 'Ingrediëntenlijst', 'oft-admin' ),
+					'label' => __( 'Ingrediëntenlijst', 'oft-admin' ).'<br>* = '.__( 'fair trade', 'oft-admin' ).'<br>° = '.__( 'biologisch', 'oft-admin' ),
 					'wrapper_class' => 'important-for-catman',
 				)
 			);
@@ -2995,6 +3009,8 @@
 			'product_grape',
 			'product_taste',
 			'product_recipe',
+			'product_packaging',
+			'product_storage',
 			'pa_bio',
 			'pa_merk',
 			'pa_fairtrade',
