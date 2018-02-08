@@ -1258,9 +1258,9 @@
 		if ( get_option('oft_import_active') !== 'yes' ) {
 			// Enkel proberen aanmaken indien foto reeds aanwezig
 			if ( intval( $product->get_image_id() ) > 0 ) {
-				create_product_pdf( $product, 'nl' );
-				create_product_pdf( $product, 'fr' );
-				// create_product_pdf( $product, 'en' );
+				create_product_pdf( $product->get_id(), 'nl' );
+				create_product_pdf( $product->get_id(), 'fr' );
+				create_product_pdf( $product->get_id(), 'en' );
 			}
 		}
 	}
@@ -2097,9 +2097,16 @@
 	###########
 
 	// Creëer een productfiche
-	function create_product_pdf( $product, $language ) {
+	function create_product_pdf( $product_id, $language ) {
+		global $sitepress;
 		require_once WP_PLUGIN_DIR.'/html2pdf/autoload.php';
 		$templatelocatie = get_stylesheet_directory().'/assets/fiche-'.$language.'.html';
+		$prev_lang = $sitepress->get_current_language();
+		$sitepress->switch_lang($language);
+
+		// Creëer product in lokale taal (false = negeer indien het nog niet bestaat)
+		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, $language ) );
+
 		$templatefile = fopen( $templatelocatie, 'r' );
 		$templatecontent = fread( $templatefile, filesize($templatelocatie) );
 		$sku = $product->get_sku();
@@ -2272,6 +2279,8 @@
 			add_filter( 'redirect_post_location', 'add_html2pdf_notice_var', 99 );
 			update_option( 'html2pdf_notice', $formatter->getHtmlMessage() );
 		}
+
+		$sitepress->switch_lang($prev_lang);
 	}
 
 	function format_pdf_block( $title, $value ) {
