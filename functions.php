@@ -23,7 +23,7 @@
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
 	function load_admin_css() {
-		wp_enqueue_style( 'oft-admin', get_stylesheet_directory_uri().'/admin.css' );
+		wp_enqueue_style( 'oft-admin', get_stylesheet_directory_uri().'/admin.css', '1.1.1' );
 	}
 
 	// Sta HTML-attribuut 'target' toe in beschrijvingen van taxonomieën
@@ -1898,18 +1898,18 @@
 		}
 
 		echo '<div class="oft-icons">';
-			$yes = array( 'Ja', 'Yes', 'Oui' );
 			// SLUGS VAN ATTRIBUTEN WORDEN NIET VERTAALD, ENKEL DE TERMEN
-			if ( in_array( $product->get_attribute('bio'), $yes ) ) {
+			// TAGS ZIJN A.H.W. TERMEN VAN EEN WELBEPAALD ATTRIBUUT EN SLUGS WORDEN DAAR DUS OOK VERTAALD
+			// VERGELIJK DE TERMEN DAAROM ALTIJD IN HET NEDERLANDS
+			$prev_lang = $sitepress->get_current_language();
+			$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
+			
+			if ( mb_strtolower( $product->get_attribute('bio') ) === 'ja' ) {
 				echo "<div class='icon-organic'></div>";
 			}
-			// TAGS ZIJN A.H.W. TERMEN VAN EEN WELBEPAALD ATTRIBUUT EN SLUGS WORDEN DAAR DUS OOK VERTAALD
-			// VERGELIJK DE TERMEN ALTIJD IN HET NEDERLANDS
-			// $prev_lang = $sitepress->get_current_language();
-			// $sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
 			
 			$icons = array();
-			foreach ( wp_get_object_terms( apply_filters( 'wpml_object_id', $product->get_id(), 'product', true, 'nl' ), 'product_hipster' ) as $term ) {
+			foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
 				$icons[] = $term->slug;
 			}
 			if ( in_array( 'veganistisch', $icons ) ) {
@@ -1930,7 +1930,7 @@
 			}
 
 			// Switch terug naar gebruikerstaal
-			// $sitepress->switch_lang( $prev_lang, true );
+			$sitepress->switch_lang( $prev_lang, true );
 		echo '</div>';
 	}
 

@@ -5,7 +5,7 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Toevoegingen voor custom Oxfam-pagina's in de back-end.
 	Template:		alone
-	Version:		1.0.0
+	Version:		1.1.1
 	Text Domain:	oft
 */
 
@@ -97,4 +97,8 @@ div#product_cat-all ul.categorychecklist > li > ul.children,
 div#product_partner-all ul.categorychecklist > li > ul.children,
 div#product_packaging-all ul.categorychecklist > li > ul.children {
 	margin-left: 0;
+}
+
+.woocommerce_options_panel textarea#_ingredients {
+	height: initial;
 }
