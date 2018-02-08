@@ -568,7 +568,7 @@
 				<th><?php echo __( 'Energie', 'oft' ); ?></th>
 				<td><?php
 					$en = intval( $product->get_meta('_energy') );
-					echo $en.' kJ (= '.number_format( $en*4.184, 0, ',', '' ).' kcal)' ?></td>
+					echo $en.' kJ (= '.number_format( $en/4.184, 0, ',', '' ).' kcal)' ?></td>
 			</tr>
 			<?php
 
@@ -604,8 +604,8 @@
 			// Allergenentab altijd tonen!
 			$has_row = true;
 			// TIJDELIJK UITSCHAKELEN
-			// $allergens = get_the_terms( $product->get_id(), 'product_allergen' );
-			$allergens = false;
+			$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
+			// $allergens = false;
 			$contains = array();
 			$traces = array();
 			
