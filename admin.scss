@@ -50,7 +50,8 @@ div.options_group.oft > p.form-field.wide > input[type=number] {
 div#postbox-container-2 {
 	div#product_cat-all,
 	div#product_partner-all,
-	div#product_allergen-all {
+	div#product_allergen-all,
+	div#product_packaging-all {
 		min-height: 275px;
 		max-height: 1100px;
 		column-count: 4;
@@ -62,6 +63,11 @@ div#postbox-container-2 {
 	}
 
 	div#product_allergen-all {
+		max-height: 375px; /* Enkel verplichten voor FF */
+		column-count: 2;
+	}
+
+	div#product_packaging-all {
 		max-height: 375px; /* Enkel verplichten voor FF */
 		column-count: 2;
 	}
@@ -81,7 +87,7 @@ div#postbox-container-2 {
 
 div#postbox-container-1 {
 	div#product_packaging-all {
-		min-height: 375px;
+		min-height: 475px;
 	}
 }
 
