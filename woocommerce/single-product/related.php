@@ -18,20 +18,23 @@ if ( $related_products ) : ?>
 
 		<h2><?php esc_html_e( 'Related products', 'alone' ); ?></h2>
 
+		<!-- Gebruik de standaard (gemodificeerde) WooCommerce-layout voor consequente stijlgeving -->
+		<div class="woocommerce columns-4">
+
 		<?php woocommerce_product_loop_start(); ?>
-			<div class="bt-row">
+			
 			<?php foreach ( $related_products as $related_product ) : ?>
-				<!-- GEWIJZIGD: Lay-out met 4 kolommen toepassen -->
-				<div class="bt-col-4 product-item"><?php
+				<?php
 					$post_object = get_post( $related_product->get_id() );
 
 					setup_postdata( $GLOBALS['post'] =& $post_object );
 
-					wc_get_template_part( 'content', 'product' ); ?>
-				</div>
+					wc_get_template_part( 'content', 'product' );
+				?>
 			<?php endforeach; ?>
-			</div>
 		<?php woocommerce_product_loop_end(); ?>
+
+		</div>
 
 	</section>
 
