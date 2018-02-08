@@ -524,11 +524,12 @@ body.search-results {
 	}
 
 	&.single-product section.related.products {
-		h2 {
+		& > h2 {
 			text-align: center;
 			text-decoration: none;
 			font-size: 40px;
 			line-height: 56px;
+			margin-bottom: 35px;
 		}
 
 		/* Gerelateerde producten naar vier kolommen forceren */
