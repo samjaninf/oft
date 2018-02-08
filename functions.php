@@ -1243,11 +1243,14 @@
 			$product->save();
 		}
 
+		// Update de productfiches niet indien er een import bezig is (behalve ERP-sync)
 		if ( get_option('oft_import_active') !== 'yes' ) {
-			// Update de productfiches niet indien er een import bezig is (te langzaam)
-			create_product_pdf( $product, 'nl' );
-			create_product_pdf( $product, 'fr' );
-			create_product_pdf( $product, 'en' );
+			// Enkel proberen aanmaken indien foto reeds aanwezig
+			if ( intval( $product->get_image_id() ) > 0 ) {
+				create_product_pdf( $product, 'nl' );
+				create_product_pdf( $product, 'fr' );
+				// create_product_pdf( $product, 'en' );
+			}
 		}
 	}
 
@@ -2065,9 +2068,8 @@
 		$sku = $product->get_sku();
 
 		if ( $partners = get_partner_terms_by_product($product) ) {
-			$origin_text = __( 'Herkomst:', 'oft' ).' '.strip_tags( implode( ', ', $partners ) );
+			$origin_text = __( 'Partners:', 'oft' ).' '.strip_tags( implode( ', ', $partners ) );
 		} else {
-			// Val terug op de landeninfo ENKEL NODIG VOOR EXTERNE PRODUCTEN, PER DEFINITIE GEEN FICHE NODIG
 			$countries = get_country_terms_by_product($product);
 			$origin_text = __( 'Herkomst:', 'oft' ).' '.implode( ', ', $countries );
 		}
@@ -2098,13 +2100,45 @@
 			}
 			$allergens_text = '';
 			if ( count($c) > 0 ) {
-				$allergens_text .= _( 'Bevat', 'oft' ).' '.implode( ', ', $c ).'. ';
+				$allergens_text .= __( 'Bevat', 'oft' ).' '.implode( ', ', $c ).'. ';
 			}
 			if ( count($mc) > 0 ) {
 				$allergens_text .= __( 'Kan sporen bevatten van', 'oft' ).' '.implode( ', ', $mc ).'. ';
 			}
 		} else {
-			$allergens_text = __( 'geen meldingsplichtige allergenen', 'oft' );
+			$allergens_text = __( 'Geen meldingsplichtige allergenen aanwezig.', 'oft' );
+		}
+
+		$packaging = get_the_terms( $product->get_id(), 'product_packaging' );
+		$cu_packaging_text = '/';
+		$steh_packaging_text = '/';
+		if ( count($packaging) > 0 ) {
+			$cu_term = get_term_by( 'slug', 'cu', 'product_packaging' );
+			$steh_term = get_term_by( 'slug', 'steh', 'product_packaging' );
+			$cu = array();
+			$steh = array();
+			foreach ( $packaging as $term ) {
+				if ( $term->parent == $cu_term->term_id ) {
+					$cu[] = ucfirst( mb_strtolower($term->name) );
+				} elseif( $term->parent == $steh_term->term_id ) {
+					$steh[] = ucfirst( mb_strtolower($term->name) );
+				}
+			}
+			if ( count($cu) > 0 ) {
+				$cu_packaging_text = implode( ', ', $cu );
+			}
+			if ( count($steh) > 0 ) {
+				$steh_packaging_text = implode( ', ', $steh );
+			}
+		}
+
+		$storages = get_the_terms( $product->get_id(), 'product_storage' );
+		$storage_text = '/';
+		if ( count($storages) > 0 ) {
+			foreach ( $storages as $term ) {
+				$store[] = ucfirst( mb_strtolower($term->name) );
+			}
+			$storage_text = implode( '. ', $store ).'.';
 		}
 
 		$labels = array();
@@ -2122,6 +2156,13 @@
 			$labels_text = '';
 		}
 
+		$images = wp_get_attachment_image_src( $product->get_image_id(), 'large' );
+		if ( $images !== false ) {
+			$image_url = '<img src="'.$images[0].'" style="width: 100%;">';
+		} else {
+			$image_url = '';
+		}
+
 		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
 		$templatecontent = str_replace( "###PRICE###", wc_price( $product->get_regular_price() ), $templatecontent );
 		$templatecontent = str_replace( "###PERMALINK###", '<a href="'.$product->get_permalink().'">(bekijk product online)</a>', $templatecontent );
@@ -2137,6 +2178,10 @@
 		$templatecontent = str_replace( "###SHOPPLUS###", preg_replace( '/[a-zA-Z]/', '', $product->get_meta('_shopplus_sku') ), $templatecontent );
 		$templatecontent = str_replace( "###MULTIPLE###", $product->get_meta('_multiple'), $templatecontent );
 		$templatecontent = str_replace( "###SKU###", $sku, $templatecontent );
+		$templatecontent = str_replace( "###CU_PACKAGING###", $cu_packaging_text, $templatecontent );
+		$templatecontent = str_replace( "###STEH_PACKAGING###", $steh_packaging_text, $templatecontent );
+		$templatecontent = str_replace( "###STORAGE_CONDITIONS###", $storage_text, $templatecontent );
+		$templatecontent = str_replace( "###IMAGE_URL###", $image_url, $templatecontent );
 		
 		// Let op met fatale error bij het proberen aanmaken van een ongeldige barcode!
 		if ( check_digit_ean13( $product->get_meta('_cu_ean') ) ) {
@@ -2176,7 +2221,7 @@
 		$templatecontent = str_replace( "###NUMBER_PER_LAYER###", $product->get_meta('_pal_number_per_layer'), $templatecontent );
 		$templatecontent = str_replace( "###TOTAL###", intval( $product->get_meta('_pal_number_of_layers') ) * intval( $product->get_meta('_pal_number_per_layer') ), $templatecontent );
 		$templatecontent = str_replace( "###INTRASTAT###", $product->get_meta('_intrastat'), $templatecontent );
-		$templatecontent = str_replace( "###FOOTER###", "Aangemaakt op ".date_i18n( 'l j F Y \o\m G\ui' ), $templatecontent );
+		$templatecontent = str_replace( "###FOOTER###", sprintf( __( 'Aangemaakt op %s', 'oft' ), date_i18n( 'l j F Y \o\m G\ui' ) ), $templatecontent );
 		
 		try {
 			$pdffile = new Html2Pdf( 'P', 'A4', 'nl', true, 'UTF-8', array( 15, 5, 15, 5 ) );
@@ -2527,6 +2572,9 @@
 				}
 				wp_reset_postdata();
 			}
+		}
+		if ( $import_id == 14 ) {
+			update_option( 'oft_erp_import_active', 'yes' );
 		} else {
 			update_option( 'oft_import_active', 'yes' );
 		}
@@ -2536,23 +2584,25 @@
 	add_action( 'pmxi_saved_post', 'update_unit_price', 10, 1 );
 
 	function update_unit_price( $post_id, $price = false, $content = false, $unit = false, $from_database = true ) {
-		$product = wc_get_product( $post_id );
-		if ( $product !== false ) {
-			if ( $from_database === true ) {
-				$price = $product->get_regular_price();
-				$content = $product->get_meta('_net_content');
-				$unit = $product->get_meta('_net_unit');
+		if ( get_option( 'oft_erp_import_active' ) === 'yes' ) {
+			$product = wc_get_product( $post_id );
+			if ( $product !== false ) {
+				if ( $from_database === true ) {
+					$price = $product->get_regular_price();
+					$content = $product->get_meta('_net_content');
+					$unit = $product->get_meta('_net_unit');
+				}
+				if ( ! empty( $price ) and ! empty( $content ) and ! empty( $unit ) ) {
+					$unit_price = calculate_unit_price( $price, $content, $unit );
+					// PROBLEEM: deze WC-functie voert eigenlijk een delete/create i.p.v. update uit, waardoor onze logs overspoeld worden
+					// $product->update_meta_data( '_unit_price', number_format( $unit_price, 2, '.', '' ) );
+					update_post_meta( $product->get_id(), '_unit_price', number_format( $unit_price, 2, '.', '' ) );
+				} else {
+					// Indien er een gegeven ontbreekt: verwijder sowieso de oude waarde
+					$product->delete_meta_data( '_unit_price' );
+				}
+				$product->save();
 			}
-			if ( ! empty( $price ) and ! empty( $content ) and ! empty( $unit ) ) {
-				$unit_price = calculate_unit_price( $price, $content, $unit );
-				// PROBLEEM: deze WC-functie voert eigenlijk een delete/create i.p.v. update uit, waardoor onze logs overspoeld worden
-				// $product->update_meta_data( '_unit_price', number_format( $unit_price, 2, '.', '' ) );
-				update_post_meta( $product->get_id(), '_unit_price', number_format( $unit_price, 2, '.', '' ) );
-			} else {
-				// Indien er een gegeven ontbreekt: verwijder sowieso de oude waarde
-				$product->delete_meta_data( '_unit_price' );
-			}
-			$product->save();
 		}
 	}
 
@@ -2569,11 +2619,13 @@
 	add_action( 'pmxi_after_xml_import', 'rename_import_file', 10, 1 );
 
 	function rename_import_file( $import_id ) {
-		delete_option( 'oft_import_active' );
 		if ( $import_id == 14 ) {
+			delete_option( 'oft_erp_import_active' );
 			$old = WP_CONTENT_DIR."/B2CImport.csv";
 			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
 			rename( $old, $new );
+		} else {
+			delete_option( 'oft_import_active' );
 		}
 	}
 
@@ -2985,7 +3037,7 @@
 
 	function log_product_meta_changes( $meta_id, $post_id, $meta_key, $new_meta_value, $mode ) {
 		// Log de data niet indien er een import loopt (doet een volledige delete/create i.p.v. update)
-		if ( get_option('oft_import_active') === 'yes' ) {
+		if ( get_option('oft_erp_import_active') === 'yes' or get_option('oft_import_active') === 'yes' ) {
 			return;
 		}
 
