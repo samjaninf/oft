@@ -82,11 +82,13 @@ div#postbox-container-2 {
 div#product_cat-all ul.categorychecklist > li > label,
 div#product_allergen-all ul.categorychecklist > li > label,
 div#product_partner-all ul.categorychecklist > li > label,
-div#product_grape-all ul.categorychecklist > li > label {
+div#product_grape-all ul.categorychecklist > li > label,
+div#product_packaging-all ul.categorychecklist > li > label {
 	font-weight: bold;
 }
 
 div#product_cat-all ul.categorychecklist > li > ul.children,
-div#product_partner-all ul.categorychecklist > li > ul.children {
+div#product_partner-all ul.categorychecklist > li > ul.children,
+div#product_packaging-all ul.categorychecklist > li > ul.children {
 	margin-left: 0;
 }

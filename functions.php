@@ -1033,7 +1033,6 @@
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'packaging', 'with_front' => false, 'hierarchical' => true ),
-			'meta_box_cb' => 'post_categories_meta_box',
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -1075,6 +1074,7 @@
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'storage', 'with_front' => false, 'hierarchical' => false ),
+			'meta_box_cb' => 'post_categories_meta_box',
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
