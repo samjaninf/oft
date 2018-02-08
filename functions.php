@@ -650,7 +650,7 @@
 				<?php
 			}
 
-			if ( $allergens !== false ) {
+			if ( is_array($allergens) ) {
 				foreach ( $allergens as $allergen ) {
 					if ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'contains' ) {
 						$contains[] = $allergen;
@@ -2104,7 +2104,7 @@
 		}
 
 		$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
-		if ( count($allergens) > 0 ) {
+		if ( is_array($allergens) ) {
 			$c_term = get_term_by( 'slug', 'contains', 'product_allergen' );
 			$mc_term = get_term_by( 'slug', 'may-contain', 'product_allergen' );
 			$c = array();
@@ -2130,7 +2130,7 @@
 		$packaging = get_the_terms( $product->get_id(), 'product_packaging' );
 		$cu_packaging_text = '/';
 		$steh_packaging_text = '/';
-		if ( count($packaging) > 0 ) {
+		if ( is_array($packaging) ) {
 			$cu_term = get_term_by( 'slug', 'cu', 'product_packaging' );
 			$steh_term = get_term_by( 'slug', 'steh', 'product_packaging' );
 			$cu = array();
@@ -2152,7 +2152,7 @@
 
 		$storages = get_the_terms( $product->get_id(), 'product_storage' );
 		$storage_text = '/';
-		if ( count($storages) > 0 ) {
+		if ( is_array($storages) ) {
 			foreach ( $storages as $term ) {
 				$store[] = ucfirst( mb_strtolower($term->name) );
 			}
@@ -2685,7 +2685,7 @@
 		$continents = get_terms( $args );
 		
 		$countries = array();
-		if ( is_array($terms) and count($terms) > 0 ) {
+		if ( is_array($terms) ) {
 			foreach ( $terms as $term ) {
 				if ( ! in_array( $term->parent, $continents, true ) ) {
 					// De bovenliggende term is geen continent, dus het is een partner!
@@ -2714,7 +2714,7 @@
 		// Producten worden door de import + checkboxlogica enkel aan de laagste hiërarchische term gelinkt, dus dit zijn per definitie landen of partners!
 		$terms = get_the_terms( $product->get_id(), 'product_partner' );
 		
-		if ( count($terms) > 0 ) {
+		if ( is_array($terms) ) {
 			// Vraag de term-ID's van de continenten op
 			$args = array( 'taxonomy' => 'product_partner', 'parent' => 0, 'hide_empty' => false, 'fields' => 'ids' );
 			$continents = get_terms( $args );
@@ -2748,7 +2748,7 @@
 	function get_grape_terms_by_product( $product ) {
 		$terms = get_the_terms( $product->get_id(), 'product_grape' );
 		
-		if ( is_array($terms) and count($terms) > 0 ) {
+		if ( is_array($terms) ) {
 			$grapes = array();
 			foreach ( $terms as $term ) {
 				$grapes[$term->term_id] = $term->name;
