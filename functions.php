@@ -2243,7 +2243,7 @@
 		$templatecontent = str_replace( "###PERMALINK###", '<a href="'.$product->get_permalink().'">('.__( 'bekijk product online', 'oft' ).')</a>', $templatecontent );
 		$templatecontent = str_replace( "###NET_CONTENT###", $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'), $templatecontent );
 		// Verwijder eventuele enters door HTML-tags
-		$templatecontent = str_replace( "###DESCRIPTION###", preg_replace( '/<[^>]+>/', ' ', $product->get_description() ), $templatecontent );
+		$templatecontent = str_replace( "###DESCRIPTION###", preg_replace( '/<[^>]+>/', ' ', $product->get_short_description() ), $templatecontent );
 		$templatecontent = str_replace( "###ORIGIN###", $origin_text, $templatecontent );
 		$templatecontent = str_replace( "###INGREDIENTS_OPTIONAL###", $ingredients_text, $templatecontent );
 		$templatecontent = str_replace( "###LABELS_OPTIONAL###", $labels_text, $templatecontent );
