@@ -2196,14 +2196,30 @@
 			$storage_text = implode( '. ', $store ).'.';
 		}
 
+		$icons = array();
+		foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
+			$icons[] = $term->slug;
+		}
+		$icons_text = '';
+		if ( in_array( 'veganistisch', $icons ) ) {
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-vegan.png" style="width: 75px;">';
+		}
+		if ( in_array( 'glutenvrij', $icons ) ) {
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-gluten-free.png" style="width: 75px;">';
+		}
+		if ( in_array( 'zonder-toegevoegde-suikers', $icons ) ) {
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-no-added-sugars.png" style="width: 75px;">';
+		}
+		if ( in_array( 'lactosevrij', $icons ) ) {
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-lactose-free.png" style="width: 75px;">';
+		}
+
 		$prev_lang = $sitepress->get_current_language();
 		$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
 		
 		$labels = array();
-		$icons = '';
 		if ( mb_strtolower( $product->get_attribute('pa_bio') ) === 'ja' ) {
 			$labels[] = wc_attribute_label('pa_bio');
-			// $icons .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-organic.png" style="width: 50px;">';
 		}
 		if ( mb_strtolower( $product->get_attribute('pa_fairtrade') ) === 'ja' ) {
 			$labels[] = wc_attribute_label('pa_fairtrade');
@@ -2245,7 +2261,7 @@
 		$templatecontent = str_replace( "###STEH_PACKAGING###", $steh_packaging_text, $templatecontent );
 		$templatecontent = str_replace( "###STORAGE_CONDITIONS###", $storage_text, $templatecontent );
 		$templatecontent = str_replace( "###IMAGE_URL###", $image_url, $templatecontent );
-		$templatecontent = str_replace( "###ICONS###", $icons, $templatecontent );
+		$templatecontent = str_replace( "###ICONS###", $icons_text, $templatecontent );
 		
 		// Let op met fatale error bij het proberen aanmaken van een ongeldige barcode!
 		if ( check_digit_ean13( $product->get_meta('_cu_ean') ) ) {
