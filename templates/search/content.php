@@ -9,9 +9,8 @@ $post_view_num = alone_get_post_views(get_the_ID());
 		<p><?php the_excerpt(); ?></p>
 		<div class="extra-meta">
 			<!-- post date -->
-			<div class="post-date" title="<?php _e('Date', 'alone'); ?>">
-			<?php the_date(); ?>
+			<div class="post-date"><?php the_date(); ?></div>
+			<div class="post-category"><?php the_category(); ?></div>
 		</div>
 	</div>
-</div>
 </article>

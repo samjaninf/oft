@@ -15,7 +15,7 @@
  				<div class="bt-col-inner">
  					<?php
  						if ( function_exists('relevanssi_didyoumean') ) {
-						    relevanssi_didyoumean( get_search_query(), "<p>Bedoelde je misschien &laquo; ", " &raquo;?</p>", 5 );
+						    relevanssi_didyoumean( get_search_query(), '<p class="did-you-mean">'.__( 'Bedoelde je misschien', 'oft' ).' &laquo; ', ' &raquo; ?</p>', 5 );
 						}
  					?>
  					<div class="postlist">

@@ -1120,7 +1120,7 @@
 	add_filter( 'woocommerce_breadcrumb_defaults', 'change_woocommerce_breadcrumb_delimiter' );
 	
 	function change_woocommerce_breadcrumb_delimiter( $defaults ) {
-		$defaults['delimiter'] = ' &rarr; ';
+		$defaults['delimiter'] = ' > ';
 		return $defaults;
 	}
 
@@ -2104,6 +2104,48 @@
 				}
 			}
 		}
+	}
+
+
+
+	############
+	#  SEARCH  #
+	############
+
+	function define_placeholder_texts() {
+		$titel_zoekresultaten = __( 'Zoekresultaten', 'oft' );
+	}
+	
+	// Voeg ook het artikelnummer, de ingrediënten en de bovenliggende categorie toe aan de te indexeren content bij producten
+	add_filter( 'relevanssi_content_to_index', 'add_extra_searchable_content', 10, 2 );
+
+	function add_extra_searchable_content( $content, $post ) {
+		global $relevanssi_variables;
+		if ( get_post_type($post) === 'product' ) {
+			$content .= get_post_meta( $post->ID, '_sku', true ).' ';
+			$content .= get_post_meta( $post->ID, '_ingredients', true ).' ';
+			$categories = get_the_terms( $post->ID, 'product_cat' );
+			if ( is_array( $categories ) ) {
+				foreach ( $categories as $category ) {
+					if ( ! empty( $category->parent ) ) {
+						$parent = get_term( $category->parent, 'product_cat' );
+						// Voer de synoniemen ook hierop door
+						$search = array_keys($relevanssi_variables['synonyms']);
+						$replace = array_values($relevanssi_variables['synonyms']);
+						$content .= str_ireplace($search, $replace, $parent->name).' ';
+					}
+				}
+			}
+		}
+		return $content;
+	}
+
+	// Verhoog het aantal producten per resultatenpagina en fix de zoekfunctie
+	add_filter( 'relevanssi_modify_wp_query', 'modify_posts_per_page', 10, 1 );
+
+	function modify_posts_per_page( $wp_query ) {
+		$wp_query->query_vars['posts_per_page'] = 25;
+		return $wp_query;
 	}
 
 
@@ -3233,8 +3275,4 @@
 		return $a['timestamp'] - $b['timestamp'];
 	}
 
-	function define_placeholder_texts() {
-		$titel_zoekresultaten = __( 'Zoekresultaten', 'oft' );
-	}
-	
 ?>

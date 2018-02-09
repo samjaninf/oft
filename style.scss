@@ -104,14 +104,6 @@ article.post {
 	}
 }
 
-.search-results {
-	h4 {
-		font-size: 18px;
-		font-weight: 700;
-		margin-top: 1.5em;	
-	}
-}
-
 .widget .widget-title span::after {
 	display: none;
 }
@@ -340,10 +332,21 @@ body.woocommerce-page:not(.single-product) {
 /*  ZOEKRESULTATEN  */
 /********************/
 
-body.search-results {
+body.search {
 	.bt-content-area {
 		padding-top: 50px;
 		padding-bottom: 50px;
+	}
+
+
+	h4 {
+		font-size: 18px;
+		font-weight: 700;
+		margin-top: 1.5em;	
+	}
+
+	.did-you-mean {
+		margin-bottom: 50px;
 	}
 }
 
