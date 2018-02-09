@@ -686,7 +686,7 @@
 			// Legende toevoegen
 			if ( $type === 'ingredients' ) {
 				echo '<p class="legend">* = '.__( 'ingrediënt aangekocht volgens de principes van eerlijke handel', 'oft' ).'</p>';
-				echo '<p style="legend">° = '.__( 'ingrediënt verbouwd volgens de normen van biologisch landbouw', 'oft' ).'</p>';
+				echo '<p class="legend">° = '.__( 'ingrediënt verbouwd volgens de normen van biologisch landbouw', 'oft' ).'</p>';
 			}
 			return ob_get_clean();
 		} else {
