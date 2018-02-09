@@ -2090,6 +2090,9 @@
 		$templatelocatie = get_stylesheet_directory().'/assets/fiche-'.$language.'.html';
 		$prev_lang = $sitepress->get_current_language();
 		$sitepress->switch_lang($language);
+		$lang_details = $sitepress->get_language_details($language);
+		unload_textdomain( 'oft' );
+		load_textdomain( 'oft', WP_CONTENT_DIR.'/languages/themes/oft-'.$lang_details['default_locale'].'.mo' );
 
 		// Creëer product in lokale taal (false = negeer indien het nog niet bestaat)
 		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, $language ) );
@@ -2268,6 +2271,9 @@
 		}
 
 		$sitepress->switch_lang($prev_lang);
+		$prev_lang_details = $sitepress->get_language_details($prev_lang);
+		unload_textdomain( 'oft' );
+		load_textdomain( 'oft', WP_CONTENT_DIR.'/languages/themes/oft-'.$prev_lang_details['default_locale'].'.mo' );
 	}
 
 	function format_pdf_block( $title, $value ) {
