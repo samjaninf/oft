@@ -2158,7 +2158,6 @@
 			if ( is_array( $allergens['may-contain'] ) ) {
 				$allergens_text .= __( 'Kan sporen bevatten van', 'oft' ).' '.implode( ', ', $allergens['may-contain'] );
 			}
-			$allergens_text = '</p>';
 		} else {
 			// MINDER EXPLICIET TOT ALLES INGELEZEN IS
 			// $allergens_text = __( 'Geen meldingsplichtige allergenen aanwezig.', 'oft' );
