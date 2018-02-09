@@ -2156,7 +2156,7 @@
 				$allergens_text .= __( 'Bevat', 'oft' ).' '.implode( ', ', $allergens['contains'] ).'. ';
 			}
 			if ( is_array( $allergens['may-contain'] ) ) {
-				$allergens_text .= __( 'Kan sporen bevatten van', 'oft' ).' '.implode( ', ', $allergens['may-contain'] );
+				$allergens_text .= __( 'Kan sporen bevatten van', 'oft' ).' '.implode( ', ', $allergens['may-contain'] ).'.';
 			}
 		} else {
 			// MINDER EXPLICIET TOT ALLES INGELEZEN IS
@@ -2203,7 +2203,7 @@
 		$icons = '';
 		if ( mb_strtolower( $product->get_attribute('pa_bio') ) === 'ja' ) {
 			$labels[] = wc_attribute_label('pa_bio');
-			$icons .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-organic.png" style="width: 50px;">';
+			// $icons .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-organic.png" style="width: 50px;">';
 		}
 		if ( mb_strtolower( $product->get_attribute('pa_fairtrade') ) === 'ja' ) {
 			$labels[] = wc_attribute_label('pa_fairtrade');
