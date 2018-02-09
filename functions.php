@@ -1880,21 +1880,22 @@
 						$cnt++;
 					}
 					if ( strlen($quoted_term->description) >= 20 and $quoted_term_image_id >= 1 ) {
+						$quoted_parent_term = get_term_by( 'id', $quoted_term->parent, 'product_partner' );
 						echo '<div class="oft-partners-th">'.wp_get_attachment_image( $quoted_term_image_id, array( '110', '110' ), false ).'</div>';
 						echo '<div class="oft-partners-td">';
 						echo '<p class="oft-partners-quote">'.trim($quoted_term->description).'</p>';
 						$quoted_term_node = intval( get_term_meta( $quoted_term->term_id, 'partner_node', true ) );
 						if ($quoted_term_node > 0 ) {
 							$url = 'https://www.oxfamwereldwinkels.be/node/'.$quoted_term_node;
-							$handle = curl_init($url);
-							curl_setopt( $handle, CURLOPT_RETURNTRANSFER, true );
-							$response = curl_exec($handle);
-							$code = curl_getinfo( $handle, CURLINFO_HTTP_CODE );
-							if ( $code !== 404 ) {
-								// Link staat publiek en mag dus getoond worden WERKT NIET DOOR DE REDIRECTS
-								echo '<a href="'.$url.'" target="_blank"><p class="oft-partners-link">'.trim($quoted_term->name).'</p></a>';
-							}
-							curl_close($handle);	
+							// $handle = curl_init($url);
+							// curl_setopt( $handle, CURLOPT_RETURNTRANSFER, true );
+							// $response = curl_exec($handle);
+							// $code = curl_getinfo( $handle, CURLINFO_HTTP_CODE );
+							// if ( $code !== 404 ) {
+							// Link staat publiek en mag dus getoond worden WERKT NIET DOOR DE REDIRECTS
+							echo '<a href="'.$url.'" target="_blank"><p class="oft-partners-link">'.trim($quoted_term->name).', '.trim($quoted_parent_term->name).'</p></a>';
+							// }
+							// curl_close($handle);	
 						}
 						echo '</div>';
 					}
