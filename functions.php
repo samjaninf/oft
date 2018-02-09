@@ -592,12 +592,19 @@
 			$secondaries = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
 			
 			foreach ( $product_metas as $meta_key => $meta_label ) {
-				// Toon voedingswaarde als het een verplicht veld is en in 2de instantie als er een zinvolle waarde ingesteld is
-				if ( in_array( $meta_key, $requireds ) or floatval( $product->get_meta($meta_key) ) > 0 ) {
+				// Toon voedingswaarde als het een verplicht veld is en in 2de instantie als er expliciet een (nul)waarde ingesteld is
+				if ( in_array( $meta_key, $requireds ) or $product->get_meta($meta_key) !== '' ) {
+					if ( $product->get_meta($meta_key) === '' or floatval($product->get_meta($meta_key)) === 0 ) {
+						// Zet zeker een nul (zonder expliciete precisie)
+						$meta_value = '0';
+					} else {
+						// Formatter de waarde als tekst
+						$meta_value = str_replace( '.', ',', $product->get_meta($meta_key) );
+					}
 					?>
 					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 						<th class="<?php echo in_array( $meta_key, $secondaries ) ? 'secondary' : 'primary'; ?>"><?php echo $meta_label; ?></th>
-						<td class="<?php echo in_array( $meta_key, $secondaries ) ? 'secondary' : 'primary'; ?>"><?php echo str_replace( '.', ',', $product->get_meta($meta_key) ); ?> g</td>
+						<td class="<?php echo in_array( $meta_key, $secondaries ) ? 'secondary' : 'primary'; ?>"><?php echo $meta_value; ?> g</td>
 					</tr>
 					<?php
 				}
@@ -649,7 +656,6 @@
 						echo implode( ', ', $allergens['contains'] );
 					} else {
 						// _e( 'geen meldingsplichtige allergenen', 'oft' );
-						_e( '/', 'oft' );
 					}
 				?>
 				</td>
