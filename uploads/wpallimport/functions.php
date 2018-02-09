@@ -1,19 +1,11 @@
 <?php
 	function alter_brand( $raw_brand ) {
-		if ( $raw_brand == 'Oxfam Fairtrade' or $raw_brand == 'EZA' ) {
+		if ( $raw_brand === 'Oxfam Fairtrade' ) {
 			$brand = 'Oxfam Fair Trade';
 		} else {
 			$brand = $raw_brand;
 		}
 		return $brand;
-	}
-
-	function determine_visibility( $raw_brand ) {
-		if ( alter_brand($raw_brand) == 'Oxfam Fair Trade' ) {
-			return 'visible';
-		} else {
-			return 'hidden';
-		}
 	}
 
 	function only_last_term( $string ) {
@@ -41,9 +33,9 @@
 		$fraction = calculate_net_content_per_kg_l( $stat_conversion, $cu_conversion );
 		if ( $fraction > 0 ) {	
 			if ( $raw_unit == 'L' ) {
-				$net_content = number_format( 100*$fraction, 0 );
+				$net_content = number_format( 100*$fraction, 0, '.', '' );
 			} elseif ( $raw_unit == 'KG' ) {
-				$net_content = number_format( 1000*$fraction, 0 );
+				$net_content = number_format( 1000*$fraction, 0, '.', '' );
 			}
 		}
 		return $net_content;
