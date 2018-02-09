@@ -1292,7 +1292,7 @@
 				// Enkel proberen aanmaken indien OFT-product én foto reeds aanwezig
 				if ( intval( $product->get_image_id() ) > 0 ) {
 					create_product_pdf( $product->get_id(), 'nl' );
-					// create_product_pdf( $product->get_id(), 'fr' );
+					create_product_pdf( $product->get_id(), 'fr' );
 					// create_product_pdf( $product->get_id(), 'en' );
 				}
 			}
@@ -1958,10 +1958,6 @@
 			if ( in_array( 'lactosevrij', $icons ) ) {
 				echo "<div class='icon-lactose-free'></div>";
 			}
-			if ( in_array( 'eerlijke-verhandelde-palmolie', $icons ) ) {
-				// VOORLOPIG NIET GEBRUIKEN
-				// echo "<div class='icon-fairly-traded-palm-oil'></div>";
-			}
 
 			// Switch terug naar gebruikerstaal
 			$sitepress->switch_lang( $prev_lang, true );
@@ -2202,16 +2198,16 @@
 		}
 		$icons_text = '';
 		if ( in_array( 'veganistisch', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-vegan.png" style="width: 50px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-vegan.png" style="width: 60px;">';
 		}
 		if ( in_array( 'glutenvrij', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-gluten-free.png" style="width: 50px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-gluten-free.png" style="width: 60px;">';
 		}
 		if ( in_array( 'zonder-toegevoegde-suikers', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-no-added-sugars.png" style="width: 50px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-no-added-sugars.png" style="width: 60px;">';
 		}
 		if ( in_array( 'lactosevrij', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-lactose-free.png" style="width: 50px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-lactose-free.png" style="width: 60px;">';
 		}
 
 		$prev_lang = $sitepress->get_current_language();
