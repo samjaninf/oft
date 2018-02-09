@@ -514,6 +514,13 @@
 			}
 		}
 
+		// Voeg tabje met ingrediënten en allergenen toe
+		$tabs['ingredients_info'] = array(
+			'title' 	=> __( 'Ingrediënten', 'oft' ),
+			'priority' 	=> 12,
+			'callback' 	=> function() { output_tab_content('ingredients'); },
+		);
+
 		// Voeg tabje met voedingswaardes toe (indien niet leeg)
 		if ( get_tab_content('food') !== false ) {
 			$unit = $product->get_meta( '_net_unit' );
@@ -528,13 +535,6 @@
 				'callback' 	=> function() { output_tab_content('food'); },
 			);
 		}
-
-		// Voeg tabje met allergenen toe
-		$tabs['ingredients_info'] = array(
-			'title' 	=> __( 'Ingrediënten', 'oft' ),
-			'priority' 	=> 16,
-			'callback' 	=> function() { output_tab_content('ingredients'); },
-		);
 
 		// Titel wijzigen van standaardtabs kan maar prioriteit niet! (description = 10, additional_information = 20)
 		$tabs['additional_information']['title'] = __( 'Technische fiche', 'oft' );

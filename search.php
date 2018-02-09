@@ -14,9 +14,6 @@
  			<div class="bt-content-area <?php alone_get_content_class( 'content', $alone_sidebar_position ); ?>">
  				<div class="bt-col-inner">
  					<?php
- 						if ( function_exists('fw_ext_breadcrumbs') && bearsthemes_check_is_bbpress() == '' ) {
- 							fw_ext_breadcrumbs();
- 						}
  						if ( function_exists('relevanssi_didyoumean') ) {
 						    relevanssi_didyoumean( get_search_query(), "<p>Bedoelde je misschien &laquo; ", " &raquo;?</p>", 5 );
 						}
