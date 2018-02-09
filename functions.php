@@ -2150,8 +2150,8 @@
 		}
 
 		$allergens_text = '';
-		if ( get_allergens($product) !== false ) {
-			$allergens = get_allergens($product);
+		$allergens = get_allergens($product);
+		if ( $allergens['contains'] !== false and $allergens['may-contain'] !== false ) {
 			if ( is_array( $allergens['contains'] ) ) {
 				$allergens_text .= __( 'Bevat', 'oft' ).' '.implode( ', ', $allergens['contains'] ).'. ';
 			}
