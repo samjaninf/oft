@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam Fair Trade\n"
 "POT-Creation-Date: 2018-02-09 00:37+0100\n"
-"PO-Revision-Date: 2018-02-09 00:37+0100\n"
+"PO-Revision-Date: 2018-02-09 01:41+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language: fr_FR\n"
@@ -749,7 +749,7 @@ msgstr "Ingrédients :"
 
 #: functions.php:2147
 msgid "Bevat"
-msgstr "Contient"
+msgstr "Contient de"
 
 #: functions.php:2153
 msgid "Geen meldingsplichtige allergenen aanwezig."
