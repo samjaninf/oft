@@ -12,7 +12,7 @@
 
 	function load_child_theme() {
 		// Zorgt ervoor dat de stylesheet van het child theme ZEKER NA alone.css ingeladen wordt
-		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.7' );
+		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.8' );
 		// BOOTSTRAP REEDS INGELADEN DOOR ALONE
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
@@ -676,9 +676,6 @@
 				?>
 				</td>
 			</tr>
-
-			<p>* = <?php _e( 'ingrediënt aangekocht volgens de principes van eerlijke handel', 'oft' ); ?></p>
-			<p>° = <?php _e( 'ingrediënt verbouwd volgens de normen van biologisch landbouw', 'oft' ); ?></p>
 			<?php
 
 		}
@@ -686,6 +683,11 @@
 		echo '</table>';
 		
 		if ( $has_row ) {
+			// Legende toevoegen
+			if ( $type === 'ingredients' ) {
+				echo '<p class="legend">* = '.__( 'ingrediënt aangekocht volgens de principes van eerlijke handel', 'oft' ).'</p>';
+				echo '<p style="legend">° = '.__( 'ingrediënt verbouwd volgens de normen van biologisch landbouw', 'oft' ).'</p>';
+			}
 			return ob_get_clean();
 		} else {
 			ob_end_clean();

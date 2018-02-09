@@ -5,7 +5,7 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.7
+	Version:		1.2.8
 	Text Domain:	oft
 */
 
@@ -101,6 +101,14 @@ article.post {
 	ul > li,
 	ol > li {
 		line-height: 1.75em !important;
+	}
+}
+
+.search-results {
+	h4 {
+		font-size: 18px;
+		font-weight: 700;
+		margin-top: 1.5em;	
 	}
 }
 
@@ -692,6 +700,10 @@ body.search-results {
 		td.primary {
 			border-top-width: 1px;
 		}
+	}
+
+	.legend {
+		font-size: 90%;
 	}
 }
 
