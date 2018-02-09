@@ -655,7 +655,9 @@
 					if ( is_array( $allergens['contains'] ) ) {
 						echo implode( ', ', $allergens['contains'] );
 					} else {
+						// MINDER EXPLICIET TOT ALLES INGELEZEN IS
 						// _e( 'geen meldingsplichtige allergenen', 'oft' );
+						_e( '/', 'oft' );
 					}
 				?>
 				</td>
@@ -667,12 +669,16 @@
 					if ( is_array( $allergens['may-contain'] ) ) {
 						echo implode( ', ', $allergens['may-contain'] );
 					} else {
+						// MINDER EXPLICIET TOT ALLES INGELEZEN IS
 						// _e( 'geen meldingsplichtige allergenen', 'oft' );
 						_e( '/', 'oft' );
 					}
 				?>
 				</td>
 			</tr>
+
+			<p>* = <?php _e( 'ingrediënt aangekocht volgens de principes van eerlijke handel', 'oft' ); ?></p>
+			<p>° = <?php _e( 'ingrediënt verbouwd volgens de normen van biologisch landbouw', 'oft' ); ?></p>
 			<?php
 
 		}
@@ -1275,18 +1281,18 @@
 			return;
 		}
 
-		if ( $product->get_attribute('merk') !== 'Oxfam Fair Trade' ) {
+		if ( $product->get_attribute('pa_merk') !== 'Oxfam Fair Trade' ) {
 			$product->set_status( 'private' );
 			$product->save();
-		}
-
-		// Update de productfiches niet indien er een import bezig is (behalve ERP-sync)
-		if ( get_option('oft_import_active') !== 'yes' ) {
-			// Enkel proberen aanmaken indien OFT-product én foto reeds aanwezig
-			if ( $product->get_attribute('merk') === 'Oxfam Fair Trade' and intval( $product->get_image_id() ) > 0 ) {
-				// create_product_pdf( $product->get_id(), 'nl' );
-				// create_product_pdf( $product->get_id(), 'fr' );
-				// create_product_pdf( $product->get_id(), 'en' );
+		} else {
+			// Update de productfiches niet indien er een import bezig is (behalve ERP-sync)
+			if ( get_option('oft_import_active') !== 'yes' ) {
+				// Enkel proberen aanmaken indien OFT-product én foto reeds aanwezig
+				if ( intval( $product->get_image_id() ) > 0 ) {
+					// create_product_pdf( $product->get_id(), 'nl' );
+					// create_product_pdf( $product->get_id(), 'fr' );
+					// create_product_pdf( $product->get_id(), 'en' );
+				}
 			}
 		}
 	}
@@ -1930,7 +1936,7 @@
 			$prev_lang = $sitepress->get_current_language();
 			$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
 			
-			if ( mb_strtolower( $product->get_attribute('bio') ) === 'ja' ) {
+			if ( mb_strtolower( $product->get_attribute('pa_bio') ) === 'ja' ) {
 				echo "<div class='icon-organic'></div>";
 			}
 			
@@ -2152,7 +2158,9 @@
 			}
 			$allergens_text = '</p>';
 		} else {
+			// MINDER EXPLICIET TOT ALLES INGELEZEN IS
 			// $allergens_text = __( 'Geen meldingsplichtige allergenen aanwezig.', 'oft' );
+			$allergens_text = __( '/', 'oft' );
 		}
 
 		$packaging = get_the_terms( $product->get_id(), 'product_packaging' );
@@ -2187,17 +2195,22 @@
 			$storage_text = implode( '. ', $store ).'.';
 		}
 
-		$labels = array();
-		// Labels vereisen 'pa_'-voorvoegsel!
-		// Wordt dit altijd in het Nederlands gecheckt?
-		if ( $product->get_attribute('pa_bio') === 'Ja' ) {
+		$prev_lang = $sitepress->get_current_language();
+		$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
+		
+		if ( mb_strtolower( $product->get_attribute('pa_bio') ) === 'ja' ) {
 			$labels[] = wc_attribute_label('pa_bio');
 		}
-		if ( $product->get_attribute('pa_fairtrade') === 'Ja' ) {
+		if ( mb_strtolower( $product->get_attribute('pa_fairtrade') ) === 'ja' ) {
 			$labels[] = wc_attribute_label('pa_fairtrade');
 		}
+
+		// Switch terug naar gebruikerstaal
+		$sitepress->switch_lang( $prev_lang, true );
+
+		// Nu pas labeltekst opmaken zodat we zeker weer in de fichetaal werken
 		if ( count($labels) > 0 ) {
-			$labels_text = format_pdf_block( 'Labels', implode( ', ', $labels ) );
+			$labels_text = format_pdf_block( __( 'Labels', 'oft' ), implode( ', ', $labels ) );
 		} else {
 			$labels_text = '';
 		}
@@ -2219,7 +2232,7 @@
 		$templatecontent = str_replace( "###INGREDIENTS_OPTIONAL###", $ingredients_text, $templatecontent );
 		$templatecontent = str_replace( "###LABELS_OPTIONAL###", $labels_text, $templatecontent );
 		$templatecontent = str_replace( "###FAIRTRADE_SHARE###", $product->get_meta('_fairtrade_share'), $templatecontent );
-		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('merk'), $templatecontent );
+		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('pa_merk'), $templatecontent );
 		$templatecontent = str_replace( "###ALLERGENS###", $allergens_text, $templatecontent );
 		$templatecontent = str_replace( "###SHOPPLUS###", preg_replace( '/[a-zA-Z]/', '', $product->get_meta('_shopplus_sku') ), $templatecontent );
 		$templatecontent = str_replace( "###MULTIPLE###", $product->get_meta('_multiple'), $templatecontent );
@@ -2250,7 +2263,7 @@
 		$templatecontent = str_replace( "###STEH_EAN###", $steh_ean, $templatecontent );
 
 		if ( intval( $product->get_meta('_shelf_life') ) > 0 ) {
-			$shelf_text = format_pdf_block( 'Houdbaarheid na productie', $product->get_meta('_shelf_life').' '.__( 'dagen', 'oft' ) );
+			$shelf_text = format_pdf_block( __( 'Houdbaarheid na productie', 'oft' ), $product->get_meta('_shelf_life').' '.__( 'dagen', 'oft' ) );
 		} else {
 			$shelf_text = '';
 		}
@@ -2288,8 +2301,8 @@
 		load_textdomain( 'oft', WP_CONTENT_DIR.'/languages/themes/oft-'.$prev_lang_details['default_locale'].'.mo' );
 	}
 
-	function format_pdf_block( $title, $value ) {
-		return '<p style="font-size: 10pt;"><div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">'.$title.'</div>'.$value.'</p>';
+	function format_pdf_block( $label, $value ) {
+		return '<p style="font-size: 10pt;"><div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">'.$label.'</div>'.$value.'</p>';
 	}
 
 	function format_pdf_ean13( $code ) {
