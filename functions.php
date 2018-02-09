@@ -1291,7 +1291,7 @@
 			if ( get_option('oft_import_active') !== 'yes' ) {
 				// Enkel proberen aanmaken indien OFT-product én foto reeds aanwezig
 				if ( intval( $product->get_image_id() ) > 0 ) {
-					// create_product_pdf( $product->get_id(), 'nl' );
+					create_product_pdf( $product->get_id(), 'nl' );
 					// create_product_pdf( $product->get_id(), 'fr' );
 					// create_product_pdf( $product->get_id(), 'en' );
 				}
@@ -2200,8 +2200,11 @@
 		$prev_lang = $sitepress->get_current_language();
 		$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
 		
+		$labels = array();
+		$icons = '';
 		if ( mb_strtolower( $product->get_attribute('pa_bio') ) === 'ja' ) {
 			$labels[] = wc_attribute_label('pa_bio');
+			$icons .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-organic.png" style="width: 50px;">';
 		}
 		if ( mb_strtolower( $product->get_attribute('pa_fairtrade') ) === 'ja' ) {
 			$labels[] = wc_attribute_label('pa_fairtrade');
@@ -2243,6 +2246,7 @@
 		$templatecontent = str_replace( "###STEH_PACKAGING###", $steh_packaging_text, $templatecontent );
 		$templatecontent = str_replace( "###STORAGE_CONDITIONS###", $storage_text, $templatecontent );
 		$templatecontent = str_replace( "###IMAGE_URL###", $image_url, $templatecontent );
+		$templatecontent = str_replace( "###ICONS###", $icons, $templatecontent );
 		
 		// Let op met fatale error bij het proberen aanmaken van een ongeldige barcode!
 		if ( check_digit_ean13( $product->get_meta('_cu_ean') ) ) {
