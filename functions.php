@@ -594,11 +594,11 @@
 			foreach ( $product_metas as $meta_key => $meta_label ) {
 				// Toon voedingswaarde als het een verplicht veld is en in 2de instantie als er expliciet een (nul)waarde ingesteld is
 				if ( in_array( $meta_key, $requireds ) or $product->get_meta($meta_key) !== '' ) {
-					if ( $product->get_meta($meta_key) === '' or floatval($product->get_meta($meta_key)) === 0 ) {
+					if ( $product->get_meta($meta_key) === '' or floatval( $product->get_meta($meta_key) ) === 0 ) {
 						// Zet zeker een nul (zonder expliciete precisie)
 						$meta_value = '0';
 					} else {
-						// Formatter de waarde als tekst
+						// Formatter het getal als Belgische tekst
 						$meta_value = str_replace( '.', ',', $product->get_meta($meta_key) );
 					}
 					?>

@@ -54,10 +54,10 @@
 	}
 
 	function ditch_zeros( $value ) {
-		if ( $value === '0' or $value === '0,0' or $value === '0,000' ) {
+		if ( $value === '0' or $value === '0,0' or $value === '0,00' or $value === '0,000' ) {
 			$value = '';
 		}
-		return $value;
+		return str_replace( ',', '.', $value );
 	}
 
 	function transform_decimal_to_point( $string ) {
