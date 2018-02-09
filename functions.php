@@ -538,6 +538,9 @@
 
 		// Titel wijzigen van standaardtabs kan maar prioriteit niet! (description = 10, additional_information = 20)
 		$tabs['additional_information']['title'] = __( 'Technische fiche', 'oft' );
+
+		// TIJDELIJK UITSCHAKELEN
+		unset($tabs['additional_information']);
 		
 		return $tabs;
 	}
@@ -585,15 +588,16 @@
 				'_pro' => __( 'Eiwitten', 'oft' ),
 				'_salteq' => __( 'Zout', 'oft' ),
 			);
-
+			$requireds = array( '_fat', '_fasat', '_choavl', '_sugar', '_pro', '_salteq' );
+			$secondaries = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
+			
 			foreach ( $product_metas as $meta_key => $meta_label ) {
-				// Check of er een (nul)waarde ingesteld is
-				if ( $product->get_meta($meta_key) !== false ) {
-					$submetas = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
+				// Toon voedingswaarde als het een verplicht veld is en in 2de instantie als er een zinvolle waarde ingesteld is
+				if ( in_array( $meta_key, $requireds ) or floatval( $product->get_meta($meta_key) ) > 0 ) {
 					?>
 					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-						<th class="<?php echo in_array( $meta_key, $submetas ) ? 'secondary' : 'primary'; ?>"><?php echo $meta_label; ?></th>
-						<td class="<?php echo in_array( $meta_key, $submetas ) ? 'secondary' : 'primary'; ?>"><?php echo str_replace( '.', ',', $product->get_meta($meta_key) ); ?> g</td>
+						<th class="<?php echo in_array( $meta_key, $secondaries ) ? 'secondary' : 'primary'; ?>"><?php echo $meta_label; ?></th>
+						<td class="<?php echo in_array( $meta_key, $secondaries ) ? 'secondary' : 'primary'; ?>"><?php echo str_replace( '.', ',', $product->get_meta($meta_key) ); ?> g</td>
 					</tr>
 					<?php
 				}
@@ -603,25 +607,19 @@
 			
 			// Allergenentab altijd tonen!
 			$has_row = true;
-			// TIJDELIJK UITSCHAKELEN
-			// $allergens = get_the_terms( $product->get_id(), 'product_allergen' );
-			$allergens = false;
-			$contains = array();
-			$traces = array();
 			
 			?>
-			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php _e( 'Fairtradepercentage', 'oft' ); ?></th>
-				<td><?php echo $product->get_meta('_fairtrade_share').' %' ?></td>
-			</tr>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php _e( 'Inhoud', 'oft' ); ?></th>
 				<td><?php echo $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'); ?></td>
 			</tr>
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th><?php _e( 'Fairtradepercentage', 'oft' ); ?></th>
+				<td><?php echo $product->get_meta('_fairtrade_share').' %' ?></td>
+			</tr>
 			<?php
 
 			$product_attributes = array( 'pa_fairtrade', 'pa_bio' );
-
 			foreach ( $product_attributes as $attribute_key ) {
 				?>
 				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
@@ -631,77 +629,45 @@
 				<?php
 			}
 			
-			if ( $grapes = get_grape_terms_by_product($product) ) {
-				$ingredients_th = __( 'Druivensoorten', 'oft' );
-				$ingredients_td = implode( ', ', $grapes );
-			} elseif ( ! empty( $product->get_meta('_ingredients') ) ) {
-				$ingredients_th = __( 'Ingrediënten', 'oft' );
-				$ingredients_td = $product->get_meta('_ingredients');
-			} else {
-				$ingredients_th = false;
-			}
-			
-			if ( $ingredients_th !== false ) {
+			$ingredients = get_ingredients($product);
+			if ( $ingredients !== false ) {
 				?>
 				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th><?php echo $ingredients_th; ?></th>
-					<td><?php echo $ingredients_td; ?></td>
+					<th><?php echo $ingredients['label']; ?></th>
+					<td><?php echo $ingredients['value']; ?></td>
 				</tr>
 				<?php
 			}
 
-			if ( is_array($allergens) ) {
-				foreach ( $allergens as $allergen ) {
-					if ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'contains' ) {
-						$contains[] = $allergen;
-					} elseif ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'may-contain' ) {
-						$traces[] = $allergen;
+			$allergens = get_allergens($product);
+			?>
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th><?php _e( 'Dit product bevat', 'oft' ); ?></th>
+				<td>
+				<?php
+					if ( is_array( $allergens['contains'] ) ) {
+						echo implode( ', ', $allergens['contains'] );
+					} else {
+						// _e( 'geen meldingsplichtige allergenen', 'oft' );
+						_e( '/', 'oft' );
 					}
-				}
 				?>
-				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th><?php _e( 'Dit product bevat', 'oft' ); ?></th>
-					<td>
-					<?php
-						$i = 0;
-						$str = __( 'geen meldingsplichtige allergenen', 'oft' );
-						if ( count( $contains ) > 0 ) {
-							foreach ( $contains as $substance ) {
-								$i++;
-								if ( $i === 1 ) {
-									$str = $substance->name;
-								} else {
-									$str .= ', '.$substance->name;
-								}
-							}
-						}
-						echo $str;
-					?>
-					</td>
-				</tr>
-
-				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th><?php _e( 'Kan sporen bevatten van', 'oft' ); ?></th>
-					<td>
-					<?php
-						$i = 0;
-						$str = __( 'geen meldingsplichtige allergenen', 'oft' );
-						if ( count( $traces ) > 0 ) {
-							foreach ( $traces as $substance ) {
-								$i++;
-								if ( $i === 1 ) {
-									$str = $substance->name;
-								} else {
-									$str .= ', '.$substance->name;
-								}
-							}
-						}
-						echo $str;
-					?>
-					</td>
-				</tr>
+				</td>
+			</tr>
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th><?php _e( 'Kan sporen bevatten van', 'oft' ); ?></th>
+				<td>
 				<?php
-			}
+					if ( is_array( $allergens['may-contain'] ) ) {
+						echo implode( ', ', $allergens['may-contain'] );
+					} else {
+						// _e( 'geen meldingsplichtige allergenen', 'oft' );
+						_e( '/', 'oft' );
+					}
+				?>
+				</td>
+			</tr>
+			<?php
 
 		}
 		
@@ -722,6 +688,58 @@
 		} else {
 			echo '<i>'.__( 'Geen info beschikbaar.', 'oft' ).'</i>';
 		}
+	}
+
+	// Haal de toepasselijke ingrediëntenlijst op (wijn/postmeta/attribute), retourneer false indien niets beschikbaar
+	function get_ingredients( $product, $with_colon = false ) {
+		$result = array();
+		$grapes = get_grape_terms_by_product($product);
+		if ( is_array($grapes) ) {
+			// Druiven kunnen door de meta_boxlogica enkel op wijn ingesteld worden, dus niet nodig om categorie te checken
+			if ( $with_colon === true ) {
+				$result['label'] = __( 'Druivensoorten:', 'oft' );
+			} else {
+				$result['label'] = __( 'Druivensoorten', 'oft' );
+			}
+			$result['value'] = implode( ', ', $grapes );
+		} elseif ( ! empty( $product->get_meta('_ingredients') ) ) {
+			if ( $with_colon === true ) {
+				$result['label'] = __( 'Ingrediënten:', 'oft' );
+			} else {
+				$result['label'] = __( 'Ingrediënten', 'oft' );
+			}
+			$result['value'] = $product->get_meta('_ingredients');
+		} else {
+			$result = false;
+		}
+		return $result;
+	}
+
+	// Haal de allergenen op als een opgesplitste array van termnamen
+	function get_allergens( $product ) {
+		$result = array( 'contains' => false, 'may-contain' => false );
+		$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
+		if ( is_array($allergens) ) {
+			// Retourneert automatisch de vertaalde term in FR/EN
+			$contains_term = get_term_by( 'slug', 'contains', 'product_allergen' );
+			$may_contain_term = get_term_by( 'slug', 'may-contain', 'product_allergen' );
+			$contains = array();
+			$may_contain = array();
+			foreach ( $allergens as $term ) {
+				if ( $term->parent == $contains_term->term_id ) {
+					$contains[] = mb_strtolower($term->name);
+				} elseif( $term->parent == $may_contain_term->term_id ) {
+					$may_contain[] = mb_strtolower($term->name);
+				}
+			}
+			if ( count($contains) > 0 ) {
+				$result['contains'] = $contains;
+			}
+			if ( count($may_contain) > 0 ) {
+				$result['may-contain'] = $may_contain;
+			}
+		}
+		return $result;
 	}
 
 	// Verhinder bepaalde selecties in de back-end
@@ -2108,39 +2126,27 @@
 			$origin_text = __( 'Herkomst:', 'oft' ).' '.implode( ', ', $countries );
 		}
 
-		// ALGEMENE GET_INGREDIENTS FUNCTIE MAKEN?
-		// Druiven kunnen door de meta_boxlogica enkel op wijn ingesteld worden, dus geen nood om de categorie te checken
-		$ingredients_text = '<p style="font-size: 11pt;">';
-		if ( $grapes = get_grape_terms_by_product($product) ) {
-			$ingredients_text .= __( 'Druivensoorten:', 'oft' ).' '.implode( ', ', $grapes ).'</p>';
-		} elseif ( ! empty( $product->get_meta('_ingredients') ) ) {
-			$ingredients_text .= __( 'Ingrediënten:', 'oft' ).' '.$product->get_meta('_ingredients').'.</p>';
-		} else {
-			$ingredients_text = '';
+		$ingredients_text = '';
+		if ( get_ingredients($product) !== false ) {
+			$ingredients_text .= '<p style="font-size: 11pt;">';
+			// Vraag label op mét dubbele punt
+			$ingredients = get_ingredients( $product, true );
+			$ingredients_text .= $ingredients['label'].' '.$ingredients['value'];
+			$ingredients_text .= '</p>';
 		}
 
-		$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
-		if ( is_array($allergens) ) {
-			$c_term = get_term_by( 'slug', 'contains', 'product_allergen' );
-			$mc_term = get_term_by( 'slug', 'may-contain', 'product_allergen' );
-			$c = array();
-			$mc = array();
-			foreach ( $allergens as $term ) {
-				if ( $term->parent == $c_term->term_id ) {
-					$c[] = mb_strtolower($term->name);
-				} elseif( $term->parent == $mc_term->term_id ) {
-					$mc[] = mb_strtolower($term->name);
-				}
+		$allergens_text = '';
+		if ( get_allergens($product) !== false ) {
+			$allergens = get_allergens($product);
+			if ( is_array( $allergens['contains'] ) ) {
+				$allergens_text .= __( 'Bevat', 'oft' ).' '.implode( ', ', $allergens['contains'] ).'. ';
 			}
-			$allergens_text = '';
-			if ( count($c) > 0 ) {
-				$allergens_text .= __( 'Bevat', 'oft' ).' '.implode( ', ', $c ).'. ';
+			if ( is_array( $allergens['may-contain'] ) ) {
+				$allergens_text .= __( 'Kan sporen bevatten van', 'oft' ).' '.implode( ', ', $allergens['may-contain'] );
 			}
-			if ( count($mc) > 0 ) {
-				$allergens_text .= __( 'Kan sporen bevatten van', 'oft' ).' '.implode( ', ', $mc ).'. ';
-			}
+			$allergens_text = '</p>';
 		} else {
-			$allergens_text = __( 'Geen meldingsplichtige allergenen aanwezig.', 'oft' );
+			// $allergens_text = __( 'Geen meldingsplichtige allergenen aanwezig.', 'oft' );
 		}
 
 		$packaging = get_the_terms( $product->get_id(), 'product_packaging' );
