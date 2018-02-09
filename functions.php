@@ -1260,8 +1260,8 @@
 		if ( get_option('oft_import_active') !== 'yes' ) {
 			// Enkel proberen aanmaken indien OFT-product én foto reeds aanwezig
 			if ( $product->get_attribute('merk') === 'Oxfam Fair Trade' and intval( $product->get_image_id() ) > 0 ) {
-				create_product_pdf( $product->get_id(), 'nl' );
-				create_product_pdf( $product->get_id(), 'fr' );
+				// create_product_pdf( $product->get_id(), 'nl' );
+				// create_product_pdf( $product->get_id(), 'fr' );
 				// create_product_pdf( $product->get_id(), 'en' );
 			}
 		}
