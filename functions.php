@@ -366,9 +366,9 @@
 			'show_in_quick_edit' => true,
 			'show_admin_column' => true,
 			'query_var' => true,
-			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
-			'rewrite' => array( 'slug' => 'allergeen', 'with_front' => false, 'hierarchical' => false ),
+			// Geef catmans rechten om zelf termen toe te kennen / te bewerken maar niet om toe te voegen / te verwijderen!
+			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'update_core', 'delete_terms' => 'update_core' ),
+			'rewrite' => array( 'slug' => 'allergeen', 'with_front' => false, 'hierarchical' => true ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
