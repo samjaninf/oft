@@ -2202,16 +2202,16 @@
 		}
 		$icons_text = '';
 		if ( in_array( 'veganistisch', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-vegan.png" style="margin-left: -30px; width: 60px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-vegan.png" style="width: 50px;">';
 		}
 		if ( in_array( 'glutenvrij', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-gluten-free.png" style="width: 60px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-gluten-free.png" style="width: 50px;">';
 		}
 		if ( in_array( 'zonder-toegevoegde-suikers', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-no-added-sugars.png" style="width: 60px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-no-added-sugars.png" style="width: 50px;">';
 		}
 		if ( in_array( 'lactosevrij', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-lactose-free.png" style="width: 60px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-lactose-free.png" style="width: 50px;">';
 		}
 
 		$prev_lang = $sitepress->get_current_language();
