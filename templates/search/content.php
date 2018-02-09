@@ -10,7 +10,7 @@ $post_view_num = alone_get_post_views(get_the_ID());
 		<div class="extra-meta">
 			<!-- post date -->
 			<div class="post-date"><?php the_date(); ?></div>
-			<div class="post-category"><?php the_category(); ?></div>
+			<!-- WERKT NIET BIJ PRODUCTEN <div class="post-category"><?php the_category(); ?></div> -->
 		</div>
 	</div>
 </article>
