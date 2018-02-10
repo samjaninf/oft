@@ -3074,8 +3074,14 @@
 	#  LOGGING  #
 	#############
 
-	// Schakel autosaves uit
-	// add_action( 'wp_print_scripts', function() { wp_deregister_script('autosave'); } );
+	// Schakel autosaves op producten uit
+	add_action( 'admin_enqueue_scripts', 'disable_autosave' );
+	
+	function disable_autosave() {
+		 if ( 'product' === get_post_type() ) {
+		 	wp_deregister_script('autosave');
+		 }
+	}
 
 	// Schakel productrevisies in
 	add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
