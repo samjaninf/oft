@@ -16,6 +16,8 @@ if ( $related_products ) : ?>
 
 	<section class="related products">
 
+		<p>&nbsp;</p>
+
 		<h2><?php esc_html_e( 'Related products', 'alone' ); ?></h2>
 
 		<!-- Gebruik de standaard (gemodificeerde) WooCommerce-layout voor consequente stijlgeving -->
