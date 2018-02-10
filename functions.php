@@ -683,8 +683,8 @@
 		echo '</table>';
 		
 		if ( $has_row ) {
-			// Legende toevoegen
-			if ( $type === 'ingredients' ) {
+			// Legende toevoegen indien ingrediënten aanwezig
+			if ( $type === 'ingredients' and get_ingredients($product) !== false ) {
 				echo '<p class="legend">* = '.__( 'ingrediënt aangekocht volgens de principes van eerlijke handel', 'oft' ).'</p>';
 				echo '<p class="legend">° = '.__( 'ingrediënt verbouwd volgens de normen van biologisch landbouw', 'oft' ).'</p>';
 			}
