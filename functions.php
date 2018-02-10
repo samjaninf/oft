@@ -1739,14 +1739,9 @@
 		);
 
 		foreach ( $regular_meta_keys as $meta_key ) {
-			if ( ! empty( $_POST[$meta_key] ) ) {
-				// Overkill, ga ervan uit dat Odisy correcte gegevens doorstuurt
-				// if ( $meta_key === '_cu_ean' and ! check_digit_ean13( $_POST[$meta_key] ) ) delete_post_meta( $post_id, $meta_key );
-				update_post_meta( $post_id, $meta_key, esc_attr( $_POST[$meta_key] ) );
-			} else {
-				// Overkill? Zorgt voor extra lijnen in changelog!
-				delete_post_meta( $post_id, $meta_key );
-			}
+			// Overkill, ga ervan uit dat Odisy correcte gegevens doorstuurt
+			// if ( $meta_key === '_cu_ean' and ! check_digit_ean13( $_POST[$meta_key] ) ) delete_post_meta( $post_id, $meta_key );
+			update_post_meta( $post_id, $meta_key, esc_attr( $_POST[$meta_key] ) );
 		}
 
 		$decimal_meta_keys = array(
@@ -1763,11 +1758,11 @@
 		);
 
 		foreach ( $decimal_meta_keys as $meta_key ) {
-			// Geen !empty() gebruiken want we willen nullen expliciet kunnen opslaan!
+			// Zeker geen !empty() gebruiken want we willen nullen expliciet kunnen opslaan!
 			if ( $_POST[$meta_key] !== '' ) {
 				update_post_meta( $post_id, $meta_key, esc_attr( number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 1, '.', '' ) ) );
 			} else {
-				delete_post_meta( $post_id, $meta_key );
+				update_post_meta( $post_id, $meta_key, '' );
 			}
 		}
 
@@ -1776,10 +1771,10 @@
 		);
 
 		foreach ( $price_meta_keys as $meta_key ) {
-			if ( ! empty( $_POST[$meta_key] ) ) {
+			if ( $_POST[$meta_key] !== '' ) {
 				update_post_meta( $post_id, $meta_key, esc_attr( number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 2, '.', '' ) ) );
 			} else {
-				delete_post_meta( $post_id, $meta_key );
+				update_post_meta( $post_id, $meta_key, '' );
 			}
 		}
 
@@ -1790,11 +1785,11 @@
 		);
 
 		foreach ( $high_precision_meta_keys as $meta_key ) {
-			// Geen !empty() gebruiken want we willen nullen expliciet kunnen opslaan!
+			// Zeker geen !empty() gebruiken want we willen nullen expliciet kunnen opslaan!
 			if ( $_POST[$meta_key] !== '' ) {
 				update_post_meta( $post_id, $meta_key, esc_attr( number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 3, '.', '' ) ) );
 			} else {
-				delete_post_meta( $post_id, $meta_key );
+				update_post_meta( $post_id, $meta_key, '' );
 			}
 		}
 	}
@@ -2189,7 +2184,7 @@
 
 		$allergens_text = '';
 		$allergens = get_allergens($product);
-		if ( $allergens['contains'] !== false and $allergens['may-contain'] !== false ) {
+		if ( $allergens['contains'] !== false or $allergens['may-contain'] !== false ) {
 			if ( is_array( $allergens['contains'] ) ) {
 				$allergens_text .= __( 'Bevat', 'oft' ).' '.implode( ', ', $allergens['contains'] ).'. ';
 			}
@@ -3096,7 +3091,7 @@
 		global $sitepress;
 		// Enkel wijzigingen in de hoofdtaal loggen
 		if ( $sitepress->get_current_language() === apply_filters( 'wpml_default_language', NULL ) ) {
-			// return;
+			return;
 		}
 
 		$watched_taxonomies = array(
