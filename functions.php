@@ -94,7 +94,6 @@
 			remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', array( YITH_WCQV_Frontend(), 'yith_add_quick_view_button' ), 10 );
 		}
 		remove_action( 'admin_notices', '_alone_admin_notice_theme_message' );
-		remove_action( 'admin_notices', 'adminNoticeLicenseActivation' );
 	}
 
 	// Laad niet-prioritaire JavaScript (die bv. moet wachten op jQuery) 

@@ -540,7 +540,7 @@ add_action( 'admin_enqueue_scripts', '_alone_admin_enqueue_scripts' );
 
 if(! function_exists('_alone_woocommerce_init_hook')) :
 	function _alone_woocommerce_init_hook() {
-		// GEWIJZIGD: Zoombox voorlopig uitschakelen
+		// GEWIJZIGD: Zoombox uitschakelen
 		// add_theme_support( 'wc-product-gallery-zoom' );
 		add_theme_support( 'wc-product-gallery-lightbox' );
 		add_theme_support( 'wc-product-gallery-slider' );
@@ -1695,8 +1695,7 @@ if(! function_exists('_alone_admin_notice_theme_message')) :
     <?php
 	}
 endif;
-// GEWIJZIGD: Nag uitschakelen
-// add_action( 'admin_notices', '_alone_admin_notice_theme_message' );
+add_action( 'admin_notices', '_alone_admin_notice_theme_message' );
 
 if(! function_exists('_alone_notification_center_action')) :
 	/**
