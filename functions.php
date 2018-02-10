@@ -1232,7 +1232,7 @@
 		}
 	}
 
-	// Maak sorteren op custom kolommen mogelijk
+	// Maak sorteren op custom kolommen mogelijk BETER VIA FILTERS BOVENAAN
 	// add_filter( 'manage_edit-product_sortable_columns', 'make_attribute_columns_sortable', 10, 1 );
 
 	function make_attribute_columns_sortable( $columns ) {
@@ -1255,25 +1255,12 @@
 		}
 	}
 
-	// 1ste mogelijkheid om niet-OFT-producten te verbergen: extra filter in algemene query
-	// add_action( 'woocommerce_product_query', 'filter_product_query_by_taxonomy' );
+	// Verberg niet-OFT-producten door automatisch 'private'-status toe te kennen bij het publiceren
+	add_action( 'save_post', 'change_external_product_status', 10, 3 );
 
-	function filter_product_query_by_taxonomy( $q ){	
-		$oft_term = get_term_by( 'name', 'Oxfam Fair Trade', 'pa_merk' );
-		$tax_query = (array) $q->get('tax_query');
-		$tax_query[] = array(
-			'taxonomy' => 'pa_merk',
-			'field' => 'term_taxonomy_id',
-			'terms' => $oft_term->term_id,
-			'operator' => 'IN',
-		);
-		$q->set( 'tax_query', $tax_query );
-	}
+	function change_external_product_status( $post_id, $post, $update ) {
+		global $sitepress;
 
-	// 2de mogelijkheid om niet-OFT-producten te verbergen: visbiliteit wijzigen INMIDDELS OOK GEÏNTEGREERD IN ERP-IMPORT
-	add_action( 'save_post', 'change_product_visibility_on_save', 10, 3 );
-
-	function change_product_visibility_on_save( $post_id, $post, $update ) {
 		if ( $post->post_status === 'trash' or $post->post_status === 'draft' ) {
 			return;
 		}
@@ -1286,16 +1273,30 @@
 			$product->set_status( 'private' );
 			$product->save();
 		} else {
-			// Update de productfiches niet indien er een import bezig is (behalve ERP-sync)
-			if ( get_option('oft_import_active') !== 'yes' ) {
-				// Enkel proberen aanmaken indien OFT-product én foto reeds aanwezig
+			// Update de OFT-productfiches enkel tijdens de ERP-sync
+			if ( get_option('oft_erp_import_active') === 'yes' ) {
+				// Enkel proberen aanmaken indien foto reeds aanwezig
 				if ( intval( $product->get_image_id() ) > 0 ) {
-					create_product_pdf( $product->get_id(), 'nl' );
-					create_product_pdf( $product->get_id(), 'fr' );
-					// create_product_pdf( $product->get_id(), 'en' );
+					// Enkel in huidige taal van import aanmaken!
+					create_product_pdf( $product->get_id(), $sitepress->get_current_language() );
 				}
 			}
 		}
+	}
+
+	// Alternatieve mogelijkheid om niet-OFT-producten te verbergen: m.b.v. extra filter in algemene WP-query
+	// add_action( 'woocommerce_product_query', 'filter_product_query_by_taxonomy' );
+
+	function filter_product_query_by_taxonomy( $q ) {	
+		$oft_term = get_term_by( 'name', 'Oxfam Fair Trade', 'pa_merk' );
+		$tax_query = (array) $q->get('tax_query');
+		$tax_query[] = array(
+			'taxonomy' => 'pa_merk',
+			'field' => 'term_taxonomy_id',
+			'terms' => $oft_term->term_id,
+			'operator' => 'IN',
+		);
+		$q->set( 'tax_query', $tax_query );
 	}
 
 	// Toon metavelden netjes in de WooCommerce-tabbladen en werk ze bij tijdens het opslaan
@@ -2697,7 +2698,7 @@
 				wp_reset_postdata();
 			}
 		}
-		if ( $import_id == 14 ) {
+		if ( $import_id == 14 or $import_id == 22 ) {
 			update_option( 'oft_erp_import_active', 'yes' );
 		} else {
 			update_option( 'oft_import_active', 'yes' );
@@ -2743,14 +2744,14 @@
 	add_action( 'pmxi_after_xml_import', 'rename_import_file', 10, 1 );
 
 	function rename_import_file( $import_id ) {
-		if ( $import_id == 14 ) {
-			delete_option( 'oft_erp_import_active' );
+		if ( $import_id == 22 ) {
 			$old = WP_CONTENT_DIR."/B2CImport.csv";
 			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
 			rename( $old, $new );
-		} else {
-			delete_option( 'oft_import_active' );
 		}
+		
+		delete_option( 'oft_import_active' );
+		delete_option( 'oft_erp_import_active' );
 	}
 
 	// TE MOEILIJK, VOORLOPIG NIET GEBRUIKEN
@@ -3095,7 +3096,7 @@
 		global $sitepress;
 		// Enkel wijzigingen in de hoofdtaal loggen
 		if ( $sitepress->get_current_language() === apply_filters( 'wpml_default_language', NULL ) ) {
-			return;
+			// return;
 		}
 
 		$watched_taxonomies = array(
