@@ -1716,8 +1716,6 @@
 		// Laatste parameter: val expliciet niét terug op de (verouderde) databasewaarden!
 		update_unit_price( $post_id, $_POST['_regular_price'], $_POST['_net_content'], $_POST['_net_unit'], false );
 		
-		write_log($_POST);
-
 		$regular_meta_keys = array(
 			'_net_unit',
 			'_net_content',
@@ -2570,7 +2568,7 @@
 		
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
 		$member = md5( strtolower( trim( $email ) ) );
-		$merge_fields = array( $language_details['native_name'], 'SOURCE' => 'OFT-site', );
+		$merge_fields = array( 'LANGUAGE' => $language_details['native_name'], 'SOURCE' => 'OFT-site', );
 		
 		// Probleem: naam zit hier nog in 1 veld, moeten er 2 worden
 		$parts = explode( ' ', $name, 2 );

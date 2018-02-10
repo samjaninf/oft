@@ -1492,8 +1492,8 @@ if(!function_exists('_alonewoocommerce_header_add_to_cart_fragment')) :
     return $fragments;
 	}
 endif;
-// GEWIJZIGD: Deprecated hook aangepast
-add_filter('woocommerce_add_to_cart_fragments', '_alonewoocommerce_header_add_to_cart_fragment');
+// GEWIJZIGD: Deprecated hook uitgeschakeld
+// add_filter('add_to_cart_fragments', '_alonewoocommerce_header_add_to_cart_fragment');
 
 if(! function_exists('_alone_related_products_args')) :
 	/**
