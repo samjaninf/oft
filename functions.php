@@ -1120,7 +1120,7 @@
 	add_filter( 'woocommerce_breadcrumb_defaults', 'change_woocommerce_breadcrumb_delimiter' );
 	
 	function change_woocommerce_breadcrumb_delimiter( $defaults ) {
-		$defaults['delimiter'] = ' > ';
+		$defaults['delimiter'] = ' &rarr; ';
 		return $defaults;
 	}
 
