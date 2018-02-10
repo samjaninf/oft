@@ -535,7 +535,8 @@ body.search {
 	}
 
 	/* Titel boven gerelateerde producten stylen zoals op vaste pagina's */
-	&.single-product section.related.products > h2 {
+	&.single-product section.related.products > h2,
+	&.single-product section.upsells.products > h2 {
 		text-align: center;
 		text-decoration: none;
 		font-size: 40px;

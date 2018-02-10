@@ -20,7 +20,7 @@ if ( $related_products and count($upsells) < 1 ) : ?>
 
 		<p>&nbsp;</p>
 
-		<h2><?php esc_html_e( 'Related products', 'alone' ); ?></h2>
+		<h2><?php _e( 'Related products', 'woocommerce' ); ?></h2>
 
 		<!-- Gebruik de standaard (gemodificeerde) WooCommerce-layout voor consequente stijlgeving -->
 		<div class="woocommerce columns-4">

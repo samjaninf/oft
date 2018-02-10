@@ -2,8 +2,6 @@
 /**
  * Single Product Up-Sells
  *
- * This template can be overridden by copying it to yourtheme/woocommerce/single-product/up-sells.php.
- *
  * @see 	    https://docs.woocommerce.com/document/template-structure/
  * @author 		WooThemes
  * @package 	WooCommerce/Templates
@@ -18,7 +16,7 @@ if ( $upsells ) : ?>
 
 	<section class="up-sells upsells products">
 
-		<h2 style="text-align: center"><?php _e( 'Gerelateerde producten', 'oft' ) ?></h2>
+		<h2><?php _e( 'Related products', 'woocommerce' ); ?></h2>
 
 		<?php woocommerce_product_loop_start(); ?>
 
