@@ -2030,8 +2030,6 @@
 	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count', 20 );
 	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30 );
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
-	// ENKEL VERWIJDEREN INDIEN UPSELLS AANWEZIG?
-	// remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20 );
 	add_action( 'woocommerce_single_product_summary', 'output_full_product_description', 20 );
 	add_action( 'woocommerce_before_shop_loop', 'output_oft_partner_info', 10 );
 
@@ -3190,7 +3188,6 @@
 			'_length',
 			'_width',
 			'_height',
-			'_empty_fee',
 			'_net_unit',
 			'_net_content',
 			'_unit_price',
@@ -3203,6 +3200,7 @@
 			'_cu_ean',
 			'_steh_ean',
 			'_multiple',
+			'_empty_fee',
 			'_pal_number_per_layer',
 			'_pal_number_of_layers',
 			'_steh_length',
@@ -3221,6 +3219,7 @@
 			'_fibtg',
 			'_pro',
 			'_salteq',
+			'_upsell_ids',
 		);
 		
 		// Deze actie vuurt bij 'single value meta keys' enkel indien er een wezenlijke wijziging was, dus oude waarde vergelijken hoeft niet meer
