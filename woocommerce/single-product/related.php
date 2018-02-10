@@ -12,7 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( $related_products ) : ?>
+// Enkel tonen indien er geen expliciete upsells ingesteld zijn!
+$upsells = $product->get_upsell_ids();
+if ( $related_products and count($upsells) < 1 ) : ?>
 
 	<section class="related products">
 
