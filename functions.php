@@ -1595,11 +1595,11 @@
 		}
 
 		$primary = array(
-			'wrapper_class' => 'primary',
+			'wrapper_class' => 'primary important-for-catman',
 		);
 
 		$secondary = array(
-			'wrapper_class' => 'secondary',
+			'wrapper_class' => 'secondary important-for-catman',
 		);
 
 		$fat = array(
@@ -2499,7 +2499,6 @@
 		if ( $submission ) {
 			$posted_data = $submission->get_posted_data();
 		}
-		write_log($posted_data);
 		// Nieuwsbriefformulieren
 		$mc_forms = array( 1054, 6757, 6756 );
 		if ( in_array( $wpcf7->id(), $mc_forms ) ) {
@@ -2533,7 +2532,8 @@
 					$msgs['mail_sent_ok'] = __( 'Er was een onbekend probleem met MailChimp.', 'oft' );
 				}
 			}
-			
+
+			write_log($posted_data);
 			write_log($msgs);
 			$wpcf7->set_properties( array( 'messages' => $msgs ) );
 		}
