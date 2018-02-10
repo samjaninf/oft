@@ -9,7 +9,7 @@
 
 	<p>&nbsp;</p>
 
-	<h2>Productwijzigingen WK<?php intval( date_i18n('W') ); ?></h2>
+	<h2>Productwijzigingen WK<?php echo intval( date_i18n('W') ); ?></h2>
 
 	<?php
 		$file_path = WP_CONTENT_DIR.'/changelog-week-'.intval( date_i18n('W') ).'.csv';

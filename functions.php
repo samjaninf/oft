@@ -262,18 +262,17 @@
 		if ( ! empty($_POST['partner_node']) ) {
 			update_term_meta( $term_id, 'partner_node', absint($_POST['partner_node']) );
 		} else {
-			// VEROORZAAKT PROBLEMEN BIJ IMPORTS
-			// delete_term_meta( $term_id, 'partner_node' );
+			update_term_meta( $term_id, 'partner_node', '' );
 		}
 		if ( ! empty($_POST['partner_type']) ) {
 			update_term_meta( $term_id, 'partner_type', sanitize_text_field($_POST['partner_type']) );
 		} else {
-			// delete_term_meta( $term_id, 'partner_type' );
+			update_term_meta( $term_id, 'partner_node', '' );
 		}
 		if ( ! empty($_POST['partner_image_id']) ) {
 			update_term_meta( $term_id, 'partner_image_id', absint($_POST['partner_image_id']) );
 		} else {
-			// delete_term_meta( $term_id, 'partner_image_id' );
+			update_term_meta( $term_id, 'partner_node', '' );
 		}
 	}
 
@@ -1738,12 +1737,11 @@
 
 		foreach ( $regular_meta_keys as $meta_key ) {
 			if ( ! empty( $_POST[$meta_key] ) ) {
-				if ( $meta_key === '_cu_ean' and ! check_digit_ean13( $_POST[$meta_key] ) ) {
-					delete_post_meta( $post_id, $meta_key );
-				} else {
-					update_post_meta( $post_id, $meta_key, esc_attr( $_POST[$meta_key] ) );
-				}
+				// Overkill, ga ervan uit dat Odisy correcte gegevens doorstuurt
+				// if ( $meta_key === '_cu_ean' and ! check_digit_ean13( $_POST[$meta_key] ) ) delete_post_meta( $post_id, $meta_key );
+				update_post_meta( $post_id, $meta_key, esc_attr( $_POST[$meta_key] ) );
 			} else {
+				// Overkill? Zorgt voor extra lijnen in changelog!
 				delete_post_meta( $post_id, $meta_key );
 			}
 		}
@@ -2128,9 +2126,9 @@
 					if ( ! empty( $category->parent ) ) {
 						$parent = get_term( $category->parent, 'product_cat' );
 						// Voer de synoniemen ook hierop door
-						$search = array_keys($relevanssi_variables['synonyms']);
-						$replace = array_values($relevanssi_variables['synonyms']);
-						$content .= str_ireplace($search, $replace, $parent->name).' ';
+						// $search = array_keys($relevanssi_variables['synonyms']);
+						// $replace = array_values($relevanssi_variables['synonyms']);
+						// $content .= str_ireplace($search, $replace, $parent->name).' ';
 					}
 				}
 			}
@@ -2511,8 +2509,10 @@
 			// $mail = $wpcf7->prop('mail');
 			// $mail['subject'] = 'Dit is een alternatief onderwerp';
 			// $wpcf7->set_properties( array( 'mail' => $mail ) );
+
+			$msgs = $wpcf7->prop('messages');
+			$msgs['mail_sent_ng'] = __( 'Er was een onbekend probleem met Contact Form 7!', 'oft' );
 			
-			// $posted_data['send_error'] = __( 'Er was een onbekend probleem met Contact Form 7!', 'oft' );
 			$posted_data['newsletter-email'] = strtolower( trim($posted_data['newsletter-email']) );
 			// Verruim tot hoofdletters na liggende streepjes
 			$posted_data['newsletter-name'] = ucwords( strtolower( trim($posted_data['newsletter-name']) ) );
@@ -2524,18 +2524,18 @@
 				// NOG NOOIT INGESCHREVEN, VOER INSCHRIJVING UIT
 				$subscription = subscribe_user_to_mailchimp_list( $posted_data['newsletter-email'], $posted_data['newsletter-name'] );
 				
-				$msgs = $wpcf7->prop('messages');
-				write_log($msgs);
 				if ( $subscription['response']['code'] == 200 ) {
 					$body = json_decode($subscription['body']);
 					if ( $body->status === "subscribed" ) {
-						$msgs['success'] = __( 'Bedankt, je bent vanaf nu geabonneerd op de nieuwsbrief Oxfam Fair Trade!', 'oft' );
+						$msgs['mail_sent_ok'] = __( 'Bedankt, je bent vanaf nu geabonneerd op de nieuwsbrief Oxfam Fair Trade!', 'oft' );
 					}
 				} else {
-					$msgs['success'] = __( 'Er was een onbekend probleem met MailChimp.', 'oft' );
+					$msgs['mail_sent_ok'] = __( 'Er was een onbekend probleem met MailChimp.', 'oft' );
 				}
-				$wpcf7->set_properties( array( 'messages' => $msgs ) );
 			}
+			
+			write_log($msgs);
+			$wpcf7->set_properties( array( 'messages' => $msgs ) );
 		}
 		
 		return $wpcf7;
@@ -3090,6 +3090,12 @@
 	add_action( 'set_object_terms', 'log_product_term_updates', 100, 6 );
 	
 	function log_product_term_updates( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ) {
+		global $sitepress;
+		// Enkel wijzigingen in de hoofdtaal loggen
+		if ( $sitepress->get_current_language() === apply_filters( 'wpml_default_language', NULL ) ) {
+			return;
+		}
+
 		$watched_taxonomies = array(
 			'product_cat',
 			'product_tag',
@@ -3160,6 +3166,12 @@
 	}
 
 	function log_product_meta_changes( $meta_id, $post_id, $meta_key, $new_meta_value, $mode ) {
+		global $sitepress;
+		// Enkel wijzigingen in de hoofdtaal loggen
+		if ( $sitepress->get_current_language() === apply_filters( 'wpml_default_language', NULL ) ) {
+			return;
+		}
+
 		// Log de data niet indien er een import loopt (doet een volledige delete/create i.p.v. update)
 		if ( get_option('oft_erp_import_active') === 'yes' or get_option('oft_import_active') === 'yes' ) {
 			return;
