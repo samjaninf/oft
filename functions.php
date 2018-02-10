@@ -1740,9 +1740,13 @@
 		);
 
 		foreach ( $regular_meta_keys as $meta_key ) {
-			// Overkill, ga ervan uit dat Odisy correcte gegevens doorstuurt
-			// if ( $meta_key === '_cu_ean' and ! check_digit_ean13( $_POST[$meta_key] ) ) delete_post_meta( $post_id, $meta_key );
-			update_post_meta( $post_id, $meta_key, esc_attr( $_POST[$meta_key] ) );
+			if ( isset($_POST[$meta_key]) ) {
+				// Overkill, ga ervan uit dat Odisy correcte gegevens doorstuurt
+				// if ( $meta_key === '_cu_ean' and ! check_digit_ean13( $_POST[$meta_key] ) ) delete_post_meta( $post_id, $meta_key );
+				update_post_meta( $post_id, $meta_key, esc_attr( $_POST[$meta_key] ) );
+			} else {
+				update_post_meta( $post_id, $meta_key, '' );
+			}
 		}
 
 		$decimal_meta_keys = array(
@@ -1760,7 +1764,7 @@
 
 		foreach ( $decimal_meta_keys as $meta_key ) {
 			// Zeker geen !empty() gebruiken want we willen nullen expliciet kunnen opslaan!
-			if ( $_POST[$meta_key] !== '' ) {
+			if ( isset($_POST[$meta_key]) and $_POST[$meta_key] !== '' ) {
 				update_post_meta( $post_id, $meta_key, esc_attr( number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 1, '.', '' ) ) );
 			} else {
 				update_post_meta( $post_id, $meta_key, '' );
@@ -1772,7 +1776,7 @@
 		);
 
 		foreach ( $price_meta_keys as $meta_key ) {
-			if ( $_POST[$meta_key] !== '' ) {
+			if ( isset($_POST[$meta_key]) and $_POST[$meta_key] !== '' ) {
 				update_post_meta( $post_id, $meta_key, esc_attr( number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 2, '.', '' ) ) );
 			} else {
 				update_post_meta( $post_id, $meta_key, '' );
@@ -1787,7 +1791,7 @@
 
 		foreach ( $high_precision_meta_keys as $meta_key ) {
 			// Zeker geen !empty() gebruiken want we willen nullen expliciet kunnen opslaan!
-			if ( $_POST[$meta_key] !== '' ) {
+			if ( isset($_POST[$meta_key]) and $_POST[$meta_key] !== '' ) {
 				update_post_meta( $post_id, $meta_key, esc_attr( number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 3, '.', '' ) ) );
 			} else {
 				update_post_meta( $post_id, $meta_key, '' );
