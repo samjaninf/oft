@@ -2458,6 +2458,9 @@
 		if ( in_array( $posted_data['_wpcf7'], $mc_forms ) ) {
 			$posted_data['validation_error'] = __( 'Gelieve de fouten op te lossen.', 'oft' );
 			$posted_data['newsletter-email'] = strtolower( trim($posted_data['newsletter-email']) );
+			// Nog te verruimen tot hoofdletters na liggende streepjes
+			$posted_data['newsletter-name'] = ucwords( strtolower( trim($posted_data['newsletter-name']) ) );
+			
 			$status = get_status_in_mailchimp_list( $posted_data['newsletter-email'] );
 						
 			if ( $status['response']['code'] == 200 ) {
@@ -2479,6 +2482,7 @@
 				}
 			}
 		}
+		write_log($posted_data);
 		return $posted_data;
 	}
 
@@ -2509,9 +2513,6 @@
 			$msgs = $wpcf7->prop('messages');
 			$msgs['mail_sent_ng'] = __( 'Er was een onbekend probleem met Contact Form 7!', 'oft' );
 			
-			$posted_data['newsletter-email'] = strtolower( trim($posted_data['newsletter-email']) );
-			// Verruim tot hoofdletters na liggende streepjes
-			$posted_data['newsletter-name'] = ucwords( strtolower( trim($posted_data['newsletter-name']) ) );
 			$status = get_status_in_mailchimp_list( $posted_data['newsletter-email'] );
 			
 			if ( $status['response']['code'] !== 200 ) {
