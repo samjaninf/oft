@@ -12,8 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Enkel tonen indien er geen expliciete upsells ingesteld zijn!
+global $product;
 $upsells = $product->get_upsell_ids();
+// Enkel tonen indien er geen expliciete upsells ingesteld zijn!
 if ( $related_products and count($upsells) < 1 ) : ?>
 
 	<section class="related products">

@@ -18,6 +18,9 @@ if ( $upsells ) : ?>
 
 		<h2><?php _e( 'Related products', 'woocommerce' ); ?></h2>
 
+		<!-- Gebruik de standaard (gemodificeerde) WooCommerce-layout voor consequente stijlgeving -->
+		<div class="woocommerce columns-4">
+
 		<?php woocommerce_product_loop_start(); ?>
 
 			<?php foreach ( $upsells as $upsell ) : ?>
