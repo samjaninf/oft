@@ -12,7 +12,7 @@
 
 	function load_child_theme() {
 		// Zorgt ervoor dat de stylesheet van het child theme ZEKER NA alone.css ingeladen wordt
-		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.8' );
+		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.9' );
 		// BOOTSTRAP REEDS INGELADEN DOOR ALONE
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
@@ -2457,44 +2457,53 @@
  	add_filter( 'wpcf7_posted_data', 'handle_validation_errors', 20, 1 );
 	
 	function handle_validation_errors( $posted_data ) {
-		// Nieuwsbriefformulieren
+		global $sitepress;
+
+		// Nieuwsbriefformulier
 		$mc_forms = array( 1054, 6757, 6756 );
 		if ( in_array( $posted_data['_wpcf7'], $mc_forms ) ) {
-			$msgs = $wpcf7->prop('messages');
-			write_log($msgs);
-
+			$posted_data['validation_error'] = __( 'Gelieve de fouten op te lossen.', 'oft' );
 			$posted_data['newsletter-email'] = strtolower( trim($posted_data['newsletter-email']) );
-			// Nog te verruimen tot hoofdletters na liggende streepjes
-			$posted_data['newsletter-name'] = ucwords( strtolower( trim($posted_data['newsletter-name']) ) );
+			$posted_data['newsletter-name'] = implode( '-', array_map( 'ucwords', explode( '-', mb_strtolower( trim($posted_data['newsletter-name']) ) ) ) );
 			
 			$status = get_status_in_mailchimp_list( $posted_data['newsletter-email'] );
 						
 			if ( $status['response']['code'] == 200 ) {
 				$body = json_decode($status['body']);
+				write_log("IEMAND DIE AL INGESCHREVEN WAS PROBEERT ZICH TE ABONNEREN OP DE NIEUWSBRIEF");
 
 				if ( $body->status === "subscribed" ) {
-					$timestamp = strtotime($body->timestamp_signup);
-					$signup_text = '';
+					$timestamp = strtotime($body->timestamp_opt);
 					if ( $timestamp !== false ) {
 						$signup_text = ' '.sprintf( __( 'sinds %s', 'oft' ), date_i18n( 'j F Y', $timestamp ) );
-					};
-					// Niet meer nodig
-					// $id = $body->unique_email_id;
-					// PATCH BESTAANDE GEGEVENS?
-					$posted_data['validation_error'] = sprintf( __( 'Je bent%s reeds geabonneerd op onze nieuwsbrief! We werkten je gegevens bij.', 'oft' ), $signup_text );
+					} else {
+						$signup_text = '';
+					}
+					$posted_data['validation_error'] = sprintf( __( 'Je bent%s reeds geabonneerd op onze nieuwsbrief!', 'oft' ), $signup_text );
+					// Patch de bestaande gegevens met eventuele aanvullingen
+					$updated = update_user_in_mailchimp_list( $body->merge_fields, $posted_data['newsletter-email'], $posted_data['newsletter-name'] );
+					if ( $updated['response']['code'] == 200 ) {
+						$posted_data['validation_error'] .= ' '.__( 'We werkten je gegevens bij.', 'oft' );
+					}
 				} else {
-					// PATCH BESTAANDE MEMBER ONMOGELIJK?
-					$posted_data['validation_error'] = sprintf( __( 'Je was vroeger al eens geabonneerd op onze nieuwsbrief! Daarom dien je expliciet opnieuw toestemming te geven. <a href="%s" target="_blank">Gelieve dit algemene inschrijvingsformulier te gebruiken</a> en op de bevestigingslink te klikken.', 'oft' ), 'https://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id='.MC_LIST_ID.'&EMAIL='.$posted_data['newsletter-email'] );
+					$posted_data['validation_error'] = sprintf( __( 'Je was al eens geabonneerd op onze nieuwsbrief!', 'oft' ), $signup_text );
+					// Zet de gebruiker weer op 'subscribed' en patch de bestaande gegevens
+					$updated = update_user_in_mailchimp_list( $body->merge_fields, $posted_data['newsletter-email'], $posted_data['newsletter-name'] );
+					if ( $updated['response']['code'] == 200 ) {
+						$posted_data['validation_error'] .= ' '.__( 'We heractiveerden je inschrijving.', 'oft' );
+					} else {
+						$language_details = $sitepress->get_language_details( $sitepress->get_current_language() );
+						$posted_data['validation_error'] .= ' '.sprintf( __( 'We konden je inschrijving niet automatisch vernieuwen. <a href="%s" target="_blank">Gelieve dit algemene inschrijvingsformulier te gebruiken</a> en op de bevestigingslink te klikken.', 'oft' ), 'https://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id='.MC_LIST_ID.'&EMAIL='.$posted_data['newsletter-email'].'&LANGUAGE='.$language_details['native_name'] );
+					}
 				}
 			}
 		}
-		write_log($posted_data);
 		return $posted_data;
 	}
 
 	// Filter om mail tegen te houden ondanks succesvolle validatie
 	// add_filter( 'wpcf7_skip_mail', 'abort_mail_sending' );
-	function abort_mail_sending( $wpcf7 ){
+	function abort_mail_sending( $wpcf7 ) {
 		return true;
 	}
 
@@ -2512,33 +2521,32 @@
 			if ( empty($posted_data) ) {
 				return;
 			}
+			
 			// $mail = $wpcf7->prop('mail');
 			// $mail['subject'] = 'Dit is een alternatief onderwerp';
 			// $wpcf7->set_properties( array( 'mail' => $mail ) );
 
 			$msgs = $wpcf7->prop('messages');
-			$msgs['mail_sent_ng'] = __( 'Er was een onbekend probleem met Contact Form 7!', 'oft' );
+			$msgs['mail_sent_ng'] = __( 'Er was een onbekend probleem met Contact Form 7. Probeer het later eens opnieuw.', 'oft' );
 			
 			$status = get_status_in_mailchimp_list( $posted_data['newsletter-email'] );
 			
 			if ( $status['response']['code'] !== 200 ) {
 				$body = json_decode($status['body']);
 
-				// NOG NOOIT INGESCHREVEN, VOER INSCHRIJVING UIT
+				// Gebruiker was nog nooit ingeschreven, voer nieuwe inschrijving uit
 				$subscription = subscribe_user_to_mailchimp_list( $posted_data['newsletter-email'], $posted_data['newsletter-name'] );
 				
 				if ( $subscription['response']['code'] == 200 ) {
 					$body = json_decode($subscription['body']);
 					if ( $body->status === "subscribed" ) {
-						$msgs['mail_sent_ok'] = __( 'Bedankt, je bent vanaf nu geabonneerd op de nieuwsbrief Oxfam Fair Trade!', 'oft' );
+						$msgs['mail_sent_ok'] = __( 'Bedankt, je bent vanaf nu geabonneerd op de nieuwsbrief van Oxfam Fair Trade!', 'oft' );
 					}
 				} else {
-					$msgs['mail_sent_ok'] = __( 'Er was een onbekend probleem met MailChimp.', 'oft' );
+					$msgs['mail_sent_ok'] = __( 'Je inschrijving kon niet uitgevoerd worden op de MailChimp-servers. Probeer het later eens opnieuw.', 'oft' );
 				}
 			}
 
-			write_log($posted_data);
-			write_log($msgs);
 			$wpcf7->set_properties( array( 'messages' => $msgs ) );
 		}
 		
@@ -2554,27 +2562,85 @@
 
 	function get_status_in_mailchimp_list( $email, $list_id = MC_LIST_ID ) {
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
-		$member = md5( strtolower( trim( $email ) ) );
+		$hash = md5( strtolower( trim( $email ) ) );
 		$args = array(
 			'headers' => array(
 				'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
 			)
 		);
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members/'.$member, $args );
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members/'.$hash, $args );
 
 		return $response;
 	}
 
 	function subscribe_user_to_mailchimp_list( $email, $name = '', $company = '', $list_id = MC_LIST_ID ) {
 		global $sitepress;
-		$language_code = $sitepress->get_current_language();
-		$language_details = $sitepress->get_language_details($language_code);
+		$language_details = $sitepress->get_language_details( $sitepress->get_current_language() );
+
+		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
+		
+		$merge_fields = split_full_name($name);
+		$merge_fields['LANGUAGE'] = $language_details['native_name'];
+		$merge_fields['SOURCE'] = 'OFT-site';
+		if ( strlen($company) > 2 ) {
+			$merge_fields['COMPANY'] = $company;
+		}
+		
+		$args = array(
+			'headers' => array(
+				'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
+			),
+			'body' => json_encode( array(
+				'email_address' => $email,
+				'status' => 'subscribed',
+				'merge_fields' => $merge_fields,
+			) ),
+		);
+		$response = wp_remote_post( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members', $args );
+
+		return $response;
+	}
+
+	function update_user_in_mailchimp_list( $old_merge_fields, $email, $name = '', $company = '', $list_id = MC_LIST_ID ) {
+		global $sitepress;
+		$language_details = $sitepress->get_language_details( $sitepress->get_current_language() );
 		
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
-		$member = md5( strtolower( trim( $email ) ) );
-		$merge_fields = array( 'LANGUAGE' => $language_details['native_name'], 'SOURCE' => 'OFT-site', );
+		$hash = md5( strtolower( trim( $email ) ) );
 		
-		// Probleem: naam zit hier nog in 1 veld, moeten er 2 worden
+		$merge_fields = split_full_name($name);
+		$merge_fields['LANGUAGE'] = $language_details['native_name'];
+		if ( strlen($company) > 2 ) {
+			$merge_fields['COMPANY'] = $company;
+		}
+
+		// Vergelijk met bestaande waardes? Update enkel niet-lege velden?
+		// OPGELET: $old_merge_fields is een object, geen array!
+		foreach ( $merge_fields as $key => $value ) {
+			if ( $value === '' ) {
+				unset($merge_fields[$key]);
+			}
+		}
+		
+		$args = array(
+			'method' => 'PATCH',
+			'headers' => array(
+				'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
+			),
+			'body' => json_encode( array(
+				'status' => 'subscribed',
+				'merge_fields' => $merge_fields,
+			) ),
+		);
+		$response = wp_remote_post( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members/'.$hash, $args );
+
+		return $response;
+	}
+
+	// Splits naam die in één veld zit in voor- en familienaam
+	function split_full_name( $name ) {
+		$merge_fields = array();
+		// Splits bij de 1ste spatie
 		$parts = explode( ' ', $name, 2 );
 		$fname = trim($parts[0]);
 		if ( strlen($fname) > 2 ) {
@@ -2586,67 +2652,10 @@
 				$merge_fields['LNAME'] = $lname;
 			}
 		}
-		if ( strlen($company) > 2 ) {
-			$merge_fields['COMPANY'] = $company;
-		}
-		
-		$args = array(
-			'headers' => array(
-				'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
-			),
-			'body' => json_encode( array(
-				'email_address' => $email,
-				'status' => 'subscribed',
-				'merge_fields' => $merge_fields,
-			) ),
-		);
-		$response = wp_remote_post( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members', $args );
-
-		return $response;
+		return $merge_fields;
 	}
 
-	function update_user_in_mailchimp_list( $email, $name = '', $company = '', $list_id = MC_LIST_ID ) {
-		global $sitepress;
-		$language_code = $sitepress->get_current_language();
-		$language_details = $sitepress->get_language_details($language_code);
-		
-		// VERGELIJK MET BESTAANDE WAARDES
-		$member = get_status_in_mailchimp_list( $email );
-
-		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
-		$member = md5( strtolower( trim( $email ) ) );
-		$merge_fields = array( 'LANGUAGE' => $language_details['native_name'], );
-		
-		// Probleem: naam zit hier nog in 1 veld, moeten er 2 worden
-		$parts = explode( ' ', $name, 2 );
-		$fname = trim($parts[0]);
-		$lname = trim($parts[1]);
-		if ( strlen($fname) > 2 ) {
-			$merge_fields['FNAME'] = $fname;
-		}
-		if ( strlen($lname) > 2 ) {
-			$merge_fields['LNAME'] = $lname;
-		}
-		if ( strlen($company) > 2 ) {
-			$merge_fields['COMPANY'] = $company;
-		}
-		
-		$args = array(
-			'method' => 'PATCH',
-			'headers' => array(
-				'Authorization' => 'Basic ' .base64_encode( 'user:'.MC_APIKEY )
-			),
-			'body' => json_encode( array(
-				'email_address' => $email,
-				'status' => 'subscribed',
-				'merge_fields' => $merge_fields,
-			) ),
-		);
-		$response = wp_remote_post( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members', $args );
-
-		return $response;
-	}
-
+	// Toon link naar de laatste B2B-nieuwsbrief
 	add_shortcode( 'latest_newsletter', 'get_latest_newsletter', 2 );
 
 	function get_latest_newsletter() {
