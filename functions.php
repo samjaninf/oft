@@ -23,7 +23,7 @@
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
 	function load_admin_css() {
-		wp_enqueue_style( 'oft-admin', get_stylesheet_directory_uri().'/admin.css', '1.1.1' );
+		wp_enqueue_style( 'oft-admin', get_stylesheet_directory_uri().'/admin.css', '1.1.2' );
 	}
 
 	// Sta HTML-attribuut 'target' toe in beschrijvingen van taxonomieën
@@ -1327,6 +1327,7 @@
 					array( 
 						'id' => '_empty_fee',
 						'label' => __( 'Leeggoed (&euro;)', 'oft-admin' ),
+						'wrapper_class' => 'important-for-catman',
 						'data_type' => 'price',
 					)
 				);
@@ -1595,11 +1596,11 @@
 		}
 
 		$primary = array(
-			'wrapper_class' => 'primary important-for-catman',
+			'wrapper_class' => 'primary',
 		);
 
 		$secondary = array(
-			'wrapper_class' => 'secondary important-for-catman',
+			'wrapper_class' => 'secondary',
 		);
 
 		$fat = array(
@@ -1658,6 +1659,7 @@
 					'id' => '_energy',
 					'label' => __( 'Energie', 'oft' ).' (kJ)'.$hint,
 					'type' => 'number',
+					'wrapper_class' => 'important-for-catman',
 					'custom_attributes' => array(
 						'step' => 'any',
 						'min' => '1',
