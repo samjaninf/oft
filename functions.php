@@ -2460,7 +2460,9 @@
 		// Nieuwsbriefformulieren
 		$mc_forms = array( 1054, 6757, 6756 );
 		if ( in_array( $posted_data['_wpcf7'], $mc_forms ) ) {
-			$posted_data['validation_error'] = __( 'Gelieve de fouten op te lossen.', 'oft' );
+			$msgs = $wpcf7->prop('messages');
+			write_log($msgs);
+
 			$posted_data['newsletter-email'] = strtolower( trim($posted_data['newsletter-email']) );
 			// Nog te verruimen tot hoofdletters na liggende streepjes
 			$posted_data['newsletter-name'] = ucwords( strtolower( trim($posted_data['newsletter-name']) ) );
@@ -2575,12 +2577,14 @@
 		// Probleem: naam zit hier nog in 1 veld, moeten er 2 worden
 		$parts = explode( ' ', $name, 2 );
 		$fname = trim($parts[0]);
-		$lname = trim($parts[1]);
 		if ( strlen($fname) > 2 ) {
 			$merge_fields['FNAME'] = $fname;
 		}
-		if ( strlen($lname) > 2 ) {
-			$merge_fields['LNAME'] = $lname;
+		if ( count($parts) > 1 ) {
+			$lname = trim($parts[1]);
+			if ( strlen($lname) > 2 ) {
+				$merge_fields['LNAME'] = $lname;
+			}
 		}
 		if ( strlen($company) > 2 ) {
 			$merge_fields['COMPANY'] = $company;
