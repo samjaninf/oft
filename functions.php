@@ -1256,8 +1256,6 @@
 	add_action( 'save_post', 'change_external_product_status', 10, 3 );
 
 	function change_external_product_status( $post_id, $post, $update ) {
-		global $sitepress;
-
 		if ( $post->post_status === 'trash' or $post->post_status === 'draft' ) {
 			return;
 		}
