@@ -1275,7 +1275,7 @@
 			$product->save();
 		} else {
 			// Update de OFT-productfiches enkel tijdens de ERP-sync
-			if ( get_option('oft_import_active') !== 'yes' and get_option('oft_erp_import_active') === 'yes' ) {
+			if ( get_option('oft_erp_import_active') === 'yes' ) {
 				// Enkel proberen aanmaken indien foto reeds aanwezig
 				if ( intval( $product->get_image_id() ) > 0 ) {
 					// Enkel in huidige taal van import aanmaken!
@@ -1410,15 +1410,15 @@
 				)
 			);
 
-			// PAS INSCHAKELEN INDIEN WIJNKIEZER AANGESLOTEN
-			// woocommerce_wp_textarea_input(
-			// 	array( 
-			// 		'id' => '_promo_text',
-			// 		'label' => __( 'Actuele promotekst', 'oft-admin' ),
-			// 		'desc_tip' => true,
-			// 		'description' => __( 'Dit tekstje dient enkel om te tonen aan particulieren in de wijnkiezer en de webshops. Te combineren met de actieprijs en -periode hierboven.', 'oft-admin' ),
-			// 	)
-			// );
+			woocommerce_wp_textarea_input(
+				array( 
+					'id' => '_promo_text',
+					'label' => __( 'Actuele promotekst', 'oft-admin' ),
+					'wrapper_class' => 'important-for-catman',
+					'desc_tip' => true,
+					'description' => __( 'Dit tekstje dient enkel om te tonen aan particulieren in de wijnkiezer en de webshops. Te combineren met de actieprijs en -periode hierboven.', 'oft-admin' ),
+				)
+			);
 
 		echo '</div>';
 
@@ -2217,11 +2217,14 @@
 			if ( count($cu) > 0 ) {
 				$cu_packaging_text = implode( ', ', $cu );
 				if ( floatval( $product->get_meta('_empty_fee') ) > 0 ) {
-					$cu_packaging_text .= ' '.__( 'statiegeld', 'oft' );
+					$cu_packaging_text .= ' ('.__( 'met statiegeld', 'oft' ).')';
 				}
 			}
 			if ( count($steh) > 0 ) {
 				$steh_packaging_text = implode( ', ', $steh );
+				if ( floatval( $product->get_meta('_empty_fee') ) > 0 ) {
+					$steh_packaging_text .= ' ('.__( 'met statiegeld', 'oft' ).')';
+				}
 			}
 		}
 
@@ -2317,6 +2320,7 @@
 		$total = $multiple * $subtotal;
 
 		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('pa_merk'), $templatecontent );
+		$templatecontent = str_replace( "###LOGO###", sanitize_title( $product->get_attribute('pa_merk'), 'oxfam-fair-trade' ), $templatecontent );
 		$templatecontent = str_replace( "###PERMALINK###", '<a href="'.$product->get_permalink().'">('.__( 'bekijk product online', 'oft' ).')</a>', $templatecontent );
 		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
 		$templatecontent = str_replace( "###IMAGE_URL###", $image_url, $templatecontent );
@@ -2702,6 +2706,8 @@
 	add_action( 'pmxi_before_xml_import', 'set_all_out_of_stock', 10, 1 );
 
 	function set_all_out_of_stock( $import_id ) {
+		update_option( 'oft_import_active', 'yes' );
+
 		// TIJDELIJK UITSCHAKELEN, B2CIMPORT.CSV GEEFT VOORRAADSTATUS NOG NIET DOOR
 		if ( $import_id == 14000 ) {
 			$args = array(
@@ -2722,10 +2728,8 @@
 				wp_reset_postdata();
 			}
 		}
-		if ( $import_id == 14 or $import_id == 22 ) {
+		if ( $import_id == 14 or $import_id == 22 or $import_id == 30 ) {
 			update_option( 'oft_erp_import_active', 'yes' );
-		} else {
-			update_option( 'oft_import_active', 'yes' );
 		}
 	}
 
@@ -2768,14 +2772,14 @@
 	add_action( 'pmxi_after_xml_import', 'rename_import_file', 10, 1 );
 
 	function rename_import_file( $import_id ) {
+		delete_option( 'oft_import_active' );
+		delete_option( 'oft_erp_import_active' );
+
 		if ( $import_id == 22 ) {
 			$old = WP_CONTENT_DIR."/B2CImport.csv";
 			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
 			rename( $old, $new );
 		}
-		
-		delete_option( 'oft_import_active' );
-		delete_option( 'oft_erp_import_active' );
 	}
 
 	// TE MOEILIJK, VOORLOPIG NIET GEBRUIKEN
@@ -3124,12 +3128,12 @@
 	
 	function log_product_term_updates( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ) {
 		// Enkel wijzigingen in de hoofdtaal loggen
-		if ( apply_filters( 'wpml_element_language_code', NULL, array( 'element_id'=> $object_id, 'element_type'=> 'product' ) ) === apply_filters( 'wpml_default_language', NULL ) ) {
+		if ( apply_filters( 'wpml_element_language_code', NULL, array( 'element_id'=> $object_id, 'element_type'=> 'product' ) ) !== apply_filters( 'wpml_default_language', NULL ) ) {
 			return;
 		}
 
 		// Log de data niet indien er een import loopt (doet een volledige delete/create i.p.v. update)
-		if ( get_option('oft_erp_import_active') === 'yes' or get_option('oft_import_active') === 'yes' ) {
+		if ( get_option('oft_import_active') === 'yes' ) {
 			// return;
 		}
 
@@ -3204,12 +3208,12 @@
 
 	function log_product_meta_changes( $meta_id, $post_id, $meta_key, $new_meta_value, $mode ) {
 		// Enkel wijzigingen in de hoofdtaal loggen
-		if ( apply_filters( 'wpml_element_language_code', NULL, array( 'element_id'=> $object_id, 'element_type'=> 'product' ) ) === apply_filters( 'wpml_default_language', NULL ) ) {
+		if ( apply_filters( 'wpml_element_language_code', NULL, array( 'element_id'=> $object_id, 'element_type'=> 'product' ) ) !== apply_filters( 'wpml_default_language', NULL ) ) {
 			return;
 		}
 
 		// Log de data niet indien er een import loopt (doet een volledige delete/create i.p.v. update)
-		if ( get_option('oft_erp_import_active') === 'yes' or get_option('oft_import_active') === 'yes' ) {
+		if ( get_option('oft_import_active') === 'yes' ) {
 			// return;
 		}
 
