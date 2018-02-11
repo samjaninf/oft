@@ -2743,6 +2743,7 @@
 	add_action( 'pmxi_saved_post', 'update_unit_price', 10, 1 );
 
 	function update_unit_price( $post_id, $price = false, $content = false, $unit = false, $from_database = true ) {
+		global $sitepress;
 		if ( get_option( 'oft_erp_import_active' ) === 'yes' ) {
 			$product = wc_get_product( $post_id );
 			if ( $product !== false ) {
