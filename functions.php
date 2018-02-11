@@ -2766,7 +2766,7 @@
 					if ( intval( $product->get_image_id() ) > 0 ) {
 						// Enkel in huidige taal van import aanmaken!
 						create_product_pdf( $product->get_id(), $sitepress->get_current_language() );
-						write_log("PRODUCT SHEET ".$product->sku()." UPDATED");
+						write_log("PRODUCT SHEET ".$product->get_sku()." UPDATED");
 					}
 				}
 			}
@@ -2795,6 +2795,14 @@
 				'timeout' => 180,
 			);
 			$response = wp_remote_get( site_url( '/wp-cron.php?import_id=22&action=trigger&import_key='.IMPORT_KEY ), $args );
+		}
+
+		if ( $import_id == 22 ) {
+			// Trigger de Franstalige import, de CSV-file staat er nog
+			$args = array(
+				'timeout' => 180,
+			);
+			// $response = wp_remote_get( site_url( '/wp-cron.php?import_id=30&action=trigger&import_key='.IMPORT_KEY ), $args );
 		}
 
 		if ( $import_id == 22 ) {
