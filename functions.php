@@ -193,9 +193,9 @@
 
 	// Extra metadata definiëren en bewaren op partnertaxonomie
 	// add_action( 'product_partner_add_form_fields', 'add_partner_node_field', 10, 2 );
-	// add_action( 'created_product_partner', 'save_partner_node_meta', 10, 2 );
+	add_action( 'created_product_partner', 'save_partner_node_meta', 10, 2 );
 	add_action( 'product_partner_edit_form_fields', 'edit_partner_node_field', 10, 2 );
-	add_action( 'edited_product_partner', 'update_partner_node_meta', 10, 2 );
+	add_action( 'edited_product_partner', 'save_partner_node_meta', 10, 2 );
 	add_action( 'admin_enqueue_scripts', 'load_wp_media' );
 	add_action( 'admin_footer', 'add_media_library_script' );
 
@@ -218,14 +218,21 @@
 	}
 
 	function save_partner_node_meta( $term_id, $tt_id ) {
-		if ( ! empty($_POST['partner_node']) ) {
-			add_term_meta( $term_id, 'partner_node', absint($_POST['partner_node']), true );
+		write_log($_POST);
+		if ( isset($_POST['partner_node']) ) {
+			update_term_meta( $term_id, 'partner_node', absint($_POST['partner_node']) );
+		} else {
+			update_term_meta( $term_id, 'partner_node', '' );
 		}
-		if ( ! empty($_POST['partner_type']) ) {
-			add_term_meta( $term_id, 'partner_type', sanitize_text_field($_POST['partner_type']), true );
+		if ( isset($_POST['partner_type']) ) {
+			update_term_meta( $term_id, 'partner_type', sanitize_text_field($_POST['partner_type']) );
+		} else {
+			update_term_meta( $term_id, 'partner_type', '' );
 		}
-		if ( ! empty($_POST['partner_image_id']) ) {
-			add_term_meta( $term_id, 'partner_image_id', absint($_POST['partner_image_id']), true );
+		if ( isset($_POST['partner_image_id']) ) {
+			update_term_meta( $term_id, 'partner_image_id', absint($_POST['partner_image_id']) );
+		} else {
+			update_term_meta( $term_id, 'partner_image_id', '' );
 		}
 	}
 
@@ -265,25 +272,6 @@
 				</td>
 			</tr>
 		<?php
-	}
-
-	function update_partner_node_meta( $term_id, $tt_id ) {
-		write_log($_POST);
-		if ( isset($_POST['partner_node']) ) {
-			update_term_meta( $term_id, 'partner_node', absint($_POST['partner_node']) );
-		} else {
-			update_term_meta( $term_id, 'partner_node', '' );
-		}
-		if ( ! empty($_POST['partner_type']) ) {
-			update_term_meta( $term_id, 'partner_type', sanitize_text_field($_POST['partner_type']) );
-		} else {
-			update_term_meta( $term_id, 'partner_node', '' );
-		}
-		if ( ! empty($_POST['partner_image_id']) ) {
-			update_term_meta( $term_id, 'partner_image_id', absint($_POST['partner_image_id']) );
-		} else {
-			update_term_meta( $term_id, 'partner_node', '' );
-		}
 	}
 
 	function load_wp_media() {
