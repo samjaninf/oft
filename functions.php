@@ -1270,10 +1270,13 @@
 			return;
 		}
 
-		if ( $product->get_attribute('pa_merk') !== 'Oxfam Fair Trade' ) {
+		$brand = $product->get_attribute('pa_merk');
+		if ( $brand !== 'Oxfam Fair Trade' ) {
 			$product->set_status( 'private' );
 			$product->save();
-		} else {
+		}
+
+		if ( $brand === 'Oxfam Fair Trade' or $brand === 'Traidcraft' ) {
 			// Update de OFT-productfiches enkel tijdens de ERP-sync
 			if ( get_option('oft_erp_import_active') === 'yes' ) {
 				// Enkel proberen aanmaken indien foto reeds aanwezig
@@ -3208,7 +3211,7 @@
 
 	function log_product_meta_changes( $meta_id, $post_id, $meta_key, $new_meta_value, $mode ) {
 		// Enkel wijzigingen in de hoofdtaal loggen
-		if ( apply_filters( 'wpml_element_language_code', NULL, array( 'element_id'=> $object_id, 'element_type'=> 'product' ) ) !== apply_filters( 'wpml_default_language', NULL ) ) {
+		if ( apply_filters( 'wpml_element_language_code', NULL, array( 'element_id'=> $post_id, 'element_type'=> 'product' ) ) !== apply_filters( 'wpml_default_language', NULL ) ) {
 			return;
 		}
 
