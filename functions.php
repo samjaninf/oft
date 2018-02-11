@@ -1272,13 +1272,14 @@
 			$product->save();
 		}
 
+		// Update de productfiches na een handmatige bewerking
 		if ( $brand === 'Oxfam Fair Trade' or $brand === 'Traidcraft' ) {
-			// Update de OFT-productfiches enkel tijdens de ERP-sync
-			if ( get_option('oft_erp_import_active') === 'yes' ) {
+			if ( get_option('oft_import_active') !== 'yes' ) {
 				// Enkel proberen aanmaken indien foto reeds aanwezig
 				if ( intval( $product->get_image_id() ) > 0 ) {
-					// Enkel in huidige taal van import aanmaken!
-					create_product_pdf( $product->get_id(), $sitepress->get_current_language() );
+					create_product_pdf( $product->get_id(), 'nl' );
+					create_product_pdf( $product->get_id(), 'fr' );
+					// create_product_pdf( $product->get_id(), 'en' );
 				}
 			}
 		}
@@ -2760,6 +2761,15 @@
 					$product->delete_meta_data( '_unit_price' );
 				}
 				$product->save();
+
+				// Maak de OFT-productfiche aan (indien foto aanwezig)
+				if ( $product->get_attribute('pa_merk') === 'Oxfam Fair Trade' ) {
+					if ( intval( $product->get_image_id() ) > 0 ) {
+						// Enkel in huidige taal van import aanmaken!
+						create_product_pdf( $product->get_id(), $sitepress->get_current_language() );
+						write_log("PRODUCT SHEET ".$product->sku()." UPDATED");
+					}
+				}
 			}
 		}
 	}
@@ -2780,38 +2790,18 @@
 		delete_option( 'oft_import_active' );
 		delete_option( 'oft_erp_import_active' );
 
+		if ( $import_id == 14 ) {
+			// Trigger de Franstalige import, de CSV-file staat er nog
+			$args = array(
+				'timeout' => 180,
+			);
+			$response = wp_remote_get( site_url( '/wp-cron.php?import_id=22&action=trigger&import_key='.IMPORT_KEY ), $args );
+		}
+
 		if ( $import_id == 22 ) {
 			$old = WP_CONTENT_DIR."/B2CImport.csv";
 			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
 			rename( $old, $new );
-		}
-	}
-
-	// TE MOEILIJK, VOORLOPIG NIET GEBRUIKEN
-	function update_origin( $post_id, $partners, $from_database = true ) {
-		$product = wc_get_product( $post_id );
-		if ( $product !== false ) {
-			if ( $from_database = true ) {
-				$partners = get_country_terms_by_product( $product );
-			}
-			if ( ! empty( $partners ) ) {
-				$term_taxonomy_ids = wp_set_object_terms( $post_id, array_keys($partners), 'pa_herkomst', true );
-				$data = $product->get_meta( '_product_attributes' );
-				unset($data['pa_herkomst']);
-				$data['pa_herkomst'] = array(
-					'name' => 'pa_herkomst',
-					'value' => '',
-					'position' => '0',
-					'is_visible' => '1',
-					'is_variation' => '0',
-					'is_taxonomy' => '1',
-				);
-				$product->update_meta_data( '_product_attributes', $data );
-			} else {
-				// Indien er geen partners zijn: verwijder het oude attribuut uit de array
-				$product->update_meta_data( '_product_attributes', $data );
-			}
-			$product->save();
 		}
 	}
 
@@ -3139,7 +3129,7 @@
 
 		// Log de data niet indien er een import loopt (doet een volledige delete/create i.p.v. update)
 		if ( get_option('oft_import_active') === 'yes' ) {
-			// return;
+			return;
 		}
 
 		$watched_taxonomies = array(
@@ -3219,7 +3209,7 @@
 
 		// Log de data niet indien er een import loopt (doet een volledige delete/create i.p.v. update)
 		if ( get_option('oft_import_active') === 'yes' ) {
-			// return;
+			return;
 		}
 
 		$watched_metas = array(
