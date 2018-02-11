@@ -96,12 +96,12 @@
 		remove_action( 'admin_notices', '_alone_admin_notice_theme_message' );
 	}
 
-	// Alle verwijzingen naar promoties (badge, doorstreepte adviesprijs) uitschakelen
+	// Alle verwijzingen naar promoties (badge, doorstreepte adviesprijs) uitschakelen in B2B-setting
 	add_filter( 'woocommerce_sale_flash', '__return_false' );
-	add_filter( 'woocommerce_format_sale_price', 'format_sale_price_as_regular' );
+	add_filter( 'woocommerce_format_sale_price', 'format_sale_as_regular_price', 10, 3 );
 
-	function format_sale_price_as_regular( $price, $regular_price, $sale_price ) {
-		return $regular_price;
+	function format_sale_as_regular_price( $price, $regular_price, $sale_price ) {
+		return wc_price($regular_price);
 	}
 
 	// Laad niet-prioritaire JavaScript (die bv. moet wachten op jQuery) 
