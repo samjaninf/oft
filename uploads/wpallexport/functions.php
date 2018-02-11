@@ -21,17 +21,37 @@
 		return implode( ', ', $may_contain );
 	}
 
-	function transform_net_unit( $unit = 'g' ) {
-		if ( $unit === 'cl' ) {
-			return '€/l';
+	function format_price( $price ) {
+		if ( $price !== false and floatval($price) !== 0 ) {
+			$price = number_format( floatval($price), 2, ',', '' );
+		}
+		return $price;
+	}
+
+	function format_unit_price( $product_id ) {
+		$unit_price = format_price( get_post_meta( $product_id, '_unit_price', true ) );
+		$unit = get_post_meta( $product_id, '_net_unit', true );
+		if ( $unit_price !== false ) {
+			if ( $unit === 'cl' ) {
+				return '€/l '.$unit_price;
+			} else {
+				return '€/kg '.$unit_price;
+			}
 		} else {
-			return '€/kg';
+			return '';
 		}
 	}
 
 	function get_net_content( $product_id ) {
-		if ( get_post_meta( $product_id, '_net_content', true ) and get_post_meta( $product_id, '_net_unit', true ) ) {
-			return get_post_meta( $product_id, '_net_content', true ).' '.get_post_meta( $product_id, '_net_unit', true );
+		$content = get_post_meta( $product_id, '_net_content', true );
+		$unit = get_post_meta( $product_id, '_net_unit', true );
+		if ( $content !== false and $unit !== false ) {
+			$content = intval( str_replace( ',', '', $content ) );
+			if ( $content >= 1000 ) {
+				$content = $content/1000;
+				$unit = 'k'.$unit;
+			}
+			return $content.' '.$unit;
 		} else {
 			return '';
 		}
@@ -122,6 +142,20 @@
 		}
 	}
 
+	function get_partner_and_country( $string ) {
+		$terms = explode( '|', $string );
+		foreach ( $terms as $term ) {
+			$parts = explode( '>', $term );
+			$partners[] = $parts[2].', '.$parts[1];
+		}
+		if ( count($partners) > 0 ) {
+			sort($partners);
+			return implode( ', ', $partners );
+		} else {
+			return '';
+		}
+	}
+
 	function get_bio_label( $bio ) {
 		if ( $bio == 'Ja' ) {
 			return ':biobol.psd';
@@ -138,5 +172,28 @@
 
 	function get_product_image( $sku ) {
 		return ':'.$sku.'.jpg';
+	}
+
+	function get_oww_page( $node ) {
+		if ( intval($node) > 0 ) {
+			return 'https://www.oxfamwereldwinkels.be/node/'.$node;
+		} else {
+			return '';
+		}
+	}
+
+	function get_lowest_terms( $string ) {
+		$terms = explode( '|', $string );
+		foreach ( $terms as $term ) {
+			$parts = explode( '>', $term );
+			$lowest_terms[] = $parts[count($parts)-1];
+		}
+		if ( count($lowest_terms) > 0 ) {
+			$single_terms = array_unique($lowest_terms);
+			sort($single_terms);
+			return implode( ', ', $single_terms );
+		} else {
+			return '';
+		}
 	}
 ?>

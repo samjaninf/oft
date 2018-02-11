@@ -218,7 +218,6 @@
 	}
 
 	function save_partner_node_meta( $term_id, $tt_id ) {
-		write_log($_POST);
 		if ( isset($_POST['partner_node']) ) {
 			update_term_meta( $term_id, 'partner_node', absint($_POST['partner_node']) );
 		} else {
