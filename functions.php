@@ -1275,7 +1275,7 @@
 			$product->save();
 		} else {
 			// Update de OFT-productfiches enkel tijdens de ERP-sync
-			if ( get_option('oft_erp_import_active') === 'yes' ) {
+			if ( get_option('oft_import_active') !== 'yes' and get_option('oft_erp_import_active') === 'yes' ) {
 				// Enkel proberen aanmaken indien foto reeds aanwezig
 				if ( intval( $product->get_image_id() ) > 0 ) {
 					// Enkel in huidige taal van import aanmaken!
@@ -3120,10 +3120,14 @@
 	add_action( 'set_object_terms', 'log_product_term_updates', 100, 6 );
 	
 	function log_product_term_updates( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ) {
-		global $sitepress;
 		// Enkel wijzigingen in de hoofdtaal loggen
-		if ( $sitepress->get_current_language() === apply_filters( 'wpml_default_language', NULL ) ) {
+		if ( apply_filters( 'wpml_element_language_code', NULL, array( 'element_id'=> $object_id, 'element_type'=> 'product' ) ) === apply_filters( 'wpml_default_language', NULL ) ) {
 			return;
+		}
+
+		// Log de data niet indien er een import loopt (doet een volledige delete/create i.p.v. update)
+		if ( get_option('oft_erp_import_active') === 'yes' or get_option('oft_import_active') === 'yes' ) {
+			// return;
 		}
 
 		$watched_taxonomies = array(
@@ -3196,15 +3200,14 @@
 	}
 
 	function log_product_meta_changes( $meta_id, $post_id, $meta_key, $new_meta_value, $mode ) {
-		global $sitepress;
 		// Enkel wijzigingen in de hoofdtaal loggen
-		if ( $sitepress->get_current_language() === apply_filters( 'wpml_default_language', NULL ) ) {
+		if ( apply_filters( 'wpml_element_language_code', NULL, array( 'element_id'=> $object_id, 'element_type'=> 'product' ) ) === apply_filters( 'wpml_default_language', NULL ) ) {
 			return;
 		}
 
 		// Log de data niet indien er een import loopt (doet een volledige delete/create i.p.v. update)
 		if ( get_option('oft_erp_import_active') === 'yes' or get_option('oft_import_active') === 'yes' ) {
-			return;
+			// return;
 		}
 
 		$watched_metas = array(
