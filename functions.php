@@ -2241,6 +2241,9 @@
 			$storage_text = implode( '. ', $store ).'.';
 		}
 
+		$prev_lang = $sitepress->get_current_language();
+		$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
+
 		$icons = array();
 		foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
 			$icons[] = $term->slug;
@@ -2258,9 +2261,6 @@
 		if ( in_array( 'lactosevrij', $icons ) ) {
 			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-lactose-free.png" style="width: 60px;">';
 		}
-
-		$prev_lang = $sitepress->get_current_language();
-		$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
 		
 		$labels = array();
 		if ( mb_strtolower( $product->get_attribute('pa_bio') ) === 'ja' ) {
@@ -2366,6 +2366,7 @@
 			$pdffile->pdf->setTitle( __( 'Productfiche', 'oft' ).' '.$sku );
 			$pdffile->writeHTML($templatecontent);
 			$pdffile->output( WP_CONTENT_DIR.'/sheets/'.$language.'/'.$sku.'.pdf', 'F' );
+			write_log("PRODUCT SHEET ".$product->get_sku()." UPDATED (".mb_strtoupper($language).")");
 		} catch ( Html2PdfException $e ) {
 			$formatter = new ExceptionFormatter($e);
 			add_filter( 'redirect_post_location', 'add_html2pdf_notice_var', 99 );
@@ -2766,7 +2767,6 @@
 					if ( intval( $product->get_image_id() ) > 0 ) {
 						// Enkel in huidige taal van import aanmaken!
 						create_product_pdf( $product->get_id(), $sitepress->get_current_language() );
-						write_log("PRODUCT SHEET ".$product->get_sku()." UPDATED");
 					}
 				}
 			}
