@@ -96,6 +96,14 @@
 		remove_action( 'admin_notices', '_alone_admin_notice_theme_message' );
 	}
 
+	// Alle verwijzingen naar promoties (badge, doorstreepte adviesprijs) uitschakelen
+	add_filter( 'woocommerce_sale_flash', '__return_false' );
+	add_filter( 'woocommerce_format_sale_price', 'format_sale_price_as_regular' );
+
+	function format_sale_price_as_regular( $price, $regular_price, $sale_price ) {
+		return $regular_price;
+	}
+
 	// Laad niet-prioritaire JavaScript (die bv. moet wachten op jQuery) 
 	add_action( 'wp_footer', 'add_scripts_to_front_end' );
 	
