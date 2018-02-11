@@ -653,8 +653,7 @@
 				<td>
 				<?php
 					if ( is_array( $allergens['contains'] ) ) {
-						// Laatste komma vervangen door voegwoord
-						echo str_lreplace( ', ', ' '.__( 'en', 'oft' ).' ', implode( ', ', $allergens['contains'] ) );
+						echo implode( ', ', $allergens['contains'] );
 					} else {
 						// MINDER EXPLICIET TOT ALLES INGELEZEN IS
 						// _e( 'geen meldingsplichtige allergenen', 'oft' );
@@ -668,8 +667,7 @@
 				<td>
 				<?php
 					if ( is_array( $allergens['may-contain'] ) ) {
-						// Laatste komma vervangen door voegwoord
-						echo str_lreplace( ', ', ' '.__( 'en', 'oft' ).' ', implode( ', ', $allergens['may-contain'] ) );
+						echo implode( ', ', $allergens['may-contain'] );
 					} else {
 						// MINDER EXPLICIET TOT ALLES INGELEZEN IS
 						// _e( 'geen meldingsplichtige allergenen', 'oft' );
@@ -2191,15 +2189,14 @@
 		$allergens = get_allergens($product);
 		if ( $allergens['contains'] !== false or $allergens['may-contain'] !== false ) {
 			if ( is_array( $allergens['contains'] ) ) {
-				$allergens_text .= __( 'Bevat', 'oft' ).' '.implode( ', ', $allergens['contains'] ).'. ';
+				// Laatste komma vervangen door voegwoord
+				$allergens_text .= __( 'Bevat', 'oft' ).' '.str_lreplace( ', ', ' '.__( 'en', 'oft' ).' ', implode( ', ', $allergens['contains'] ) ).'. ';
 			}
 			if ( is_array( $allergens['may-contain'] ) ) {
-				$allergens_text .= __( 'Kan sporen bevatten van', 'oft' ).' '.implode( ', ', $allergens['may-contain'] ).'.';
+				$allergens_text .= __( 'Kan sporen bevatten van', 'oft' ).' '.str_lreplace( ', ', ' '.__( 'en', 'oft' ).' ', implode( ', ', $allergens['may-contain'] ) ).'.';
 			}
 		} else {
-			// MINDER EXPLICIET TOT ALLES INGELEZEN IS
-			// $allergens_text = __( 'Geen meldingsplichtige allergenen aanwezig.', 'oft' );
-			$allergens_text = __( '/', 'oft' );
+			$allergens_text = __( 'Geen meldingsplichtige allergenen aanwezig.', 'oft' );
 		}
 
 		$packaging = get_the_terms( $product->get_id(), 'product_packaging' );
