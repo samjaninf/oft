@@ -2280,35 +2280,13 @@
 			$image_url = '';
 		}
 
-		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
-		$templatecontent = str_replace( "###PRICE###", wc_price( $product->get_regular_price() ), $templatecontent );
-		$templatecontent = str_replace( "###PERMALINK###", '<a href="'.$product->get_permalink().'">('.__( 'bekijk product online', 'oft' ).')</a>', $templatecontent );
-		$templatecontent = str_replace( "###NET_CONTENT###", $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'), $templatecontent );
-		// Verwijder eventuele enters door HTML-tags
-		$templatecontent = str_replace( "###DESCRIPTION###", preg_replace( '/<[^>]+>/', ' ', $product->get_short_description() ), $templatecontent );
-		$templatecontent = str_replace( "###ORIGIN###", $origin_text, $templatecontent );
-		$templatecontent = str_replace( "###INGREDIENTS_OPTIONAL###", $ingredients_text, $templatecontent );
-		$templatecontent = str_replace( "###LABELS_OPTIONAL###", $labels_text, $templatecontent );
-		$templatecontent = str_replace( "###FAIRTRADE_SHARE###", $product->get_meta('_fairtrade_share'), $templatecontent );
-		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('pa_merk'), $templatecontent );
-		$templatecontent = str_replace( "###ALLERGENS###", $allergens_text, $templatecontent );
-		$templatecontent = str_replace( "###SHOPPLUS###", preg_replace( '/[a-zA-Z]/', '', $product->get_meta('_shopplus_sku') ), $templatecontent );
-		$templatecontent = str_replace( "###MULTIPLE###", $product->get_meta('_multiple'), $templatecontent );
-		$templatecontent = str_replace( "###SKU###", $sku, $templatecontent );
-		$templatecontent = str_replace( "###CU_PACKAGING###", $cu_packaging_text, $templatecontent );
-		$templatecontent = str_replace( "###STEH_PACKAGING###", $steh_packaging_text, $templatecontent );
-		$templatecontent = str_replace( "###STORAGE_CONDITIONS###", $storage_text, $templatecontent );
-		$templatecontent = str_replace( "###IMAGE_URL###", $image_url, $templatecontent );
-		$templatecontent = str_replace( "###ICONS###", $icons_text, $templatecontent );
-		
 		// Let op met fatale error bij het proberen aanmaken van een ongeldige barcode!
 		if ( check_digit_ean13( $product->get_meta('_cu_ean') ) ) {
 			$cu_ean = format_pdf_ean13( $product->get_meta('_cu_ean') );
 		} else {
 			$cu_ean = '/';
 		}
-		$templatecontent = str_replace( "###CU_EAN###", $cu_ean, $templatecontent );
-		
+
 		if ( strlen( $product->get_meta('_steh_ean') ) >= 8 ) {
 			if ( check_digit_ean13( $product->get_meta('_steh_ean') ) ) {
 				$steh_ean = format_pdf_ean13( $product->get_meta('_steh_ean') );
@@ -2319,26 +2297,58 @@
 		} else {
 			$steh_ean = '/';
 		}
-		$templatecontent = str_replace( "###STEH_EAN###", $steh_ean, $templatecontent );
 
 		if ( intval( $product->get_meta('_shelf_life') ) > 0 ) {
 			$shelf_text = format_pdf_block( __( 'Houdbaarheid na productie', 'oft' ), $product->get_meta('_shelf_life').' '.__( 'dagen', 'oft' ) );
 		} else {
 			$shelf_text = '';
 		}
-		$templatecontent = str_replace( "###SHELF_LIFE_OPTIONAL###", $shelf_text, $templatecontent );
 
-		$templatecontent = str_replace( "###CU_DIMENSIONS###", wc_format_dimensions( $product->get_dimensions(false) ), $templatecontent );
 		$steh_dimensions = array(
 			'length' => $product->get_meta('_steh_length'),
 			'width' => $product->get_meta('_steh_width'),
 			'height' => $product->get_meta('_steh_height'),
 		);
+
+		$multiple = intval( $product->get_meta('_multiple') );
+		$number_of_layers = intval( $product->get_meta('_pal_number_of_layers') );
+		$number_per_layer = intval( $product->get_meta('_pal_number_per_layer') );
+		$subtotal = $number_of_layers * $number_per_layer;
+		$total = $multiple * $subtotal;
+
+		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('pa_merk'), $templatecontent );
+		$templatecontent = str_replace( "###PERMALINK###", '<a href="'.$product->get_permalink().'">('.__( 'bekijk product online', 'oft' ).')</a>', $templatecontent );
+		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
+		$templatecontent = str_replace( "###IMAGE_URL###", $image_url, $templatecontent );
+		// Verwijder eventuele enters door HTML-tags
+		$templatecontent = str_replace( "###DESCRIPTION###", preg_replace( '/<[^>]+>/', ' ', $product->get_short_description() ), $templatecontent );
+		$templatecontent = str_replace( "###INGREDIENTS_OPTIONAL###", $ingredients_text, $templatecontent );
+		$templatecontent = str_replace( "###ORIGIN###", $origin_text, $templatecontent );
+		$templatecontent = str_replace( "###FAIRTRADE_SHARE###", $product->get_meta('_fairtrade_share'), $templatecontent );
+		$templatecontent = str_replace( "###ICONS###", $icons_text, $templatecontent );
+		
+		$templatecontent = str_replace( "###ALLERGENS###", $allergens_text, $templatecontent );
+		$templatecontent = str_replace( "###LABELS_OPTIONAL###", $labels_text, $templatecontent );
+		$templatecontent = str_replace( "###SHOPPLUS###", preg_replace( '/[a-zA-Z]/', '', $product->get_meta('_shopplus_sku') ), $templatecontent );
+		$templatecontent = str_replace( "###CU_PACKAGING###", $cu_packaging_text, $templatecontent );
+		$templatecontent = str_replace( "###CU_DIMENSIONS###", wc_format_dimensions( $product->get_dimensions(false) ), $templatecontent );
+		$templatecontent = str_replace( "###CU_EAN###", $cu_ean, $templatecontent );
+		
+		$templatecontent = str_replace( "###MULTIPLE###", $multiple, $templatecontent );
+		$templatecontent = str_replace( "###SKU###", $sku, $templatecontent );
+		$templatecontent = str_replace( "###STEH_PACKAGING###", $steh_packaging_text, $templatecontent );
 		$templatecontent = str_replace( "###STEH_DIMENSIONS###", wc_format_dimensions($steh_dimensions), $templatecontent );
-		$templatecontent = str_replace( "###NUMBER_OF_LAYERS###", $product->get_meta('_pal_number_of_layers'), $templatecontent );
-		$templatecontent = str_replace( "###NUMBER_PER_LAYER###", $product->get_meta('_pal_number_per_layer'), $templatecontent );
-		$templatecontent = str_replace( "###TOTAL###", intval( $product->get_meta('_pal_number_of_layers') ) * intval( $product->get_meta('_pal_number_per_layer') ), $templatecontent );
+		$templatecontent = str_replace( "###STEH_EAN###", $steh_ean, $templatecontent );
+		
+		$templatecontent = str_replace( "###NET_CONTENT###", $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'), $templatecontent );
+		$templatecontent = str_replace( "###STORAGE_CONDITIONS###", $storage_text, $templatecontent );
+		$templatecontent = str_replace( "###SHELF_LIFE_OPTIONAL###", $shelf_text, $templatecontent );
+		$templatecontent = str_replace( "###NUMBER_OF_LAYERS###", $number_of_layers, $templatecontent );
+		$templatecontent = str_replace( "###NUMBER_PER_LAYER###", $number_per_layer, $templatecontent );
+		$templatecontent = str_replace( "###SUBTOTAL###", $subtotal, $templatecontent );
+		$templatecontent = str_replace( "###TOTAL###", $total, $templatecontent );
 		$templatecontent = str_replace( "###INTRASTAT###", $product->get_meta('_intrastat'), $templatecontent );
+		
 		$templatecontent = str_replace( "###FOOTER###", sprintf( __( 'Aangemaakt op %s', 'oft' ), date_i18n( 'l j F Y \o\m G\ui' ) ), $templatecontent );
 		
 		try {
