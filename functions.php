@@ -2180,6 +2180,12 @@
 		$templatecontent = fread( $templatefile, filesize($templatelocatie) );
 		$sku = $product->get_sku();
 
+		if ( $product->get_status() === 'publish' ) {
+			$permalink = '<a href="'.$product->get_permalink().'">('.__( 'bekijk product online', 'oft' ).')</a>';
+		} else {
+			$permalink = ' ';
+		}
+
 		if ( $partners = get_partner_terms_by_product($product) ) {
 			$origin_text = __( 'Partners:', 'oft' ).' '.strip_tags( implode( ', ', $partners ) );
 		} else {
@@ -2332,7 +2338,7 @@
 
 		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('pa_merk'), $templatecontent );
 		$templatecontent = str_replace( "###LOGO###", sanitize_title( $product->get_attribute('pa_merk'), 'oxfam-fair-trade' ), $templatecontent );
-		$templatecontent = str_replace( "###PERMALINK###", '<a href="'.$product->get_permalink().'">('.__( 'bekijk product online', 'oft' ).')</a>', $templatecontent );
+		$templatecontent = str_replace( "###PERMALINK###", $permalink, $templatecontent );
 		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
 		$templatecontent = str_replace( "###IMAGE_URL###", $image_url, $templatecontent );
 		// Verwijder eventuele enters door HTML-tags
@@ -3230,6 +3236,7 @@
 
 		$watched_metas = array(
 			'_regular_price',
+			'_sale_price',
 			'_thumbnail_id',
 			'_tax_class',
 			'_weight',
