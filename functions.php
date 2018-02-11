@@ -2488,7 +2488,7 @@
 						$posted_data['validation_error'] .= ' '.__( 'We werkten je gegevens bij.', 'oft' );
 					}
 				} else {
-					$posted_data['validation_error'] = sprintf( __( 'Je was al eens geabonneerd op onze nieuwsbrief!', 'oft' ), $signup_text );
+					$posted_data['validation_error'] = sprintf( __( 'Je was vroeger al eens geabonneerd op onze nieuwsbrief!', 'oft' ), $signup_text );
 					// Zet de gebruiker weer op 'subscribed' en patch de bestaande gegevens
 					$updated = update_user_in_mailchimp_list( $body->merge_fields, $posted_data['newsletter-email'], $posted_data['newsletter-name'] );
 					if ( $updated['response']['code'] == 200 ) {
