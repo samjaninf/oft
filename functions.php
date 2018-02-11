@@ -2216,6 +2216,9 @@
 			}
 			if ( count($cu) > 0 ) {
 				$cu_packaging_text = implode( ', ', $cu );
+				if ( floatval( $product->get_meta('_empty_fee') ) > 0 ) {
+					$cu_packaging_text .= ' '.__( 'statiegeld', 'oft' );
+				}
 			}
 			if ( count($steh) > 0 ) {
 				$steh_packaging_text = implode( ', ', $steh );
