@@ -654,7 +654,7 @@
 				<?php
 					if ( is_array( $allergens['contains'] ) ) {
 						// Laatste komma vervangen door voegwoord
-						echo str_lreplace( ',', __( 'en', 'oft'), implode( ', ', $allergens['contains'] ) );
+						echo str_lreplace( ', ', ' '.__( 'en', 'oft' ).' ', implode( ', ', $allergens['contains'] ) );
 					} else {
 						// MINDER EXPLICIET TOT ALLES INGELEZEN IS
 						// _e( 'geen meldingsplichtige allergenen', 'oft' );
@@ -669,7 +669,7 @@
 				<?php
 					if ( is_array( $allergens['may-contain'] ) ) {
 						// Laatste komma vervangen door voegwoord
-						echo str_lreplace( ',', __( 'en', 'oft'), implode( ', ', $allergens['may-contain'] ) );
+						echo str_lreplace( ', ', ' '.__( 'en', 'oft' ).' ', implode( ', ', $allergens['may-contain'] ) );
 					} else {
 						// MINDER EXPLICIET TOT ALLES INGELEZEN IS
 						// _e( 'geen meldingsplichtige allergenen', 'oft' );
@@ -3321,9 +3321,9 @@
 
 	// Laatste voorkomen van een substring vervangen
 	function str_lreplace( $search, $replace, $subject ) {
-		$pos = strrpos($subject, $search);
+		$pos = strrpos( $subject, $search );
 		if ( $pos !== false ) {
-			$subject = substr_replace($subject, $replace, $pos, strlen($search));
+			$subject = substr_replace( $subject, $replace, $pos, strlen($search) );
 		}
 		return $subject;
 	}
