@@ -436,34 +436,43 @@ body.search {
 /*  FOOTER  */
 /************/
 
-.widget {
-	font-weight: 300;
+.bt-footer-widgets {
+	padding-top: 30px;
+	padding-bottom: 30px;
 
-	.post-date,
-	.wpcf7-form label {
-		font-weight: 300 !important;
-	}
+	.widget {
+		font-weight: 300;
 
-	.textwidget > a {
-		text-decoration: underline !important;
-		text-underline-position: under !important;
-		-webkit-text-underline-position: under !important;
-		letter-spacing: 1px !important;
-		
-		&:hover {
-			text-decoration: none !important;
+		.widget-title {
+			margin: 25px 0px;
+		}
+
+		.post-date,
+		.wpcf7-form label {
+			font-weight: 300 !important;
+		}
+
+		.textwidget > a {
+			text-decoration: underline !important;
+			text-underline-position: under !important;
+			-webkit-text-underline-position: under !important;
+			letter-spacing: 1px !important;
+			
+			&:hover {
+				text-decoration: none !important;
+			}
 		}
 	}
-}
 
-.fw-side-posts-list li .posts-content {
-	width: 100%;
-	padding-top: 4px;
+	.fw-side-posts-list li .posts-content {
+		width: 100%;
+		padding-top: 4px;
 
-	a.post-title {
-		letter-spacing: 1px !important;
-		color: $black-title;
-		font-weight: 700;
+		a.post-title {
+			letter-spacing: 1px !important;
+			color: $black-title;
+			font-weight: 700;
+		}
 	}
 }
 
