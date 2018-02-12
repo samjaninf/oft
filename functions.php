@@ -999,7 +999,7 @@
 		$args = array(
 			'labels' => $labels,
 			'description' => __( 'Duid de eigenschappen van het product aan', 'oft' ),
-			'public' => false,
+			'public' => true,
 			'publicly_queryable' => false,
 			'hierarchical' => true,
 			'show_ui' => true,
