@@ -184,7 +184,7 @@
 			// Slugs van custom taxonomieën kunnen helaas niet vertaald worden 
 			'rewrite' => array( 'slug' => 'herkomst', 'with_front' => true, 'hierarchical' => true ),
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
+			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -363,7 +363,7 @@
 			'show_admin_column' => true,
 			'query_var' => true,
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken maar niet om toe te voegen / te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'update_core', 'delete_terms' => 'update_core' ),
+			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'update_core', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'allergeen', 'with_front' => false, 'hierarchical' => true ),
 		);
 
@@ -406,7 +406,7 @@
 			'show_in_quick_edit' => false,
 			'show_admin_column' => true,
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
+			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
 			// In de praktijk niet bereikbaar op deze URL want niet publiek!
 			'rewrite' => array( 'slug' => $name, 'with_front' => false, 'hierarchical' => false ),
 		);
@@ -1011,7 +1011,7 @@
 			'show_admin_column' => true,
 			'query_var' => true,
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken maar niet om toe te voegen / te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'update_core', 'delete_terms' => 'update_core' ),
+			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'update_core', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'eco', 'with_front' => false, 'hierarchical' => false ),
 			// ZORGT ERVOOR DAT DE ID ALS TERM OPGESLAGEN WORDT, NIET BRUIKBAAR
 			// 'meta_box_cb' => 'post_categories_meta_box',
@@ -1056,7 +1056,7 @@
 			'show_admin_column' => true,
 			'query_var' => true,
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
+			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'packaging', 'with_front' => false, 'hierarchical' => true ),
 		);
 
@@ -1097,7 +1097,7 @@
 			'show_admin_column' => true,
 			'query_var' => true,
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
+			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'storage', 'with_front' => false, 'hierarchical' => false ),
 			// ZORGT ERVOOR DAT DE ID ALS TERM OPGESLAGEN WORDT, NIET BRUIKBAAR
 			// 'meta_box_cb' => 'post_categories_meta_box',
