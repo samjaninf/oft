@@ -613,7 +613,7 @@
 			
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php _e( 'Inhoud', 'oft' ); ?></th>
+				<th><?php _e( 'Netto-inhoud', 'oft' ); ?></th>
 				<td><?php echo $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'); ?></td>
 			</tr>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
@@ -681,8 +681,8 @@
 		if ( $has_row ) {
 			// Legende toevoegen indien ingrediënten aanwezig
 			if ( $type === 'ingredients' and ! empty( $product->get_meta('_ingredients') ) ) {
-				echo '<p class="legend">* = '.__( 'ingrediënt aangekocht volgens de principes van eerlijke handel', 'oft' ).'</p>';
-				echo '<p class="legend">° = '.__( 'ingrediënt verbouwd volgens de normen van biologisch landbouw', 'oft' ).'</p>';
+				echo '<p class="legend">* = '.__( 'van een producent waarmee we een eerlijke handelsrelatie hebben', 'oft' ).'</p>';
+				echo '<p class="legend">° = '.__( 'ingrediënt van biologisch landbouw', 'oft' ).'</p>';
 			}
 			return ob_get_clean();
 		} else {
@@ -2092,7 +2092,7 @@
 					global $wp_query;
 					$cnt = $wp_query->found_posts;
 					if ( $cnt > 0 ) {
-						echo '<h4 style="margin: 2em 0;">'.sprintf( _n( 'Momenteel verkopen wij %s product van deze partner:', 'Momenteel verkopen wij %s producten van deze partner:', $cnt, 'oft' ), $cnt ).'</h4>';
+						echo '<h4 style="margin: 2em 0;">'.sprintf( _n( 'Momenteel verkopen wij één product van deze partner:', 'Momenteel verkopen wij %s producten van deze partner:', $cnt, 'oft' ), $cnt ).'</h4>';
 					}
 				} else {
 					// Er is geen parent dus de oorspronkelijke term is een land
