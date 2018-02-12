@@ -184,7 +184,7 @@
 			// Slugs van custom taxonomieën kunnen helaas niet vertaald worden 
 			'rewrite' => array( 'slug' => 'herkomst', 'with_front' => true, 'hierarchical' => true ),
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
+			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'edit_posts', 'delete_terms' => 'update_core' ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
