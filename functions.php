@@ -1000,7 +1000,7 @@
 			'labels' => $labels,
 			'description' => __( 'Duid de eigenschappen van het product aan', 'oft' ),
 			'public' => true,
-			'publicly_queryable' => false,
+			'publicly_queryable' => true,
 			'hierarchical' => true,
 			'show_ui' => true,
 			'show_in_menu' => true,
