@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam Fair Trade\n"
-"POT-Creation-Date: 2018-02-12 18:16+0100\n"
-"PO-Revision-Date: 2018-02-12 18:18+0100\n"
+"POT-Creation-Date: 2018-02-12 19:29+0100\n"
+"PO-Revision-Date: 2018-02-12 19:29+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language: en_US\n"
@@ -19,7 +19,25 @@ msgstr ""
 "esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
 "_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: functions.php\n"
+"X-Poedit-SearchPath-1: content-none.php\n"
+"X-Poedit-SearchPath-2: search.php\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: content-none.php:7
+msgid "Niets gevonden!"
+msgstr ""
+
+#: content-none.php:9
+msgid ""
+"We konden helaas niets vinden met die zoektermen. Probeer het eens opnieuw "
+"met een korter woord, of volg de automatische suggestie hierboven."
+msgstr ""
+
+#: content-none.php:17
+msgid ""
+"Die pagina kunnen we niet vinden. Misschien kan een kleine zoektocht raad "
+"brengen?"
+msgstr ""
 
 #: functions.php:42
 msgid "Bulkregistratie"
@@ -870,6 +888,10 @@ msgid "Bekijk <a href=\"%s\" target=\"_blank\">de recentste nieuwsbrief</a>."
 msgstr ""
 "Have a look at <a href=\"%s\" target=\"_blank\">the most recent newsletter</"
 "a>."
+
+#: search.php:18
+msgid "Bedoelde je misschien"
+msgstr ""
 
 #. Theme Name of the plugin/theme
 msgid "Oxfam Fair Trade"
