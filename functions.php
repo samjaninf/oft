@@ -2200,7 +2200,8 @@
 				$allergens_text .= __( 'Kan sporen bevatten van', 'oft' ).' '.str_lreplace( ', ', ' '.__( 'en', 'oft' ).' ', implode( ', ', $allergens['may-contain'] ) ).'.';
 			}
 		} else {
-			$allergens_text = __( 'Geen meldingsplichtige allergenen aanwezig.', 'oft' );
+			// $allergens_text = __( 'Geen meldingsplichtige allergenen aanwezig.', 'oft' );
+			$allergens_text = __( '/', 'oft' );
 		}
 
 		$packaging = get_the_terms( $product->get_id(), 'product_packaging' );
