@@ -3069,6 +3069,7 @@
 
 			if ( $product_id > 0 ) {
 				// Voeg de nieuwe attachment-ID toe aan het bestaande product
+				$product = wc_get_product($product_id);
 				$product->set_image_id($attachment_id);
 				$product->save();
 
