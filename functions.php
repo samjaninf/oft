@@ -3061,7 +3061,7 @@
 		$attachment_id = wp_insert_attachment( $attachment, $filepath );
 		if ( ! is_wp_error( $attachment_id ) ) {
 			// Check of de uploadlocatie ingegeven was!
-			if ( ! isset($product_id) ) {
+			if ( ! isset($product_id) or $product_id === false ) {
 				// Indien het een b/c/d/e/f-foto is zal de search naar $filetitle een 0 opleveren
 				// Dat is de bedoeling, want die foto's mogen het hoofdbeeld niet vervangen!
 				$product_id = wc_get_product_id_by_sku( $filetitle );
