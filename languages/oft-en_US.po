@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam Fair Trade\n"
 "POT-Creation-Date: 2018-02-13 12:19+0100\n"
-"PO-Revision-Date: 2018-02-13 12:20+0100\n"
+"PO-Revision-Date: 2018-02-13 12:25+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language: en_US\n"
@@ -26,17 +26,17 @@ msgstr ""
 
 #: 404.php:10
 msgid "Error 404"
-msgstr ""
+msgstr "Error 404"
 
 #: 404.php:11
 msgid "Oeps! Hier liep iets mis."
-msgstr ""
+msgstr "Yikes! Page not found."
 
 #: 404.php:13
 msgid ""
 "We konden de pagina die je opvroeg niet vinden. Misschien kan een kleine "
 "zoektocht raad brengen?"
-msgstr ""
+msgstr "It looks like nothing was found at this location. Maybe try a search?"
 
 #: 404.php:16
 #, php-format
@@ -44,11 +44,13 @@ msgid ""
 "Heb je een vraag voor ons? Stel die dan gerust via <a href=\"%s\">ons "
 "formulier</a>."
 msgstr ""
+"Do you have a question? Please send it to us through <a href=\"%s\">this "
+"form</a>."
 
 #: 404.php:17
 #, php-format
 msgid "Of keer terug naar <a href=\"%s\">de startpagina</a>."
-msgstr ""
+msgstr "Or go back to <a href=\"%s\">the homepage</a>."
 
 #: content-none.php:7
 msgid "Niets gevonden!"
@@ -66,11 +68,11 @@ msgstr ""
 
 #: content-none.php:18
 msgid "Die pagina kunnen we niet vinden."
-msgstr ""
+msgstr "We couldn't find that page."
 
 #: content-none.php:18
 msgid "Misschien kan een kleine zoektocht raad brengen?"
-msgstr ""
+msgstr "Maybe some search magic might help?"
 
 #: functions.php:42
 msgid "Bulkregistratie"
