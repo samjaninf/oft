@@ -731,10 +731,10 @@
 		$legend = array();
 		if ( ! empty( $product->get_meta('_ingredients') ) ) {
 			if ( strpos( $product->get_meta('_ingredients'), '*' ) !== false ) {
-				$legend[] = '* = '.__( 'van een producent waarmee we een eerlijke handelsrelatie hebben', 'oft' );
+				$legend[] = '* '.__( 'ingrediënt van een producent waarmee we een eerlijke handelsrelatie hebben', 'oft' );
 			}
 			if ( strpos( $product->get_meta('_ingredients'), '°' ) !== false ) {
-				$legend[] = '° = '.__( 'ingrediënt van biologisch landbouw', 'oft' );
+				$legend[] = '° '.__( 'ingrediënt van biologisch landbouw', 'oft' );
 			}
 		}
 		return $legend;
