@@ -175,7 +175,7 @@
 			'show_in_menu' => true,
 			'show_in_nav_menus' => true,
 			'show_in_rest' => true,
-			'show_tagcloud' => false,
+			'show_tagcloud' => true,
 			'show_in_quick_edit' => false,
 			'show_admin_column' => true,
 			'description' => __( 'Ken het product toe aan een partner/land', 'oft' ),
@@ -731,10 +731,10 @@
 		$legend = array();
 		if ( ! empty( $product->get_meta('_ingredients') ) ) {
 			if ( strpos( $product->get_meta('_ingredients'), '*' ) !== false ) {
-				$legend[] = '* '.__( 'ingrediënt van een producent waarmee we een eerlijke handelsrelatie hebben', 'oft' );
+				$legend[] = '* '.__( 'ingrediënt uit een eerlijke handelsrelatie', 'oft' );
 			}
 			if ( strpos( $product->get_meta('_ingredients'), '°' ) !== false ) {
-				$legend[] = '° '.__( 'ingrediënt van biologisch landbouw', 'oft' );
+				$legend[] = '° '.__( 'ingrediënt van biologische landbouw', 'oft' );
 			}
 		}
 		return $legend;
@@ -2222,7 +2222,7 @@
 
 		$ingredients_legend = '';
 		if ( count( get_ingredients_legend($product) ) > 0 ) {
-			$ingredients_legend .= '<p style="font-size: 9pt;">';
+			$ingredients_legend .= '<p style="font-size: 8pt; text-align: right;">';
 			$ingredients_legend .= implode( '<br>', get_ingredients_legend($product) );
 			$ingredients_legend .= '</p>';
 		}
@@ -2314,7 +2314,7 @@
 
 		// Nu pas labeltekst opmaken zodat we zeker weer in de fichetaal werken
 		if ( count($labels) > 0 ) {
-			$labels_text = format_pdf_block( __( 'Labels', 'oft' ), implode( ', ', $labels ) );
+			$labels_text = format_pdf_block( __( 'Labels', 'oft' ), implode( '<br>', $labels ) );
 		} else {
 			$labels_text = '';
 		}
