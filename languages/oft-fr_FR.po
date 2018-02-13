@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam Fair Trade\n"
-"POT-Creation-Date: 2018-02-12 19:29+0100\n"
-"PO-Revision-Date: 2018-02-12 19:29+0100\n"
+"POT-Creation-Date: 2018-02-13 12:20+0100\n"
+"PO-Revision-Date: 2018-02-13 12:20+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language: fr_FR\n"
@@ -21,22 +21,55 @@ msgstr ""
 "X-Poedit-SearchPath-0: functions.php\n"
 "X-Poedit-SearchPath-1: content-none.php\n"
 "X-Poedit-SearchPath-2: search.php\n"
+"X-Poedit-SearchPath-3: 404.php\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: 404.php:10
+msgid "Error 404"
+msgstr ""
+
+#: 404.php:11
+msgid "Oeps! Hier liep iets mis."
+msgstr ""
+
+#: 404.php:13
+msgid ""
+"We konden de pagina die je opvroeg niet vinden. Misschien kan een kleine "
+"zoektocht raad brengen?"
+msgstr ""
+
+#: 404.php:16
+#, php-format
+msgid ""
+"Heb je een vraag voor ons? Stel die dan gerust via <a href=\"%s\">ons "
+"formulier</a>."
+msgstr ""
+
+#: 404.php:17
+#, php-format
+msgid "Of keer terug naar <a href=\"%s\">de startpagina</a>."
+msgstr ""
 
 #: content-none.php:7
 msgid "Niets gevonden!"
+msgstr "Aucun résultat !"
+
+#: content-none.php:9
+msgid "We konden helaas niets vinden met die zoektermen."
 msgstr ""
 
 #: content-none.php:9
 msgid ""
-"We konden helaas niets vinden met die zoektermen. Probeer het eens opnieuw "
-"met een korter woord, of volg de automatische suggestie hierboven."
+"Probeer het eens opnieuw met een korter woord, of volg de automatische "
+"suggestie hierboven."
 msgstr ""
 
-#: content-none.php:17
-msgid ""
-"Die pagina kunnen we niet vinden. Misschien kan een kleine zoektocht raad "
-"brengen?"
+#: content-none.php:18
+msgid "Die pagina kunnen we niet vinden."
+msgstr ""
+
+#: content-none.php:18
+msgid "Misschien kan een kleine zoektocht raad brengen?"
 msgstr ""
 
 #: functions.php:42
@@ -804,7 +837,7 @@ msgstr "avec consigne"
 
 #: functions.php:2279
 msgid "Labels"
-msgstr ""
+msgstr "Labels"
 
 #: functions.php:2310
 msgid "Houdbaarheid na productie"
@@ -864,6 +897,9 @@ msgid ""
 "\"_blank\">Gelieve dit algemene inschrijvingsformulier te gebruiken</a> en "
 "op de bevestigingslink te klikken."
 msgstr ""
+"Nous ne pouvions pas renouveler votre abonnement automatiquement. <a href="
+"\"%s\" target=\"_blank\">Veuillez utiliser ce formulaire d'inscription</a> "
+"et tapez le lien de confirmation."
 
 #: functions.php:2552
 msgid ""
@@ -885,6 +921,8 @@ msgid ""
 "Je inschrijving kon niet uitgevoerd worden op de MailChimp-servers. Probeer "
 "het later eens opnieuw."
 msgstr ""
+"Votre inscription ne pouvait pas être complété sur les serveurs de "
+"MailChimp. Veuillez le réessayer plus tard."
 
 #: functions.php:2699
 #, php-format
@@ -893,7 +931,7 @@ msgstr "Consultez <a href=\"%s\" target=\"_blank\">le dernier bulletin</a>."
 
 #: search.php:18
 msgid "Bedoelde je misschien"
-msgstr ""
+msgstr "Vouliez-vous dire peut-être"
 
 #. Theme Name of the plugin/theme
 msgid "Oxfam Fair Trade"

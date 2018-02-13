@@ -7,14 +7,14 @@
 
 			<div class="content-area <?php alone_get_content_class( 'content', $alone_sidebar_position ); ?>">
 				<div class="wrap-entry-404 text-center">
-					<h1 class="entry-title fw-title-404"><?php esc_html_e( '404', 'alone' ); ?></h1>
-					<h3 class="entry-title fw-title-404-sub"><?php esc_html_e( 'Ohh! Page not found', 'alone' ); ?></h3>
+					<h1 class="entry-title fw-title-404"><?php _e( 'Error 404', 'oft' ); ?></h1>
+					<h3 class="entry-title fw-title-404-sub"><?php _e( 'Oeps! Hier liep iets mis.', 'oft' ); ?></h3>
 					<div class="page-content">
-						<p><?php esc_html_e( 'It looks like nothing was found at this location. Maybe try a search?', 'alone' ); ?></p>
+						<p><?php _e( 'We konden de pagina die je opvroeg niet vinden. Misschien kan een kleine zoektocht raad brengen?', 'oft' ); ?></p>
 						<?php get_search_form(); ?>
 						<?php $page = get_page_by_path('contact'); ?>
-						<p><?php esc_html_e( 'Do you have a question? Feel free to ask us using', 'alone' ) ?> <a href="<?php echo esc_attr(get_permalink($page->ID)); ?>"><?php esc_html_e('our form', 'alone') ?></a>.</p>
-						<p><?php esc_html_e('Or go back to', 'alone') ?> <a href="<?php echo esc_attr(get_home_url()); ?>"><?php esc_html_e('the homepage', 'alone') ?></a>.</p>
+						<p><?php printf( __( 'Heb je een vraag voor ons? Stel die dan gerust via <a href="%s">ons formulier</a>.', 'oft' ), get_permalink($page->ID) ); ?></p>
+						<p><?php printf( __( 'Of keer terug naar <a href="%s">de startpagina</a>.', 'oft' ), get_home_url() ); ?></p>
 					</div><!-- .page-content -->
 				</div>
 			</div><!-- /.content-area-->

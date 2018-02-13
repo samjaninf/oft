@@ -802,14 +802,14 @@ body.search {
 
 		a {
 			color: white;
-			text-decoration: none !important;
+			text-decoration: underline !important;
+			text-underline-position: under !important;
+			-webkit-text-underline-position: under !important;
 		}
 
 		a:hover {
 			color: white !important;
-			text-decoration: underline !important;
-			text-underline-position: under !important;
-			-webkit-text-underline-position: under !important;
+			text-decoration: none !important;
 		}
 	}
 }
