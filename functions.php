@@ -1277,7 +1277,7 @@
 				if ( intval( $product->get_image_id() ) > 0 ) {
 					create_product_pdf( $product->get_id(), 'nl' );
 					create_product_pdf( $product->get_id(), 'fr' );
-					// create_product_pdf( $product->get_id(), 'en' );
+					create_product_pdf( $product->get_id(), 'en' );
 				}
 			}
 		}
