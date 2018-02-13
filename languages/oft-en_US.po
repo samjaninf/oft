@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam Fair Trade\n"
 "POT-Creation-Date: 2018-02-12 19:29+0100\n"
-"PO-Revision-Date: 2018-02-12 19:29+0100\n"
+"PO-Revision-Date: 2018-02-13 12:01+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language: en_US\n"
@@ -335,7 +335,7 @@ msgstr "Carbohydrate"
 
 #: functions.php:580 functions.php:1633
 msgid "waarvan suikers"
-msgstr "of which suages"
+msgstr "of which sugars"
 
 #: functions.php:581 functions.php:1638
 msgid "waarvan polyolen"
@@ -766,6 +766,9 @@ msgid ""
 "jullie steun kunnen coöperaties uitgroeien tot bloeiende ondernemingen die "
 "hun fairtradeproducten wereldwijd verkopen."
 msgstr ""
+"These farmers are not mere suppliers to us, they are partners. Thanks to "
+"your support these cooperations can grow and flourish, and distribute their "
+"fair trade products worldwide."
 
 #: functions.php:2095
 #, php-format
@@ -808,7 +811,7 @@ msgstr "Labels"
 
 #: functions.php:2310
 msgid "Houdbaarheid na productie"
-msgstr ""
+msgstr "Shelf life after production"
 
 #: functions.php:2310
 msgid "dagen"
@@ -817,7 +820,7 @@ msgstr "days"
 #: functions.php:2361
 #, php-format
 msgid "Aangemaakt op %s"
-msgstr ""
+msgstr "Created on %s"
 
 #: functions.php:2367
 msgid "Productfiche"
