@@ -614,7 +614,7 @@
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php _e( 'Netto-inhoud', 'oft' ); ?></th>
-				<td><?php echo $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'); ?></td>
+				<td><?php echo get_net_content($product); ?></td>
 			</tr>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php _e( 'Fairtradepercentage', 'oft' ); ?></th>
@@ -679,10 +679,9 @@
 		echo '</table>';
 		
 		if ( $has_row ) {
-			// Legende toevoegen indien ingrediënten aanwezig
-			if ( $type === 'ingredients' and ! empty( $product->get_meta('_ingredients') ) ) {
-				echo '<p class="legend">* = '.__( 'van een producent waarmee we een eerlijke handelsrelatie hebben', 'oft' ).'</p>';
-				echo '<p class="legend">° = '.__( 'ingrediënt van biologisch landbouw', 'oft' ).'</p>';
+			// Legende toevoegen indien ingrediënten aanwezig met deze eigenschap
+			if ( $type === 'ingredients' ) {
+				echo get_ingredients_legend($product);
 			}
 			return ob_get_clean();
 		} else {
@@ -723,6 +722,36 @@
 			$result = false;
 		}
 		return $result;
+	}
+
+	// Haal de legende op die bij het ingrediëntenlijstje hoort
+	function get_ingredients_legend( $product ) {
+		$str = '';
+		if ( ! empty( $product->get_meta('_ingredients') ) ) {
+			if ( strpos( '*', $product->get_meta('_ingredients') ) !== false ) {
+				$str .= '<p class="legend">* = '.__( 'van een producent waarmee we een eerlijke handelsrelatie hebben', 'oft' ).'</p>';
+			}
+			if ( strpos( '°', $product->get_meta('_ingredients') ) !== false ) {
+				$str .= '<p class="legend">° = '.__( 'ingrediënt van biologisch landbouw', 'oft' ).'</p>';
+			}
+		}
+		return $str;
+	}
+
+	// Haal het netto-gewicht op (en druk zware producten daarbij uit in kilo)
+	function get_net_content( $product ) {
+		$content = $product->get_meta('_net_content');
+		$unit = $product->get_meta('_net_unit');
+		if ( $content !== '' and $unit !== '' ) {
+			$content = intval( str_replace( ',', '', $content ) );
+			if ( $content >= 1000 ) {
+				$content = $content/1000;
+				$unit = 'k'.$unit;
+			}
+			return $content.' '.$unit;
+		} else {
+			return '/';
+		}
 	}
 
 	// Haal de allergenen op als een opgesplitste array van termnamen
@@ -2332,9 +2361,9 @@
 		// Verwijder eventuele enters door HTML-tags
 		$templatecontent = str_replace( "###DESCRIPTION###", preg_replace( '/<[^>]+>/', ' ', $product->get_short_description() ), $templatecontent );
 		$templatecontent = str_replace( "###INGREDIENTS_OPTIONAL###", $ingredients_text, $templatecontent );
+		$templatecontent = str_replace( "###LEGEND_OPTIONAL###", get_ingredients_legend($product), $templatecontent );
 		$templatecontent = str_replace( "###ORIGIN###", $origin_text, $templatecontent );
 		$templatecontent = str_replace( "###FAIRTRADE_SHARE###", $product->get_meta('_fairtrade_share'), $templatecontent );
-		$templatecontent = str_replace( "###ICONS###", $icons_text, $templatecontent );
 		
 		$templatecontent = str_replace( "###ALLERGENS###", $allergens_text, $templatecontent );
 		$templatecontent = str_replace( "###LABELS_OPTIONAL###", $labels_text, $templatecontent );
@@ -2349,7 +2378,7 @@
 		$templatecontent = str_replace( "###STEH_DIMENSIONS###", wc_format_dimensions($steh_dimensions), $templatecontent );
 		$templatecontent = str_replace( "###STEH_EAN###", $steh_ean, $templatecontent );
 		
-		$templatecontent = str_replace( "###NET_CONTENT###", $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'), $templatecontent );
+		$templatecontent = str_replace( "###NET_CONTENT###", get_net_content($product), $templatecontent );
 		$templatecontent = str_replace( "###STORAGE_CONDITIONS###", $storage_text, $templatecontent );
 		$templatecontent = str_replace( "###SHELF_LIFE_OPTIONAL###", $shelf_text, $templatecontent );
 		$templatecontent = str_replace( "###NUMBER_OF_LAYERS###", $number_of_layers, $templatecontent );
@@ -2357,6 +2386,7 @@
 		$templatecontent = str_replace( "###SUBTOTAL###", $subtotal, $templatecontent );
 		$templatecontent = str_replace( "###TOTAL###", $total, $templatecontent );
 		$templatecontent = str_replace( "###INTRASTAT###", $product->get_meta('_intrastat'), $templatecontent );
+		$templatecontent = str_replace( "###ICONS###", $icons_text, $templatecontent );
 		
 		$templatecontent = str_replace( "###FOOTER###", sprintf( __( 'Aangemaakt op %s', 'oft' ), date_i18n( 'l j F Y \o\m G\ui' ) ), $templatecontent );
 		
