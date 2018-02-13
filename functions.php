@@ -681,7 +681,9 @@
 		if ( $has_row ) {
 			// Legende toevoegen indien ingrediënten aanwezig met deze eigenschap
 			if ( $type === 'ingredients' ) {
-				echo get_ingredients_legend($product);
+				if ( count( get_ingredients_legend($product) ) > 0 ) {
+					echo '<p class="legend">'.implode( '<br>', get_ingredients_legend($product) ).'</p>';
+				}
 			}
 			return ob_get_clean();
 		} else {
@@ -726,16 +728,16 @@
 
 	// Haal de legende op die bij het ingrediëntenlijstje hoort
 	function get_ingredients_legend( $product ) {
-		$str = '';
+		$legend = array();
 		if ( ! empty( $product->get_meta('_ingredients') ) ) {
-			if ( strpos( '*', $product->get_meta('_ingredients') ) !== false ) {
-				$str .= '<p class="legend">* = '.__( 'van een producent waarmee we een eerlijke handelsrelatie hebben', 'oft' ).'</p>';
+			if ( strpos( $product->get_meta('_ingredients'), '*' ) !== false ) {
+				$legend[] = '* = '.__( 'van een producent waarmee we een eerlijke handelsrelatie hebben', 'oft' );
 			}
-			if ( strpos( '°', $product->get_meta('_ingredients') ) !== false ) {
-				$str .= '<p class="legend">° = '.__( 'ingrediënt van biologisch landbouw', 'oft' ).'</p>';
+			if ( strpos( $product->get_meta('_ingredients'), '°' ) !== false ) {
+				$legend[] = '° = '.__( 'ingrediënt van biologisch landbouw', 'oft' );
 			}
 		}
-		return $str;
+		return $legend;
 	}
 
 	// Haal het netto-gewicht op (en druk zware producten daarbij uit in kilo)
@@ -2218,6 +2220,13 @@
 			$ingredients_text .= '</p>';
 		}
 
+		$ingredients_legend = '';
+		if ( count( get_ingredients_legend($product) ) > 0 ) {
+			$ingredients_legend .= '<p style="font-size: 9pt;">';
+			$ingredients_legend .= implode( '<br>', get_ingredients_legend($product) );
+			$ingredients_legend .= '</p>';
+		}
+
 		$allergens_text = '';
 		$allergens = get_allergens($product);
 		if ( $allergens['contains'] !== false or $allergens['may-contain'] !== false ) {
@@ -2361,7 +2370,7 @@
 		// Verwijder eventuele enters door HTML-tags
 		$templatecontent = str_replace( "###DESCRIPTION###", preg_replace( '/<[^>]+>/', ' ', $product->get_short_description() ), $templatecontent );
 		$templatecontent = str_replace( "###INGREDIENTS_OPTIONAL###", $ingredients_text, $templatecontent );
-		$templatecontent = str_replace( "###LEGEND_OPTIONAL###", get_ingredients_legend($product), $templatecontent );
+		$templatecontent = str_replace( "###LEGEND_OPTIONAL###", $ingredients_legend, $templatecontent );
 		$templatecontent = str_replace( "###ORIGIN###", $origin_text, $templatecontent );
 		$templatecontent = str_replace( "###FAIRTRADE_SHARE###", $product->get_meta('_fairtrade_share'), $templatecontent );
 		
