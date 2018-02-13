@@ -9,6 +9,7 @@
 		<p><?php echo __( 'We konden helaas niets vinden met die zoektermen.', 'oft' ).'<br>'.__( 'Probeer het eens opnieuw met een korter woord, of volg de automatische suggestie hierboven.', 'oft' ); ?></p>
 		<div class="row">
 			<div class="col-md-12" style="text-align: center;">
+				<p>&nbsp;</p>
 				<?php get_search_form(); ?>
 			</div>
 		</div>
@@ -17,6 +18,7 @@
 		<p><?php echo __( 'Die pagina kunnen we niet vinden.', 'oft' ).'<br>'.__( 'Misschien kan een kleine zoektocht raad brengen?', 'oft' ); ?></p>
 		<div class="row">
 			<div class="col-md-12" style="text-align: center;">
+				<p>&nbsp;</p>
 				<?php get_search_form(); ?>
 			</div>
 		</div>

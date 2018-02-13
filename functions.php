@@ -3069,10 +3069,8 @@
 
 			if ( $product_id > 0 ) {
 				// Voeg de nieuwe attachment-ID toe aan het bestaande product
-				update_post_meta( $product_id, '_thumbnail_id', $attachment_id );
-				// WERKT NOG NIET IN WC 2.6
-				// $product->set_image_id($attachment_id);
-				// $product->save();
+				$product->set_image_id($attachment_id);
+				$product->save();
 
 				// Stel de uploadlocatie van de nieuwe afbeelding in
 				wp_update_post(
