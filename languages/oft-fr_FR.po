@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam Fair Trade\n"
 "POT-Creation-Date: 2018-02-13 12:20+0100\n"
-"PO-Revision-Date: 2018-02-13 12:20+0100\n"
+"PO-Revision-Date: 2018-02-13 14:31+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language: fr_FR\n"
@@ -26,7 +26,7 @@ msgstr ""
 
 #: 404.php:10
 msgid "Error 404"
-msgstr ""
+msgstr "Erreur 404"
 
 #: 404.php:11
 msgid "Oeps! Hier liep iets mis."
