@@ -3022,6 +3022,10 @@
 	}
 
 	function register_photo( $filename, $filestamp, $filepath ) {			
+		global $sitepress;
+		$default_language = apply_filters( 'wpml_default_language', NULL );
+		$sitepress->switch_lang($default_language);
+
 		// Parse de fototitel
 		$filetitle = explode( '.jpg', $filename );
 		$filetitle = $filetitle[0];
@@ -3061,20 +3065,32 @@
 		$attachment_id = wp_insert_attachment( $attachment, $filepath );
 		if ( ! is_wp_error( $attachment_id ) ) {
 			// Check of de uploadlocatie ingegeven was!
-			if ( ! isset($product_id) or $product_id === false ) {
+			if ( ! isset($product_id) or $product_id < 1 ) {
 				// Indien het een b/c/d/e/f-foto is zal de search naar $filetitle een 0 opleveren
 				// Dat is de bedoeling, want die foto's mogen het hoofdbeeld niet vervangen!
 				$product_id = wc_get_product_id_by_sku( $filetitle );
-				write_log("PRODUCT-ID MET SKU ".$filetitle." GEVONDEN: ".$product_id);
 			}
 
-			if ( $product_id > 0 ) {
-				// Voeg de nieuwe attachment-ID toe aan het bestaande product
-				$product = wc_get_product($product_id);
-				$product->set_image_id($attachment_id);
-				$product->save();
+			$attachment_data = wp_generate_attachment_metadata( $attachment_id, $filepath );
+			// Registreer ook de metadata en toon een succesboodschap
+			wp_update_attachment_metadata( $attachment_id,  $attachment_data );
 
-				// Stel de uploadlocatie van de nieuwe afbeelding in
+			if ( $product_id > 0 ) {
+				// Voeg de nieuwe attachment-ID toe aan het bestaande product MOET IN ELKE TAAL EXPLICIET GEBEUREN
+				$languages = apply_filters( 'wpml_active_languages', NULL );
+				foreach ( $languages as $lang_code => $language ) {
+					$sitepress->switch_lang($lang_code);
+					$local_product_id = apply_filters( 'wpml_object_id', $product_id, 'product', false, $lang_code );
+					$local_attachment_id = apply_filters( 'wpml_object_id', $attachment_id, 'attachment', false, $lang_code );
+					if ( $local_product_id > 0 and $local_attachment_id > 0 ) {
+						$product = wc_get_product($local_product_id);
+						$product->set_image_id($local_attachment_id);
+						$product->save();
+					}
+					$sitepress->switch_lang($default_language);
+				}
+
+				// Stel de uploadlocatie van de nieuwe afbeelding in WORDT DOOR WPML MEDIA SCRIPT NADIEN OOK INGESTELD IN ANDERE TALEN
 				wp_update_post(
 					array(
 						'ID' => $attachment_id, 
@@ -3083,9 +3099,6 @@
 				);
 			}
 
-			$attachment_data = wp_generate_attachment_metadata( $attachment_id, $filepath );
-			// Registreer ook de metadata en toon een succesboodschap
-			wp_update_attachment_metadata( $attachment_id,  $attachment_data );
 			if ( $updated ) {
 				$deleted = $deleted ? "verwijderd en opnieuw aangemaakt" : "bijgewerkt";
 				$msg .= "<i>".$filename."</i> ".$deleted." in de mediabibliotheek om ".date_i18n('H:i:s')." ...";
