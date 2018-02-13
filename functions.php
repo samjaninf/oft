@@ -3065,6 +3065,7 @@
 				// Indien het een b/c/d/e/f-foto is zal de search naar $filetitle een 0 opleveren
 				// Dat is de bedoeling, want die foto's mogen het hoofdbeeld niet vervangen!
 				$product_id = wc_get_product_id_by_sku( $filetitle );
+				write_log("PRODUCT-ID MET SKU ".$filetitle." GEVONDEN: ".$product_id);
 			}
 
 			if ( $product_id > 0 ) {
