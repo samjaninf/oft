@@ -1303,7 +1303,7 @@
 
 		// Update de productfiches na een handmatige bewerking
 		write_log($_POST);
-		if ( get_option('oft_import_active') !== 'yes' and $_POST('_update_product_sheet') === 1 ) {
+		if ( get_option('oft_import_active') !== 'yes' and $_POST['_update_product_sheet'] === 1 ) {
 			// Enkel proberen aanmaken indien foto reeds aanwezig
 			if ( intval( $product->get_image_id() ) > 0 ) {
 				create_product_pdf( $product->get_id(), 'nl' );
