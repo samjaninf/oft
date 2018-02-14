@@ -1302,14 +1302,13 @@
 		}
 
 		// Update de productfiches na een handmatige bewerking
-		if ( $brand === 'Oxfam Fair Trade' or $brand === 'Traidcraft' ) {
-			if ( get_option('oft_import_active') !== 'yes' ) {
-				// Enkel proberen aanmaken indien foto reeds aanwezig
-				if ( intval( $product->get_image_id() ) > 0 ) {
-					create_product_pdf( $product->get_id(), 'nl' );
-					create_product_pdf( $product->get_id(), 'fr' );
-					create_product_pdf( $product->get_id(), 'en' );
-				}
+		write_log($_POST);
+		if ( get_option('oft_import_active') !== 'yes' and $_POST('_update_product_sheet') === 1 ) {
+			// Enkel proberen aanmaken indien foto reeds aanwezig
+			if ( intval( $product->get_image_id() ) > 0 ) {
+				create_product_pdf( $product->get_id(), 'nl' );
+				create_product_pdf( $product->get_id(), 'fr' );
+				create_product_pdf( $product->get_id(), 'en' );
 			}
 		}
 	}
@@ -1453,6 +1452,14 @@
 		echo '</div>';
 
 		echo '<div class="options_group">';
+
+			woocommerce_wp_checkbox( 
+				array( 
+					'id' => '_update_product_sheet',
+					'label' => __( 'Update de fiches bij het opslaan', 'oft' ),
+				)
+			);
+
 			$languages = array( 'nl', 'fr', 'en' );
 			foreach ( $languages as $language ) {
 				$path = '/sheets/'.$language.'/'.$product->get_sku().'.pdf';
