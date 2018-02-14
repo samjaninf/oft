@@ -2309,6 +2309,8 @@
 			$labels[] = wc_attribute_label('pa_fairtrade');
 		}
 
+		$created = date_i18n( 'l j F Y @ G:i' );
+
 		// Switch terug naar gebruikerstaal
 		$sitepress->switch_lang( $prev_lang, true );
 
@@ -2397,7 +2399,7 @@
 		$templatecontent = str_replace( "###INTRASTAT###", $product->get_meta('_intrastat'), $templatecontent );
 		$templatecontent = str_replace( "###ICONS###", $icons_text, $templatecontent );
 		
-		$templatecontent = str_replace( "###FOOTER###", sprintf( __( 'Aangemaakt op %s', 'oft' ), date_i18n( 'l j F Y \o\m G\ui' ) ), $templatecontent );
+		$templatecontent = str_replace( "###FOOTER###", sprintf( __( 'Aangemaakt op %s', 'oft' ), $created ), $templatecontent );
 		
 		try {
 			$pdffile = new Html2Pdf( 'P', 'A4', 'nl', true, 'UTF-8', array( 15, 5, 15, 5 ) );
