@@ -501,7 +501,7 @@
 					$category = $parent;
 				}
 			}
-			if ( $parent->slug === 'wijn' ) {
+			if ( $parent->slug === 'wijn' or $parent->slug === 'vin' or $parent->slug === 'wine' ) {
 				// Sommelierinfo uit lange beschrijving tonen
 				$tabs['description']['title'] = __( 'Wijnbeschrijving', 'oft' );
 			} else {
@@ -944,7 +944,7 @@
 						$category = $parent;
 					}
 				}
-				if ( $parent->slug === 'wijn' ) {
+				if ( $parent->slug === 'wijn' or $parent->slug === 'vin' or $parent->slug === 'wine' ) {
 					
 					?>
 					<script>
@@ -997,7 +997,7 @@
 					}
 				}
 				// VERTALEN EN CHECKEN IN HOOFDTAAL
-				if ( $parent->slug === 'wijn' ) {
+				if ( $parent->slug === 'wijn' or $parent->slug === 'vin' or $parent->slug === 'wine' ) {
 					$remove = false;
 				}
 			}
@@ -1353,7 +1353,8 @@
 			$category_ids = $product->get_category_ids();
 			// In principe slechts één categorie geselecteerd bij ons, dus gewoon 1ste element nemen
 			$category = get_term( $category_ids[0], 'product_cat' );
-			if ( $category->slug === 'fruitsap' ) {
+			// Eventueel op basis van verpakkingswijze tonen?
+			if ( $category->slug === 'fruitsap' or $category->slug === 'jus-de-fruit' or $category->slug === 'fruit-juice' ) {
 				woocommerce_wp_text_input(
 					array( 
 						'id' => '_empty_fee',
@@ -2079,7 +2080,7 @@
 			}
 		}
 		echo '<div class="woocommerce-product-details__short-description">';
-			if ( $parent->slug === 'wijn' ) {
+			if ( $parent->slug === 'wijn' or $parent->slug === 'vin' or $parent->slug === 'wine' ) {
 				// Korte 'Lekker bij' tonen
 				the_excerpt();
 			} else {
@@ -2222,7 +2223,7 @@
 
 		$ingredients_legend = '';
 		if ( count( get_ingredients_legend($product) ) > 0 ) {
-			$ingredients_legend .= '<p style="font-size: 8pt; text-align: right;">';
+			$ingredients_legend .= '<p style="font-size: 8pt; text-align: right; margin-top: 0;">';
 			$ingredients_legend .= implode( '<br>', get_ingredients_legend($product) );
 			$ingredients_legend .= '</p>';
 		}
@@ -2365,8 +2366,14 @@
 		$templatecontent = str_replace( "###PERMALINK###", $permalink, $templatecontent );
 		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
 		$templatecontent = str_replace( "###IMAGE_URL###", $image_url, $templatecontent );
+		// Check of de korte beschrijving wel ingevuld is
+		if ( strlen( $product->get_short_description() ) > 10 ) {
+			$product_text = $product->get_short_description();
+		} else {
+			$product_text = $product->get_description();
+		}
 		// Verwijder eventuele enters door HTML-tags
-		$templatecontent = str_replace( "###DESCRIPTION###", preg_replace( '/<[^>]+>/', ' ', $product->get_short_description() ), $templatecontent );
+		$templatecontent = str_replace( "###DESCRIPTION###", preg_replace( '/<[^>]+>/', ' ', $product_text ), $templatecontent );
 		$templatecontent = str_replace( "###INGREDIENTS_OPTIONAL###", $ingredients_text, $templatecontent );
 		$templatecontent = str_replace( "###LEGEND_OPTIONAL###", $ingredients_legend, $templatecontent );
 		$templatecontent = str_replace( "###ORIGIN###", $origin_text, $templatecontent );
