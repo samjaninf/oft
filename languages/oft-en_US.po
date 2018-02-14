@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam Fair Trade\n"
-"POT-Creation-Date: 2018-02-14 11:34+0100\n"
-"PO-Revision-Date: 2018-02-14 11:34+0100\n"
+"POT-Creation-Date: 2018-02-14 12:42+0100\n"
+"PO-Revision-Date: 2018-02-14 12:43+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language: en_US\n"
@@ -30,7 +30,7 @@ msgstr "Error 404"
 
 #: 404.php:11
 msgid "Oeps! Hier liep iets mis."
-msgstr "Yikes! Page not found."
+msgstr "Yikes! Something went wrong."
 
 #: 404.php:13
 msgid ""
@@ -818,7 +818,7 @@ msgstr "Search results"
 
 #: functions.php:2202
 msgid "bekijk product online"
-msgstr "consult product online"
+msgstr "view product online"
 
 #: functions.php:2208
 msgid "Partners:"
@@ -836,66 +836,66 @@ msgstr "Contains"
 msgid "en"
 msgstr "and"
 
-#: functions.php:2263 functions.php:2269
+#: functions.php:2264 functions.php:2270
 msgid "met statiegeld"
 msgstr "with deposit"
 
-#: functions.php:2319
+#: functions.php:2315
 msgid "Labels"
 msgstr "Labels"
 
-#: functions.php:2350
+#: functions.php:2346
 msgid "Houdbaarheid na productie"
 msgstr "Shelf life after production"
 
-#: functions.php:2350
+#: functions.php:2346
 msgid "dagen"
 msgstr "days"
 
-#: functions.php:2402
+#: functions.php:2398
 #, php-format
-msgid "Aangemaakt op %s"
-msgstr "Created on %s"
+msgid "Aangemaakt %s"
+msgstr "Created %s"
 
-#: functions.php:2408
+#: functions.php:2404
 msgid "Productfiche"
 msgstr "Product sheet"
 
-#: functions.php:2509
+#: functions.php:2505
 msgid "Dit e-mailadres is reeds ingeschreven!"
 msgstr ""
 
-#: functions.php:2512
+#: functions.php:2508
 msgid "Dit e-mailadres was al eens ingeschreven!"
 msgstr ""
 
-#: functions.php:2528
+#: functions.php:2524
 msgid "Gelieve de fouten op te lossen."
 msgstr "Please correct the errors."
 
-#: functions.php:2541
+#: functions.php:2537
 #, php-format
 msgid "sinds %s"
 msgstr "since %s"
 
-#: functions.php:2545
+#: functions.php:2541
 #, php-format
 msgid "Je bent%s reeds geabonneerd op onze nieuwsbrief!"
 msgstr ""
 
-#: functions.php:2549
+#: functions.php:2545
 msgid "We werkten je gegevens bij."
 msgstr ""
 
-#: functions.php:2552
+#: functions.php:2548
 msgid "Je was vroeger al eens geabonneerd op onze nieuwsbrief!"
 msgstr ""
 
-#: functions.php:2556
+#: functions.php:2552
 msgid "We heractiveerden je inschrijving."
 msgstr "We reactivated your subscription."
 
-#: functions.php:2559
+#: functions.php:2555
 #, php-format
 msgid ""
 "We konden je inschrijving niet automatisch vernieuwen. <a href=\"%s\" target="
@@ -903,24 +903,24 @@ msgid ""
 "op de bevestigingslink te klikken."
 msgstr ""
 
-#: functions.php:2593
+#: functions.php:2589
 msgid ""
 "Er was een onbekend probleem met Contact Form 7. Probeer het later eens "
 "opnieuw."
 msgstr ""
 
-#: functions.php:2606
+#: functions.php:2602
 msgid ""
 "Bedankt, je bent vanaf nu geabonneerd op de nieuwsbrief van Oxfam Fair Trade!"
 msgstr ""
 
-#: functions.php:2609
+#: functions.php:2605
 msgid ""
 "Je inschrijving kon niet uitgevoerd worden op de MailChimp-servers. Probeer "
 "het later eens opnieuw."
 msgstr ""
 
-#: functions.php:2740
+#: functions.php:2736
 #, php-format
 msgid "Bekijk <a href=\"%s\" target=\"_blank\">de recentste nieuwsbrief</a>."
 msgstr ""

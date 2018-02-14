@@ -1967,7 +1967,7 @@
 			$prev_lang = $sitepress->get_current_language();
 			$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
 			
-			if ( mb_strtolower( $product->get_attribute('pa_bio') ) === 'ja' ) {
+			if ( strtolower( $product->get_attribute('pa_bio') ) === 'ja' ) {
 				echo "<div class='icon-organic'></div>";
 			}
 			
@@ -2252,9 +2252,10 @@
 			$steh = array();
 			foreach ( $packaging as $term ) {
 				if ( $term->parent == $cu_term->term_id ) {
-					$cu[] = ucfirst( mb_strtolower($term->name) );
+					// GEEN MB_STRTOLOWER() TOEPASSEN, GEEFT PROBLEMEN MET ACCENTEN
+					$cu[] = ucfirst($term->name);
 				} elseif( $term->parent == $steh_term->term_id ) {
-					$steh[] = ucfirst( mb_strtolower($term->name) );
+					$steh[] = ucfirst($term->name);
 				}
 			}
 			if ( count($cu) > 0 ) {
@@ -2275,16 +2276,14 @@
 		$storage_text = '/';
 		if ( is_array($storages) ) {
 			foreach ( $storages as $term ) {
-				$store[] = ucfirst( mb_strtolower($term->name) );
+				$store[] = ucfirst($term->name);
 			}
 			$storage_text = implode( '. ', $store ).'.';
 		}
 
-		$prev_lang = $sitepress->get_current_language();
-		$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
-
 		$icons = array();
-		foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
+		$main_product_id = apply_filters( 'wpml_object_id', $product->get_id(), 'product', false, 'nl' );
+		foreach ( wp_get_object_terms( $main_product_id, 'product_hipster' ) as $term ) {
 			$icons[] = $term->slug;
 		}
 		$icons_text = '';
@@ -2302,21 +2301,18 @@
 		}
 		
 		$labels = array();
-		if ( mb_strtolower( $product->get_attribute('pa_bio') ) === 'ja' ) {
+		$bio = strtolower( $product->get_attribute('pa_bio') );
+		if ( $bio === 'ja' or $bio === 'oui' or $bio === 'yes' ) {
 			$labels[] = wc_attribute_label('pa_bio');
 		}
-		if ( mb_strtolower( $product->get_attribute('pa_fairtrade') ) === 'ja' ) {
+		$ft = strtolower( $product->get_attribute('pa_fairtrade') );
+		if ( $ft === 'ja' or $ft === 'oui' or $ft === 'yes' ) {
 			$labels[] = wc_attribute_label('pa_fairtrade');
 		}
 
-		$created = date_i18n( 'l j F Y @ G:i' );
-
-		// Switch terug naar gebruikerstaal
-		$sitepress->switch_lang( $prev_lang, true );
-
 		// Nu pas labeltekst opmaken zodat we zeker weer in de fichetaal werken
 		if ( count($labels) > 0 ) {
-			$labels_text = format_pdf_block( __( 'Labels', 'oft' ), implode( '<br>', $labels ) );
+			$labels_text = format_pdf_block( __( 'Labels', 'oft' ), implode( ', ', $labels ) );
 		} else {
 			$labels_text = '';
 		}
@@ -2399,7 +2395,7 @@
 		$templatecontent = str_replace( "###INTRASTAT###", $product->get_meta('_intrastat'), $templatecontent );
 		$templatecontent = str_replace( "###ICONS###", $icons_text, $templatecontent );
 		
-		$templatecontent = str_replace( "###FOOTER###", sprintf( __( 'Aangemaakt op %s', 'oft' ), $created ), $templatecontent );
+		$templatecontent = str_replace( "###FOOTER###", sprintf( __( 'Aangemaakt %s', 'oft' ), date_i18n( 'Y-m-d @ G:i' ) ), $templatecontent );
 		
 		try {
 			$pdffile = new Html2Pdf( 'P', 'A4', 'nl', true, 'UTF-8', array( 15, 5, 15, 5 ) );
@@ -2408,7 +2404,7 @@
 			$pdffile->pdf->setTitle( __( 'Productfiche', 'oft' ).' '.$sku );
 			$pdffile->writeHTML($templatecontent);
 			$pdffile->output( WP_CONTENT_DIR.'/sheets/'.$language.'/'.$sku.'.pdf', 'F' );
-			write_log("PRODUCT SHEET ".$product->get_sku()." UPDATED (".mb_strtoupper($language).")");
+			write_log("PRODUCT SHEET ".$product->get_sku()." UPDATED (".strtoupper($language).")");
 		} catch ( Html2PdfException $e ) {
 			$formatter = new ExceptionFormatter($e);
 			add_filter( 'redirect_post_location', 'add_html2pdf_notice_var', 99 );
