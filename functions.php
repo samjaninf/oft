@@ -1456,7 +1456,8 @@
 			woocommerce_wp_checkbox( 
 				array( 
 					'id' => '_update_product_sheet',
-					'label' => __( 'Update de fiches bij het opslaan', 'oft' ),
+					'label' => __( 'Fiches updaten', 'oft' ),
+					'description' => __( 'Vink dit aan als je de PDF\'s wil bijwerken tijdens het opslaan (ook niet-OFT-producten)', 'oft' ),
 				)
 			);
 
@@ -2785,7 +2786,7 @@
 				wp_reset_postdata();
 			}
 		}
-		if ( $import_id == 14 or $import_id == 22 or $import_id == 30 ) {
+		if ( $import_id == 14 or $import_id == 22 or $import_id == 33 ) {
 			update_option( 'oft_erp_import_active', 'yes' );
 		}
 	}
@@ -2854,10 +2855,10 @@
 			$args = array(
 				'timeout' => 180,
 			);
-			// $response = wp_remote_get( site_url( '/wp-cron.php?import_id=30&action=trigger&import_key='.IMPORT_KEY ), $args );
+			// $response = wp_remote_get( site_url( '/wp-cron.php?import_id=33&action=trigger&import_key='.IMPORT_KEY ), $args );
 		}
 
-		if ( $import_id == 22 ) {
+		if ( $import_id == 33 ) {
 			$old = WP_CONTENT_DIR."/B2CImport.csv";
 			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
 			rename( $old, $new );
