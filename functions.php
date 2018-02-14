@@ -708,9 +708,9 @@
 		if ( is_array($grapes) ) {
 			// Druiven kunnen door de meta_boxlogica enkel op wijn ingesteld worden, dus niet nodig om categorie te checken
 			if ( $with_colon === true ) {
-				$result['label'] = __( 'Druivensoorten:', 'oft' );
+				$result['label'] = __( 'Druivenrassen:', 'oft' );
 			} else {
-				$result['label'] = __( 'Druivensoorten', 'oft' );
+				$result['label'] = __( 'Druivenrassen', 'oft' );
 			}
 			$result['value'] = implode( ', ', $grapes );
 		} elseif ( ! empty( $product->get_meta('_ingredients') ) ) {
