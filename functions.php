@@ -614,7 +614,7 @@
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php _e( 'Netto-inhoud', 'oft' ); ?></th>
-				<td><?php echo get_net_content($product); ?></td>
+				<td><?php echo get_net_weight($product); ?></td>
 			</tr>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php _e( 'Fairtradepercentage', 'oft' ); ?></th>
@@ -741,7 +741,7 @@
 	}
 
 	// Haal het netto-gewicht op (en druk zware producten daarbij uit in kilo)
-	function get_net_content( $product ) {
+	function get_net_weight( $product ) {
 		$content = $product->get_meta('_net_content');
 		$unit = $product->get_meta('_net_unit');
 		if ( $content !== '' and $unit !== '' ) {
@@ -2387,7 +2387,7 @@
 		$templatecontent = str_replace( "###STEH_DIMENSIONS###", wc_format_dimensions($steh_dimensions), $templatecontent );
 		$templatecontent = str_replace( "###STEH_EAN###", $steh_ean, $templatecontent );
 		
-		$templatecontent = str_replace( "###NET_CONTENT###", get_net_content($product), $templatecontent );
+		$templatecontent = str_replace( "###NET_CONTENT###", get_net_weight($product), $templatecontent );
 		$templatecontent = str_replace( "###STORAGE_CONDITIONS###", $storage_text, $templatecontent );
 		$templatecontent = str_replace( "###SHELF_LIFE_OPTIONAL###", $shelf_text, $templatecontent );
 		$templatecontent = str_replace( "###NUMBER_OF_LAYERS###", $number_of_layers, $templatecontent );
