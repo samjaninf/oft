@@ -1302,7 +1302,6 @@
 		}
 
 		// Update de productfiches na een handmatige bewerking
-		write_log($_POST);
 		if ( get_option('oft_import_active') !== 'yes' and $_POST['_update_product_sheet'] === 'yes' ) {
 			// Enkel proberen aanmaken indien foto reeds aanwezig
 			if ( intval( $product->get_image_id() ) > 0 ) {
@@ -1850,7 +1849,7 @@
 
 		$query_args = array(
 			'post_type'			=> 'product',
-			'post_status'		=> array( 'publish', 'draft' ),
+			'post_status'		=> array( 'publish' ),
 			'posts_per_page'	=> 500,
 			'meta_key'			=> '_sku',
 			'orderby'			=> 'meta_value_num',
