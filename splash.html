@@ -3,7 +3,6 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>Welkom | Oxfam Fair Trade</title>
-		<meta name="keywords" content="Oxfam Fair Trade, voedingsproducten, eerlijke handel, fair trade, fairtradeproducten, koffie, cacao, thee, chocolade, wijn, wereldwinkel, Oxfam, Oxfam-Wereldwinkels, koffieservice, bio">
 		<meta name="description" content="Oxfam Fair Trade brengt je een wereld vol kwaliteitsproducten van eerlijke handel. Chocolade die smelt op je tong. Een kop koffie waar je helemaal van opkikkert.">
 		<meta name="viewport" content="width=device-width">
 		<link rel="stylesheet" type="text/css" href="/wp-content/themes/oft/assets/normalize.css">
@@ -30,7 +29,7 @@
 					
 					<a href="/nl/" title="Nederlands"><div class="box"><span style="font-size: 85%;">NL</span></div></a>
 					<a href="/fr/" title="Français"><div class="box"><span style="font-size: 85%;">FR</span></div></a>
-					<a href="http://www.oxfam-fairtrade.be/en" title="English"><div class="box"><span style="font-size: 85%;">EN</span></div></a>
+					<a href="/en/" title="English"><div class="box"><span style="font-size: 85%;">EN</span></div></a>
 					
 					<p style="margin-top: 10%;">
 						Particulier?<br/><a href="https://www.oxfamwereldwinkels.be/nl">Oxfam-Wereldwinkels</a>
@@ -103,7 +102,7 @@
 				// Detecteer de taal automatisch bij het klikken op de titel
 				jQuery(".text h1").click(function(){
 					if ( navigator.language.indexOf("en") > -1 ) {
-						window.location.href = "http://www.oxfam-fairtrade.be/en";
+						window.location.href = "/en/";
 					} else if ( navigator.language.indexOf("fr") > -1 ) {
 						window.location.href = "/fr/";
 					} else {
