@@ -103,6 +103,11 @@ article.post {
 		line-height: 1.75em !important;
 		padding-left: 10px !important;
 	}
+
+	blockquote {
+		margin-bottom: 0px;
+		padding-bottom: 0px;
+	}
 }
 
 .widget .widget-title span::after {

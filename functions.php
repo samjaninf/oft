@@ -2059,7 +2059,7 @@
 			'post' => null,
 			'data' => '',
 		), $data ) );
-		return __( 'Datum: ', 'oft' ).get_the_date( 'd/m/Y' ).'<br>'.__( 'Category:', 'woocommerce' ).' '.get_the_category_list( ', ' );
+		return __( 'Gepubliceerd: ', 'oft' ).get_the_date( 'd/m/Y' ).'<br>'.__( 'Categorie:', 'oft' ).' '.get_the_category_list( ', ' );
 	}
 
 	// Output
