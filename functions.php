@@ -1227,22 +1227,20 @@
 			if ( ! empty( $the_product->get_attribute('pa_merk') ) ) {
 				// OPGELET: Kan theoretisch meer dan één term bevatten!
 				$attribute = get_term_by( 'name', $the_product->get_attribute('pa_merk'), 'pa_merk' );
-				// Gebruik home_url( add_query_arg( 'pa_merk', $attribute->slug ) ) indien je de volledige huidige query-URL wil behouden
-				echo '<a href="/wp-admin/edit.php?post_type=product&pa_merk='.$attribute->slug.'">'.$attribute->name.'</a>';
+				// Gebruik home_url( add_query_arg( 'term', $attribute->slug ) ) indien je de volledige huidige query-URL wil behouden
+				echo '<a href="/wp-admin/edit.php?post_type=product&taxonomy=pa_merk&term='.$attribute->slug.'">'.$attribute->name.'</a>';
 			} else {
 				echo '<span aria-hidden="true">&#8212;</span>';
 			}
 		}
 	}
 
-	// Creëer extra merkenfilter bovenaan de productenlijst 
-	add_action( 'restrict_manage_posts', 'add_filters_to_products' );
+	// Creëer extra merkenfilter bovenaan de productenlijst VOORLOPIG WEGLATEN
+	// add_action( 'restrict_manage_posts', 'add_filters_to_products' );
 
 	function add_filters_to_products() {
 		global $pagenow, $post_type;
 		if ( $pagenow === 'edit.php' and $post_type === 'product' ) {
-			// FILTER OP STOCK_STATUS WORDT OPGENOMEN IN CORE VANAF WC 3.3
-			
 			$args = array( 'taxonomy' => 'pa_merk', 'hide_empty' => false );
 			$terms = get_terms( $args );
 			$values_brand = array();
@@ -1250,8 +1248,9 @@
 				$values_brand[$term->slug] = $term->name;
 			}
 			
-			$current_brand = isset( $_REQUEST['pa_merk'] ) ? wc_clean( wp_unslash( $_REQUEST['pa_merk'] ) ) : false;
-			echo '<select name="pa_merk">';
+			$current_brand = isset( $_REQUEST['term'] ) ? wc_clean( wp_unslash( $_REQUEST['term'] ) ) : false;
+			// echo '<select name="taxonomy"><option value="pa_merk"></option></select>';
+			echo '<select name="term">';
 				echo '<option value="">'.__( 'Op merk filteren', 'oft-admin' ).'</option>';
 				foreach ( $values_brand as $status => $label ) {
 					echo '<option value="'.$status.'" '.selected( $status, $current_brand, false ).'>'.$label.'</option>';
@@ -1260,12 +1259,14 @@
 		}
 	}
 
-	// Maak sorteren op custom kolommen mogelijk BETER VIA FILTERS BOVENAAN
-	// add_filter( 'manage_edit-product_sortable_columns', 'make_attribute_columns_sortable', 10, 1 );
+	// Maak sorteren op custom kolommen mogelijk
+	add_filter( 'manage_edit-product_sortable_columns', 'make_attribute_columns_sortable', 10, 1 );
 
 	function make_attribute_columns_sortable( $columns ) {
-		$columns['pa_merk'] = 'pa_merk';
-		$columns['is_in_stock'] = 'is_in_stock';
+		$columns['featured'] = 'featured';
+		// BETER VIA FILTERS BOVENAAN
+		// $columns['pa_merk'] = 'pa_merk';
+		// $columns['is_in_stock'] = 'is_in_stock';
 		return $columns;
 	}
 
