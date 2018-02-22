@@ -2507,6 +2507,18 @@
 		return $result;
 	}
 
+	// Overrule de is_email() validatie die geen rekening houdt met internationale domeinnamen
+	add_filter( 'wpcf7_is_email', 'allow_idn_domains', 10, 2 );
+
+	function allow_idn_domains( $result, $email ) {
+		if ( $result === false ) {
+			// Zorg ervoor dat de module php7.0-intl geactiveerd is!
+			return is_email( substr( $email, 0, strpos( $email, '@' ) + 1 ).idn_to_ascii( substr( $email, strpos( $email, '@' ) + 1 ) ) );
+		} else {
+			return $result;
+		}
+	}
+
 	// Voer de effectieve inschrijving uit indien de validatie hierboven geen problemen gaf
  	add_filter( 'wpcf7_posted_data', 'handle_validation_errors', 20, 1 );
 	
@@ -2835,7 +2847,7 @@
 			$args = array(
 				'timeout' => 180,
 			);
-			// $response = wp_remote_get( site_url( '/wp-cron.php?import_id=33&action=trigger&import_key='.IMPORT_KEY ), $args );
+			$response = wp_remote_get( site_url( '/wp-cron.php?import_id=33&action=trigger&import_key='.IMPORT_KEY ), $args );
 		}
 
 		if ( $import_id == 33 ) {
