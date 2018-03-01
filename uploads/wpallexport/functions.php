@@ -117,16 +117,17 @@
 	}
 
 	function get_countries_from_partners( $partners ) {
-		$terms = explode( '|', $partners );
+		$terms = explode( ',', $partners );
+		$countries = array();
 		foreach ( $terms as $term ) {
 			$parts = explode( '>', $term );
-			// Altijd continent aanwezig op positie 0 dat geknipt kan worden, eventuele partner zit nu op positie 3
-			$countries[] = html_entity_decode( $parts[1], ENT_QUOTES );
+			// Altijd continent aanwezig op positie 0 dat geknipt kan worden, eventuele partner zit nu op positie 2
+			$countries[] = $parts[1];
 		}
 		if ( count($countries) > 0 ) {
 			$single_countries = array_unique($countries);
 			sort($single_countries);
-			return implode( ', ', $single_countries );
+			return html_entity_decode( implode( ', ', $single_countries ), ENT_QUOTES );
 		} else {
 			return '';
 		}
@@ -143,12 +144,31 @@
 	function split_by_paragraph( $text ) {
 		$parts = explode( '</p><p>', $text );
 		$bits = explode( '<br>', $parts[0] );
-		return html_entity_decode( $bits[0], ENT_QUOTES );
+		return wp_strip_all_tags( html_entity_decode( $bits[0], ENT_QUOTES ) );
 	}
 
 	function split_after_300_characters( $text ) {
-		$ignore = substr( $text, 0, 300 );
-		$parts = explode( '. ', substr( $text, 300 ) );
-		return html_entity_decode( $ignore.$parts[0].'.', ENT_QUOTES );
+		$text = str_replace( '<br>', ' ', $text );
+		$text = str_replace( '</p><p>', ' ', $text );
+		$ignored = substr( $text, 0, 300 );
+		if ( substr( $text, 300 ) ) {
+			$parts = explode( '.', substr( $text, 300 ) );
+			$chopped = $parts[0].'.';
+		} else {
+			$chopped = '';
+		}
+		return wp_strip_all_tags( html_entity_decode( $ignored.$chopped, ENT_QUOTES ) );
+	}
+
+	function decode_html( $value ) {
+		return html_entity_decode( $value, ENT_QUOTES );
+	}
+
+	function get_stat_uom( $unit ) {
+		if ( $unit === 'cl' ) {
+			return 'L';
+		} else {
+			return 'KG';
+		}
 	}
 ?>

@@ -75,4 +75,12 @@
 		}
 		return $unit;
 	}
+
+	function translate_stock_status( $flag ) {
+		if ( $flag === 'aan' ) {
+			return 'instock';
+		} else {
+			return 'outofstock';
+		}
+	}
 ?>
