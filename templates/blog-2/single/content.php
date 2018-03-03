@@ -55,7 +55,7 @@ $article_classes = array(
 
 						// GEWIJZIGD: Link naar vorige / volgende post niet tonen
 
-						$skus = explode( ',', get_post_meta( get_the_ID(), 'oft-post-product', true ) );
+						$skus = explode( ',', get_post_meta( get_the_ID(), 'oft_post_product', true ) );
 						if ( count($skus) > 0 ) {
 							echo '<div class="woocommerce columns-3">';
 							woocommerce_product_loop_start();

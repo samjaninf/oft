@@ -1850,11 +1850,11 @@
 
 		?>
 			<p>
-				<label for="oft-post-product" class=""><?php printf( __( 'Selecteer 1 van de %d actuele en publiek te raadplegen producten waarover dit bericht gaat:', 'oft' ), count($list) ); ?></label>
-				<select name="oft-post-product" id="oft-post-product">
+				<label for="oft_post_product" class=""><?php printf( __( 'Selecteer 1 van de %d actuele en publiek te raadplegen producten waarover dit bericht gaat:', 'oft' ), count($list) ); ?></label>
+				<select name="oft_post_product" id="oft_post_product">
 					<option value="EMPTY"><?php _e( '(geen)', 'oft' ); ?></option>
 					<?php foreach ( $list as $sku => $title ) : ?>
-						<option value="<?php echo $sku; ?>" <?php if ( isset ( $prfx_stored_meta['oft-post-product'] ) ) selected( $prfx_stored_meta['oft-post-product'][0], $sku ); ?>><?php echo $sku.': '.$title; ?></option>';
+						<option value="<?php echo $sku; ?>" <?php if ( isset ( $prfx_stored_meta['oft_post_product'] ) ) selected( $prfx_stored_meta['oft_post_product'][0], $sku ); ?>><?php echo $sku.': '.$title; ?></option>';
 					<?php endforeach; ?>
 				</select>
 			</p>
@@ -1870,8 +1870,8 @@
 			return;
 		}
 	 
-		if( isset( $_POST[ 'oft-post-product' ] ) ) {
-			update_post_meta( $post_id, 'oft-post-product', sanitize_text_field( $_POST[ 'oft-post-product' ] ) );
+		if( isset( $_POST[ 'oft_post_product' ] ) ) {
+			update_post_meta( $post_id, 'oft_post_product', sanitize_text_field( $_POST[ 'oft_post_product' ] ) );
 		}
 	}
 
@@ -1925,7 +1925,7 @@
 			'post_status' => 'publish',
 			'orderby' => 'date',
 			'order' => 'DESC',
-			'meta_key' => 'oft-post-product',
+			'meta_key' => 'oft_post_product',
 			'meta_value' => $product->get_sku(),
 			'meta_compare' => '=',
 			'numberposts' => 1,
@@ -2973,7 +2973,7 @@
 		'show_in_rest' => true,
 	);
 	// Zorg ervoor dat custom metadata opduikt in WP API
-	register_meta( 'post', 'oft_post_to_product', $api_args );
+	register_meta( 'post', 'oft_post_product', $api_args );
 
 	// Testje met het toevoegen van custom taxonomieën aan de WP API
 	// add_filter( 'woocommerce_rest_prepare_product_object', 'add_custom_taxonomies_to_response', 10, 3 );
