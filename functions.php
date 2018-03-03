@@ -2950,7 +2950,7 @@
 	############
 
 	// Activeer WP API
-	// add_action( 'wp_enqueue_scripts', 'load_extra_scripts' );
+	add_action( 'wp_enqueue_scripts', 'load_extra_scripts' );
 
 	function load_extra_scripts() {
 		wp_enqueue_script( 'wp-api' );
@@ -2965,6 +2965,15 @@
 		}
 		return $access;
 	}
+
+	$api_args = array(
+		'type' => 'integer',
+		'description' => 'Artikelnummer waarover het bericht gaat.',
+		'single' => true,
+		'show_in_rest' => true,
+	);
+	// Zorg ervoor dat custom metadata opduikt in WP API
+	register_meta( 'post', 'oft_post_to_product', $api_args );
 
 	// Testje met het toevoegen van custom taxonomieën aan de WP API
 	// add_filter( 'woocommerce_rest_prepare_product_object', 'add_custom_taxonomies_to_response', 10, 3 );
