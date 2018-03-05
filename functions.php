@@ -630,10 +630,11 @@
 				<?php
 					if ( is_array( $allergens['contains'] ) ) {
 						echo implode( ', ', $allergens['contains'] );
+					} elseif ( $allergens['none'] === true ) {
+						// Enkel tonen indien expliciet zo aangegeven in database!
+						_e( 'geen meldingsplichtige allergenen', 'oft' );
 					} else {
-						// MINDER EXPLICIET TOT ALLES INGELEZEN IS
-						// _e( 'geen meldingsplichtige allergenen', 'oft' );
-						_e( '/', 'oft' );
+						echo '/';
 					}
 				?>
 				</td>
@@ -644,10 +645,11 @@
 				<?php
 					if ( is_array( $allergens['may-contain'] ) ) {
 						echo implode( ', ', $allergens['may-contain'] );
+					} elseif ( $allergens['none'] === true ) {
+						// Enkel tonen indien expliciet zo aangegeven in database!
+						_e( 'geen meldingsplichtige allergenen', 'oft' );
 					} else {
-						// MINDER EXPLICIET TOT ALLES INGELEZEN IS
-						// _e( 'geen meldingsplichtige allergenen', 'oft' );
-						_e( '/', 'oft' );
+						echo '/';
 					}
 				?>
 				</td>
@@ -738,19 +740,22 @@
 
 	// Haal de allergenen op als een opgesplitste array van termnamen
 	function get_allergens( $product ) {
-		$result = array( 'contains' => false, 'may-contain' => false );
+		$result = array( 'contains' => false, 'may-contain' => false, 'none' => false );
 		$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
 		if ( is_array($allergens) ) {
 			// Retourneert automatisch de vertaalde term in FR/EN
 			$contains_term = get_term_by( 'slug', 'contains', 'product_allergen' );
 			$may_contain_term = get_term_by( 'slug', 'may-contain', 'product_allergen' );
+			$none_term = get_term_by( 'slug', 'none', 'product_allergen' );
 			$contains = array();
 			$may_contain = array();
 			foreach ( $allergens as $term ) {
 				if ( $term->parent == $contains_term->term_id ) {
 					$contains[] = mb_strtolower($term->name);
-				} elseif( $term->parent == $may_contain_term->term_id ) {
+				} elseif ( $term->parent == $may_contain_term->term_id ) {
 					$may_contain[] = mb_strtolower($term->name);
+				} elseif ( $term->term_id == $none_term->term_id ) {
+					$result['none'] = true;
 				}
 			}
 			if ( count($contains) > 0 ) {
@@ -785,6 +790,7 @@
 
 			$args['taxonomy'] = 'product_allergen';
 			$types = get_terms($args);
+			$none_term = get_term_by( 'slug', 'none', $args['taxonomy'] );
 
 			$args['taxonomy'] = 'product_grape';
 			$grapes = get_terms($args);
@@ -826,16 +832,18 @@
 
 					/* Disable en verberg checkboxes allergeenklasses */
 					<?php foreach ( $types as $id ) : ?>
-						jQuery( '#in-product_allergen-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
-						jQuery( '#product_allergen-all' ).find( 'input[type=checkbox]:checked' ).each( function() {
-							var checked_box = jQuery(this);
-							var label = checked_box.closest( 'label.selectit' ).text();
-							checked_box.closest( 'ul.children' ).closest( 'li' ).siblings().find( 'label.selectit' ).each( function() {
-								if ( jQuery(this).text() == label ) {
-									jQuery(this).find( 'input[type=checkbox]' ).prop( 'disabled', true );
-								}
+						<?php if ( $id != $none_term->term_id ) : ?> 
+							jQuery( '#in-product_allergen-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
+							jQuery( '#product_allergen-all' ).find( 'input[type=checkbox]:checked' ).each( function() {
+								var checked_box = jQuery(this);
+								var label = checked_box.closest( 'label.selectit' ).text();
+								checked_box.closest( 'ul.children' ).closest( 'li' ).siblings().find( 'label.selectit' ).each( function() {
+									if ( jQuery(this).text() == label ) {
+										jQuery(this).find( 'input[type=checkbox]' ).prop( 'disabled', true );
+									}
+								});
 							});
-						});
+						<?php endif; ?>
 					<?php endforeach; ?>
 
 					/* Disable en verberg checkboxes rode en witte druiven */
@@ -1325,7 +1333,7 @@
 			$suffix = '&euro;';
 			if ( $product->get_meta('_net_unit') === 'cl' ) {
 				$suffix .= '/l';
-			} elseif( $product->get_meta('_net_unit') === 'g' ) {
+			} elseif ( $product->get_meta('_net_unit') === 'g' ) {
 				$suffix .= '/kg';
 			}
 
@@ -2228,9 +2236,10 @@
 			if ( is_array( $allergens['may-contain'] ) ) {
 				$allergens_text .= __( 'Kan sporen bevatten van', 'oft' ).' '.str_lreplace( ', ', ' '.__( 'en', 'oft' ).' ', implode( ', ', $allergens['may-contain'] ) ).'.';
 			}
+		} elseif ( $allergens['none'] === true ) {
+			$allergens_text = __( 'Geen meldingsplichtige allergenen aanwezig.', 'oft' );
 		} else {
-			// $allergens_text = __( 'Geen meldingsplichtige allergenen aanwezig.', 'oft' );
-			$allergens_text = __( '/', 'oft' );
+			$allergens_text = '/';
 		}
 
 		$packaging = get_the_terms( $product->get_id(), 'product_packaging' );
@@ -2245,7 +2254,7 @@
 				if ( $term->parent == $cu_term->term_id ) {
 					// GEEN MB_STRTOLOWER() TOEPASSEN, GEEFT PROBLEMEN MET ACCENTEN
 					$cu[] = ucfirst($term->name);
-				} elseif( $term->parent == $steh_term->term_id ) {
+				} elseif ( $term->parent == $steh_term->term_id ) {
 					$steh[] = ucfirst($term->name);
 				}
 			}
