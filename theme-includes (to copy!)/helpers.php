@@ -1196,14 +1196,13 @@ if ( ! function_exists( 'alone_paging_navigation' ) ) :
 
         $alone_pagination_type = function_exists('fw_get_db_customizer_option') ? fw_get_db_customizer_option('post_settings/blog_pagination', 'paging-navigation-type-1') : 'paging-navigation-type-1';
         if( $alone_pagination_type == 'paging-navigation-type-2' ) {
-            $prev_text = esc_html__( 'Prev Page', 'alone' );
-            $next_text = esc_html__( 'Next Page', 'alone' );
+            $prev_text = esc_html__( 'Vorige', 'oft' );
+            $next_text = esc_html__( 'Volgende', 'oft' );
             $prev_icon = '<i class="ion-ios-arrow-thin-left"></i>';
             $next_icon = '<i class="ion-ios-arrow-thin-right"></i>';
-        }
-        else {
-            $prev_text = esc_html__( 'Newer', 'alone' );
-            $next_text = esc_html__( 'Older', 'alone' );
+        } else {
+            $prev_text = esc_html__( 'Vorige', 'oft' );
+            $next_text = esc_html__( 'Volgende', 'oft' );
             $prev_icon = '<i class="fa fa-angle-left"></i>';
             $next_icon = '<i class="fa fa-angle-right"></i>';
         }

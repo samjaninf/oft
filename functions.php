@@ -2129,6 +2129,8 @@
 
 	function define_placeholder_texts() {
 		$titel_zoekresultaten = __( 'Zoekresultaten', 'oft' );
+		$navigatie_vorige = __( 'Vorige', 'oft' );
+		$navigatie_volgende = __( 'Volgende', 'oft' );
 	}
 	
 	// Voeg ook het artikelnummer, de ingrediënten en de bovenliggende categorie toe aan de te indexeren content bij producten
