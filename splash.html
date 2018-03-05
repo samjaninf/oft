@@ -28,7 +28,8 @@
 		</script>
 	</head>
 
-	<body onLoad="setTimeout('delayedRedirect()', 0)">
+	<!-- Stuur gebruiker na 5 seconden automatisch door op basis van browsertaal -->
+	<body onLoad="setTimeout('delayedRedirect()', 3000)">
 		<div id="splash">
 
 			<div class="centered">
@@ -111,14 +112,14 @@
 					switchBackground(0);
 				});
 				
-				// Detecteer de taal automatisch bij het klikken op de titel
+				// Detecteer taal en voer automatische redirect uit bij het klikken op de titel
 				jQuery(".text h1").click(function(){
-					if ( navigator.language.indexOf("en") > -1 ) {
-						window.location.href = "/en/";
+					if ( navigator.language.indexOf("nl") > -1 ) {
+						window.location.href = "/nl/";
 					} else if ( navigator.language.indexOf("fr") > -1 ) {
 						window.location.href = "/fr/";
 					} else {
-						window.location.href = "/nl/";
+						window.location.href = "/en/";
 					}
 				})
 			});

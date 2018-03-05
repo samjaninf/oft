@@ -20,10 +20,7 @@ $format  = isset( $format ) ? $format : '';
 if ( $total <= 1 ) {
 	return;
 }
-?>
 
-<nav class="woocommerce-pagination">
-	<?php
-		alone_paging_navigation();
-	?>
-</nav>
+alone_paging_navigation();
+
+?>
