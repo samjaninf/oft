@@ -168,6 +168,8 @@ article.post {
 
 	.widget_nav_menu {
 		display: inline-block !important;
+		// Verhinder rare sprong rond 985px schermbreedte
+		margin-bottom: 0;
 
 		ul.menu {
 			margin-top: 3px;
@@ -493,13 +495,9 @@ body.search {
 /*  PRODUCTS  */
 /**************/
 
-/* Verberg de automatisch toegevoegde categorieën op de hoofdpagina van de shop NOG NIET SPECIFIEK GENOEG */
-.woocommerce-page .woocommerce-product-subcategories-wrap {
-	display: none;
-}
-
 /* Overzichtspagina */
-.woocommerce {
+.woocommerce,
+#bt-woo-content {
 	& > ul.products {
 		text-align: center;
 
@@ -507,7 +505,7 @@ body.search {
 			width: 32%;
 		}
 
-		& > div.product {
+		div.product {
 			display: inline-block;
 			margin-bottom: 2em;
 			vertical-align: top;
@@ -1121,7 +1119,7 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	}
 }
 
-@media (max-width: 980px) {
+@media (max-width: 989px) {
 	.oft-image-minimal-height {
 		min-height: 450px;
 	}
