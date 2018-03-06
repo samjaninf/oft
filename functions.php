@@ -774,6 +774,7 @@
 	function disable_custom_checkboxes() {
 		global $pagenow, $post_type;
 
+		// Functies die we zowel op individuele als op bulkbewerkingen willen toepassen
 		if ( ( $pagenow === 'post.php' or $pagenow === 'post-new.php' or $pagenow === 'edit.php' ) and $post_type === 'product' ) {
 			$args = array(
 				'fields' => 'ids',
@@ -786,15 +787,9 @@
 			$categories = get_terms($args);
 			$uncategorized_term = get_term_by( 'slug', 'geen-categorie', $args['taxonomy'] );
 			
-			$args['taxonomy'] = 'product_partner';
-			$continents = get_terms($args);
-
 			$args['taxonomy'] = 'product_allergen';
 			$types = get_terms($args);
 			$none_term = get_term_by( 'slug', 'none', $args['taxonomy'] );
-
-			$args['taxonomy'] = 'product_grape';
-			$grapes = get_terms($args);
 
 			$args['taxonomy'] = 'product_packaging';
 			$units = get_terms($args);
@@ -802,20 +797,6 @@
 			?>
 			<script>
 				jQuery(document).ready( function() {
-					/* Disable enkele core WC-velden én een custom select waarop het attribuut 'readonly' niet werkt */
-					/* Door opgeven van 'disabled'-attribuut in velddefinitie verdwijnt de waarde tijdens het opslaan, dus via jQuery oplossen */
-					jQuery( '#general_product_data' ).find( 'input#_regular_price' ).prop( 'readonly', true );
-					jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', true );
-					jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', true );
-					jQuery( '#general_product_data' ).find( 'select#_net_unit' ).prop( 'disabled', true );
-					jQuery( '#inventory_product_data' ).find( 'select#_stock_status' ).prop( 'disabled', true );
-					jQuery( '#inventory_product_data' ).find( 'input[name=_sold_individually]' ).prop( 'disabled', true );
-					jQuery( '#shipping_product_data' ).find( 'input[name=_weight]' ).prop( 'readonly', true );
-					jQuery( '#shipping_product_data' ).find( 'input[name=_length]' ).prop( 'readonly', true );
-					jQuery( '#shipping_product_data' ).find( 'input[name=_width]' ).prop( 'readonly', true );
-					jQuery( '#shipping_product_data' ).find( 'input[name=_height]' ).prop( 'readonly', true );
-					jQuery( '#shipping_product_data' ).find( 'select#product_shipping_class' ).prop( 'disabled', true );
-
 					/* Disable en verberg checkboxes hoofdcategorieën */
 					<?php foreach ( $categories as $id ) : ?>
 						<?php if ( $id != $uncategorized_term->term_id ) : ?> 
@@ -825,15 +806,10 @@
 						<?php endif; ?>
 					<?php endforeach; ?>
 					
-					/* Disable en verberg checkboxes continenten */
-					<?php foreach ( $continents as $id ) : ?>
-						jQuery( '#in-product_partner-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
-					<?php endforeach; ?>
-
-					/* Disable en verberg checkboxes besteleenheid / consumenteneenheid */
-					<?php foreach ( $units as $id ) : ?>
-						jQuery( '#in-product_packaging-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
-					<?php endforeach; ?>
+					/* Uncheck de vorige waarde indien je een nieuwe productcategorie selecteert */
+					jQuery( '#product_cat-all' ).find( 'input[type=checkbox]' ).on( 'change', function() {
+						jQuery(this).closest( '#product_catchecklist' ).find( 'input[type=checkbox]' ).not(this).prop( 'checked', false );
+					});
 
 					/* Disable en verberg checkboxes allergeenklasses (behalve none) */
 					<?php foreach ( $types as $id ) : ?>
@@ -851,11 +827,63 @@
 						<?php endif; ?>
 					<?php endforeach; ?>
 
-					/* Disable en verberg checkboxes rode en witte druiven */
-					<?php foreach ( $grapes as $id ) : ?>
-						jQuery( '#in-product_grape-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
+					/* Disable en verberg checkboxes besteleenheid / consumenteneenheid */
+					<?php foreach ( $units as $id ) : ?>
+						jQuery( '#in-product_packaging-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
 					<?php endforeach; ?>
-					
+				});
+			</script>
+			<?php
+
+		}
+
+		// Functies die we niet op bulkbewerkingen willen toepassen
+		if ( ( $pagenow === 'post.php' or $pagenow === 'post-new.php' ) and $post_type === 'product' ) {
+			$args = array(
+				'fields' => 'ids',
+				'hide_empty' => false,
+				// Enkel de hoofdtermen selecteren!
+				'parent' => 0,
+			);
+
+			$args['taxonomy'] = 'product_partner';
+			$continents = get_terms($args);
+			
+			$args['taxonomy'] = 'product_grape';
+			$grapes = get_terms($args);
+
+			$categories = isset( $_GET['post'] ) ? get_the_terms( $_GET['post'], 'product_cat' ) : false;
+			if ( is_array( $categories ) ) {
+				foreach ( $categories as $category ) {
+					while ( intval($category->parent) !== 0 ) {
+						$parent = get_term( $category->parent, 'product_cat' );
+						$category = $parent;
+					}
+				}
+			}
+
+			?>
+			<script>
+				jQuery(document).ready( function() {
+					/* Disable enkele core WC-velden én een custom select waarop het attribuut 'readonly' niet werkt */
+					/* Door opgeven van 'disabled'-attribuut in velddefinitie verdwijnt de waarde tijdens het opslaan, dus via jQuery oplossen */
+					jQuery( '#general_product_data' ).find( 'input#_regular_price' ).prop( 'readonly', true );
+					jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', true );
+					jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', true );
+					jQuery( '#general_product_data' ).find( 'select#_net_unit' ).prop( 'disabled', true );
+					jQuery( '#inventory_product_data' ).find( 'select#_stock_status' ).prop( 'disabled', true );
+					jQuery( '#inventory_product_data' ).find( 'input[name=_sold_individually]' ).prop( 'disabled', true );
+					jQuery( '#shipping_product_data' ).find( 'input[name=_weight]' ).prop( 'readonly', true );
+					jQuery( '#shipping_product_data' ).find( 'input[name=_length]' ).prop( 'readonly', true );
+					jQuery( '#shipping_product_data' ).find( 'input[name=_width]' ).prop( 'readonly', true );
+					jQuery( '#shipping_product_data' ).find( 'input[name=_height]' ).prop( 'readonly', true );
+					jQuery( '#shipping_product_data' ).find( 'select#product_shipping_class' ).prop( 'disabled', true );
+
+					/* Disable en verberg checkboxes continenten */
+					<?php foreach ( $continents as $id ) : ?>
+						jQuery( '#in-product_partner-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
+					<?php endforeach; ?>
+
 					/* Disable bovenliggende landen/continenten van alle aangevinkte partners/landen */
 					jQuery( '#product_partner-all' ).find( 'input[type=checkbox]:checked' ).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'disabled', true );
 
@@ -865,7 +893,7 @@
 					});
 
 					/* Disable/enable het overeenkomstige allergeen in contains/may-contain bij aan/afvinken van may-contain/contains */
-					jQuery( '#product_allergen-all' ).find( 'input[type=checkbox]' ).on( 'change', function() {
+					jQuery( '#product_allergen-all, #product_allergen-checklist' ).find( 'input[type=checkbox]' ).on( 'change', function() {
 						var changed_box = jQuery(this);
 						var label = changed_box.closest( 'label.selectit' ).text();
 						changed_box.closest( 'ul.children' ).closest( 'li' ).siblings().find( 'label.selectit' ).each( function() {
@@ -886,12 +914,11 @@
 						none_box.closest( 'li' ).siblings().find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', none_box.is(":checked") );
 					});
 
-
-					/* Uncheck de vorige waarde indien je een nieuwe productcategorie selecteert */
-					jQuery( '#product_cat-all' ).find( 'input[type=checkbox]' ).on( 'change', function() {
-						jQuery(this).closest( '#product_catchecklist' ).find( 'input[type=checkbox]' ).not(this).prop( 'checked', false );
-					});
-
+					/* Disable en verberg checkboxes rode en witte druiven */
+					<?php foreach ( $grapes as $id ) : ?>
+						jQuery( '#in-product_grape-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
+					<?php endforeach; ?>
+					
 					/* Vereis dat er één productcategorie en minstens één partner/land aangevinkt is voor het opslaan */
 					jQuery( 'input[type=submit]#publish, input[type=submit]#save-post' ).click( function() {
 						// ALLE DISABLED DROPDOWNS WEER ACTIVEREN, ANDERS GEEN WAARDE DOORGESTUURD
@@ -915,14 +942,30 @@
 							pass = false;
 							msg += '* Je moet het fairtradepercentage nog ingeven!\n';
 						}
-						/* UITSCHAKELEN BIJ WIJNTJES */
-						if ( jQuery( '#general_product_data' ).find( 'textarea#_ingredients' ).val() == '' ) {
-							pass = false;
-							msg += '* Je moet de ingrediëntenlijst nog ingeven!\n';
-						}
+
+						<?php if ( $parent->slug !== 'wijn' or $parent->slug === 'vin' or $parent->slug === 'wine' ) : ?>
+							if ( jQuery( '#general_product_data' ).find( 'textarea#_ingredients' ).val() == '' ) {
+								pass = false;
+								msg += '* Je moet de ingrediëntenlijst nog ingeven!\n';
+							}
+						<?php else : ?>
+							/* Vereis dat minstens één druif, gerecht en smaak aangevinkt is voor het opslaan van wijntjes */
+							if ( jQuery( '#product_grape-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
+								pass = false;
+								msg += '* Je moet de druivenrassen nog aanvinken!\n';
+							}
+							if ( jQuery( '#product_recipe-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
+								pass = false;
+								msg += '* Je moet de gerechten nog aanvinken!\n';
+							}
+							if ( jQuery( '#product_taste-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
+								pass = false;
+								msg += '* Je moet de smaken nog aanvinken!\n';
+							}
+						<?php endif; ?>
 
 						if ( pass == false ) {
-							// alert(msg);
+							alert(msg);
 						}
 
 						return true;
@@ -940,49 +983,7 @@
 				});
 			</script>
 			<?php
-			
-			$categories = isset( $_GET['post'] ) ? get_the_terms( $_GET['post'], 'product_cat' ) : false;
-			if ( is_array( $categories ) ) {
-				foreach ( $categories as $category ) {
-					while ( intval($category->parent) !== 0 ) {
-						$parent = get_term( $category->parent, 'product_cat' );
-						$category = $parent;
-					}
-				}
-				if ( $parent->slug === 'wijn' or $parent->slug === 'vin' or $parent->slug === 'wine' ) {
-					
-					?>
-					<script>
-						jQuery(document).ready( function() {
-							/* Vereis dat minstens één druif, gerecht en smaak aangevinkt is voor het opslaan */
-							jQuery( 'input[type=submit]#publish, input[type=submit]#save-post' ).click( function() {
-								var pass = true;
-								var msg = 'Hold your horses, er zijn enkele issues:\n';
-								if ( jQuery( '#product_grape-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
-									pass = false;
-									msg += '* Je moet de druivenrassen nog aanvinken!\n';
-								}
-								if ( jQuery( '#product_recipe-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
-									pass = false;
-									msg += '* Je moet de gerechten nog aanvinken!\n';
-								}
-								if ( jQuery( '#product_taste-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
-									pass = false;
-									msg += '* Je moet de smaken nog aanvinken!\n';
-								}
-								
-								if ( pass == false ) {
-									// alert(msg);
-								}
 
-								return true;
-							});
-						});
-					</script>
-					<?php
-
-				}
-			}
 		}
 	}
 
