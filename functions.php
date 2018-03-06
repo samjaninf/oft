@@ -972,7 +972,7 @@
 								sum += Number( jQuery(this).children( 'input' ).first().val() );
 							});
 							if ( sum > max ) {
-								pass == false;
+								pass = false;
 								msg += '* Een secundaire voedingswaarde is groter dan de primaire!\n';
 							}
 						});
@@ -1444,7 +1444,6 @@
 				array( 
 					'id' => '_ingredients',
 					'label' => __( 'Ingrediëntenlijst', 'oft-admin' ).'<br>* = '.__( 'fair trade', 'oft-admin' ).'<br>° = '.__( 'biologisch', 'oft-admin' ).'<br>'.mb_strtoupper( __( 'allergeen', 'oft-admin' ) ),
-					'value' => esc_textarea( get_post_meta( $post->ID, '_ingredients', true ) ),
 					'wrapper_class' => 'important-for-catman',
 					'rows' => 4,
 				)
@@ -1454,7 +1453,6 @@
 				array( 
 					'id' => '_promo_text',
 					'label' => __( 'Actuele promotekst', 'oft-admin' ),
-					'value' => esc_textarea( get_post_meta( $post->ID, '_promo_text', true ) ),
 					'wrapper_class' => 'important-for-catman',
 					'desc_tip' => true,
 					'description' => __( 'Dit tekstje dient enkel om te tonen aan particulieren in de wijnkiezer en de webshops. Te combineren met de actieprijs en -periode hierboven.', 'oft-admin' ),
@@ -1828,7 +1826,7 @@
 		foreach ( $decimal_meta_keys as $meta_key ) {
 			// Zeker geen !empty() gebruiken want we willen nullen expliciet kunnen opslaan!
 			if ( isset($_POST[$meta_key]) and $_POST[$meta_key] !== '' ) {
-				update_post_meta( $post_id, $meta_key, esc_attr( number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 1, '.', '' ) ) );
+				update_post_meta( $post_id, $meta_key, number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 1, '.', '' ) );
 			} else {
 				update_post_meta( $post_id, $meta_key, '' );
 			}
@@ -1840,7 +1838,7 @@
 
 		foreach ( $price_meta_keys as $meta_key ) {
 			if ( isset($_POST[$meta_key]) and $_POST[$meta_key] !== '' ) {
-				update_post_meta( $post_id, $meta_key, esc_attr( number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 2, '.', '' ) ) );
+				update_post_meta( $post_id, $meta_key, number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 2, '.', '' ) );
 			} else {
 				update_post_meta( $post_id, $meta_key, '' );
 			}
@@ -1855,7 +1853,7 @@
 		foreach ( $high_precision_meta_keys as $meta_key ) {
 			// Zeker geen !empty() gebruiken want we willen nullen expliciet kunnen opslaan!
 			if ( isset($_POST[$meta_key]) and $_POST[$meta_key] !== '' ) {
-				update_post_meta( $post_id, $meta_key, esc_attr( number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 3, '.', '' ) ) );
+				update_post_meta( $post_id, $meta_key, number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 3, '.', '' ) );
 			} else {
 				update_post_meta( $post_id, $meta_key, '' );
 			}
@@ -1915,8 +1913,10 @@
 			return;
 		}
 	 
-		if( isset( $_POST[ 'oft_post_product' ] ) ) {
+		if ( isset( $_POST[ 'oft_post_product' ] ) and $_POST[ 'oft_post_product' ] !== 'EMPTY' ) {
 			update_post_meta( $post_id, 'oft_post_product', sanitize_text_field( $_POST[ 'oft_post_product' ] ) );
+		} else {
+			delete_post_meta( $post_id, 'oft_post_product' );
 		}
 	}
 
