@@ -1444,6 +1444,7 @@
 				array( 
 					'id' => '_ingredients',
 					'label' => __( 'Ingrediëntenlijst', 'oft-admin' ).'<br>* = '.__( 'fair trade', 'oft-admin' ).'<br>° = '.__( 'biologisch', 'oft-admin' ).'<br>'.mb_strtoupper( __( 'allergeen', 'oft-admin' ) ),
+					'value' => esc_textarea( get_post_meta( $post->ID, '_ingredients', true ) ),
 					'wrapper_class' => 'important-for-catman',
 					'rows' => 4,
 				)
@@ -1453,6 +1454,7 @@
 				array( 
 					'id' => '_promo_text',
 					'label' => __( 'Actuele promotekst', 'oft-admin' ),
+					'value' => esc_textarea( get_post_meta( $post->ID, '_promo_text', true ) ),
 					'wrapper_class' => 'important-for-catman',
 					'desc_tip' => true,
 					'description' => __( 'Dit tekstje dient enkel om te tonen aan particulieren in de wijnkiezer en de webshops. Te combineren met de actieprijs en -periode hierboven.', 'oft-admin' ),
@@ -1800,9 +1802,11 @@
 
 		foreach ( $regular_meta_keys as $meta_key ) {
 			if ( isset($_POST[$meta_key]) ) {
-				// Overkill, ga ervan uit dat Odisy correcte gegevens doorstuurt
-				// if ( $meta_key === '_cu_ean' and ! check_digit_ean13( $_POST[$meta_key] ) ) delete_post_meta( $post_id, $meta_key );
-				update_post_meta( $post_id, $meta_key, esc_attr( $_POST[$meta_key] ) );
+				if ( $meta_key === '_ingredients' or $meta_key === '_promo_text' ) {
+					update_post_meta( $post_id, $meta_key, sanitize_textarea_field( $_POST[$meta_key] ) );
+				} else {
+					update_post_meta( $post_id, $meta_key, sanitize_text_field( $_POST[$meta_key] ) );
+				}
 			} else {
 				update_post_meta( $post_id, $meta_key, '' );
 			}
