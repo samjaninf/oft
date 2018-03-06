@@ -516,13 +516,10 @@ body.search {
 
 			span.price {
 				text-align: center;
-				display: block;
-				font-size: 1em;
+				display: inline-block;
+				font-size: 0.9em;
 				
-				.amount {
-					color: $oxfam-green;
-				}
-
+				.amount,
 				.woocommerce-price-suffix {
 					color: $oxfam-green;
 				}
@@ -539,7 +536,7 @@ body.search {
 
 			h2.woocommerce-loop-product__title {
 				font-size: 1.2em;
-				line-height: 1.1em;
+				line-height: 1.2em;
 			}
 		}
 	}
