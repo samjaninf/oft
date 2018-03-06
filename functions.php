@@ -774,7 +774,7 @@
 	function disable_custom_checkboxes() {
 		global $pagenow, $post_type;
 
-		if ( ( $pagenow === 'post.php' or $pagenow === 'post-new.php' ) and $post_type === 'product' ) {
+		if ( ( $pagenow === 'post.php' or $pagenow === 'post-new.php' or $pagenow === 'edit.php' ) and $post_type === 'product' ) {
 			$args = array(
 				'fields' => 'ids',
 				'hide_empty' => false,
