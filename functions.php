@@ -951,15 +951,15 @@
 						<?php else : ?>
 							/* Vereis dat minstens één druif, gerecht en smaak aangevinkt is voor het opslaan van wijntjes */
 							if ( jQuery( '#product_grape-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
-								pass = false;
+								// pass = false;
 								msg += '* Je moet de druivenrassen nog aanvinken!\n';
 							}
 							if ( jQuery( '#product_recipe-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
-								pass = false;
+								// pass = false;
 								msg += '* Je moet de gerechten nog aanvinken!\n';
 							}
 							if ( jQuery( '#product_taste-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
-								pass = false;
+								// pass = false;
 								msg += '* Je moet de smaken nog aanvinken!\n';
 							}
 						<?php endif; ?>
@@ -972,6 +972,7 @@
 								sum += Number( jQuery(this).children( 'input' ).first().val() );
 							});
 							if ( sum > max ) {
+								pass == false;
 								msg += '* Een secundaire voedingswaarde is groter dan de primaire!\n';
 							}
 						});
