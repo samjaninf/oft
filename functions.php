@@ -964,21 +964,23 @@
 							}
 						<?php endif; ?>
 
+						/* Eventueel: checken of de som van alle secondaries de primary niet overschrijdt! */
+						jQuery( '#quality_product_data' ).find( 'p.primary' ).each( function() {
+							var max = Number( jQuery(this).children( 'input' ).first().val() );
+							var sum = 0;
+							jQuery(this).siblings( 'p.secondary' ).each( function() {
+								sum += Number( jQuery(this).children( 'input' ).first().val() );
+							});
+							if ( sum > max ) {
+								alert("Een secundaire voedingswaarde is te groot!");
+							}
+						});
+
 						if ( pass == false ) {
 							alert(msg);
 						}
 
-						return true;
-					});
-
-					/* Eventueel: checken of de som van alle secondaries de primary niet overschrijdt! */
-					jQuery( '#quality_product_data' ).find( 'p.primary' ).change( function() {
-						var max = jQuery(this).children( 'input' ).first().val();
-						var sum = 0;
-						jQuery(this).siblings( 'p.secondary' ).each( function() {
-							sum += Number( jQuery(this).children( 'input' ).first().val() );
-						});
-						// alert(sum);
+						return pass;
 					});
 				});
 			</script>
@@ -1645,20 +1647,30 @@
 			'wrapper_class' => 'primary',
 		);
 
+		$important = array(
+			'wrapper_class' => 'important-for-catman',
+		);
+
+		$important_primary = array(
+			'wrapper_class' => 'important-for-catman primary',
+		);
+
 		$secondary = array(
 			'wrapper_class' => 'secondary',
+		);
+
+		$important_secondary = array(
+			'wrapper_class' => 'important-for-catman secondary',
 		);
 
 		$fat = array(
 			'id' => '_fat',
 			'label' => __( 'Vetten', 'oft' ).$suffix.$hint,
-			'wrapper_class' => 'important-for-catman',
 		);
 		
 		$fasat = array(
 			'id' => '_fasat',
 			'label' => __( 'waarvan verzadigde vetzuren', 'oft' ).$suffix,
-			'wrapper_class' => 'important-for-catman',
 		);
 
 		$famscis = array(
@@ -1674,13 +1686,11 @@
 		$choavl = array(
 			'id' => '_choavl',
 			'label' => __( 'Koolhydraten', 'oft' ).$suffix.$hint,
-			'wrapper_class' => 'important-for-catman',
 		);
 
 		$sugar = array(
 			'id' => '_sugar',
 			'label' => __( 'waarvan suikers', 'oft' ).$suffix,
-			'wrapper_class' => 'important-for-catman',
 		);
 
 		$polyl = array(
@@ -1701,7 +1711,6 @@
 		$pro = array(
 			'id' => '_pro',
 			'label' => __( 'Eiwitten', 'oft' ).$suffix.$hint,
-			'wrapper_class' => 'important-for-catman',
 		);
 
 		echo '<div id="quality_product_data" class="panel woocommerce_options_panel">';
@@ -1710,7 +1719,6 @@
 					'id' => '_energy',
 					'label' => __( 'Energie', 'oft' ).' (kJ)'.$hint,
 					'type' => 'number',
-					'wrapper_class' => 'important-for-catman',
 					'custom_attributes' => array(
 						'step' => 'any',
 						'min' => '1',
@@ -1722,32 +1730,31 @@
 					$args_energy['custom_attributes']['readonly'] = true;
 				}
 
-				woocommerce_wp_text_input( $args_energy );
+				woocommerce_wp_text_input( $args_energy + $important );
 			echo '</div>';
 		
 			echo '<div class="options_group oft">';
-				woocommerce_wp_text_input( $fat + $one_decimal_args + $primary );
-				woocommerce_wp_text_input( $fasat + $one_decimal_args + $secondary );
+				woocommerce_wp_text_input( $fat + $one_decimal_args + $important_primary );
+				woocommerce_wp_text_input( $fasat + $one_decimal_args + $important_secondary );
 				woocommerce_wp_text_input( $famscis + $one_decimal_args + $secondary );
 				woocommerce_wp_text_input( $fapucis + $one_decimal_args + $secondary );
 			echo '</div>';
 		
 			echo '<div class="options_group oft">';
-				woocommerce_wp_text_input( $choavl + $one_decimal_args + $primary );
-				woocommerce_wp_text_input( $sugar + $one_decimal_args + $secondary );
+				woocommerce_wp_text_input( $choavl + $one_decimal_args + $important_primary );
+				woocommerce_wp_text_input( $sugar + $one_decimal_args + $important_secondary );
 				woocommerce_wp_text_input( $polyl + $one_decimal_args + $secondary );
 				woocommerce_wp_text_input( $starch + $one_decimal_args + $secondary );
 			echo '</div>';
 		
 			echo '<div class="options_group oft">';
 				woocommerce_wp_text_input( $fibtg + $one_decimal_args );
-				woocommerce_wp_text_input( $pro + $one_decimal_args );
+				woocommerce_wp_text_input( $pro + $one_decimal_args + $important );
 				
 				$args_salteq = array( 
 					'id' => '_salteq',
 					'label' => __( 'Zout', 'oft' ).$suffix.$hint,
 					'type' => 'number',
-					'wrapper_class' => 'important-for-catman',
 					'custom_attributes' => array(
 						'step' => '0.001',
 						'min' => '0.000',
@@ -1759,7 +1766,7 @@
 					$args_salteq['custom_attributes']['readonly'] = true;
 				}
 
-				woocommerce_wp_text_input( $args_salteq );
+				woocommerce_wp_text_input( $args_salteq + $important );
 			echo '</div>';
 		echo '</div>';
 	}
