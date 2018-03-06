@@ -785,7 +785,7 @@
 			$args['taxonomy'] = 'product_cat';
 			$categories = get_terms($args);
 			$uncategorized_term = get_term_by( 'slug', 'geen-categorie', $args['taxonomy'] );
-
+			
 			$args['taxonomy'] = 'product_partner';
 			$continents = get_terms($args);
 
@@ -876,10 +876,16 @@
 					});
 
 					/* Disable alle allergenen indien expliciet aangegeven werd dat er geen allergenen zijn */
-					jQuery( '#in-product_allergen-<?php echo $none_term->term_id; ?>' ).on( 'change', function() {
-						var changed_box = jQuery(this);
-						changed_box.closest( 'li' ).siblings().find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', changed_box.is(":checked") );
+					jQuery( '#in-product_allergen-<?php echo $none_term->term_id; ?>:checked' ).each( function() {
+						var none_box = jQuery(this);
+						none_box.closest( 'li' ).siblings().find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', none_box.is(":checked") );
 					});
+					/* Ook on toggle */
+					jQuery( '#in-product_allergen-<?php echo $none_term->term_id; ?>' ).on( 'change', function() {
+						var none_box = jQuery(this);
+						none_box.closest( 'li' ).siblings().find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', none_box.is(":checked") );
+					});
+
 
 					/* Uncheck de vorige waarde indien je een nieuwe productcategorie selecteert */
 					jQuery( '#product_cat-all' ).find( 'input[type=checkbox]' ).on( 'change', function() {
