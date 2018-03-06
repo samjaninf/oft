@@ -964,7 +964,7 @@
 							}
 						<?php endif; ?>
 
-						/* Eventueel: checken of de som van alle secondaries de primary niet overschrijdt! */
+						/* Check of de som van alle secundaire voedingswaardes de primaire niet overschrijdt */
 						jQuery( '#quality_product_data' ).find( 'p.primary' ).each( function() {
 							var max = Number( jQuery(this).children( 'input' ).first().val() );
 							var sum = 0;
@@ -972,7 +972,7 @@
 								sum += Number( jQuery(this).children( 'input' ).first().val() );
 							});
 							if ( sum > max ) {
-								alert("Een secundaire voedingswaarde is te groot!");
+								msg += '* Een secundaire voedingswaarde is groter dan de primaire!\n';
 							}
 						});
 
@@ -980,6 +980,7 @@
 							alert(msg);
 						}
 
+						// return true;
 						return pass;
 					});
 				});
