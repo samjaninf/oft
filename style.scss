@@ -503,9 +503,8 @@ body.search {
 	& > ul.products {
 		text-align: center;
 
-		.product-item .wp-post-image img {
-			// MAG WEG?
-			// border-width: 0px !important;
+		& > .bt-row > .bt-col-3.product-item {
+			width: 32%;
 		}
 
 		& > div.product {
@@ -729,7 +728,7 @@ body.search {
 }
 
 .product-item > .product-type-simple:hover {
-	background-colo: transparent !important;
+	background-color: transparent !important;
 }
 
 .woocommerce-imagewrapper > a.woocommerce-product-link > img {
@@ -1143,7 +1142,7 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 
 		/* Niet meteen naar 2 kolommen gaan in overzichtspagina's (default = rijen van 3) */
 		.products .product-item.bt-col-3 {
-			width: calc(33%);
+			width: 32%;
 		}
 	}
 }
@@ -1183,7 +1182,7 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	.woocommerce {
 		/* Nu wel naar 2 kolommen gaan */
 		.products .product-item.bt-col-3 {
-			width: calc(50%);
+			width: 49%;
 		}
 	}
 }
@@ -1212,7 +1211,7 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 
 		/* Naar 1 kolom gaan in overzichtspagina's */
 		.products .product-item.bt-col-3 {
-			width: calc(100%);
+			width: 100%;
 		}
 	}
 
