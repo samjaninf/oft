@@ -830,7 +830,7 @@
 						jQuery( '#in-product_packaging-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
 					<?php endforeach; ?>
 
-					/* Disable en verberg checkboxes allergeenklasses */
+					/* Disable en verberg checkboxes allergeenklasses (behalve none) */
 					<?php foreach ( $types as $id ) : ?>
 						<?php if ( $id != $none_term->term_id ) : ?> 
 							jQuery( '#in-product_allergen-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
@@ -869,6 +869,12 @@
 							}
 						});
 					});
+
+					/* Disable alle allergenen indien expliciet aangegeven werd dat er geen allergenen zijn */
+					jQuery( '#in-product_allergen-<?php echo $none_term->term_id; ?>' ).on( 'change', function() {
+						var changed_box = jQuery(this);
+						changed_box.closest( 'li' ).siblings().find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', changed_box.is(":checked") );
+					}
 
 					/* Uncheck de vorige waarde indien je een nieuwe productcategorie selecteert */
 					jQuery( '#product_cat-all' ).find( 'input[type=checkbox]' ).on( 'change', function() {
