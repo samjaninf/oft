@@ -1651,11 +1651,13 @@
 		$fat = array(
 			'id' => '_fat',
 			'label' => __( 'Vetten', 'oft' ).$suffix.$hint,
+			'wrapper_class' => 'important-for-catman',
 		);
 		
 		$fasat = array(
 			'id' => '_fasat',
 			'label' => __( 'waarvan verzadigde vetzuren', 'oft' ).$suffix,
+			'wrapper_class' => 'important-for-catman',
 		);
 
 		$famscis = array(
@@ -1671,11 +1673,13 @@
 		$choavl = array(
 			'id' => '_choavl',
 			'label' => __( 'Koolhydraten', 'oft' ).$suffix.$hint,
+			'wrapper_class' => 'important-for-catman',
 		);
 
 		$sugar = array(
 			'id' => '_sugar',
 			'label' => __( 'waarvan suikers', 'oft' ).$suffix,
+			'wrapper_class' => 'important-for-catman',
 		);
 
 		$polyl = array(
@@ -1696,6 +1700,7 @@
 		$pro = array(
 			'id' => '_pro',
 			'label' => __( 'Eiwitten', 'oft' ).$suffix.$hint,
+			'wrapper_class' => 'important-for-catman',
 		);
 
 		echo '<div id="quality_product_data" class="panel woocommerce_options_panel">';
@@ -1741,6 +1746,7 @@
 					'id' => '_salteq',
 					'label' => __( 'Zout', 'oft' ).$suffix.$hint,
 					'type' => 'number',
+					'wrapper_class' => 'important-for-catman',
 					'custom_attributes' => array(
 						'step' => '0.001',
 						'min' => '0.000',
