@@ -1428,7 +1428,7 @@
 				'wrapper_class' => 'important-for-catman',
 				'custom_attributes' => array(
 					'step' => '1',
-					'min' => '25',
+					'min' => '10',
 					'max' => '100',
 				),
 			);
