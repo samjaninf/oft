@@ -960,14 +960,14 @@
 						/* Check of de som van alle secundaire voedingswaardes de primaire niet overschrijdt */
 						jQuery( '#quality_product_data' ).find( 'p.primary' ).each( function() {
 							/* Kleine marge nemen voor afrondingsfouten */
-							var max = 0.1 + Number( jQuery(this).children( 'input' ).first().val() );
+							var max = Number( jQuery(this).children( 'input' ).first().val() );
 							var sum = 0;
 							jQuery(this).siblings( 'p.secondary' ).each( function() {
 								sum += Number( jQuery(this).children( 'input' ).first().val() );
 							});
-							if ( sum.toFixed(1) > max.toFixed(1) ) {
+							if ( sum > max + 0.1 ) {
 								pass = false;
-								msg += '* Som van secundaire waardes is groter dan primaire voedingswaarde ('+sum.toFixed(1)+' g)!\n';
+								msg += '* Som van secundaire waardes is groter dan primaire voedingswaarde ('+sum.toFixed(1)+' g > '+max.toFixed(1)+' g)!\n';
 							}
 						});
 
@@ -1324,21 +1324,6 @@
 				create_product_pdf( $product->get_id(), 'en' );
 			}
 		}
-	}
-
-	// Alternatieve mogelijkheid om niet-OFT-producten te verbergen: m.b.v. extra filter in algemene WP-query
-	// add_action( 'woocommerce_product_query', 'filter_product_query_by_taxonomy' );
-
-	function filter_product_query_by_taxonomy( $q ) {	
-		$oft_term = get_term_by( 'name', 'Oxfam Fair Trade', 'pa_merk' );
-		$tax_query = (array) $q->get('tax_query');
-		$tax_query[] = array(
-			'taxonomy' => 'pa_merk',
-			'field' => 'term_taxonomy_id',
-			'terms' => $oft_term->term_id,
-			'operator' => 'IN',
-		);
-		$q->set( 'tax_query', $tax_query );
 	}
 
 	// Toon metavelden netjes in de WooCommerce-tabbladen en werk ze bij tijdens het opslaan
@@ -2859,7 +2844,7 @@
 				$product->save();
 
 				// Maak de OFT-productfiche aan (indien foto aanwezig)
-				if ( $product->get_attribute('pa_merk') === 'Oxfam Fair Trade' ) {
+				if ( $product->get_attribute('pa_merk') === 'Oxfam Fair Trade' or $product->get_attribute('pa_merk') === 'Maya' ) {
 					if ( intval( $product->get_image_id() ) > 0 ) {
 						// Enkel in huidige taal van import aanmaken!
 						create_product_pdf( $product->get_id(), $sitepress->get_current_language() );
