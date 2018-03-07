@@ -5,7 +5,9 @@
 <div class="wrap">
 	<h1>Changelog</h1>
 
-	<p>Hieronder kun je de aangepaste productinfo raadplegen van deze week.</p>
+	<p>Hieronder kun je de productinfo raadplegen die in de loop van deze week handmatig aangepast werd. De log toont enkel de wijzigingen aan de Nederlandstalige termen.</p>
+
+	<p>Wijzigingen die tijdens automatische imports plaatsvinden worden niét getoond, aangezien de 'delete/create'-methode dit soort logging compleet zinloos maakt.</p>
 
 	<p>&nbsp;</p>
 
