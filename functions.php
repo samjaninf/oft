@@ -921,13 +921,6 @@
 					
 					/* Vereis dat er één productcategorie en minstens één partner/land aangevinkt is voor het opslaan */
 					jQuery( 'input[type=submit]#publish, input[type=submit]#save-post' ).click( function() {
-						// ALLE DISABLED DROPDOWNS WEER ACTIVEREN, ANDERS GEEN WAARDE DOORGESTUURD
-						jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', false );
-						jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', false );
-						jQuery( '#general_product_data' ).find( 'select#_net_unit' ).prop( 'disabled', false );
-						jQuery( '#inventory_product_data' ).find( 'select#_stock_status' ).prop( 'disabled', false );
-						jQuery( '#shipping_product_data' ).find( 'select#product_shipping_class' ).prop( 'disabled', false );
-
 						var pass = true;
 						var msg = 'Hold your horses, er zijn enkele issues:\n';
 						if ( jQuery( '#product_partner-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
@@ -966,19 +959,27 @@
 
 						/* Check of de som van alle secundaire voedingswaardes de primaire niet overschrijdt */
 						jQuery( '#quality_product_data' ).find( 'p.primary' ).each( function() {
-							var max = Number( jQuery(this).children( 'input' ).first().val() );
+							/* Kleine marge nemen voor afrondingsfouten */
+							var max = 0.1 + Number( jQuery(this).children( 'input' ).first().val() );
 							var sum = 0;
 							jQuery(this).siblings( 'p.secondary' ).each( function() {
 								sum += Number( jQuery(this).children( 'input' ).first().val() );
 							});
-							if ( sum > max ) {
+							if ( sum.toFixed(1) > max.toFixed(1) ) {
 								pass = false;
-								msg += '* Een secundaire voedingswaarde is groter dan de primaire!\n';
+								msg += '* Som van secundaire waardes is groter dan primaire voedingswaarde ('+sum.toFixed(1)+' g)!\n';
 							}
 						});
 
 						if ( pass == false ) {
 							alert(msg);
+						} else {
+							// ALLE DISABLED DROPDOWNS WEER ACTIVEREN, ANDERS GEEN WAARDE DOORGESTUURD
+							jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', false );
+							jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', false );
+							jQuery( '#general_product_data' ).find( 'select#_net_unit' ).prop( 'disabled', false );
+							jQuery( '#inventory_product_data' ).find( 'select#_stock_status' ).prop( 'disabled', false );
+							jQuery( '#shipping_product_data' ).find( 'select#product_shipping_class' ).prop( 'disabled', false );
 						}
 
 						// return true;
