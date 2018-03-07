@@ -973,17 +973,19 @@
 
 						if ( pass == false ) {
 							alert(msg);
-						} else {
-							// ALLE DISABLED DROPDOWNS WEER ACTIVEREN, ANDERS GEEN WAARDE DOORGESTUURD
-							jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', false );
-							jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', false );
-							jQuery( '#general_product_data' ).find( 'select#_net_unit' ).prop( 'disabled', false );
-							jQuery( '#inventory_product_data' ).find( 'select#_stock_status' ).prop( 'disabled', false );
-							jQuery( '#shipping_product_data' ).find( 'select#product_shipping_class' ).prop( 'disabled', false );
 						}
+						
+						// ALLE DISABLED DROPDOWNS WEER ACTIVEREN, ANDERS GEEN WAARDE DOORGESTUURD
+						// In ELSE-blok stoppen indien we de controle activeren, om te vermijden dat de data beschikbaar wordt indien er geen page reload plaatsvindt wegens blokkage
+						jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', false );
+						jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', false );
+						jQuery( '#general_product_data' ).find( 'select#_net_unit' ).prop( 'disabled', false );
+						jQuery( '#inventory_product_data' ).find( 'select#_stock_status' ).prop( 'disabled', false );
+						jQuery( '#shipping_product_data' ).find( 'select#product_shipping_class' ).prop( 'disabled', false );
 
-						// return true;
-						return pass;
+						// return pass;
+						return true;
+						
 					});
 				});
 			</script>
