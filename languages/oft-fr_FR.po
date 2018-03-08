@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam Fair Trade\n"
-"POT-Creation-Date: 2018-03-08 15:48+0100\n"
-"PO-Revision-Date: 2018-03-08 15:48+0100\n"
+"POT-Creation-Date: 2018-03-08 15:55+0100\n"
+"PO-Revision-Date: 2018-03-08 15:55+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language: fr_FR\n"
@@ -406,7 +406,7 @@ msgstr "Ce produit contient"
 msgid "geen meldingsplichtige allergenen"
 msgstr "aucun allergène à déclaration obligatoire"
 
-#: functions.php:643 functions.php:2262
+#: functions.php:643 functions.php:2263
 msgid "Kan sporen bevatten van"
 msgstr "Peut contenir des traces de"
 
@@ -754,39 +754,43 @@ msgstr ""
 #: functions.php:1884
 #, php-format
 msgid ""
-"Kies 1 van de %d actuele OFT-producten om onderaan het bericht toe te voegen "
-"(gebruik de shortcode [products skus=\"A,B,C\" colums=\"3\"] indien je "
-"meerdere producten wil tonen!):"
+"Kies 1 van de %d actuele OFT-producten om onderaan het bericht toe te voegen:"
 msgstr ""
 
-#: functions.php:1920
+#: functions.php:1891
+msgid ""
+"Gebruik de shortcode [products skus=\"A,B,C\" colums=\"3\"] indien je "
+"meerdere producten wil tonen!"
+msgstr ""
+
+#: functions.php:1921
 msgid "Partner:"
 msgid_plural "Partners:"
 msgstr[0] "Partenaire :"
 msgstr[1] "Partenaires :"
 
-#: functions.php:1971
+#: functions.php:1972
 #, php-format
 msgid "Lees ook de blogpost \"%s\"."
 msgstr "Lisez aussi l'article \"%s\"."
 
-#: functions.php:1981
+#: functions.php:1982
 msgid "Download de productfiche"
 msgstr "Téléchargez la feuille de produit"
 
-#: functions.php:2054
+#: functions.php:2055
 msgid "Toon de datum en eventuele categorieën van de post."
 msgstr ""
 
-#: functions.php:2075
+#: functions.php:2076
 msgid "Gepubliceerd: "
 msgstr "Publié :"
 
-#: functions.php:2075
+#: functions.php:2076
 msgid "Categorie:"
 msgstr "Catégorie :"
 
-#: functions.php:2138
+#: functions.php:2139
 msgid ""
 "Deze boeren zijn voor ons geen leveranciers, het zijn partners. Dankzij "
 "jullie steun kunnen coöperaties uitgroeien tot bloeiende ondernemingen die "
@@ -797,114 +801,114 @@ msgstr ""
 "développer en entreprises fleurissantes qui vendent leurs produits "
 "équitables dans le monde entier."
 
-#: functions.php:2141
+#: functions.php:2142
 msgid "lees meer over deze producent op oxfamwereldwinkels.be"
 msgstr ""
 "lisez plus sur ce producteur sur oxfamwereldwinkels.be (en néerlandais)"
 
-#: functions.php:2148
+#: functions.php:2149
 #, php-format
 msgid "Momenteel verkopen wij één product van deze partner:"
 msgid_plural "Momenteel verkopen wij %s producten van deze partner:"
 msgstr[0] "À ce moment, nous vendons un produit de ce partenaire :"
 msgstr[1] "À ce moment, nous vendons %s produits de ce partenaire :"
 
-#: functions.php:2164
+#: functions.php:2165
 msgid "Zoekresultaten"
 msgstr "Résultats de récherche"
 
-#: functions.php:2165
+#: functions.php:2166
 msgid "Vorige"
 msgstr "Précédent"
 
-#: functions.php:2166
+#: functions.php:2167
 msgid "Volgende"
 msgstr "Suivant"
 
-#: functions.php:2226
+#: functions.php:2227
 msgid "bekijk product online"
 msgstr "consultez le produit sur le site"
 
-#: functions.php:2232
+#: functions.php:2233
 msgid "Partners:"
 msgstr "Partenaires :"
 
-#: functions.php:2235
+#: functions.php:2236
 msgid "Herkomst:"
 msgstr "Origine :"
 
-#: functions.php:2259
+#: functions.php:2260
 msgid "Bevat"
 msgstr "Contient de"
 
-#: functions.php:2259 functions.php:2262
+#: functions.php:2260 functions.php:2263
 msgid "en"
 msgstr "et"
 
-#: functions.php:2265
+#: functions.php:2266
 msgid "Geen meldingsplichtige allergenen aanwezig."
 msgstr "Aucun allergène à déclaration obligatoire présent."
 
-#: functions.php:2289 functions.php:2295
+#: functions.php:2290 functions.php:2296
 msgid "met statiegeld"
 msgstr "avec consigne"
 
-#: functions.php:2340
+#: functions.php:2341
 msgid "Labels"
 msgstr "Labels"
 
-#: functions.php:2373
+#: functions.php:2374
 msgid "Houdbaarheid na productie"
 msgstr "Conservation après production"
 
-#: functions.php:2373
+#: functions.php:2374
 msgid "dagen"
 msgstr "jours"
 
-#: functions.php:2431
+#: functions.php:2432
 #, php-format
 msgid "Aangemaakt %s"
 msgstr "Créé %s"
 
-#: functions.php:2437
+#: functions.php:2438
 msgid "Productfiche"
 msgstr "Feuille de produit"
 
-#: functions.php:2538
+#: functions.php:2539
 msgid "Dit e-mailadres is reeds ingeschreven!"
 msgstr "Cette adresse est déjà inscrite !"
 
-#: functions.php:2541
+#: functions.php:2542
 msgid "Dit e-mailadres was al eens ingeschreven!"
 msgstr "Cette adresse a déjà été inscrite auparavant !"
 
-#: functions.php:2569
+#: functions.php:2570
 msgid "Gelieve de fouten op te lossen."
 msgstr "Veuillez éliminer les erreurs."
 
-#: functions.php:2582
+#: functions.php:2583
 #, php-format
 msgid "sinds %s"
 msgstr "depuis le %s"
 
-#: functions.php:2586
+#: functions.php:2587
 #, php-format
 msgid "Je bent%s reeds geabonneerd op onze nieuwsbrief!"
 msgstr "Vous êtes déjà inscrit à notre bulletin d'information%s !"
 
-#: functions.php:2590
+#: functions.php:2591
 msgid "We werkten je gegevens bij."
 msgstr "Nous avons actualisé vos données."
 
-#: functions.php:2593
+#: functions.php:2594
 msgid "Je was vroeger al eens geabonneerd op onze nieuwsbrief!"
 msgstr "Vous étiez déjà inscrit à notre bulletin d'information auparavant !"
 
-#: functions.php:2597
+#: functions.php:2598
 msgid "We heractiveerden je inschrijving."
 msgstr "Nous avons réactivé votre inscription."
 
-#: functions.php:2600
+#: functions.php:2601
 #, php-format
 msgid ""
 "We konden je inschrijving niet automatisch vernieuwen. <a href=\"%s\" target="
@@ -915,7 +919,7 @@ msgstr ""
 "\"%s\" target=\"_blank\">Veuillez utiliser ce formulaire d'inscription</a> "
 "et tapez le lien de confirmation."
 
-#: functions.php:2634
+#: functions.php:2635
 msgid ""
 "Er was een onbekend probleem met Contact Form 7. Probeer het later eens "
 "opnieuw."
@@ -923,14 +927,14 @@ msgstr ""
 "Il s'est produit un problème inconnu avec Contact Form 7. Veuillez l'essayer "
 "encore une fois plus tard."
 
-#: functions.php:2647
+#: functions.php:2648
 msgid ""
 "Bedankt, je bent vanaf nu geabonneerd op de nieuwsbrief van Oxfam Fair Trade!"
 msgstr ""
 "Merci, désormais vous êtes inscrit au bulletin d'information d'Oxfam Fair "
 "Trade !"
 
-#: functions.php:2650
+#: functions.php:2651
 msgid ""
 "Je inschrijving kon niet uitgevoerd worden op de MailChimp-servers. Probeer "
 "het later eens opnieuw."
@@ -938,7 +942,7 @@ msgstr ""
 "Votre inscription ne pouvait pas être complété sur les serveurs de "
 "MailChimp. Veuillez le réessayer plus tard."
 
-#: functions.php:2781
+#: functions.php:2782
 #, php-format
 msgid "Bekijk <a href=\"%s\" target=\"_blank\">de recentste nieuwsbrief</a>."
 msgstr "Consultez <a href=\"%s\" target=\"_blank\">le dernier bulletin</a>."

@@ -1881,13 +1881,14 @@
 
 		?>
 			<p>
-				<label for="oft_post_product" class=""><?php printf( __( 'Kies 1 van de %d actuele OFT-producten om onderaan het bericht toe te voegen (gebruik de shortcode [products skus="A,B,C" colums="3"] indien je meerdere producten wil tonen!):', 'oft' ), count($list) ); ?></label>
+				<label for="oft_post_product" class=""><?php printf( __( 'Kies 1 van de %d actuele OFT-producten om onderaan het bericht toe te voegen:', 'oft' ), count($list) ); ?></label>
 				<select name="oft_post_product" id="oft_post_product">
 					<option value=""><?php _e( '(selecteer)', 'oft' ); ?></option>
 					<?php foreach ( $list as $sku => $title ) : ?>
 						<option value="<?php echo $sku; ?>" <?php if ( isset ( $prfx_stored_meta['oft_post_product'] ) ) selected( $prfx_stored_meta['oft_post_product'][0], $sku ); ?>><?php echo $sku.': '.$title; ?></option>';
 					<?php endforeach; ?>
 				</select>
+				<?php _e( 'Gebruik de shortcode [products skus="A,B,C" colums="3"] indien je meerdere producten wil tonen!', 'oft' ); ?>
 			</p>
 		<?php
 	}
