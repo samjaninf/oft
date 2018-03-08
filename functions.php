@@ -2139,7 +2139,7 @@
 						_e( 'Deze boeren zijn voor ons geen leveranciers, het zijn partners. Dankzij jullie steun kunnen coöperaties uitgroeien tot bloeiende ondernemingen die hun fairtradeproducten wereldwijd verkopen.', 'oft' );
 						$partner_node = get_term_meta( get_queried_object()->term_id, 'partner_node', true );
 						if ( $partner_node > 0 ) {
-							echo ' (<a href="https://www.oxfamwereldwinkels.be/node/'.$partner_node.'" target="_blank">'._e( 'lees meer over deze producent op oxfamwereldwinkels.be', 'oft' ).'</a>)';
+							echo ' (<a href="https://www.oxfamwereldwinkels.be/node/'.$partner_node.'" target="_blank">'.__( 'lees meer over deze producent op oxfamwereldwinkels.be', 'oft' ).'</a>)';
 						}
 					echo '</p>';
 
