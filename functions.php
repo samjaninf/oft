@@ -1316,7 +1316,7 @@
 		}
 
 		// Update de productfiches na een handmatige bewerking
-		if ( get_option('oft_import_active') !== 'yes' and $_POST['_update_product_sheet'] === 'yes' ) {
+		if ( get_option('oft_import_active') !== 'yes' and isset($_POST['_update_product_sheet']) and $_POST['_update_product_sheet'] === 'yes' ) {
 			// Enkel proberen aanmaken indien foto reeds aanwezig
 			if ( intval( $product->get_image_id() ) > 0 ) {
 				create_product_pdf( $product->get_id(), 'nl' );
@@ -2342,10 +2342,10 @@
 			$labels_text = '';
 		}
 
-		$images = wp_get_attachment_image_src( $product->get_image_id(), 'large' );
+		// Thumbnail 'large' is bij oude vertaalde afbeeldingen nog niet geregistreerd, dus gebruik de ID van het Nederlandstalige product
+		// Dit vermijdt dat we erg zware PDF's creëren!
+		$images = wp_get_attachment_image_src( $main_product_id, 'large' );
 		if ( $images !== false ) {
-			write_log($language.': '.$product->get_image_id());
-			write_log($language.': '.$images[0]);
 			$image_url = '<img src="'.$images[0].'" style="width: 100%;">';
 		} else {
 			$image_url = '';
