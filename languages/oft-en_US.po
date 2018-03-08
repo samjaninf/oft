@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam Fair Trade\n"
-"POT-Creation-Date: 2018-03-08 15:55+0100\n"
-"PO-Revision-Date: 2018-03-08 16:01+0100\n"
+"POT-Creation-Date: 2018-03-08 16:19+0100\n"
+"PO-Revision-Date: 2018-03-08 16:20+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language: en_US\n"
@@ -803,8 +803,8 @@ msgstr ""
 "fair trade products worldwide."
 
 #: functions.php:2142
-msgid "lees meer over deze producent op oxfamwereldwinkels.be"
-msgstr "read more about this producer on oxfamwereldwinkels.be (Dutch)"
+msgid "Lees meer over deze producent op oxfamwereldwinkels.be"
+msgstr "Read more about this producer on oxfamwereldwinkels.be (Dutch)"
 
 #: functions.php:2149
 #, php-format
@@ -942,7 +942,7 @@ msgstr ""
 
 #: search.php:18
 msgid "Bedoelde je misschien"
-msgstr ""
+msgstr "Did you mean"
 
 #. Theme Name of the plugin/theme
 msgid "Oxfam Fair Trade"
