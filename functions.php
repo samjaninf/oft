@@ -1881,9 +1881,9 @@
 
 		?>
 			<p>
-				<label for="oft_post_product" class=""><?php printf( __( 'Selecteer 1 van de %d actuele en publiek te raadplegen producten waarover dit bericht gaat:', 'oft' ), count($list) ); ?></label>
+				<label for="oft_post_product" class=""><?php printf( __( 'Kies 1 van de %d actuele OFT-producten om onderaan het bericht toe te voegen (gebruik de shortcode [products skus="A,B,C" colums="3"] indien je meerdere producten wil tonen!):', 'oft' ), count($list) ); ?></label>
 				<select name="oft_post_product" id="oft_post_product">
-					<option value="EMPTY"><?php _e( '(geen)', 'oft' ); ?></option>
+					<option value=""><?php _e( '(selecteer)', 'oft' ); ?></option>
 					<?php foreach ( $list as $sku => $title ) : ?>
 						<option value="<?php echo $sku; ?>" <?php if ( isset ( $prfx_stored_meta['oft_post_product'] ) ) selected( $prfx_stored_meta['oft_post_product'][0], $sku ); ?>><?php echo $sku.': '.$title; ?></option>';
 					<?php endforeach; ?>
@@ -1901,7 +1901,7 @@
 			return;
 		}
 	 
-		if ( isset( $_POST[ 'oft_post_product' ] ) and $_POST[ 'oft_post_product' ] !== 'EMPTY' ) {
+		if ( isset( $_POST[ 'oft_post_product' ] ) ) {
 			update_post_meta( $post_id, 'oft_post_product', sanitize_text_field( $_POST[ 'oft_post_product' ] ) );
 		} else {
 			delete_post_meta( $post_id, 'oft_post_product' );
@@ -2056,9 +2056,9 @@
 			'params' => array(
 				array(
 					'type' => 'textfield',
-					'heading' => __( 'Extra class name', 'js_composer' ),
+					'heading' => 'Extra class name',
 					'param_name' => 'el_class',
-					'description' => __( 'Style particular content element differently - add a class name and refer to it in custom CSS.', 'js_composer' )
+					'description' => 'Style particular content element differently - add a class name and refer to it in custom CSS.',
 				),
 			),
 		);
@@ -2138,7 +2138,7 @@
 						_e( 'Deze boeren zijn voor ons geen leveranciers, het zijn partners. Dankzij jullie steun kunnen coöperaties uitgroeien tot bloeiende ondernemingen die hun fairtradeproducten wereldwijd verkopen.', 'oft' );
 						$partner_node = get_term_meta( get_queried_object()->term_id, 'partner_node', true );
 						if ( $partner_node > 0 ) {
-							echo ' (<a href="https://www.oxfamwereldwinkels.be/node/'.$partner_node.'" target="_blank">lees meer over deze producent op oxfamwereldwinkels.be</a>)';
+							echo ' (<a href="https://www.oxfamwereldwinkels.be/node/'.$partner_node.'" target="_blank">'._e( 'lees meer over deze producent op oxfamwereldwinkels.be', 'oft' ).'</a>)';
 						}
 					echo '</p>';
 
