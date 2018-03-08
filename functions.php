@@ -2344,6 +2344,7 @@
 
 		$images = wp_get_attachment_image_src( $product->get_image_id(), 'large' );
 		if ( $images !== false ) {
+			write_log($language.': '.$product->get_image_id());
 			write_log($language.': '.$images[0]);
 			$image_url = '<img src="'.$images[0].'" style="width: 100%;">';
 		} else {
