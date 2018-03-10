@@ -4,7 +4,7 @@
 <head>
 	 <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Productfoto's OFT</title>
+    <title>Overzicht packshots</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 
@@ -78,20 +78,20 @@
 							}
 							echo '<small style="color: vampire grey; font-style: italic;">'.$merk.' '.$product['sku'].'</small><br>';
 							echo '<div style="padding: 0; height: 50px; display: flex; align-items: center;"><p style="font-weight: bold; margin: 0; text-align: center; width: 100%;">'.$product['name'].'</p></div>';
-							echo '<a href="'.$product['permalink'].'" title="Bekijk product op OFT-site" target="_blank"><img style="max-width: 100%;" src="'.$shop_catalog[0].'"></a><br>';
+							echo '<a href="'.$product['permalink'].'" title="Bekijk dit product op de OFT-site" target="_blank"><img style="max-width: 100%;" src="'.$shop_catalog[0].'"></a><br>';
 							echo '<u>Downloads:</u><br>';
-							echo '<a href="'.$wp_full[0].'" title="Download" target="_blank">Full</a> ('.$wp_full[1].' x '.$wp_full[2].' pixels)<br>';
+							echo '<a href="'.$wp_full[0].'" title="Download afbeelding" target="_blank">Full</a> ('.$wp_full[1].' x '.$wp_full[2].' pixels)<br>';
 							if ( $wp_full[1] !== $wp_large[1] ) {
-								echo '<a href="'.$wp_large[0].'" title="Download" target="_blank">Large</a> ('.$wp_large[1].' x '.$wp_large[2].' pixels)<br>';
+								echo '<a href="'.$wp_large[0].'" title="Download afbeelding" target="_blank">Large</a> ('.$wp_large[1].' x '.$wp_large[2].' pixels)<br>';
 							}
 							if ( $wp_large[1] !== $wp_medium[1] ) {
-								echo '<a href="'.$wp_medium[0].'" title="Download" target="_blank">Medium</a> ('.$wp_medium[1].' x '.$wp_medium[2].' pixels)<br>';
+								echo '<a href="'.$wp_medium[0].'" title="Download afbeelding" target="_blank">Medium</a> ('.$wp_medium[1].' x '.$wp_medium[2].' pixels)<br>';
 							}
 							if ( $wp_medium[1] !== $shop_single[1] ) {
-								echo '<a href="'.$shop_single[0].'" title="Download" target="_blank">Detail</a> ('.$shop_single[1].' x '.$shop_single[2].' pixels)<br>';
+								echo '<a href="'.$shop_single[0].'" title="Download afbeelding" target="_blank">Detail</a> ('.$shop_single[1].' x '.$shop_single[2].' pixels)<br>';
 							}
-							echo '<a href="'.$shop_catalog[0].'" title="Download" target="_blank">Catalog</a> ('.$shop_catalog[1].' x '.$shop_catalog[2].' pixels)<br>';
-							echo '<a href="'.$shop_thumbnail[0].'" title="Download" target="_blank">Thumbnail</a> ('.$shop_thumbnail[1].' x '.$shop_thumbnail[2].' pixels)';
+							echo '<a href="'.$shop_catalog[0].'" title="Download afbeelding" target="_blank">Catalog</a> ('.$shop_catalog[1].' x '.$shop_catalog[2].' pixels)<br>';
+							echo '<a href="'.$shop_thumbnail[0].'" title="Download afbeelding" target="_blank">Thumbnail</a> ('.$shop_thumbnail[1].' x '.$shop_thumbnail[2].' pixels)';
 						echo '</div>';
 					}
 				echo '</div>';
