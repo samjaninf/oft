@@ -460,14 +460,7 @@ body.search {
 		}
 
 		.textwidget > a {
-			text-decoration: underline !important;
-			text-underline-position: under !important;
-			-webkit-text-underline-position: under !important;
 			letter-spacing: 1px !important;
-			
-			&:hover {
-				text-decoration: none !important;
-			}
 		}
 	}
 
@@ -631,6 +624,13 @@ body.search {
 
 		.oft-partners-link {
 			text-align: right;
+			text-decoration: underline !important;
+			text-underline-position: under !important;
+			-webkit-text-underline-position: under !important;
+			
+			&:hover {
+				text-decoration: none !important;
+			}
 		}
 
 		.oft-latest-news {
