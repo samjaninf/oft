@@ -630,7 +630,7 @@
 				<?php
 					if ( is_array( $allergens['contains'] ) ) {
 						echo implode( ', ', $allergens['contains'] );
-					} elseif ( $allergens['none'] === true ) {
+					} elseif ( $allergens['none'] === true or is_array( $allergens['may-contain'] ) ) {
 						// Enkel tonen indien expliciet zo aangegeven in database!
 						_e( 'geen meldingsplichtige allergenen', 'oft' );
 					} else {
@@ -645,7 +645,7 @@
 				<?php
 					if ( is_array( $allergens['may-contain'] ) ) {
 						echo implode( ', ', $allergens['may-contain'] );
-					} elseif ( $allergens['none'] === true ) {
+					} elseif ( $allergens['none'] === true or is_array( $allergens['contains'] ) ) {
 						// Enkel tonen indien expliciet zo aangegeven in database!
 						_e( 'geen meldingsplichtige allergenen', 'oft' );
 					} else {
