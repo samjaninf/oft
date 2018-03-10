@@ -2535,10 +2535,8 @@
 			if ( $response['response']['code'] == 200 ) {
 				$body = json_decode($response['body']);
 				if ( $body->status === "subscribed" ) {
-					// REEDS INGESCHREVEN
 					$result->invalidate( $tag, __( 'Dit e-mailadres is reeds ingeschreven!', 'oft' ) );
 				} else {
-					// NIET LANGER INGESCHREVEN
 					$result->invalidate( $tag, __( 'Dit e-mailadres was al eens ingeschreven!', 'oft' ) );
 				}
 			}
@@ -2564,12 +2562,12 @@
 	function handle_validation_errors( $posted_data ) {
 		global $sitepress;
 
-		// Nieuwsbriefformulier
-		$mc_forms = array( 1054, 6757, 6756 );
-		if ( in_array( $posted_data['_wpcf7'], $mc_forms ) ) {
+		// Nieuwsbriefformulieren
+		$mailchimp_forms = array( 1054, 6757, 6756 );
+		if ( in_array( $posted_data['_wpcf7'], $mailchimp_forms ) ) {
 			$posted_data['validation_error'] = __( 'Gelieve de fouten op te lossen.', 'oft' );
+			$posted_data['newsletter-name'] = trim_and_uppercase_words( $posted_data['newsletter-name'] );
 			$posted_data['newsletter-email'] = strtolower( trim($posted_data['newsletter-email']) );
-			$posted_data['newsletter-name'] = implode( '-', array_map( 'ucwords', explode( '-', mb_strtolower( trim($posted_data['newsletter-name']) ) ) ) );
 			
 			$status = get_status_in_mailchimp_list( $posted_data['newsletter-email'] );
 						
@@ -2603,7 +2601,20 @@
 				}
 			}
 		}
+
+		// Contactformulieren
+		$contact_forms = array( 1014, 6711, 6712 );
+		if ( in_array( $posted_data['_wpcf7'], $contact_forms ) ) {
+			$posted_data['your-name'] = trim_and_uppercase_words( $posted_data['your-name'] );
+			$posted_data['your-email'] = strtolower( trim($posted_data['your-email']) );
+			$posted_data['your-company'] = trim_and_uppercase_words( $posted_data['your-company'] );
+		}
+
 		return $posted_data;
+	}
+
+	function trim_and_uppercase_words( $value ) {
+		return implode( '-', array_map( 'ucwords', explode( '-', mb_strtolower( trim($value) ) ) ) );
 	}
 
 	// Filter om mail tegen te houden ondanks succesvolle validatie
@@ -2620,9 +2631,10 @@
 		if ( $submission ) {
 			$posted_data = $submission->get_posted_data();
 		}
+		
 		// Nieuwsbriefformulieren
-		$mc_forms = array( 1054, 6757, 6756 );
-		if ( in_array( $wpcf7->id(), $mc_forms ) ) {
+		$mailchimp_forms = array( 1054, 6757, 6756 );
+		if ( in_array( $wpcf7->id(), $mailchimp_forms ) ) {
 			if ( empty($posted_data) ) {
 				return;
 			}
