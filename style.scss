@@ -447,31 +447,35 @@ body.search {
 	padding-top: 10px;
 	padding-bottom: 40px;
 
-	.widget {
-		font-weight: 300;
+	.bt-row .bt-col-3 {
+		padding-left: 40px;
 
-		.widget-title {
-			margin: 40px 0px 10px 0px;
+		.widget {
+			font-weight: 300;
+
+			.widget-title {
+				margin: 40px 0px 10px 0px;
+			}
+
+			.post-date,
+			.wpcf7-form label {
+				font-weight: 300 !important;
+			}
+
+			.textwidget > a {
+				letter-spacing: 1px !important;
+			}
 		}
 
-		.post-date,
-		.wpcf7-form label {
-			font-weight: 300 !important;
-		}
+		.fw-side-posts-list li .posts-content {
+			width: 100%;
+			padding-top: 4px;
 
-		.textwidget > a {
-			letter-spacing: 1px !important;
-		}
-	}
-
-	.fw-side-posts-list li .posts-content {
-		width: 100%;
-		padding-top: 4px;
-
-		a.post-title {
-			letter-spacing: 1px !important;
-			color: $black-title;
-			font-weight: 700;
+			a.post-title {
+				letter-spacing: 1px !important;
+				color: $black-title;
+				font-weight: 700;
+			}
 		}
 	}
 }

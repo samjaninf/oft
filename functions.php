@@ -1164,13 +1164,20 @@
 		return $defaults;
 	}
 
-	// Voeg sorteren op artikelnummer toe aan de opties op cataloguspagina's VERSTOORT DE SHORTCODES, VOORLOPIG UITSCHAKELEN (TOCH VERBORGEN), COMPATIBILITEIT MET WC 3.3 CHECKEN
-	// add_filter( 'woocommerce_get_catalog_ordering_args', 'add_extra_sorting_filters' );
+	// Voeg sorteren op artikelnummer toe aan de opties op cataloguspagina's
+	add_filter( 'woocommerce_get_catalog_ordering_args', 'add_extra_sorting_filters' );
 
 	function add_extra_sorting_filters( $args ) {
-		// Kan door veralgemening nu ook een shortcode argument zijn i.p.v. van een GET-paramater in de URL!
-		// Zie gelijkaardige mixing op https://github.com/woocommerce/woocommerce/issues/18859
-		$orderby_value = isset( $_GET['orderby'] ) ? wc_clean( $_GET['orderby'] ) : apply_filters( 'woocommerce_default_catalog_orderby', get_option( 'woocommerce_default_catalog_orderby' ) );
+		// Kan door veralgemening van code nu ook een shortcode argument zijn i.p.v. van een GET-paramater in de URL!
+		// Verstoort shortcodes, zie gelijkaardige mixing issue op https://github.com/woocommerce/woocommerce/issues/18859
+		// Nettere voorwaarde wc_get_loop_prop('is_shortcode') lijkt niet te werken ...
+		if ( is_woocommerce() ) {
+			if ( isset( $_GET['orderby'] ) ) {
+				$orderby_value = wc_clean( $_GET['orderby'] );
+			} else {
+				$orderby_value = apply_filters( 'woocommerce_default_catalog_orderby', get_option( 'woocommerce_default_catalog_orderby' ) );
+			}
+		}
 
 		if ( 'alpha' === $orderby_value ) {
 			$args['orderby'] = 'title';
