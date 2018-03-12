@@ -3009,7 +3009,7 @@
 	#  WP API  #
 	############
 
-	// Activeer WP API
+	// Activeer de WP API
 	add_action( 'wp_enqueue_scripts', 'load_extra_scripts' );
 
 	function load_extra_scripts() {
@@ -3026,79 +3026,36 @@
 		return $access;
 	}
 
+	// Voeg custom postmetadata toe aan de WP API door de metadata algemeen te registreren
 	$api_args = array(
 		'type' => 'integer',
 		'description' => 'Artikelnummer waarover het bericht gaat.',
 		'single' => true,
 		'show_in_rest' => true,
 	);
-	// Zorg ervoor dat custom metadata opduikt in WP API
 	register_meta( 'post', 'oft_post_product', $api_args );
 
-	// Testje met het toevoegen van custom taxonomieën aan de WP API
-	// add_filter( 'woocommerce_rest_prepare_product_object', 'add_custom_taxonomies_to_response', 10, 3 );
+	// Voeg custom producttaxonomieën toe aan de WC API
+	add_filter( 'woocommerce_rest_prepare_product_object', 'add_custom_taxonomies_to_response', 10, 3 );
 
 	function add_custom_taxonomies_to_response( $response, $object, $request ) {
 		if ( empty( $response->data ) ) {
 			return $response;
 		}
 		
-		foreach ( wp_get_object_terms( $object->id, 'product_recipe' ) as $term ) {
-			$recipes[] = array(
-				'id'   => $term->term_id,
-				'name' => $term->name,
-				'slug' => $term->slug,
-			);
+		$custom_taxonomies = array( 'product_allergen', 'product_grape', 'product_taste', 'product_recipe' );
+		foreach ( $custom_taxonomies as $taxonomy ) {
+			foreach ( wp_get_object_terms( $object->id, $taxonomy ) as $term ) {
+				$recipes[] = array(
+					'id'   => $term->term_id,
+					'name' => $term->name,
+					'slug' => $term->slug,
+				);
+			}
+			$response->data[$taxonomy] = $recipes;
 		}
-		$response->data['recipes'] = $recipes;
-
-		foreach ( wp_get_object_terms( $object->id, 'product_grape' ) as $term ) {
-			$grapes[] = array(
-				'id'   => $term->term_id,
-				'name' => $term->name,
-				'slug' => $term->slug,
-			);
-		}
-		$response->data['grapes'] = $grapes;
-
-		foreach ( wp_get_object_terms( $object->id, 'product_taste' ) as $term ) {
-			$tastes[] = array(
-				'id'   => $term->term_id,
-				'name' => $term->name,
-				'slug' => $term->slug,
-			);
-		}
-		$response->data['tastes'] = $tastes;
 
 		return $response;
-	}
-	
-	// Lukt het intern wél via de JS-library?
-	add_shortcode( 'wp-json', 'echo_js' );
-
-	function echo_js() {
-		?>
-		<script type="text/javascript">
-			function dump(obj) {
-				var out = '';
-				for (var i in obj) {
-					out += i + ": " + obj[i] + "\n";
-				}
-
-				var pre = document.createElement('pre');
-				pre.innerHTML = out;
-				document.body.appendChild(pre);
-			}
-
-			jQuery(document).ready( function() {
-				wp.api.loadPromise.done( function() {
-					var post = new wp.api.models.Post( { id : 1077 } );
-					post.fetch();
-					alert( post.attributes.title.rendered );
-				} );
-			} );
-		</script>
-		<?php
 	}
 
 	function oxfam_photos_callback() {

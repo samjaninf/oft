@@ -2,9 +2,9 @@
 <html lang="nl">
 
 <head>
-	 <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Overzicht packshots</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>Overzicht packshots</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 
@@ -13,17 +13,17 @@
 	<?php
 
 		require_once '../../../wp-load.php';
-		require_once '../../../wc-api/autoload.php';
+		require_once WP_CONTENT_DIR.'/wc-api/autoload.php';
 
 		use Automattic\WooCommerce\Client;
 
 		$woocommerce = new Client(
 			site_url(), WC_KEY, WC_SECRET,
 			[
-        		'wp_api' => true,
-        		'version' => 'wc/v2',
-        		'query_string_auth' => true,
-    		]
+				'wp_api' => true,
+				'version' => 'wc/v2',
+				'query_string_auth' => true,
+			]
 		);
 
 		$cat_parameters = array( 'orderby' => 'name', 'order' => 'asc', 'per_page' => 10, 'parent' => 0, 'exclude' => get_option('default_product_cat') );
