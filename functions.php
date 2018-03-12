@@ -3046,13 +3046,14 @@
 		$custom_taxonomies = array( 'product_allergen', 'product_grape', 'product_taste', 'product_recipe' );
 		foreach ( $custom_taxonomies as $taxonomy ) {
 			foreach ( wp_get_object_terms( $object->id, $taxonomy ) as $term ) {
-				$recipes[] = array(
+				$terms[] = array(
 					'id'   => $term->term_id,
 					'name' => $term->name,
 					'slug' => $term->slug,
 				);
 			}
-			$response->data[$taxonomy] = $recipes;
+			$response->data[$taxonomy] = $terms;
+			unset($terms);
 		}
 
 		return $response;
