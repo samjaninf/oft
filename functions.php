@@ -2354,7 +2354,7 @@
 
 		// Thumbnail 'large' is bij oude vertaalde afbeeldingen nog niet geregistreerd, dus gebruik de ID van het Nederlandstalige product
 		// Dit vermijdt dat we erg zware PDF's creëren!
-		$images = wp_get_attachment_image_src( $main_product_id, 'large' );
+		$images = wp_get_attachment_image_src( get_post_meta( $main_product_id, '_thumbnail_id', true ), 'large' );
 		if ( $images !== false ) {
 			$image_url = '<img src="'.$images[0].'" style="width: 100%;">';
 		} else {
