@@ -2054,6 +2054,21 @@
 		return 50;
 	}
 
+	// Knip de inleiding in de RSS-feed ook af na de '<!--more-->'-tag door get_the_content() op te roepen
+	add_filter( 'the_excerpt_rss', 'alter_rss_feed_excerpt' );
+
+	function alter_rss_feed_excerpt( $feed_type = null ) {
+		global $more;
+		$more_restore = $more;
+		if ( !$feed_type ) {
+			$feed_type = get_default_feed();
+		}
+		$more = 0;
+		$content = apply_filters( 'the_content', get_the_content('') );
+		$more = $more_restore;
+		return $content;
+	}
+
 	// Definieer extra element met post data voor grids
 	add_filter( 'vc_grid_item_shortcodes', 'add_grid_shortcodes_to_wpbakery' );
 	function add_grid_shortcodes_to_wpbakery( $shortcodes ) {
