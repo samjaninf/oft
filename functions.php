@@ -1310,6 +1310,10 @@
 	add_action( 'save_post', 'change_external_product_status', 10, 3 );
 
 	function change_external_product_status( $post_id, $post, $update ) {
+		if ( defined( 'DOING_AUTOSAVE' ) and DOING_AUTOSAVE ) {
+			return;
+		}
+		
 		if ( $post->post_status === 'trash' or $post->post_status === 'draft' ) {
 			return;
 		}
@@ -1319,8 +1323,8 @@
 		}
 
 		$brand = $product->get_attribute('pa_merk');
-		if ( $brand !== 'Oxfam Fair Trade' ) {
-			$product->set_status( 'private' );
+		if ( $brand !== 'Oxfam Fair Trade' and $brand !== 'Maya' ) {
+			$product->set_status('private');
 			$product->save();
 		}
 
@@ -2066,7 +2070,9 @@
 		$more = 0;
 		$content = apply_filters( 'the_content', get_the_content('') );
 		$more = $more_restore;
-		return $content;
+		// Sta bepaalde HTML-tags toch toe
+		$allowed_tags = '<p>,<em>,<strong>,<a>,<b>,<ul>,<li>,<ol>,<h4>';
+		return '<br>'.strip_tags( $content, $allowed_tags );
 	}
 
 	// Definieer extra element met post data voor grids
