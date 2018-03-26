@@ -500,7 +500,7 @@ body.search {
 	padding: 0 0.5em;
 	font-size: $font-size;
 	z-index: 50;
-	transform: skewX(-3deg);
+	// transform: skewX(-3deg);
 	background-color: $color;
 }
 
@@ -521,7 +521,7 @@ body.search {
 			/* Toon een blokje bij nieuwe producten (door automatisch toegevoegde nieuwe datumklasse in template) */
 			&.newbee::after {
 				@include banner();
-				content: "NEW";
+				content: "New";
 			}
 
 			h2.woocommerce-loop-product__title {
@@ -588,9 +588,9 @@ body.search {
 		width: 40%;
 	}
 
-	&.newbee .woocommerce-product-gallery__wrapper::after {
+	.product.newbee .woocommerce-product-gallery__wrapper::after {
 		@include banner();
-		content: "NEW";
+		content: "New";
 	}
 
 	.summary.entry-summary {

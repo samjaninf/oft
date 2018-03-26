@@ -1359,6 +1359,7 @@
 
 	function add_recent_product_class( $classes ) {
 		global $post;
+		write_log( implode( ',', $classes ) );
 		if ( get_the_date( 'Y-m-d', $post->ID ) > date_i18n( 'Y-m-d', strtotime('-3 months') ) ) {
 			$classes[] = 'newbee';
 		}
