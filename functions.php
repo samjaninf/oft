@@ -1323,15 +1323,9 @@
 		}
 
 		$brand = $product->get_attribute('pa_merk');
-		if ( $brand !== 'Oxfam Fair Trade' and $brand !== 'Maya' ) {
-			// Unhook
-			remove_action( 'save_post', 'change_external_product_status' );
-			
+		if ( $brand !== '' and $brand !== 'Oxfam Fair Trade' and $brand !== 'Maya' ) {
 			$product->set_status('private');
 			$product->save();
-
-			// Re-hook
-			add_action( 'save_post', 'change_external_product_status' );
 		}
 
 		// Update de productfiches na een handmatige bewerking
@@ -1342,6 +1336,21 @@
 				create_product_pdf( $product->get_id(), 'fr' );
 				create_product_pdf( $product->get_id(), 'en' );
 			}
+		}
+	}
+
+	// Check na het publiceren van een product of de datum moet bijgewerkt worden
+	add_action( 'draft_to_publish', 'check_publish_date_update', 10, 1 );
+	
+	function check_publish_date_update( $post ) {
+		if ( $post->post_type === 'product' ) {
+			wp_update_post(
+				array(
+					'ID' => $post->ID,
+					'post_date' => current_time( 'mysql' ),
+					'post_date_gmt' => current_time( 'mysql', 1 ),
+				)
+			);
 		}
 	}
 
@@ -1908,7 +1917,7 @@
 					<?php endforeach; ?>
 				</select>
 			</p>
-			<p><?php _e( 'Gebruik de shortcode [products skus="A,B,C" colums="3"] indien je meerdere producten wil tonen!', 'oft' ); ?></p>
+			<p><?php _e( 'Gebruik de shortcode [products skus="A,B,C" columns="3"] indien je meerdere producten wil tonen!', 'oft' ); ?></p>
 		<?php
 	}
 
@@ -2077,12 +2086,12 @@
 		$content = apply_filters( 'the_content', get_the_content('') );
 		$more = $more_restore;
 		// Verwijder de overtollige <ul> rond shortcodes
-		$content = str_replace( '<ul class="products columns-4">', '', $content );
+		// $content = str_replace( '<ul class="products columns-4">', '', $content );
 		// Opgepast: kan ook andere lijstjes verstoren!
 		// $content = str_replace( '</ul></li>', '', $content );
 		// Sta bepaalde HTML-tags toch toe
 		$allowed_tags = '<p>,<em>,<strong>,<a>,<b>,<ul>,<li>,<ol>,<h4>';
-		return '<br>'.strip_tags( $content, $allowed_tags );
+		return '&nbsp;<br>'.strip_tags( $content, $allowed_tags );
 	}
 
 	// Definieer extra element met post data voor grids
