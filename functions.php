@@ -1172,10 +1172,9 @@
 		// Verstoort shortcodes, zie gelijkaardige mixing issue op https://github.com/woocommerce/woocommerce/issues/18859
 		// Nettere voorwaarde wc_get_loop_prop('is_shortcode') lijkt niet te werken ...
 		if ( is_woocommerce() ) {
+			$orderby_value = apply_filters( 'woocommerce_default_catalog_orderby', get_option( 'woocommerce_default_catalog_orderby' ) );
 			if ( isset( $_GET['orderby'] ) ) {
 				$orderby_value = wc_clean( $_GET['orderby'] );
-			} else {
-				$orderby_value = apply_filters( 'woocommerce_default_catalog_orderby', get_option( 'woocommerce_default_catalog_orderby' ) );
 			}
 		}
 
@@ -1359,7 +1358,6 @@
 
 	function add_recent_product_class( $classes ) {
 		global $post;
-		write_log( implode( ',', $classes ) );
 		if ( get_the_date( 'Y-m-d', $post->ID ) > date_i18n( 'Y-m-d', strtotime('-3 months') ) ) {
 			$classes[] = 'newbee';
 		}
