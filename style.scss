@@ -492,6 +492,18 @@ body.search {
 /*  PRODUCTS  */
 /**************/
 
+@mixin banner( $color: $yellow, $font-size: 85% ) {
+	color: white;
+	position: absolute;
+	top: 0em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: $font-size;
+	z-index: 50;
+	transform: skewX(-3deg);
+	background-color: $color;
+}
+
 /* Overzichtspagina */
 .woocommerce,
 #bt-woo-content {
@@ -505,6 +517,12 @@ body.search {
 		div.product {
 			display: inline-block;
 			vertical-align: top;
+
+			/* Toon een blokje bij nieuwe producten (door automatisch toegevoegde nieuwe datumklasse in template) */
+			&.newbee::after {
+				@include banner();
+				content: "NEW";
+			}
 
 			h2.woocommerce-loop-product__title {
 				text-align: center;
@@ -568,6 +586,11 @@ body.search {
 
 	.woocommerce-product-gallery.images {
 		width: 40%;
+	}
+
+	&.newbee .woocommerce-product-gallery__wrapper::after {
+		@include banner();
+		content: "NEW";
 	}
 
 	.summary.entry-summary {

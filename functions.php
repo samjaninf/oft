@@ -1354,6 +1354,17 @@
 		}
 	}
 
+	// Voeg klasse toe indien recent product
+	add_filter( 'post_class', 'add_recent_product_class' );
+
+	function add_recent_product_class( $classes ) {
+		global $post;
+		if ( get_the_date( 'Y-m-d', $post->ID ) > date_i18n( 'Y-m-d', strtotime('-3 months') ) ) {
+			$classes[] = 'newbee';
+		}
+		return $classes;
+	}
+
 	// Toon metavelden netjes in de WooCommerce-tabbladen en werk ze bij tijdens het opslaan
 	add_action( 'woocommerce_product_options_general_product_data', 'add_oft_general_fields', 5 );
 	add_action( 'woocommerce_product_options_inventory_product_data', 'add_oft_inventory_fields', 5 );
