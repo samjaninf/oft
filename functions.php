@@ -1176,28 +1176,28 @@
 			if ( isset( $_GET['orderby'] ) ) {
 				$orderby_value = wc_clean( $_GET['orderby'] );
 			}
-		}
 
-		if ( 'alpha' === $orderby_value ) {
-			$args['orderby'] = 'title';
-			$args['order'] = 'ASC';
-		}
+			if ( 'alpha' === $orderby_value ) {
+				$args['orderby'] = 'title';
+				$args['order'] = 'ASC';
+			}
 
-		if ( 'alpha-desc' === $orderby_value ) {
-			$args['orderby'] = 'title';
-			$args['order'] = 'DESC';
-		}
+			if ( 'alpha-desc' === $orderby_value ) {
+				$args['orderby'] = 'title';
+				$args['order'] = 'DESC';
+			}
 
-		if ( 'sku' === $orderby_value ) {
-			$args['orderby'] = 'meta_value_num';
-			$args['order'] = 'ASC';
-			$args['meta_key'] = '_sku';
-		}
+			if ( 'sku' === $orderby_value ) {
+				$args['orderby'] = 'meta_value_num';
+				$args['order'] = 'ASC';
+				$args['meta_key'] = '_sku';
+			}
 
-		if ( 'sku-desc' === $orderby_value ) {
-			$args['orderby'] = 'meta_value_num';
-			$args['order'] = 'DESC';
-			$args['meta_key'] = '_sku';
+			if ( 'sku-desc' === $orderby_value ) {
+				$args['orderby'] = 'meta_value_num';
+				$args['order'] = 'DESC';
+				$args['meta_key'] = '_sku';
+			}
 		}
 
 		return $args;
@@ -2098,12 +2098,17 @@
 		$content = apply_filters( 'the_content', get_the_content('') );
 		$more = $more_restore;
 		
+		// Sta slechts bepaalde HTML-tags toe
+		$allowed_tags = '<p>,<em>,<strong>,<a>,<b>,<ul>,<li>,<ol>,<h4>';
+		$content = strip_tags( $content, $allowed_tags );
+		
+		// Verwijder de linebreaks vooraleer we preg_match kunnen doen (dubbele quotes verplicht!)
+		$content = str_replace( array( "\r", "\n", "\t" ), "", $content );
 		// Verwijder de overtollige <ul> rond WC-shortcodes
-		preg_match( '/<ul class="products columns-4">(.*?)<\/ul>/gi', $content, $matches );
-		if ( count($matches) > 1 ) {
-			unset($matches[0]);
+		preg_match_all( '/<ul class="products columns-4">(.*?)<\/ul>/i', $content, $matches );
+		if ( $matches ) {
 			// ALLES ERVOOR EN ERNA TERUGZETTEN
-			$content = implode( ' ', $matches );
+			$content = implode( ' ', array_map( 'trim', $matches[1] ) );
 		}
 
 		$image = '&nbsp;<br>';
@@ -2111,9 +2116,7 @@
 			$image = get_the_post_thumbnail( $post->ID, 'shop_single', array( 'style' => 'padding: 20px;' ) ).$image;
 		}
 
-		// Sta bepaalde HTML-tags toch toe
-		$allowed_tags = '<p>,<em>,<strong>,<a>,<b>,<ul>,<li>,<ol>,<h4>';
-		return $image.strip_tags( $content, $allowed_tags );
+		return $image.$content;
 	}
 
 	// Definieer extra element met post data voor grids
