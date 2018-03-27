@@ -1,8 +1,8 @@
 <?php
 
 	use Spipu\Html2Pdf\Html2Pdf;
-    use Spipu\Html2Pdf\Exception\Html2PdfException;
-    use Spipu\Html2Pdf\Exception\ExceptionFormatter;
+	use Spipu\Html2Pdf\Exception\Html2PdfException;
+	use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 	setlocale( LC_ALL, 'nl_NL' );
 	
 	if ( ! defined('ABSPATH') ) exit;
@@ -2083,25 +2083,37 @@
 		return 50;
 	}
 
-	// Knip de inleiding in de RSS-feed ook af na de '<!--more-->'-tag door get_the_content() op te roepen
+	// Wijzig het formaat van de korte RSS-feed
 	add_filter( 'the_excerpt_rss', 'alter_rss_feed_excerpt' );
 
 	function alter_rss_feed_excerpt( $feed_type = null ) {
-		global $more;
+		global $more, $post;
 		$more_restore = $more;
 		if ( !$feed_type ) {
 			$feed_type = get_default_feed();
 		}
+		// Reset aantal woorden zodat de inleiding na <!--more--> afgeknipt wordt, net zoals op de site
 		$more = 0;
+		// Voeg geen 'lees verder'-link meer toe onder tekst door lege string als argument mee te geven
 		$content = apply_filters( 'the_content', get_the_content('') );
 		$more = $more_restore;
-		// Verwijder de overtollige <ul> rond shortcodes
-		// $content = str_replace( '<ul class="products columns-4">', '', $content );
-		// Opgepast: kan ook andere lijstjes verstoren!
-		// $content = str_replace( '</ul></li>', '', $content );
+		
+		// Verwijder de overtollige <ul> rond WC-shortcodes
+		preg_match( '/<ul class="products columns-4">(.*?)<\/ul>/gi', $content, $matches );
+		if ( count($matches) > 1 ) {
+			unset($matches[0]);
+			// ALLES ERVOOR EN ERNA TERUGZETTEN
+			$content = implode( ' ', $matches );
+		}
+
+		$image = '&nbsp;<br>';
+		if ( has_post_thumbnail( $post->ID ) ) {
+			$image = get_the_post_thumbnail( $post->ID, 'shop_single', array( 'style' => 'padding: 20px;' ) ).$image;
+		}
+
 		// Sta bepaalde HTML-tags toch toe
 		$allowed_tags = '<p>,<em>,<strong>,<a>,<b>,<ul>,<li>,<ol>,<h4>';
-		return '&nbsp;<br>'.strip_tags( $content, $allowed_tags );
+		return $image.strip_tags( $content, $allowed_tags );
 	}
 
 	// Definieer extra element met post data voor grids
@@ -2616,7 +2628,7 @@
 	}
 
 	// Voer de effectieve inschrijving uit indien de validatie hierboven geen problemen gaf
- 	add_filter( 'wpcf7_posted_data', 'handle_validation_errors', 20, 1 );
+	add_filter( 'wpcf7_posted_data', 'handle_validation_errors', 20, 1 );
 	
 	function handle_validation_errors( $posted_data ) {
 		global $sitepress;
@@ -2682,8 +2694,8 @@
 		return true;
 	}
 
- 	// BIJ HET AANROEPEN VAN DEZE FILTER ZIJN WE ZEKER DAT ALLES AL GEVALIDEERD IS
- 	add_filter( 'wpcf7_before_send_mail', 'handle_mailchimp_subscribe', 20, 1 );
+	// BIJ HET AANROEPEN VAN DEZE FILTER ZIJN WE ZEKER DAT ALLES AL GEVALIDEERD IS
+	add_filter( 'wpcf7_before_send_mail', 'handle_mailchimp_subscribe', 20, 1 );
 
 	function handle_mailchimp_subscribe( $wpcf7 ) {
 		$submission = WPCF7_Submission::get_instance();
@@ -3248,7 +3260,7 @@
 	
 	function disable_autosave() {
 		 if ( 'product' === get_post_type() ) {
-		 	wp_deregister_script('autosave');
+			wp_deregister_script('autosave');
 		 }
 	}
 
