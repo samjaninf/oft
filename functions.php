@@ -2083,6 +2083,20 @@
 		return 50;
 	}
 
+	// Forceer snellere RSS-updates
+	// add_filter( 'wp_feed_cache_transient_lifetime', create_function( '', 'return 60;' ) );
+
+	// Toon in de 'Voorraadnieuws'-feed ook het (enige) private bericht
+	add_action( 'pre_get_posts', 'show_private_posts_in_rss_feeds' );
+
+	function show_private_posts_in_rss_feeds( $query ) {
+		if ( is_feed() and $query->is_category('voorraadnieuws') ) {
+			$query->set( 'post_status', array( 'publish', 'private' ) );
+			// $query->set( 'posts_per_page', 1 );
+		}
+		return $query;
+	}
+
 	// Wijzig het formaat van de korte RSS-feed
 	add_filter( 'the_excerpt_rss', 'alter_rss_feed_excerpt' );
 
@@ -2099,21 +2113,21 @@
 		$more = $more_restore;
 		
 		// Sta slechts bepaalde HTML-tags toe
-		$allowed_tags = '<p>,<em>,<strong>,<a>,<b>,<ul>,<li>,<ol>,<h4>';
+		$allowed_tags = '<p>,<em>,<strong>,<a>,<b>,<li>,<ol>,<h4>';
 		$content = strip_tags( $content, $allowed_tags );
 		
-		// // Verwijder de linebreaks vooraleer we preg_match kunnen doen (dubbele quotes verplicht!)
-		// $content = str_replace( array( "\r", "\n", "\t" ), "", $content );
-		// // Verwijder de overtollige <ul> rond WC-shortcodes
-		// preg_match_all( '/<ul class="products columns-4">(.*?)<\/ul>/i', $content, $matches );
-		// if ( $matches ) {
-		// 	// ALLES ERVOOR EN ERNA TERUGZETTEN
-		// 	$content = implode( ' ', array_map( 'trim', $matches[1] ) );
-		// }
+		// Verwijder de linebreaks vooraleer we betrouwbare preg_match kunnen doen (dubbele quotes verplicht!)
+		$content = str_replace( array( "\r", "\n", "\t" ), "", $content );
+		// Zet de <ul>'s terug rond elk blok <li>'s tussen <h4>'s
+		$content = str_replace( array( "</h4><li>", "</li><h4>", "&euro;" ), array( "</h4><ul><li>", "</li></ul><h4>", " &euro;" ), $content );
+		
+		// Verwijder overtollige tags mét attributen rond WC-shortcodes
+		// $tags = array( 'ul' );
+		// $content = preg_replace( '#<(' . implode( '|', $tags) . ')>.*?<\/$1>#s', '', $content );
 
-		$image = '<br>&nbsp;<br>';
+		$image = '';
 		if ( has_post_thumbnail( $post->ID ) ) {
-			$image = get_the_post_thumbnail( $post->ID, 'shop_single' ).$image;
+			$image = get_the_post_thumbnail( $post->ID, 'shop_single' ).'<br>&nbsp;<br>';
 		}
 
 		return $image.$content;
