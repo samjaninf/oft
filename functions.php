@@ -2102,18 +2102,18 @@
 		$allowed_tags = '<p>,<em>,<strong>,<a>,<b>,<ul>,<li>,<ol>,<h4>';
 		$content = strip_tags( $content, $allowed_tags );
 		
-		// Verwijder de linebreaks vooraleer we preg_match kunnen doen (dubbele quotes verplicht!)
-		$content = str_replace( array( "\r", "\n", "\t" ), "", $content );
-		// Verwijder de overtollige <ul> rond WC-shortcodes
-		preg_match_all( '/<ul class="products columns-4">(.*?)<\/ul>/i', $content, $matches );
-		if ( $matches ) {
-			// ALLES ERVOOR EN ERNA TERUGZETTEN
-			$content = implode( ' ', array_map( 'trim', $matches[1] ) );
-		}
+		// // Verwijder de linebreaks vooraleer we preg_match kunnen doen (dubbele quotes verplicht!)
+		// $content = str_replace( array( "\r", "\n", "\t" ), "", $content );
+		// // Verwijder de overtollige <ul> rond WC-shortcodes
+		// preg_match_all( '/<ul class="products columns-4">(.*?)<\/ul>/i', $content, $matches );
+		// if ( $matches ) {
+		// 	// ALLES ERVOOR EN ERNA TERUGZETTEN
+		// 	$content = implode( ' ', array_map( 'trim', $matches[1] ) );
+		// }
 
-		$image = '&nbsp;<br>';
+		$image = '<br>&nbsp;<br>';
 		if ( has_post_thumbnail( $post->ID ) ) {
-			$image = get_the_post_thumbnail( $post->ID, 'shop_single', array( 'style' => 'padding: 20px;' ) ).$image;
+			$image = get_the_post_thumbnail( $post->ID, 'shop_single' ).$image;
 		}
 
 		return $image.$content;
