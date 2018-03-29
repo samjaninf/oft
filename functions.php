@@ -198,17 +198,17 @@
 	}
 
 	function save_partner_node_meta( $term_id, $tt_id ) {
-		if ( isset($_POST['partner_node']) ) {
+		if ( isset( $_POST['partner_node'] ) ) {
 			update_term_meta( $term_id, 'partner_node', absint($_POST['partner_node']) );
 		} else {
 			update_term_meta( $term_id, 'partner_node', '' );
 		}
-		if ( isset($_POST['partner_type']) ) {
+		if ( isset( $_POST['partner_type'] ) ) {
 			update_term_meta( $term_id, 'partner_type', sanitize_text_field($_POST['partner_type']) );
 		} else {
 			update_term_meta( $term_id, 'partner_type', '' );
 		}
-		if ( isset($_POST['partner_image_id']) ) {
+		if ( isset( $_POST['partner_image_id'] ) ) {
 			update_term_meta( $term_id, 'partner_image_id', absint($_POST['partner_image_id']) );
 		} else {
 			update_term_meta( $term_id, 'partner_image_id', '' );
@@ -1000,7 +1000,7 @@
 	function hide_wine_taxonomies() {
 		global $pagenow;
 		$remove = true;
-		if ( ( $pagenow === 'post.php' or $pagenow === 'post-new.php' ) and ( isset($_GET['post']) and get_post_type($_GET['post']) === 'product' ) ) {
+		if ( ( $pagenow === 'post.php' or $pagenow === 'post-new.php' ) and ( isset( $_GET['post'] ) and get_post_type( $_GET['post'] ) === 'product' ) ) {
 			$categories =  get_the_terms( $_GET['post'], 'product_cat' );
 			if ( is_array( $categories ) ) {
 				foreach ( $categories as $category ) {
@@ -1328,7 +1328,7 @@
 		}
 
 		// Update de productfiches na een handmatige bewerking
-		if ( get_option('oft_import_active') !== 'yes' and isset($_POST['_update_product_sheet']) and $_POST['_update_product_sheet'] === 'yes' ) {
+		if ( get_option('oft_import_active') !== 'yes' and isset( $_POST['_update_product_sheet'] ) and $_POST['_update_product_sheet'] === 'yes' ) {
 			// Enkel proberen aanmaken indien foto reeds aanwezig
 			if ( intval( $product->get_image_id() ) > 0 ) {
 				create_product_pdf( $product->get_id(), 'nl' );
@@ -1386,18 +1386,19 @@
 			}
 
 			$category_ids = $product->get_category_ids();
-			// In principe slechts één categorie geselecteerd bij ons, dus gewoon 1ste element nemen
-			$category = get_term( $category_ids[0], 'product_cat' );
-			// Eventueel op basis van verpakkingswijze tonen?
-			if ( $category->slug === 'fruitsap' or $category->slug === 'jus-de-fruit' or $category->slug === 'fruit-juice' ) {
-				woocommerce_wp_text_input(
-					array( 
-						'id' => '_empty_fee',
-						'label' => __( 'Leeggoed (&euro;)', 'oft-admin' ),
-						'wrapper_class' => 'important-for-catman',
-						'data_type' => 'price',
-					)
-				);
+			if ( is_array($category_ids) and count($category_ids) > 0 ) {
+				// In principe slechts één categorie geselecteerd bij ons, dus gewoon 1ste element nemen
+				$category = get_term( $category_ids[0], 'product_cat' );
+				if ( $category->slug === 'fruitsap' or $category->slug === 'jus-de-fruit' or $category->slug === 'fruit-juice' ) {
+					woocommerce_wp_text_input(
+						array( 
+							'id' => '_empty_fee',
+							'label' => __( 'Leeggoed (&euro;)', 'oft-admin' ),
+							'wrapper_class' => 'important-for-catman',
+							'data_type' => 'price',
+						)
+					);
+				}
 			}
 
 			woocommerce_wp_text_input(
@@ -1825,7 +1826,7 @@
 		);
 
 		foreach ( $regular_meta_keys as $meta_key ) {
-			if ( isset($_POST[$meta_key]) ) {
+			if ( isset( $_POST[$meta_key] ) ) {
 				if ( $meta_key === '_ingredients' or $meta_key === '_promo_text' ) {
 					update_post_meta( $post_id, $meta_key, sanitize_textarea_field( $_POST[$meta_key] ) );
 				} else {
@@ -1851,7 +1852,7 @@
 
 		foreach ( $decimal_meta_keys as $meta_key ) {
 			// Zeker geen !empty() gebruiken want we willen nullen expliciet kunnen opslaan!
-			if ( isset($_POST[$meta_key]) and $_POST[$meta_key] !== '' ) {
+			if ( isset( $_POST[$meta_key] ) and $_POST[$meta_key] !== '' ) {
 				update_post_meta( $post_id, $meta_key, number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 1, '.', '' ) );
 			} else {
 				update_post_meta( $post_id, $meta_key, '' );
@@ -1863,7 +1864,7 @@
 		);
 
 		foreach ( $price_meta_keys as $meta_key ) {
-			if ( isset($_POST[$meta_key]) and $_POST[$meta_key] !== '' ) {
+			if ( isset( $_POST[$meta_key] ) and $_POST[$meta_key] !== '' ) {
 				update_post_meta( $post_id, $meta_key, number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 2, '.', '' ) );
 			} else {
 				update_post_meta( $post_id, $meta_key, '' );
@@ -1878,7 +1879,7 @@
 
 		foreach ( $high_precision_meta_keys as $meta_key ) {
 			// Zeker geen !empty() gebruiken want we willen nullen expliciet kunnen opslaan!
-			if ( isset($_POST[$meta_key]) and $_POST[$meta_key] !== '' ) {
+			if ( isset( $_POST[$meta_key] ) and $_POST[$meta_key] !== '' ) {
 				update_post_meta( $post_id, $meta_key, number_format( floatval( str_replace( ',', '.', $_POST[$meta_key] ) ), 3, '.', '' ) );
 			} else {
 				update_post_meta( $post_id, $meta_key, '' );
@@ -1923,7 +1924,7 @@
 				<select name="oft_post_product" id="oft_post_product">
 					<option value=""><?php _e( '(selecteer)', 'oft' ); ?></option>
 					<?php foreach ( $list as $sku => $title ) : ?>
-						<option value="<?php echo $sku; ?>" <?php if ( isset ( $prfx_stored_meta['oft_post_product'] ) ) selected( $prfx_stored_meta['oft_post_product'][0], $sku ); ?>><?php echo $sku.': '.$title; ?></option>';
+						<option value="<?php echo $sku; ?>" <?php if ( isset( $prfx_stored_meta['oft_post_product'] ) ) selected( $prfx_stored_meta['oft_post_product'][0], $sku ); ?>><?php echo $sku.': '.$title; ?></option>';
 					<?php endforeach; ?>
 				</select>
 			</p>
@@ -1934,14 +1935,14 @@
 	function oft_post_to_product_save( $post_id ) {
 		$is_autosave = wp_is_post_autosave( $post_id );
 		$is_revision = wp_is_post_revision( $post_id );
-		$is_valid_nonce = ( isset( $_POST[ 'oft_post_to_product_nonce' ] ) && wp_verify_nonce( $_POST[ 'oft_post_to_product_nonce' ], basename( __FILE__ ) ) ) ? 'true' : 'false';
+		$is_valid_nonce = ( isset( $_POST['oft_post_to_product_nonce'] ) && wp_verify_nonce( $_POST['oft_post_to_product_nonce'], basename( __FILE__ ) ) ) ? 'true' : 'false';
 		
 		if ( $is_autosave or $is_revision or ! $is_valid_nonce ) {
 			return;
 		}
 	 
-		if ( isset( $_POST[ 'oft_post_product' ] ) ) {
-			update_post_meta( $post_id, 'oft_post_product', sanitize_text_field( $_POST[ 'oft_post_product' ] ) );
+		if ( isset( $_POST['oft_post_product'] ) ) {
+			update_post_meta( $post_id, 'oft_post_product', sanitize_text_field( $_POST['oft_post_product'] ) );
 		} else {
 			delete_post_meta( $post_id, 'oft_post_product' );
 		}
@@ -2570,13 +2571,16 @@
 
 	function oxfam_admin_notices() {
 		global $pagenow;
-		$screen = get_current_screen();
-		var_dump($screen);
+		// $screen = get_current_screen();
+		// var_dump($screen);
 
-		if ( $pagenow === 'post-new.php' and ( isset( $_GET['post_type'] ) and $_GET['post_type'] = 'product' ) and ( isset( $_GET['lang'] ) and $_GET['lang'] = 'nl' ) ) {
-			echo '<div class="notice notice-warning">';
-				echo '<p>Alle catmanvelden zijn aangeduid in het groen. Vergeet het product na aanmaak niet te vertalen naar het Frans en Engels!</p>';
-			echo '</div>';
+		// CSS KLASSE NOTICE WORDT BLIJKBAAR VERBORGEN BIJ CATMANS
+		if ( $pagenow === 'post-new.php' and ( isset( $_GET['post_type'] ) and $_GET['post_type'] === 'product' ) ) {
+			if ( ! isset( $_GET['lang'] ) or ( isset( $_GET['lang'] ) and $_GET['lang'] === 'nl' ) ) {
+				echo '<div class="notice notice-warning">';
+					echo '<p>Alle catmanvelden zijn aangeduid in het groen. Vergeet het product na het opslaan van het concept niet te vertalen naar het Frans en het Engels!</p>';
+				echo '</div>';
+			}
 		}
 
 		if ( isset( $_GET['html2pdf'] ) ) {
@@ -2597,7 +2601,8 @@
 	function post_language_equals_site_language() {
 		$default_language = apply_filters( 'wpml_default_language', NULL );
 		$post_language = apply_filters( 'wpml_post_language_details', NULL );
-		if ( $post_language['language_code'] === $default_language ) {
+		// Bij post-new.php is de taal nog niet ingesteld maar willen we de velden wel vrijgeven! 
+		if ( empty($post_language['language_code']) or $post_language['language_code'] === $default_language ) {
 			return true;
 		} else {
 			return false;
