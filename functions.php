@@ -342,8 +342,8 @@
 			'show_in_quick_edit' => true,
 			'show_admin_column' => true,
 			'query_var' => true,
-			// Geef catmans rechten om zelf termen toe te kennen / te bewerken maar niet om toe te voegen / te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'update_core', 'delete_terms' => 'update_core' ),
+			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
+			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'allergeen', 'with_front' => false, 'hierarchical' => true ),
 		);
 
@@ -1309,11 +1309,11 @@
 	add_action( 'save_post', 'change_external_product_status', 10, 3 );
 
 	function change_external_product_status( $post_id, $post, $update ) {
-		if ( defined( 'DOING_AUTOSAVE' ) and DOING_AUTOSAVE ) {
+		if ( defined('DOING_AUTOSAVE') and DOING_AUTOSAVE ) {
 			return;
 		}
 		
-		if ( $post->post_status === 'trash' or $post->post_status === 'draft' ) {
+		if ( $post->post_status === 'trash' ) {
 			return;
 		}
 
@@ -2043,8 +2043,8 @@
 			if ( in_array( 'glutenvrij', $icons ) ) {
 				echo "<div class='icon-gluten-free'></div>";
 			}
-			if ( in_array( 'zonder-toegevoegde-suikers', $icons ) ) {
-				echo "<div class='icon-no-added-sugars'></div>";
+			if ( in_array( 'zonder-toegevoegde-suiker', $icons ) ) {
+				echo "<div class='icon-no-added-sugar'></div>";
 			}
 			if ( in_array( 'lactosevrij', $icons ) ) {
 				echo "<div class='icon-lactose-free'></div>";
@@ -2403,16 +2403,16 @@
 		}
 		$icons_text = '';
 		if ( in_array( 'veganistisch', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-vegan.png" style="width: 60px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-vegan.png" style="width: 55px;">';
 		}
 		if ( in_array( 'glutenvrij', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-gluten-free.png" style="width: 60px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-gluten-free.png" style="width: 55px;">';
 		}
-		if ( in_array( 'zonder-toegevoegde-suikers', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-no-added-sugars.png" style="width: 60px;">';
+		if ( in_array( 'zonder-toegevoegde-suiker', $icons ) ) {
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-no-added-sugar.png" style="width: 55px;">';
 		}
 		if ( in_array( 'lactosevrij', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-lactose-free.png" style="width: 60px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-lactose-free.png" style="width: 55px;">';
 		}
 		
 		$labels = array();
@@ -2521,13 +2521,12 @@
 		$templatecontent = str_replace( "###FOOTER###", sprintf( __( 'Aangemaakt %s', 'oft' ), date_i18n( 'Y-m-d @ G:i' ) ), $templatecontent );
 		
 		try {
-			$pdffile = new Html2Pdf( 'P', 'A4', 'nl', true, 'UTF-8', array( 15, 5, 15, 5 ) );
+			$pdffile = new Html2Pdf( 'P', 'A4', $language, true, 'UTF-8', array( 15, 5, 15, 5 ) );
 			$pdffile->setDefaultFont('Arial');
 			$pdffile->pdf->setAuthor('Oxfam Fair Trade cvba');
 			$pdffile->pdf->setTitle( __( 'Productfiche', 'oft' ).' '.$sku );
 			$pdffile->writeHTML($templatecontent);
 			$pdffile->output( WP_CONTENT_DIR.'/sheets/'.$language.'/'.$sku.'.pdf', 'F' );
-			write_log("PRODUCT SHEET ".$product->get_sku()." UPDATED (".strtoupper($language).")");
 		} catch ( Html2PdfException $e ) {
 			$formatter = new ExceptionFormatter($e);
 			add_filter( 'redirect_post_location', 'add_html2pdf_notice_var', 99 );
