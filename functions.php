@@ -2552,16 +2552,6 @@
 		return add_query_arg( array( 'html2pdf' => 'error' ), $location );
 	}
 
-	add_action( 'admin_notices', 'oft_admin_notices' );
-
-	function oft_admin_notices() {
-		if ( isset( $_GET['html2pdf'] ) ) {
-			echo '<div class="notice notice-error">';
-				echo '<p>'.get_option( 'html2pdf_notice' ).'</p>';
-			echo '</div>';
-		}
-	}
-
 	function check_digit_ean13( $ean ) {
 		if ( strlen( trim($ean) ) !== 13 ) {
 			return false;
@@ -2575,17 +2565,23 @@
 		}
 	}
 
-	// Voeg een bericht toe bovenaan alle adminpagina's
+	// Voeg berichten toe aan adminpagina's
 	add_action( 'admin_notices', 'oxfam_admin_notices' );
 
 	function oxfam_admin_notices() {
 		global $pagenow;
 		$screen = get_current_screen();
-		// var_dump($screen);
+		var_dump($screen);
 
-		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
+		if ( $pagenow === 'post-new.php' and ( isset( $_GET['post_type'] ) and $_GET['post_type'] = 'product' ) and ( isset( $_GET['lang'] ) and $_GET['lang'] = 'nl' ) ) {
 			echo '<div class="notice notice-warning">';
-				echo '<p>Welkom in het walhalla van de productdata!</p>';
+				echo '<p>Alle catmanvelden zijn aangeduid in het groen. Vergeet het product na aanmaak niet te vertalen naar het Frans en Engels!</p>';
+			echo '</div>';
+		}
+
+		if ( isset( $_GET['html2pdf'] ) ) {
+			echo '<div class="notice notice-error">';
+				echo '<p>'.get_option( 'html2pdf_notice' ).'</p>';
 			echo '</div>';
 		}
 	}
