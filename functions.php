@@ -163,8 +163,8 @@
 			'query_var' => true,
 			// Slugs van custom taxonomieën kunnen helaas niet vertaald worden 
 			'rewrite' => array( 'slug' => 'herkomst', 'with_front' => true, 'hierarchical' => true ),
-			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'edit_posts', 'delete_terms' => 'update_core' ),
+			// Geef catmans rechten om zelf termen toe te kennen maar niet om te bewerken / toe te voegen / te verwijderen!
+			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'update_core', 'manage_terms' => 'update_core', 'delete_terms' => 'update_core' ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -1225,12 +1225,13 @@
 	function add_attribute_columns( $columns ) {
 		$new_columns = array();
 		foreach ( $columns as $key => $title ) {
+			// Nieuwe kolommen invoegen net voor productcategorie
 			if ( $key === 'product_cat' ) {
 				$new_columns['pa_merk'] = __( 'Merk', 'oft-admin' );
-				// $new_columns['modified'] = __( 'Laatst bewerkt', 'oft-admin' );
 				// Inhoud van deze kolom is al door WooCommerce gedefinieerd, dit zorgt er gewoon voor dat de kolom ook beschikbaar is indien de optie 'woocommerce_manage_stock' op 'no' staat
 				$new_columns['is_in_stock'] = __( 'BestelWeb', 'oft-admin' );
 			}
+			// Nutteloze kolom met producttype weglaten
 			if ( $key !== 'product_type' ) {
 				$new_columns[$key] = $title;
 			}
@@ -1351,6 +1352,21 @@
 				)
 			);
 		}
+	}
+
+	// Verduidelijk de status van een product in de overzichtslijst
+	add_filter( 'display_post_states', 'clarify_draft_private_products', 100, 2 );
+
+	function clarify_draft_private_products( $post_states, $post ) {
+		if ( 'product' === get_post_type($post) ) {
+			// Door Unyson Event Helper eerder weggefilterde statussen opnieuw toevoegen (of overrulen indien gedeactiveerd)
+			if ( 'private' === get_post_status($post) ) {
+				$post_states = array( 'private' => 'NOOIT ZICHTBAAR' );
+			} elseif ( 'draft' === get_post_status($post) ) {
+				$post_states = array( 'draft' => 'NOG NIET GEPUBLICEERD' );
+			}
+		}
+		return $post_states;
 	}
 
 	// Voeg klasse toe indien recent product
@@ -2310,16 +2326,16 @@
 		}
 		$icons_text = '';
 		if ( in_array( 'veganistisch', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-vegan.png" style="width: 60px; margin-left: -12px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-vegan.png" style="width: 60px; margin-left: -12px; margin-bottom: -12px;">';
 		}
 		if ( in_array( 'glutenvrij', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-gluten-free.png" style="width: 60px; margin-left: -12px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-gluten-free.png" style="width: 60px; margin-left: -12px; margin-bottom: -12px;">';
 		}
 		if ( in_array( 'zonder-toegevoegde-suiker', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-no-added-sugar.png" style="width: 60px; margin-left: -12px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-no-added-sugar.png" style="width: 60px; margin-left: -12px; margin-bottom: -12px;">';
 		}
 		if ( in_array( 'lactosevrij', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-lactose-free.png" style="width: 60px; margin-left: -12px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-lactose-free.png" style="width: 60px; margin-left: -12px; margin-bottom: -12px;">';
 		}
 		
 		// Switch nu naar de gevraagde fichetaal
@@ -2486,12 +2502,19 @@
 		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
 		$templatecontent = str_replace( "###IMAGE_URL###", $image_url, $templatecontent );
 		
-		// Check of de korte beschrijving wel ingevuld is
-		// if ( strlen( $product->get_short_description() ) > 10 ) {
-		//	$product_text = $product->get_short_description();
-		// }
-		// Verwijder eventuele enters door HTML-tags
-		$templatecontent = str_replace( "###DESCRIPTION###", preg_replace( '/<[^>]+>/', ' ', $product->get_description() ), $templatecontent );
+		// Toon in principe de lange beschrijving
+		$product_text = $product->get_description();
+		// Maar check of we de tekst in combinatie met de ingrediëntenlijst niet te lang is!
+		if ( strlen($product_text) + strlen($ingredients_text) > 500 ) {
+			// Check of de korte beschrijving wel inhoud bevat
+			// if ( strlen( $product->get_short_description() ) > 20 ) {
+				$product_text = $product->get_short_description();
+			// }
+		}
+		// Verwijder eventueel de enters door HTML-tags
+		// preg_replace( '/<[^>]+>/', ' ', $product_text );
+		
+		$templatecontent = str_replace( "###DESCRIPTION###", $product_text, $templatecontent );
 		$templatecontent = str_replace( "###INGREDIENTS_OPTIONAL###", $ingredients_text, $templatecontent );
 		$templatecontent = str_replace( "###LEGEND_OPTIONAL###", $ingredients_legend, $templatecontent );
 		$templatecontent = str_replace( "###ORIGIN###", $origin_text, $templatecontent );
