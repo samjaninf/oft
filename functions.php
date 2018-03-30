@@ -2403,16 +2403,16 @@
 		}
 		$icons_text = '';
 		if ( in_array( 'veganistisch', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-vegan.png" style="width: 55px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-vegan.png" style="width: 60px; margin-left: -12px; margin-bottom: -24px;">';
 		}
 		if ( in_array( 'glutenvrij', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-gluten-free.png" style="width: 55px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-gluten-free.png" style="width: 60px; margin-left: -12px; margin-bottom: -24px;">';
 		}
 		if ( in_array( 'zonder-toegevoegde-suiker', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-no-added-sugar.png" style="width: 55px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-no-added-sugar.png" style="width: 60px; margin-left: -12px; margin-bottom: -24px;">';
 		}
 		if ( in_array( 'lactosevrij', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-lactose-free.png" style="width: 55px;">';
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-lactose-free.png" style="width: 60px; margin-left: -12px; margin-bottom: -24px;">';
 		}
 		
 		$labels = array();
@@ -2521,7 +2521,7 @@
 		$templatecontent = str_replace( "###FOOTER###", sprintf( __( 'Aangemaakt %s', 'oft' ), date_i18n( 'Y-m-d @ G:i' ) ), $templatecontent );
 		
 		try {
-			$pdffile = new Html2Pdf( 'P', 'A4', $language, true, 'UTF-8', array( 15, 5, 15, 5 ) );
+			$pdffile = new Html2Pdf( 'P', 'A4', $language, true, 'UTF-8', array( 10, 5, 10, 5 ) );
 			$pdffile->setDefaultFont('Arial');
 			$pdffile->pdf->setAuthor('Oxfam Fair Trade cvba');
 			$pdffile->pdf->setTitle( __( 'Productfiche', 'oft' ).' '.$sku );
@@ -2897,21 +2897,21 @@
 	function set_all_out_of_stock( $import_id ) {
 		update_option( 'oft_import_active', 'yes' );
 
-		// TIJDELIJK UITSCHAKELEN, B2CIMPORT.CSV GEEFT VOORRAADSTATUS NOG NIET DOOR
-		if ( $import_id == 14000 ) {
+		if ( $import_id == 14 ) {
 			$args = array(
 				'post_type'	=> 'product',
-				'post_status' => array( 'publish', 'private', 'draft' ),
+				'post_status' => array( 'publish', 'private', 'draft', 'trash' ),
 				'posts_per_page' => -1,
 			);
 
+			// Lijkt te lukken in één batch
 			$out_of_stocks = new WP_Query( $args );
 
 			if ( $out_of_stocks->have_posts() ) {
 				while ( $out_of_stocks->have_posts() ) {
 					$out_of_stocks->the_post();
 					$product = wc_get_product( get_the_ID() );
-					$product->set_stock_status( 'outofstock' );
+					$product->set_stock_status('outofstock');
 					$product->save();
 				}
 				wp_reset_postdata();
