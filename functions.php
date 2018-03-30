@@ -163,8 +163,8 @@
 			'query_var' => true,
 			// Slugs van custom taxonomieën kunnen helaas niet vertaald worden 
 			'rewrite' => array( 'slug' => 'herkomst', 'with_front' => true, 'hierarchical' => true ),
-			// Geef catmans rechten om zelf termen toe te kennen maar niet om te bewerken / toe te voegen / te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'update_core', 'manage_terms' => 'update_core', 'delete_terms' => 'update_core' ),
+			// Geef catmans rechten om zelf termen toe te kennen (+ overzicht te bekijken) maar niet om te bewerken (+ toe te voegen) / te verwijderen!
+			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'update_core', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -342,8 +342,8 @@
 			'show_in_quick_edit' => true,
 			'show_admin_column' => true,
 			'query_var' => true,
-			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
+			// Geef catmans rechten om zelf termen toe te kennen (+ overzicht te bekijken) maar niet om te bewerken (+ toe te voegen) / te verwijderen!
+			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'update_core', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'allergeen', 'with_front' => false, 'hierarchical' => true ),
 		);
 
@@ -774,6 +774,18 @@
 	function disable_custom_checkboxes() {
 		global $pagenow, $post_type;
 
+		// 'Vertaalinterface' en 'Stringvertaling' verbergen in het menu voor niet-beheerders
+		if ( ! current_user_can('update_core') ) {
+			?>
+			<style>
+				li#toplevel_page_wpml-translation-management-menu-translations-queue,
+				li#toplevel_page_wpml-string-translation-menu-string-translation {
+					display: none !important;
+				}
+			</style>
+			<?php
+		}
+
 		// Functies die we zowel op individuele als op bulkbewerkingen willen toepassen
 		if ( ( $pagenow === 'post.php' or $pagenow === 'post-new.php' or $pagenow === 'edit.php' ) and $post_type === 'product' ) {
 			$args = array(
@@ -983,6 +995,7 @@
 						jQuery( '#inventory_product_data' ).find( 'select#_stock_status' ).prop( 'disabled', false );
 						jQuery( '#shipping_product_data' ).find( 'select#product_shipping_class' ).prop( 'disabled', false );
 
+						// Voorlopig niet afdwingen dat de fouten eerst opgelost moeten worden
 						// return pass;
 						return true;
 						
@@ -1054,8 +1067,8 @@
 			'show_in_quick_edit' => true,
 			'show_admin_column' => true,
 			'query_var' => true,
-			// Geef catmans rechten om zelf termen toe te kennen / te bewerken maar niet om toe te voegen / te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'update_core', 'delete_terms' => 'update_core' ),
+			// Geef catmans rechten om zelf termen toe te kennen (+ overzicht te bekijken) maar niet om te bewerken (+ toe te voegen) / te verwijderen!
+			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'update_core', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
 			'rewrite' => array( 'slug' => 'eco', 'with_front' => false, 'hierarchical' => false ),
 			// ZORGT ERVOOR DAT DE ID ALS TERM OPGESLAGEN WORDT, NIET BRUIKBAAR
 			// 'meta_box_cb' => 'post_categories_meta_box',
@@ -2598,11 +2611,11 @@
 		// $screen = get_current_screen();
 		// var_dump($screen);
 
-		// CSS KLASSE NOTICE WORDT BLIJKBAAR VERBORGEN BIJ CATMANS
+		// Pas op dat de 'Show plugins/themes notices to admin only'-optie van User Role Editor meldingen niet verbergt!
 		if ( $pagenow === 'post-new.php' and ( isset( $_GET['post_type'] ) and $_GET['post_type'] === 'product' ) ) {
 			if ( ! isset( $_GET['lang'] ) or ( isset( $_GET['lang'] ) and $_GET['lang'] === 'nl' ) ) {
 				echo '<div class="notice notice-warning">';
-					echo '<p>Alle catmanvelden zijn aangeduid in het groen. Vergeet het product na het opslaan van het concept niet te vertalen naar het Frans en het Engels!</p>';
+					echo "<p>Alle belangrijke catmanvelden zijn aangeduid in het groen. Begin met het ompaknummer onder het tabblad 'Voorraad'. Vergeet het product na het <u>opslaan als concept</u> niet te vertalen naar het Frans en het Engels!</p>";
 				echo '</div>';
 			}
 		}

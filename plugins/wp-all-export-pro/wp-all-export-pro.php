@@ -139,9 +139,9 @@ else {
 
 		public static $session = null;
 
-		// GEWIJZIGD: Ook lokale beheerders toegang geven tot exports door rechten bij 'export' toe te kennen
-		// Creëert eigenlijk een security lek, aangezien je vanuit WP All Export alle PHP-code kunt doen uitvoeren
-		public static $capabilities = 'export';
+		// GEWIJZIGD: Ook catmans toegang geven tot exports door toe te staan bij custom 'wpallexport_run_exports'-capability toe te kennen
+		// Creëert eigenlijk een security lek, aangezien je vanuit WP All Export alle PHP-code kunt doen uitvoeren ...
+		public static $capabilities = 'wpallexport_run_exports';
 
 		public static $cache_key = '';
 
