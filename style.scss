@@ -785,6 +785,7 @@ body.search {
 .icon-organic {
 	@include icon();
 	background-image: url('assets/icon-organic.png');
+	margin-right: -20px;
 }
 
 .icon-vegetarian {
