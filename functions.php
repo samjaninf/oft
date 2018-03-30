@@ -2299,7 +2299,30 @@
 		global $sitepress;
 		require_once WP_PLUGIN_DIR.'/html2pdf/autoload.php';
 		$templatelocatie = get_stylesheet_directory().'/assets/fiche-'.$language.'.html';
+		$main_product_id = apply_filters( 'wpml_object_id', $product_id, 'product', false, 'nl' );
 		$prev_lang = $sitepress->get_current_language();
+
+		// Switch eerst naar Nederlands voor het vergelijken van taalgevoelige slugs
+		$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
+		$icons = array();
+		foreach ( wp_get_object_terms( $main_product_id, 'product_hipster' ) as $term ) {
+			$icons[] = $term->slug;
+		}
+		$icons_text = '';
+		if ( in_array( 'veganistisch', $icons ) ) {
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-vegan.png" style="width: 60px; margin-left: -12px;">';
+		}
+		if ( in_array( 'glutenvrij', $icons ) ) {
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-gluten-free.png" style="width: 60px; margin-left: -12px;">';
+		}
+		if ( in_array( 'zonder-toegevoegde-suiker', $icons ) ) {
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-no-added-sugar.png" style="width: 60px; margin-left: -12px;">';
+		}
+		if ( in_array( 'lactosevrij', $icons ) ) {
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-lactose-free.png" style="width: 60px; margin-left: -12px;">';
+		}
+		
+		// Switch nu naar de gevraagde fichetaal
 		$sitepress->switch_lang($language);
 		$lang_details = $sitepress->get_language_details($language);
 		unload_textdomain( 'oft' );
@@ -2395,25 +2418,6 @@
 			}
 			$storage_text = implode( '. ', $store ).'.';
 		}
-
-		$icons = array();
-		$main_product_id = apply_filters( 'wpml_object_id', $product->get_id(), 'product', false, 'nl' );
-		foreach ( wp_get_object_terms( $main_product_id, 'product_hipster' ) as $term ) {
-			$icons[] = $term->slug;
-		}
-		$icons_text = '';
-		if ( in_array( 'veganistisch', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-vegan.png" style="width: 60px; margin-left: -12px; margin-bottom: -24px;">';
-		}
-		if ( in_array( 'glutenvrij', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-gluten-free.png" style="width: 60px; margin-left: -12px; margin-bottom: -24px;">';
-		}
-		if ( in_array( 'zonder-toegevoegde-suiker', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-no-added-sugar.png" style="width: 60px; margin-left: -12px; margin-bottom: -24px;">';
-		}
-		if ( in_array( 'lactosevrij', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-lactose-free.png" style="width: 60px; margin-left: -12px; margin-bottom: -24px;">';
-		}
 		
 		$labels = array();
 		$bio = strtolower( $product->get_attribute('pa_bio') );
@@ -2433,7 +2437,6 @@
 		}
 
 		// Thumbnail 'large' is bij oude vertaalde afbeeldingen nog niet geregistreerd, dus gebruik de ID van het Nederlandstalige product
-		// Dit vermijdt dat we erg zware PDF's creëren!
 		$images = wp_get_attachment_image_src( get_post_meta( $main_product_id, '_thumbnail_id', true ), 'large' );
 		if ( $images !== false ) {
 			$image_url = '<img src="'.$images[0].'" style="width: 100%;">';
@@ -2482,14 +2485,13 @@
 		$templatecontent = str_replace( "###PERMALINK###", $permalink, $templatecontent );
 		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
 		$templatecontent = str_replace( "###IMAGE_URL###", $image_url, $templatecontent );
+		
 		// Check of de korte beschrijving wel ingevuld is
-		if ( strlen( $product->get_short_description() ) > 10 ) {
-			$product_text = $product->get_short_description();
-		} else {
-			$product_text = $product->get_description();
-		}
+		// if ( strlen( $product->get_short_description() ) > 10 ) {
+		//	$product_text = $product->get_short_description();
+		// }
 		// Verwijder eventuele enters door HTML-tags
-		$templatecontent = str_replace( "###DESCRIPTION###", preg_replace( '/<[^>]+>/', ' ', $product_text ), $templatecontent );
+		$templatecontent = str_replace( "###DESCRIPTION###", preg_replace( '/<[^>]+>/', ' ', $product->get_description() ), $templatecontent );
 		$templatecontent = str_replace( "###INGREDIENTS_OPTIONAL###", $ingredients_text, $templatecontent );
 		$templatecontent = str_replace( "###LEGEND_OPTIONAL###", $ingredients_legend, $templatecontent );
 		$templatecontent = str_replace( "###ORIGIN###", $origin_text, $templatecontent );
@@ -2521,7 +2523,7 @@
 		$templatecontent = str_replace( "###FOOTER###", sprintf( __( 'Aangemaakt %s', 'oft' ), date_i18n( 'Y-m-d @ G:i' ) ), $templatecontent );
 		
 		try {
-			$pdffile = new Html2Pdf( 'P', 'A4', $language, true, 'UTF-8', array( 10, 5, 10, 5 ) );
+			$pdffile = new Html2Pdf( 'P', 'A4', $language, true, 'UTF-8', array( 15, 5, 15, 5 ) );
 			$pdffile->setDefaultFont('Arial');
 			$pdffile->pdf->setAuthor('Oxfam Fair Trade cvba');
 			$pdffile->pdf->setTitle( __( 'Productfiche', 'oft' ).' '.$sku );
@@ -2948,6 +2950,7 @@
 
 				// Maak de OFT-productfiche aan (indien foto aanwezig)
 				if ( $product->get_attribute('pa_merk') === 'Oxfam Fair Trade' or $product->get_attribute('pa_merk') === 'Maya' ) {
+					write_log("BIJNA FICHE AANMAKEN IN ".$sitepress->get_current_language());
 					if ( intval( $product->get_image_id() ) > 0 ) {
 						// Enkel in huidige taal van import aanmaken!
 						create_product_pdf( $product->get_id(), $sitepress->get_current_language() );
@@ -2982,7 +2985,7 @@
 		}
 
 		if ( $import_id == 22 ) {
-			// Trigger de Franstalige import, de CSV-file staat er nog
+			// Trigger de Engelstalige import, de CSV-file staat er nog
 			$args = array(
 				'timeout' => 180,
 			);
