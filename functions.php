@@ -2370,16 +2370,20 @@
 			$permalink = ' ';
 		}
 
+		$origin_text = '';
 		if ( $partners = get_partner_terms_by_product($product) ) {
-			$origin_text = __( 'Partners:', 'oft' ).' '.strip_tags( implode( ', ', $partners ) );
-		} else {
-			$countries = get_country_terms_by_product($product);
-			$origin_text = __( 'Herkomst:', 'oft' ).' '.implode( ', ', $countries );
+			$origin_text = '<p style="font-size: 10pt;">';
+			$origin_text .= __( 'Partners:', 'oft' ).' '.strip_tags( implode( ', ', $partners ) );
+			$origin_text .= '</p>';
+		} elseif ( $countries = get_country_terms_by_product($product) ) {
+			$origin_text = '<p style="font-size: 10pt;">';
+			$origin_text .= __( 'Herkomst:', 'oft' ).' '.implode( ', ', $countries );
+			$origin_text .= '</p>';
 		}
 
 		$ingredients_text = '';
 		if ( get_ingredients($product) !== false ) {
-			$ingredients_text .= '<p style="font-size: 11pt;">';
+			$ingredients_text = '<p style="font-size: 10pt;">';
 			// Vraag label op mét dubbele punt
 			$ingredients = get_ingredients( $product, true );
 			$ingredients_text .= $ingredients['label'].' '.$ingredients['value'];
@@ -2388,7 +2392,7 @@
 
 		$ingredients_legend = '';
 		if ( count( get_ingredients_legend($product) ) > 0 ) {
-			$ingredients_legend .= '<p style="font-size: 8pt; text-align: right; margin-top: 0;">';
+			$ingredients_legend = '<p style="font-size: 8pt; text-align: right; margin-top: 0;">';
 			$ingredients_legend .= implode( '<br>', get_ingredients_legend($product) );
 			$ingredients_legend .= '</p>';
 		}
@@ -2518,9 +2522,9 @@
 		// Toon in principe de lange beschrijving
 		$product_text = $product->get_description();
 		// Maar check of we de tekst in combinatie met de ingrediëntenlijst niet te lang is!
-		if ( strlen($product_text) + strlen($ingredients_text) > 500 ) {
+		if ( strlen($product_text) + strlen($ingredients_text) + 2*strlen($ingredients_legend) + strlen($origin_text) > 750 ) {
 			// Check of de korte beschrijving wel inhoud bevat
-			// if ( strlen( $product->get_short_description() ) > 20 ) {
+			// if ( strlen( $product->get_short_description() ) > 10 ) {
 				$product_text = $product->get_short_description();
 			// }
 		}
@@ -2530,7 +2534,7 @@
 		$templatecontent = str_replace( "###DESCRIPTION###", $product_text, $templatecontent );
 		$templatecontent = str_replace( "###INGREDIENTS_OPTIONAL###", $ingredients_text, $templatecontent );
 		$templatecontent = str_replace( "###LEGEND_OPTIONAL###", $ingredients_legend, $templatecontent );
-		$templatecontent = str_replace( "###ORIGIN###", $origin_text, $templatecontent );
+		$templatecontent = str_replace( "###ORIGIN_OPTIONAL###", $origin_text, $templatecontent );
 		$templatecontent = str_replace( "###FAIRTRADE_SHARE###", $product->get_meta('_fairtrade_share'), $templatecontent );
 		
 		$templatecontent = str_replace( "###ALLERGENS###", $allergens_text, $templatecontent );
@@ -2578,11 +2582,11 @@
 	}
 
 	function format_pdf_block( $label, $value ) {
-		return '<p style="font-size: 10pt;"><div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">'.$label.'</div>'.$value.'</p>';
+		return '<p style="font-size: 9pt;"><div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">'.$label.'</div>'.$value.'</p>';
 	}
 
 	function format_pdf_ean13( $code ) {
-		return '<br><barcode dimension="1D" type="EAN13" value="'.$code.'" label="label" style="width: 80%; height: 10mm; font-size: 10pt;"></barcode>';
+		return '<br><barcode dimension="1D" type="EAN13" value="'.$code.'" label="label" style="width: 80%; height: 10mm; font-size: 9pt;"></barcode>';
 	}
 
 	function add_html2pdf_notice_var( $location ) {
