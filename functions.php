@@ -2372,13 +2372,9 @@
 
 		$origin_text = '';
 		if ( $partners = get_partner_terms_by_product($product) ) {
-			$origin_text = '<p style="font-size: 10pt;">';
 			$origin_text .= __( 'Partners:', 'oft' ).' '.strip_tags( implode( ', ', $partners ) );
-			$origin_text .= '</p>';
 		} elseif ( $countries = get_country_terms_by_product($product) ) {
-			$origin_text = '<p style="font-size: 10pt;">';
 			$origin_text .= __( 'Herkomst:', 'oft' ).' '.implode( ', ', $countries );
-			$origin_text .= '</p>';
 		}
 
 		$ingredients_text = '';
@@ -2522,11 +2518,11 @@
 		// Toon in principe de lange beschrijving
 		$product_text = $product->get_description();
 		// Maar check of we de tekst in combinatie met de ingrediëntenlijst niet te lang is!
-		if ( strlen($product_text) + strlen($ingredients_text) + 2*strlen($ingredients_legend) + strlen($origin_text) > 750 ) {
+		if ( strlen($product_text) + strlen($ingredients_text) + 2*strlen($ingredients_legend) + strlen($origin_text) > 800 ) {
 			// Check of de korte beschrijving wel inhoud bevat
-			// if ( strlen( $product->get_short_description() ) > 10 ) {
+			if ( strlen( $product->get_short_description() ) > 10 ) {
 				$product_text = $product->get_short_description();
-			// }
+			}
 		}
 		// Verwijder eventueel de enters door HTML-tags
 		// preg_replace( '/<[^>]+>/', ' ', $product_text );
@@ -2534,7 +2530,7 @@
 		$templatecontent = str_replace( "###DESCRIPTION###", $product_text, $templatecontent );
 		$templatecontent = str_replace( "###INGREDIENTS_OPTIONAL###", $ingredients_text, $templatecontent );
 		$templatecontent = str_replace( "###LEGEND_OPTIONAL###", $ingredients_legend, $templatecontent );
-		$templatecontent = str_replace( "###ORIGIN_OPTIONAL###", $origin_text, $templatecontent );
+		$templatecontent = str_replace( "###ORIGIN###", $origin_text, $templatecontent );
 		$templatecontent = str_replace( "###FAIRTRADE_SHARE###", $product->get_meta('_fairtrade_share'), $templatecontent );
 		
 		$templatecontent = str_replace( "###ALLERGENS###", $allergens_text, $templatecontent );
