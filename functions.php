@@ -2578,7 +2578,7 @@
 	}
 
 	function format_pdf_block( $label, $value ) {
-		return '<p style="font-size: 9pt;"><div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">'.$label.'</div>'.$value.'</p>';
+		return '<p style="font-size: 10pt;"><div style="font-weight: bold; text-decoration: underline; padding-bottom: 1mm;">'.$label.'</div>'.$value.'</p>';
 	}
 
 	function format_pdf_ean13( $code ) {
