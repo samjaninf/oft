@@ -1356,9 +1356,11 @@
 
 	// Check na het publiceren van een product of de datum moet bijgewerkt worden
 	add_action( 'draft_to_publish', 'check_publish_date_update', 10, 1 );
+	add_action( 'draft_to_publish', 'sync_product_status', 100, 1 );
+	// add_action( 'draft_to_private', 'sync_product_status', 20, 1 );
 	
 	function check_publish_date_update( $post ) {
-		write_log("HOOK DRAFT_TO_PUBLISH AANGEROEPEN VOOR ".$post->ID);
+		write_log("HOOK DRAFT_TO_PUBLISH AANGEROEPEN VOOR ".$post->ID." MET PRIORITEIT 10");
 
 		if ( $post->post_type === 'product' ) {
 			wp_update_post(
@@ -1368,10 +1370,17 @@
 					'post_date_gmt' => current_time( 'mysql', 1 ),
 				)
 			);
+		}
+	}
 
+	function sync_product_status( $post ) {
+		write_log("HOOK DRAFT_TO_PUBLISH AANGEROEPEN VOOR ".$post->ID." MET PRIORITEIT 100");
+
+		if ( $post->post_type === 'product' ) {
 			// FRANS EN ENGELS AUTOMATISCH PUBLICEREN!
 			// VERWIJDEREN WORDT WEL GESYNCHRONISEERD IN ALLE TALEN
 			// WORDT PRIVATE STATUS DAARNA CORRECT TOEGEPAST?
+
 			$fr_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'fr' );
 			$fr_product = wc_get_product($fr_product_id);
 			if ( $fr_product !== false ) {
