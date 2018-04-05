@@ -1364,6 +1364,23 @@
 					'post_date_gmt' => current_time( 'mysql', 1 ),
 				)
 			);
+
+			// FRANS EN ENGELS AUTOMATISCH PUBLICEREN!
+			// VERWIJDEREN WORDT WEL GESYNCHRONISEERD IN ALLE TALEN
+			// WORDT PRIVATE STATUS DAARNA CORRECT TOEGEPAST?
+			$fr_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'fr' );
+			$fr_product = wc_get_product($fr_product_id);
+			if ( $fr_product !== false ) {
+				$fr_product->set_status('publish');
+				$fr_product->save();
+			}
+
+			$en_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'en' );
+			$en_product = wc_get_product($en_product_id);
+			if ( $en_product !== false ) {
+				$en_product->set_status('publish');
+				$en_product->save();
+			}
 		}
 	}
 
