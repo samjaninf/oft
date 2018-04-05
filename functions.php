@@ -1338,7 +1338,7 @@
 		}
 
 		$brand = $product->get_attribute('pa_merk');
-		if ( $brand !== '' and $brand !== 'Oxfam Fair Trade' and $brand !== 'Maya' ) {
+		if ( $post->post_status !== 'draft' and $brand !== '' and $brand !== 'Oxfam Fair Trade' and $brand !== 'Maya' ) {
 			$product->set_status('private');
 			$product->save();
 		}
@@ -1356,12 +1356,6 @@
 
 	// Check na het publiceren van een product of de datum moet bijgewerkt worden
 	add_action( 'draft_to_publish', 'check_publish_date_update', 10, 1 );
-
-	// Synchroniseer de publicatiestatus met de anderstalige producten
-	// Bij verwijderen gebeurt dit automatisch door de WPML-instelling
-	// Neem een erg hoge prioriteit, zodat de hook pas doorlopen wordt NA save_post
-	add_action( 'draft_to_publish', 'sync_product_status', 1000, 1 );
-	// add_action( 'draft_to_private', 'sync_product_status', 20, 1 );
 	
 	function check_publish_date_update( $post ) {
 		write_log("HOOK DRAFT_TO_PUBLISH AANGEROEPEN VOOR ".$post->ID." MET PRIORITEIT 10");
@@ -1377,31 +1371,34 @@
 		}
 	}
 
-	function sync_product_status( $post ) {
-		write_log("HOOK DRAFT_TO_PUBLISH AANGEROEPEN VOOR ".$post->ID." MET PRIORITEIT 1000");
+	// Synchroniseer de publicatiestatus naar de anderstalige producten (gebeurt bij verwijderen automatisch door WPML)
+	// Neem een erg hoge prioriteit, zodat de hook pas doorlopen wordt na de 1ste 'save_post', die de zichtbaarheid regelt
+	add_action( 'draft_to_publish', 'sync_product_status', 100, 1 );
+	add_action( 'draft_to_private', 'sync_product_status', 100, 1 );
 
-		// FRANS EN ENGELS PUBLICEREN VAN ZODRA NEDERLANDS ONLINE KOMT!
-		if ( $post->post_type === 'product' and apply_filters( 'wpml_post_language_details', NULL, $post->ID ) === 'nl' ) {
+	function sync_product_status( $post ) {
+		write_log("HOOK DRAFT_TO_PUBLISH/PRIVATE AANGEROEPEN VOOR ".$post->ID." MET PRIORITEIT 100");
+
+		// Frans en Engels publiceren van zodra Nederlands product online komt!
+		$lang = apply_filters( 'wpml_post_language_details', NULL, $post->ID );
+		if ( $post->post_type === 'product' and $lang['language_code'] === 'nl' ) {
 			$nl_product = wc_get_product($post->ID);
 			if ( $nl_product !== false ) {
 				$status = $nl_product->get_status();
-				write_log("NL ID: ".$post->ID." - ".$status);
-			}
 
-			$fr_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'fr' );
-			$fr_product = wc_get_product($fr_product_id);
-			if ( $fr_product !== false ) {
-				write_log("FR ID: ".$fr_product_id);
-				// $fr_product->set_status('publish');
-				// $fr_product->save();
-			}
+				$fr_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'fr' );
+				$fr_product = wc_get_product($fr_product_id);
+				if ( $fr_product !== false ) {
+					$fr_product->set_status($status);
+					$fr_product->save();
+				}
 
-			$en_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'en' );
-			$en_product = wc_get_product($en_product_id);
-			if ( $en_product !== false ) {
-				write_log("EN ID: ".$en_product_id);
-				// $en_product->set_status('publish');
-				// $en_product->save();
+				$en_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'en' );
+				$en_product = wc_get_product($en_product_id);
+				if ( $en_product !== false ) {
+					$en_product->set_status($status);
+					$en_product->save();
+				}
 			}
 		}
 	}
