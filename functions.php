@@ -1323,6 +1323,8 @@
 	add_action( 'save_post', 'change_external_product_status', 10, 3 );
 
 	function change_external_product_status( $post_id, $post, $update ) {
+		write_log("HOOK SAVE_POST AANGEROEPEN VOOR ".$post_id);
+
 		if ( defined('DOING_AUTOSAVE') and DOING_AUTOSAVE ) {
 			return;
 		}
@@ -1356,6 +1358,8 @@
 	add_action( 'draft_to_publish', 'check_publish_date_update', 10, 1 );
 	
 	function check_publish_date_update( $post ) {
+		write_log("HOOK DRAFT_TO_PUBLISH AANGEROEPEN VOOR ".$post->ID);
+
 		if ( $post->post_type === 'product' ) {
 			wp_update_post(
 				array(
@@ -1371,15 +1375,17 @@
 			$fr_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'fr' );
 			$fr_product = wc_get_product($fr_product_id);
 			if ( $fr_product !== false ) {
-				$fr_product->set_status('publish');
-				$fr_product->save();
+				write_log("FR ID: ".$fr_product_id);
+				// $fr_product->set_status('publish');
+				// $fr_product->save();
 			}
 
 			$en_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'en' );
 			$en_product = wc_get_product($en_product_id);
 			if ( $en_product !== false ) {
-				$en_product->set_status('publish');
-				$en_product->save();
+				write_log("EN ID: ".$en_product_id);
+				// $en_product->set_status('publish');
+				// $en_product->save();
 			}
 		}
 	}
@@ -2579,7 +2585,7 @@
 			$pdffile = new Html2Pdf( 'P', 'A4', $language, true, 'UTF-8', array( 15, 5, 15, 5 ) );
 			$pdffile->setDefaultFont('Arial');
 			$pdffile->pdf->setAuthor('Oxfam Fair Trade cvba');
-			$pdffile->pdf->setTitle( __( 'Productfiche', 'oft' ).' '.$sku );
+			$pdffile->pdf->setTitle( $product->get_name() );
 			$pdffile->writeHTML($templatecontent);
 			$pdffile->output( WP_CONTENT_DIR.'/sheets/'.$language.'/'.$sku.'.pdf', 'F' );
 		} catch ( Html2PdfException $e ) {
@@ -3001,9 +3007,9 @@
 				}
 				$product->save();
 
-				// Maak de OFT-productfiche aan (indien foto aanwezig)
-				if ( $product->get_attribute('pa_merk') === 'Oxfam Fair Trade' or $product->get_attribute('pa_merk') === 'Maya' ) {
-					write_log("BIJNA FICHE AANMAKEN IN ".$sitepress->get_current_language());
+				// Maak de OFT-productfiche aan indien gepubliceerd én foto aanwezig
+				// Omdat niet-OFT-producten automatisch op 'private' gezet worden, wordt voor hen in de praktijk nooit een fiche aangemaakt tijdens een import
+				if ( get_post_type($post_id) === 'publish' ) {
 					if ( intval( $product->get_image_id() ) > 0 ) {
 						// Enkel in huidige taal van import aanmaken!
 						create_product_pdf( $product->get_id(), $sitepress->get_current_language() );
