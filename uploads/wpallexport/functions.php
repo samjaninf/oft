@@ -171,4 +171,46 @@
 			return 'KG';
 		}
 	}
+
+	function get_fr_name( $product_id ) {
+		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, 'fr' ) );
+		if ( $product !== false ) {
+			return $product->get_name();
+		}
+	}
+
+	function get_fr_description( $product_id ) {
+		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, 'fr' ) );
+		if ( $product !== false ) {
+			return $product->get_description();
+		}
+	}
+
+	function get_fr_short_description( $product_id ) {
+		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, 'fr' ) );
+		if ( $product !== false ) {
+			return $product->get_short_description();
+		}
+	}
+
+	function get_en_name( $product_id ) {
+		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, 'en' ) );
+		if ( $product !== false ) {
+			return $product->get_name();
+		}
+	}
+
+	function get_en_description( $product_id ) {
+		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, 'en' ) );
+		if ( $product !== false ) {
+			return $product->get_description();
+		}
+	}
+
+	function get_en_short_description( $product_id ) {
+		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, 'en' ) );
+		if ( $product !== false ) {
+			return $product->get_short_description();
+		}
+	}
 ?>
