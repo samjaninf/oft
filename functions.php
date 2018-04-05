@@ -1356,7 +1356,11 @@
 
 	// Check na het publiceren van een product of de datum moet bijgewerkt worden
 	add_action( 'draft_to_publish', 'check_publish_date_update', 10, 1 );
-	add_action( 'draft_to_publish', 'sync_product_status', 100, 1 );
+
+	// Synchroniseer de publicatiestatus met de anderstalige producten
+	// Bij verwijderen gebeurt dit automatisch door de WPML-instelling
+	// Neem een erg hoge prioriteit, zodat de hook pas doorlopen wordt NA save_post
+	add_action( 'draft_to_publish', 'sync_product_status', 1000, 1 );
 	// add_action( 'draft_to_private', 'sync_product_status', 20, 1 );
 	
 	function check_publish_date_update( $post ) {
@@ -1374,12 +1378,15 @@
 	}
 
 	function sync_product_status( $post ) {
-		write_log("HOOK DRAFT_TO_PUBLISH AANGEROEPEN VOOR ".$post->ID." MET PRIORITEIT 100");
+		write_log("HOOK DRAFT_TO_PUBLISH AANGEROEPEN VOOR ".$post->ID." MET PRIORITEIT 1000");
 
-		if ( $post->post_type === 'product' ) {
-			// FRANS EN ENGELS AUTOMATISCH PUBLICEREN!
-			// VERWIJDEREN WORDT WEL GESYNCHRONISEERD IN ALLE TALEN
-			// WORDT PRIVATE STATUS DAARNA CORRECT TOEGEPAST?
+		// FRANS EN ENGELS PUBLICEREN VAN ZODRA NEDERLANDS ONLINE KOMT!
+		if ( $post->post_type === 'product' and apply_filters( 'wpml_post_language_details', NULL, $post->ID ) === 'nl' ) {
+			$nl_product = wc_get_product($post->ID);
+			if ( $nl_product !== false ) {
+				$status = $nl_product->get_status();
+				write_log("NL ID: ".$post->ID." - ".$status);
+			}
 
 			$fr_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'fr' );
 			$fr_product = wc_get_product($fr_product_id);
