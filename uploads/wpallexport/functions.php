@@ -176,6 +176,8 @@
 		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, 'fr' ) );
 		if ( $product !== false ) {
 			return $product->get_name();
+		} else {
+			return '';
 		}
 	}
 
@@ -183,6 +185,8 @@
 		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, 'fr' ) );
 		if ( $product !== false ) {
 			return $product->get_description();
+		} else {
+			return '';
 		}
 	}
 
@@ -190,6 +194,8 @@
 		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, 'fr' ) );
 		if ( $product !== false ) {
 			return $product->get_short_description();
+		} else {
+			return '';
 		}
 	}
 
@@ -197,6 +203,8 @@
 		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, 'en' ) );
 		if ( $product !== false ) {
 			return $product->get_name();
+		} else {
+			return '';
 		}
 	}
 
@@ -204,6 +212,8 @@
 		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, 'en' ) );
 		if ( $product !== false ) {
 			return $product->get_description();
+		} else {
+			return '';
 		}
 	}
 
@@ -211,6 +221,8 @@
 		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, 'en' ) );
 		if ( $product !== false ) {
 			return $product->get_short_description();
+		} else {
+			return '';
 		}
 	}
 ?>
