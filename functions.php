@@ -2157,7 +2157,7 @@
 
 	function show_private_posts_in_rss_feeds( $query ) {
 		if ( is_feed() ) {
-			if ( $query->is_category('deadlines') and $query->is_category('voorraadnieuws') ) {
+			if ( $query->is_category('deadlines') or $query->is_category('voorraadnieuws') ) {
 				$query->set( 'post_status', array( 'publish', 'private' ) );
 				// $query->set( 'posts_per_page', 1 );
 			}
