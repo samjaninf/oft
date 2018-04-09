@@ -2156,17 +2156,30 @@
 		// Overschrijf defaults met expliciete data van de gebruiker
 		$atts = shortcode_atts( array( 'sku' => 21000 ), $atts );
 		
-		$product_id = wc_get_product_id_by_sku( $atts['sku'] );
-		if ( $product_id > 0 ) {
-			$product = wc_get_product($product_id);
-			$output = $product->get_sku().' '.$product->get_name();
-			if ( intval( $product->get_meta('_multiple') ) > 1 ) {
-				$output .= ' (x'.$product->get_meta('_multiple').')';
+		$args = array(
+			'post_type'	=> 'product',
+			'post_status' => array( 'publish', 'private', 'draft', 'future', 'trash' ),
+			'posts_per_page' => 1,
+			'meta_key' => 'sku',
+			'meta_value' => $atts['sku'],
+			'meta_compare' => '=',
+		);
+		$result = new WP_Query( $args );
+
+		$output = '';
+		if ( $result->have_posts() ) {
+			$result->the_post();
+			$output .= $atts['sku'].' '.get_the_title();
+			if ( intval( get_post_meta( get_the_ID(), '_multiple', true ) ) > 1 ) {
+				$output .= ' (x'.get_post_meta( get_the_ID(), '_multiple', true ).')';
 			}
-			if ( $product->get_status() === 'publish' ) {
-				$output = '<a href="'.$product->get_permalink().'">'.$output.'</a>';
+			if ( get_post_status() === 'publish' ) {
+				$output = '<a href="'.get_permalink().'">'.$output.'</a>';
 			}
+
+			wp_reset_postdata();
 		}
+
 		return $output;
 	}
 
@@ -2202,7 +2215,7 @@
 		$more = $more_restore;
 		
 		// Sta slechts bepaalde HTML-tags toe
-		$allowed_tags = '<h4>,<p>,<em>,<b>,<strong>,<u>,<a>,<ul>,<ol>,<li>,<table>,<tr>,<th>,<td>';
+		$allowed_tags = '<h4>,<p>,<em>,<b>,<strong>,<u>,<a>,<br>,<ul>,<ol>,<li>,<table>,<tr>,<th>,<td>';
 		$content = strip_tags( $content, $allowed_tags );
 		
 		// Verwijder de linebreaks vooraleer we betrouwbare preg_match kunnen doen (dubbele quotes verplicht!)
