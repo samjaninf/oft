@@ -2150,15 +2150,17 @@
 	}
 
 	// Forceer snellere RSS-updates
-	// add_filter( 'wp_feed_cache_transient_lifetime', create_function( '', 'return 60;' ) );
+	add_filter( 'wp_feed_cache_transient_lifetime', create_function( '', 'return 3600;' ) );
 
 	// Toon in de 'Voorraadnieuws'-feed ook het (enige) private bericht
 	add_action( 'pre_get_posts', 'show_private_posts_in_rss_feeds' );
 
 	function show_private_posts_in_rss_feeds( $query ) {
-		if ( is_feed() and $query->is_category('voorraadnieuws') ) {
-			$query->set( 'post_status', array( 'publish', 'private' ) );
-			// $query->set( 'posts_per_page', 1 );
+		if ( is_feed() ) {
+			if ( $query->is_category('deadlines') and $query->is_category('voorraadnieuws') ) {
+				$query->set( 'post_status', array( 'publish', 'private' ) );
+				// $query->set( 'posts_per_page', 1 );
+			}
 		}
 		return $query;
 	}
