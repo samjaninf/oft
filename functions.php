@@ -2149,6 +2149,27 @@
 		return 50;
 	}
 
+	// Toon link naar de laatste B2B-nieuwsbrief
+	add_shortcode( 'text_product', 'get_newsletter_product' );
+
+	function get_newsletter_product( $atts ) {
+		// Overschrijf defaults met expliciete data van de gebruiker
+		$atts = shortcode_atts( array( 'sku' => 21000 ), $atts );
+		
+		$product_id = wc_get_product_id_by_sku( $atts['sku'] );
+		if ( $product_id > 0 ) {
+			$product = wc_get_product($product_id);
+			$output = $product->get_sku().' '.$product->get_name();
+			if ( intval( $product->get_meta('_multiple') ) > 1 ) {
+				$output .= ' (x'.$product->get_meta('_multiple').')';
+			}
+			if ( $product->get_status() === 'publish' ) {
+				$output = '<a href="'.$product->get_permalink().'">'.$output.'</a>';
+			}
+		}
+		return $output;
+	}
+
 	// Forceer snellere RSS-updates
 	add_filter( 'wp_feed_cache_transient_lifetime', create_function( '', 'return 3600;' ) );
 
@@ -2181,14 +2202,16 @@
 		$more = $more_restore;
 		
 		// Sta slechts bepaalde HTML-tags toe
-		$allowed_tags = '<p>,<em>,<strong>,<a>,<b>,<li>,<ol>,<h4>';
+		$allowed_tags = '<h4>,<p>,<em>,<b>,<strong>,<u>,<a>,<ul>,<ol>,<li>,<table>,<tr>,<th>,<td>';
 		$content = strip_tags( $content, $allowed_tags );
 		
 		// Verwijder de linebreaks vooraleer we betrouwbare preg_match kunnen doen (dubbele quotes verplicht!)
-		$content = str_replace( array( "\r", "\n", "\t" ), "", $content );
+		// $content = str_replace( array( "\r", "\n", "\t" ), "", $content );
 		// Zet de <ul>'s terug rond elk blok <li>'s tussen <h4>'s
-		$content = str_replace( array( "</h4><li>", "</li><h4>", "&euro;" ), array( "</h4><ul><li>", "</li></ul><h4>", " &euro;" ), $content );
+		// $content = str_replace( array( "</h4><li>", "</li><h4>", "&euro;" ), array( "</h4><ul><li>", "</li></ul><h4>", " &euro;" ), $content );
 		
+		// Vervang de TablePress-klassen door een stijlattribuut
+		// $content = str_replace( 'class="tablepress ', 'style="width: 100%;" class="', $content );
 		// Verwijder overtollige tags mét attributen rond WC-shortcodes
 		// $tags = array( 'ul' );
 		// $content = preg_replace( '#<(' . implode( '|', $tags) . ')>.*?<\/$1>#s', '', $content );
