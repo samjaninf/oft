@@ -1246,7 +1246,11 @@
 			}
 			// Nutteloze kolom met producttype weglaten
 			if ( $key !== 'product_type' ) {
-				$new_columns[$key] = $title;
+				if ( $key === 'price' ) {
+					$new_columns[$key] = __( 'Prijs excl. BTW', 'oft-admin' );
+				} else {
+					$new_columns[$key] = $title;
+				}
 			}
 		}
 		return $new_columns;
@@ -2204,7 +2208,7 @@
 	}
 
 	// Custom shortcode om titel en URL van (onzichtbare) producten op te halen
-	add_shortcode( 'text_product', 'get_product_for_newsletter' );
+	add_shortcode( 'newsletter', 'get_product_for_newsletter' );
 
 	function get_product_for_newsletter( $atts ) {
 		// Overschrijf defaults met expliciete data van de gebruiker
