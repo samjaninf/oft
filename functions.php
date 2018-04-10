@@ -23,7 +23,7 @@
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
 	function load_admin_css() {
-		wp_enqueue_style( 'oft-admin', get_stylesheet_directory_uri().'/admin.css', '1.1.2' );
+		wp_enqueue_style( 'oft-admin', get_stylesheet_directory_uri().'/admin.css', '1.1.3' );
 	}
 
 	// Sta HTML-attribuut 'target' toe in beschrijvingen van taxonomieën
@@ -38,8 +38,8 @@
 	add_action( 'admin_menu', 'register_oft_menus', 99 );
 
 	function register_oft_menus() {
-		add_submenu_page( 'woocommerce', 'Changelog', 'Changelog', 'manage_woocommerce', 'product-changelog', 'oxfam_product_changelog_callback' );
-		add_media_page( __( 'Bulkregistratie', 'oft-admin' ), __( 'Bulkregistratie', 'oft-admin' ), 'update_core', 'oxfam-photos', 'oxfam_photos_callback' );
+		add_submenu_page( 'edit.php?post_type=product', 'Changelog', 'Changelog', 'publish_products', 'product-changelog', 'oxfam_product_changelog_callback' );
+		add_media_page( __( 'Bulkregistratie', 'oft-admin' ), __( 'Bulkregistratie', 'oft-admin' ), 'publish_products', 'oxfam-photos', 'oxfam_photos_callback' );
 	}
 
 	function oxfam_product_changelog_callback() {
