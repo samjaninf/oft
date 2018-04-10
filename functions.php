@@ -1246,8 +1246,16 @@
 			}
 			// Nutteloze kolom met producttype weglaten
 			if ( $key !== 'product_type' ) {
-				if ( $key === 'price' ) {
-					$new_columns[$key] = __( 'Prijs excl. BTW', 'oft-admin' );
+				if ( $key === 'sku' ) {
+					$new_columns[$key] = __( 'Ompaknummer', 'oft-admin' );
+				} elseif ( $key === 'price' ) {
+					if ( get_option('woocommerce_tax_display_shop') === 'excl' ) {
+						$new_columns[$key] = __( 'Prijs (excl. BTW)', 'oft-admin' );
+					} else {
+						$new_columns[$key] = __( 'Prijs (incl. BTW)', 'oft-admin' );
+					}
+				} elseif ( $key === 'icl_translations' ) {
+					$new_columns[$key] = __( 'Talen', 'oft-admin' );
 				} else {
 					$new_columns[$key] = $title;
 				}
