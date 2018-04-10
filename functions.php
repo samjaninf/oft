@@ -1418,6 +1418,13 @@
 		return $post_states;
 	}
 
+	// Verduidelijk de titel van niet-OFT-producten in front-end
+	add_filter( 'private_title_format', 'hide_private_on_title' );
+
+	function hide_private_on_title( $format ) {
+		return 'NIET ZICHTBAAR: %s';
+	}
+
 	// Voeg klasse toe indien recent product
 	add_filter( 'post_class', 'add_recent_product_class' );
 
@@ -2149,51 +2156,16 @@
 		return 50;
 	}
 
-	// Toon link naar de laatste B2B-nieuwsbrief
-	add_shortcode( 'text_product', 'get_newsletter_product' );
-
-	function get_newsletter_product( $atts ) {
-		// Overschrijf defaults met expliciete data van de gebruiker
-		$atts = shortcode_atts( array( 'sku' => 21000 ), $atts );
-		
-		$args = array(
-			'post_type'	=> 'product',
-			'post_status' => array( 'publish', 'private', 'draft', 'future', 'trash' ),
-			'posts_per_page' => 1,
-			'meta_key' => 'sku',
-			'meta_value' => $atts['sku'],
-			'meta_compare' => '=',
-		);
-		$result = new WP_Query( $args );
-
-		$output = '';
-		if ( $result->have_posts() ) {
-			$result->the_post();
-			$output .= $atts['sku'].' '.get_the_title();
-			if ( intval( get_post_meta( get_the_ID(), '_multiple', true ) ) > 1 ) {
-				$output .= ' (x'.get_post_meta( get_the_ID(), '_multiple', true ).')';
-			}
-			if ( get_post_status() === 'publish' ) {
-				$output = '<a href="'.get_permalink().'">'.$output.'</a>';
-			}
-
-			wp_reset_postdata();
-		}
-
-		return $output;
-	}
-
 	// Forceer snellere RSS-updates
 	add_filter( 'wp_feed_cache_transient_lifetime', create_function( '', 'return 3600;' ) );
 
-	// Toon in de 'Voorraadnieuws'-feed ook het (enige) private bericht
+	// Toon in de 'Deadlines' en 'Voorraadnieuws'-feed ook het (enige) private bericht
 	add_action( 'pre_get_posts', 'show_private_posts_in_rss_feeds' );
 
 	function show_private_posts_in_rss_feeds( $query ) {
 		if ( is_feed() ) {
 			if ( $query->is_category('deadlines') or $query->is_category('voorraadnieuws') ) {
 				$query->set( 'post_status', array( 'publish', 'private' ) );
-				// $query->set( 'posts_per_page', 1 );
 			}
 		}
 		return $query;
@@ -2223,18 +2195,57 @@
 		// Zet de <ul>'s terug rond elk blok <li>'s tussen <h4>'s
 		// $content = str_replace( array( "</h4><li>", "</li><h4>", "&euro;" ), array( "</h4><ul><li>", "</li></ul><h4>", " &euro;" ), $content );
 		
-		// Vervang de TablePress-klassen door een stijlattribuut
-		// $content = str_replace( 'class="tablepress ', 'style="width: 100%;" class="', $content );
-		// Verwijder overtollige tags mét attributen rond WC-shortcodes
-		// $tags = array( 'ul' );
-		// $content = preg_replace( '#<(' . implode( '|', $tags) . ')>.*?<\/$1>#s', '', $content );
-
 		$image = '';
 		if ( has_post_thumbnail( $post->ID ) ) {
 			$image = get_the_post_thumbnail( $post->ID, 'shop_single' ).'<br>&nbsp;<br>';
 		}
 
 		return $image.$content;
+	}
+
+	// Custom shortcode om titel en URL van (onzichtbare) producten op te halen
+	add_shortcode( 'text_product', 'get_product_for_newsletter' );
+
+	function get_product_for_newsletter( $atts ) {
+		// Overschrijf defaults met expliciete data van de gebruiker
+		$atts = shortcode_atts( array( 'sku' => '' ), $atts );
+		
+		$args = array(
+			'post_type'	=> 'product',
+			// Ook verborgen / toekomstige / verwijderde producten opnemen!
+			'post_status' => array( 'publish', 'private', 'draft', 'future', 'trash' ),
+			'posts_per_page' => 1,
+			'meta_key' => '_sku',
+			'meta_value' => $atts['sku'],
+			'meta_compare' => '=',
+		);
+		$result = new WP_Query( $args );
+
+		$output = '';
+		if ( $result->have_posts() ) {
+			$result->the_post();
+			$output = str_replace( 'NIET ZICHTBAAR: ', '', get_the_title() );
+			
+			// Zet ompakhoeveelheid tussen haakjes achteraan
+			// if ( intval( get_post_meta( get_the_ID(), '_multiple', true ) ) > 1 ) {
+			// 	$output .= ' (x'.get_post_meta( get_the_ID(), '_multiple', true ).')';
+			// }
+
+			if ( get_post_status() === 'publish' ) {
+				$output = '<a href="'.get_permalink().'">'.$output.'</a>';
+			} else {
+				$terms = wp_get_post_terms( get_the_ID(), 'pa_merk' );
+				if ( count($terms) > 0 ) {
+					$brand = $terms[0];
+					if ( $brand->name !== 'Oxfam Fair Trade' and $brand->name !== 'Maya' ) {
+						$output .= ' ('.$brand->name.')';
+					}
+				}
+			}
+			wp_reset_postdata();
+		}
+
+		return $atts['sku'].' '.$output;
 	}
 
 	// Definieer extra element met post data voor grids
