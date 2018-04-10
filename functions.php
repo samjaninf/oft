@@ -1335,8 +1335,6 @@
 	add_action( 'save_post', 'change_external_product_status', 10, 3 );
 
 	function change_external_product_status( $post_id, $post, $update ) {
-		write_log("HOOK SAVE_POST AANGEROEPEN VOOR ".$post_id);
-
 		if ( defined('DOING_AUTOSAVE') and DOING_AUTOSAVE ) {
 			return;
 		}
@@ -1370,8 +1368,6 @@
 	add_action( 'draft_to_publish', 'check_publish_date_update', 10, 1 );
 	
 	function check_publish_date_update( $post ) {
-		write_log("HOOK DRAFT_TO_PUBLISH AANGEROEPEN VOOR ".$post->ID." MET PRIORITEIT 10");
-
 		if ( $post->post_type === 'product' ) {
 			wp_update_post(
 				array(
@@ -1389,8 +1385,6 @@
 	add_action( 'draft_to_private', 'sync_product_status', 100, 1 );
 
 	function sync_product_status( $post ) {
-		write_log("HOOK DRAFT_TO_PUBLISH/PRIVATE AANGEROEPEN VOOR ".$post->ID." MET PRIORITEIT 100");
-
 		// Frans en Engels publiceren van zodra Nederlands product online komt!
 		$lang = apply_filters( 'wpml_post_language_details', NULL, $post->ID );
 		if ( $post->post_type === 'product' and $lang['language_code'] === 'nl' ) {

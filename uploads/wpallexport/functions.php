@@ -225,4 +225,45 @@
 			return '';
 		}
 	}
+
+	function get_fr_ingredients( $product_id ) {
+		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, 'fr' ) );
+		if ( $product !== false ) {
+			return $product->get_meta('_ingredients');
+		} else {
+			return '';
+		}
+	}
+
+	function get_en_ingredients( $product_id ) {
+		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, 'en' ) );
+		if ( $product !== false ) {
+			return $product->get_meta('_ingredients');
+		} else {
+			return '';
+		}
+	}
+
+	function get_products_from_partner( $partner_id ) {
+		$products = get_posts( array(
+			'post_type' => 'product',
+			'posts_per_page' => -1,
+			'tax_query' => array(
+				array(
+					'taxonomy' => 'product_partner',
+					'field' => 'id',
+					'terms' => $partner_id,
+				)
+			),
+		) );
+
+		$product_names = array();
+		foreach ( $products as $post ) {
+			$product = wc_get_product($post->ID);
+			$product_names[$product->get_sku()] = $product->get_sku().' '.$product->get_name();
+		}
+
+		asort( $product_names, SORT_NUMERIC );
+		return implode( ', ', $product_names );
+	}
 ?>
