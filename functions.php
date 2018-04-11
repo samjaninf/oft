@@ -3123,6 +3123,12 @@
 		delete_option( 'oft_import_active' );
 		delete_option( 'oft_erp_import_active' );
 
+		if ( $import_id == 10 ) {
+			$old = WP_CONTENT_DIR."/pos-import.csv";
+			$new = WP_CONTENT_DIR."/pos-import-".date_i18n('Y-m-d').".csv";
+			rename( $old, $new );
+		}
+
 		if ( $import_id == 14 ) {
 			// Trigger de Franstalige import, de CSV-file staat er nog
 			$args = array(
