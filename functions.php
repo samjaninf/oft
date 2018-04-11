@@ -1416,7 +1416,7 @@
 		if ( 'product' === get_post_type($post) ) {
 			// Door Unyson Event Helper eerder weggefilterde statussen opnieuw toevoegen (of overrulen indien gedeactiveerd)
 			if ( 'private' === get_post_status($post) ) {
-				$post_states = array( 'private' => 'NOOIT ZICHTBAAR' );
+				$post_states = array( 'private' => 'NIET ZICHTBAAR' );
 			} elseif ( 'draft' === get_post_status($post) ) {
 				$post_states = array( 'draft' => 'NOG NIET GEPUBLICEERD' );
 			}
@@ -2198,8 +2198,27 @@
 		
 		// Verwijder de linebreaks vooraleer we betrouwbare preg_match kunnen doen (dubbele quotes verplicht!)
 		// $content = str_replace( array( "\r", "\n", "\t" ), "", $content );
-		// Zet de <ul>'s terug rond elk blok <li>'s tussen <h4>'s
-		// $content = str_replace( array( "</h4><li>", "</li><h4>", "&euro;" ), array( "</h4><ul><li>", "</li></ul><h4>", " &euro;" ), $content );
+		
+		// Voeg extra witruimte toe en zorg ervoor dat tabellen ook in oude versies van Outlook de huidige typografie van de B2B-nieuwsbrief overnemen
+		$content = str_replace( array(
+			'<h4>',
+			'<p>',
+			'<th class="column-1">',
+			'<th class="column-2">',
+			'<th class="column-3">',
+			'<td class="column-1">',
+			'<td class="column-2">',
+			'<td class="column-3">'
+		), array(
+			'<br><h4>',
+			'<br><p>',
+			'<th class="column-1" style="color: #202020; font-family: Helvetica; font-size: 13px; line-height: 125%; text-align: left; width: 28%;">',
+			'<th class="column-2" style="color: #202020; font-family: Helvetica; font-size: 13px; line-height: 125%; text-align: left; width: 28%;">',
+			'<th class="column-3" style="color: #202020; font-family: Helvetica; font-size: 13px; line-height: 125%; text-align: left; width: 44%;">',
+			'<td class="column-1" style="color: #202020; font-family: Helvetica; font-size: 13px; line-height: 125%; text-align: left; width: 28%;">',
+			'<td class="column-2" style="color: #202020; font-family: Helvetica; font-size: 13px; line-height: 125%; text-align: left; width: 28%;">',
+			'<td class="column-3" style="color: #202020; font-family: Helvetica; font-size: 13px; line-height: 125%; text-align: left; width: 44%;">'
+		), $content );
 		
 		$image = '';
 		if ( has_post_thumbnail( $post->ID ) ) {
