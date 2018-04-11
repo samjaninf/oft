@@ -3094,9 +3094,8 @@
 				}
 				$product->save();
 
-				// Maak de OFT-productfiche aan indien gepubliceerd én foto aanwezig
-				// Omdat niet-OFT-producten automatisch op 'private' gezet worden, wordt voor hen in de praktijk nooit een fiche aangemaakt tijdens een import
-				if ( get_post_type($post_id) === 'publish' ) {
+				// Maak de productfiche aan indien gepubliceerd (dus in de praktijk enkel OFT-producten!) én foto aanwezig
+				if ( 'publish' === get_post_status($post_id) ) {
 					if ( intval( $product->get_image_id() ) > 0 ) {
 						// Enkel in huidige taal van import aanmaken!
 						create_product_pdf( $product->get_id(), $sitepress->get_current_language() );
