@@ -2224,7 +2224,7 @@
 		
 		$image = '';
 		if ( has_post_thumbnail( $post->ID ) ) {
-			$image = get_the_post_thumbnail( $post->ID, 'shop_single' ).'<br>&nbsp;<br>';
+			$image = '<a href="'.get_permalink($post->ID).'" target="_blank">'.get_the_post_thumbnail( $post->ID, 'shop_single' ).'</a><br>&nbsp;<br>';
 		}
 
 		return $image.$content;

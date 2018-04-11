@@ -862,15 +862,12 @@ body.home {
 	.rev_slider_wrapper {
 		h2.tp-caption {
 			line-height: 90%;
-			word-break: break-word;
-			hyphens: auto;
 			// display: inline;
 			// background-color: rgba(0,0,0,0.5);
 		}
 		
 		h4.tp-caption {
-			// display: inline;
-			// background-color: rgba(0,0,0,0.5);
+			line-height: 90%;
 		}
 	}
 
@@ -1195,17 +1192,23 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 
 	.rev_slider_wrapper {
 		h2.tp-caption {
+			word-break: break-word;
+			hyphens: auto;
 			font-size: 32px !important;
 			line-height: 100% !important;
 			max-width: 100%;
+			// position: relative;
+			// top: 80px;
 		}
 
 		h4.tp-caption {
+			word-break: break-word;
+			hyphens: auto;
 			font-size: 24px !important;
 			line-height: 100% !important;
 			max-width: 100%;
-			position: relative;
-			bottom: 20px;
+			// position: relative;
+			// bottom: 40px;
 		}
 	}
 
@@ -1266,8 +1269,6 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	.rev_slider_wrapper {
 		h2.tp-caption {
 			font-size: 26px !important;
-			position: relative;
-			top: 40px;
 		}
 
 		h4.tp-caption {
