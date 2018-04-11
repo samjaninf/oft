@@ -2172,7 +2172,7 @@
 
 	function show_private_posts_in_rss_feeds( $query ) {
 		if ( is_feed() ) {
-			if ( $query->is_category('deadlines') or $query->is_category('voorraadnieuws') ) {
+			if ( $query->is_category('voorraadnieuws') or $query->is_category('deadlines') or $query->is_category('nouvelles-de-stock') or $query->is_category('delais') ) {
 				$query->set( 'post_status', array( 'publish', 'private' ) );
 			}
 		}
