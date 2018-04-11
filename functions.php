@@ -1379,10 +1379,12 @@
 		}
 	}
 
-	// Synchroniseer de publicatiestatus naar de anderstalige producten (gebeurt bij verwijderen automatisch door WPML)
+	// Synchroniseer de publicatiestatus van/naar draft naar de anderstalige producten (gebeurt bij trashen reeds automatisch door WPML)
 	// Neem een erg hoge prioriteit, zodat de hook pas doorlopen wordt na de 1ste 'save_post', die de zichtbaarheid regelt
 	add_action( 'draft_to_publish', 'sync_product_status', 100, 1 );
 	add_action( 'draft_to_private', 'sync_product_status', 100, 1 );
+	add_action( 'publish_to_draft', 'sync_product_status', 100, 1 );
+	add_action( 'private_to_draft', 'sync_product_status', 100, 1 );
 
 	function sync_product_status( $post ) {
 		// Frans en Engels publiceren van zodra Nederlands product online komt!
