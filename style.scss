@@ -1197,8 +1197,6 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 			font-size: 32px !important;
 			line-height: 100% !important;
 			max-width: 100%;
-			// position: relative;
-			// top: 80px;
 		}
 
 		h4.tp-caption {
@@ -1207,8 +1205,8 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 			font-size: 24px !important;
 			line-height: 100% !important;
 			max-width: 100%;
-			// position: relative;
-			// bottom: 40px;
+			position: relative;
+			bottom: 20px;
 		}
 	}
 
@@ -1269,6 +1267,8 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	.rev_slider_wrapper {
 		h2.tp-caption {
 			font-size: 26px !important;
+			position: relative;
+			top: 40px;
 		}
 
 		h4.tp-caption {
