@@ -7,6 +7,9 @@
 	
 	if ( ! defined('ABSPATH') ) exit;
 
+	// Nonces niet checken in VC-grids, oplossing voor cachingprobleem?
+	add_filter( 'vc_grid_get_grid_data_access','__return_true' );
+
 	// Laad het child theme na het hoofdthema
 	add_action( 'wp_enqueue_scripts', 'load_child_theme', 999 );
 
@@ -3357,7 +3360,7 @@
 		}
 		
 		// Creëer de parameters voor de foto
-		$wp_filetype = wp_check_filetype( $filename, null );
+		$wp_filetype = wp_check_filetype( $filename, NULL );
 		$attachment = array(
 			'post_mime_type' => $wp_filetype['type'],
 			'post_title' => $filetitle,
@@ -3370,10 +3373,8 @@
 		$msg = "";
 		$attachment_id = wp_insert_attachment( $attachment, $filepath );
 		if ( ! is_wp_error( $attachment_id ) ) {
-			// Check of de uploadlocatie ingegeven was!
+			// Check of de uploadlocatie ingegeven was, zo nee: zoek het product op o.b.v. SKU!
 			if ( ! isset($product_id) or $product_id < 1 ) {
-				// Indien het een b/c/d/e/f-foto is zal de search naar $filetitle een 0 opleveren
-				// Dat is de bedoeling, want die foto's mogen het hoofdbeeld niet vervangen!
 				$product_id = wc_get_product_id_by_sku( $filetitle );
 			}
 
