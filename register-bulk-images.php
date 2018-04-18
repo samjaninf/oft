@@ -20,10 +20,10 @@
 					if ( ends_with( $file, '.jpg' ) and strlen( $parts[0] ) === 5 and is_numeric( $parts[0] ) and filemtime($filepath) > get_option( 'oft_timestamp_last_photo', '1516924800' ) ) {
 						// Zet naam, timestamp, datum en pad van de upload in de array
 						$photos[] = array(
-							"name" => basename($filepath),
-							"timestamp" => filemtime($filepath),
-							"date" => get_date_from_gmt( date( 'Y-m-d H:i:s', filemtime($filepath) ), 'd/m/Y H:i:s' ),
-							"path" => $filepath,
+							'name' => basename($filepath),
+							'timestamp' => filemtime($filepath),
+							'date' => get_date_from_gmt( date( 'Y-m-d H:i:s', filemtime($filepath) ), 'd/m/Y H:i:s' ),
+							'path' => $filepath,
 						);
 					}
 				}
@@ -51,12 +51,12 @@
 						var s = "";
 						if ( data.length !== 1 ) s = "'s";
 						jQuery(".input").prepend("<pre>We vonden "+data.length+" nieuwe of gewijzigde foto"+s+"!</pre>");
-						if ( data.length > 0 ) jQuery(".run").prop('disabled', false);
+						if ( data.length > 0 ) jQuery(".run").prop("disabled", false);
 						
-						jQuery(".run").on('click', function() {
-							jQuery(".run").prop('disabled', true);
-							jQuery(".run").text('Ik ben aan het nadenken ...');
-							jQuery('#wpcontent').css('background-color', 'orange');
+						jQuery(".run").on("click", function() {
+							jQuery(".run").prop("disabled", true);
+							jQuery(".run").text("Ik ben aan het nadenken ...");
+							jQuery("#wpcontent").css("background-color", "gold");
 							jQuery(".output").before("<p>&nbsp;</p>");
 							ajaxCall(0);
 						});
@@ -64,7 +64,7 @@
 						jQuery(".input").prepend("<pre>We vonden geen enkele nieuwe of gewijzigde foto!</pre>");
 					}
 
-					jQuery(".input").prepend( "<pre>Uploadtijdstip laatst verwerkte foto: <?php echo get_date_from_gmt( date( 'Y-m-d H:i:s', get_option( 'oft_timestamp_last_photo', '1516924800' ) ), 'd/m/Y H:i:s' ); ?></pre>" );
+					jQuery(".input").prepend("<pre>Uploadtijdstip laatst verwerkte foto: <?php echo get_date_from_gmt( date( 'Y-m-d H:i:s', get_option( 'oft_timestamp_last_photo', '1516924800' ) ), 'd/m/Y H:i:s' ); ?></pre>");
 
 					var tries = 0;
 					var max = 5;
@@ -74,17 +74,17 @@
 							var photo = data[i];
 
 							var input = {
-								'action': 'oxfam_photo_action',
-								'name': photo['name'],
-								'timestamp': photo['timestamp'],
-								'path': photo['path'],
+								"action": "oxfam_photo_action",
+								"name": photo['name'],
+								"timestamp": photo['timestamp'],
+								"path": photo['path'],
 							};
 							
 							jQuery.ajax({
-								type: 'POST',
+								type: "POST",
 								url: ajaxurl,
 								data: input,
-								dataType: 'html',
+								dataType: "html",
 								success: function(msg) {
 									tries = 0;
 									jQuery(".output").prepend("<p>"+msg+"</p>");
@@ -92,10 +92,10 @@
 								},
 								error: function(jqXHR, statusText, errorThrown) {
 									tries++;
-									var str = '<?php _e( 'Asynchroon laden van PHP-file mislukt ... (poging ###CURRENT### van ###MAXIMUM###: ###ERROR###)', 'oftc-admin' ); ?>';
-									str = str.replace( '###CURRENT###', tries );
-									str = str.replace( '###MAXIMUM###', max );
-									str = str.replace( '###ERROR###', errorThrown );
+									var str = "<?php _e( 'Asynchroon laden van PHP-file mislukt ... (poging ###CURRENT### van ###MAXIMUM###: ###ERROR###)', 'oftc-admin' ); ?>";
+									str = str.replace("###CURRENT###", tries);
+									str = str.replace("###MAXIMUM###", max);
+									str = str.replace("###ERROR###", errorThrown);
 									jQuery(".output").prepend("<p>"+str+"</p>");
 									if ( tries < max ) {
 										ajaxCall(i);
@@ -107,14 +107,14 @@
 								},
 							});
 						} else {
-							jQuery("#wpcontent").css("background-color", "limegreen");
+							jQuery("#wpcontent").css("background-color", "lightgreen");
 							jQuery(".output").prepend("<p>Klaar, we hebben "+i+" foto's verwerkt!</p>");
 							jQuery(".run").text("Registreer nieuwe / gewijzigde foto's");
 						}
 					}
 					
 					function dump(obj) {
-						var out = '';
+						var out = "";
 						for ( var i in obj ) {
 							if ( typeof obj[i] === 'object' ){
 								dump(obj[i]);
@@ -122,7 +122,7 @@
 								if ( i != 'timestamp' ) out += i + ": " + obj[i] + "<br>";
 							}
 						}
-						jQuery(".input").append('<pre>'+out+'</pre>');
+						jQuery(".input").append("<pre>"+out+"</pre>");
 					}
 				});
 			</script>
@@ -141,7 +141,7 @@
 
 	<p>&nbsp;</p>
 
-	<button class="run" style="float: right; margin: 0 10px; width: 250px;" disabled>Registreer nieuwe / gewijzigde foto's</button>
+	<button class="run" style="float: right; margin: 0 10px; width: 300px;" disabled>Registreer nieuwe / gewijzigde foto's</button>
 
 	<div class="input"></div>
 
