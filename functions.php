@@ -2432,6 +2432,20 @@
 		return $wp_query;
 	}
 
+	// Enkel PDF-attachments indexeren
+	add_filter( 'relevanssi_do_not_index', 'rlv_only_pdfs', 10, 2 );
+	
+	function rlv_only_pdfs( $block, $post_id ) {
+		$mime = get_post_mime_type($post_id);
+		if ( ! empty($mime) ) {
+			$block = true;
+			if ( substr( $mime, -3, 3 ) === 'pdf' ) {
+				$block = false;
+			}
+		}
+		return $block;
+	}
+
 
 
 	###########
