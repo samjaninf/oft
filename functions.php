@@ -2857,23 +2857,27 @@
 			}
 		}
 
-		// Contactformulieren
-		$contact_forms = array( 1014, 6711, 6712 );
-		if ( in_array( $posted_data['_wpcf7'], $contact_forms ) ) {
+		// Algemene veldcorrecties
+		if ( isset( $posted_data['your-name'] ) ) {
 			$posted_data['your-name'] = trim_and_uppercase_words( $posted_data['your-name'] );
+		}
+		if ( isset( $posted_data['your-first-name'] ) ) {
+			$posted_data['your-first-name'] = trim_and_uppercase_words( $posted_data['your-first-name'] );
+		}
+		if ( isset( $posted_data['your-last-name'] ) ) {
+			$posted_data['your-last-name'] = trim_and_uppercase_words( $posted_data['your-last-name'] );
+		}
+		if ( isset( $posted_data['your-email'] ) ) {
 			$posted_data['your-email'] = strtolower( trim($posted_data['your-email']) );
+		}
+		if ( isset( $posted_data['your-company'] ) ) {
 			$posted_data['your-company'] = trim_and_uppercase_words( $posted_data['your-company'] );
 		}
-
-		// Fairtrade@Work
-		$ftaw_form = array( 10073 );
-		if ( in_array( $posted_data['_wpcf7'], $ftaw_form ) ) {
-			$posted_data['your-company'] = trim_and_uppercase_words( $posted_data['your-company'] );
+		if ( isset( $posted_data['your-street'] ) ) {
 			$posted_data['your-street'] = trim_and_uppercase_words( $posted_data['your-street'] );
+		}
+		if ( isset( $posted_data['your-city'] ) ) {
 			$posted_data['your-city'] = trim_and_uppercase_words( $posted_data['your-city'] );
-			$posted_data['your-first-name'] = trim_and_uppercase_words( $posted_data['your-first-name'] );
-			$posted_data['your-last-name'] = trim_and_uppercase_words( $posted_data['your-last-name'] );
-			$posted_data['your-email'] = strtolower( trim($posted_data['your-email']) );
 		}
 
 		return $posted_data;
