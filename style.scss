@@ -5,7 +5,7 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.14
+	Version:		1.2.15
 	Text Domain:	oft
 */
 
@@ -1129,6 +1129,39 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 .fa-spinner {
 	// WAT IS DIT?
 	// display: none;
+}
+
+
+
+/********************/
+/*  CONTACT FORM 7  */
+/********************/
+
+.two-column {
+	margin-bottom: 2em;
+
+	& > p {
+		width: 45%;
+		display: inline-block;
+		margin-right: 12px !important;
+		margin-bottom: 12px !important;
+	}
+}
+
+@media (min-width: 768px) {
+	.two-column input[type=submit] {
+		float: right;
+		position: relative;
+		bottom: 12px;
+	}
+}
+
+@media (max-width: 767px) {
+	.two-column > p {
+		width: 95%;
+		display: block;
+		margin-right: 0px !important;
+	}
 }
 
 

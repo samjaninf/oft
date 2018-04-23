@@ -15,7 +15,7 @@
 
 	function load_child_theme() {
 		// Zorgt ervoor dat de stylesheet van het child theme ZEKER NA alone.css ingeladen wordt
-		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.14' );
+		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.15' );
 		// BOOTSTRAP REEDS INGELADEN DOOR ALONE
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
@@ -42,7 +42,7 @@
 
 	function register_oft_menus() {
 		add_submenu_page( 'edit.php?post_type=product', 'Changelog', 'Changelog', 'publish_products', 'product-changelog', 'oxfam_product_changelog_callback' );
-		add_media_page( __( 'Bulkregistratie', 'oft-admin' ), __( 'Bulkregistratie', 'oft-admin' ), 'publish_products', 'oxfam-photos', 'oxfam_photos_callback' );
+		add_media_page( __( 'Bulkregistratie', 'oft-admin' ), __( 'Bulkregistratie', 'oft-admin' ), 'edit_products', 'oxfam-photos', 'oxfam_photos_callback' );
 	}
 
 	function oxfam_product_changelog_callback() {
@@ -167,7 +167,7 @@
 			// Slugs van custom taxonomieën kunnen helaas niet vertaald worden 
 			'rewrite' => array( 'slug' => 'herkomst', 'with_front' => true, 'hierarchical' => true ),
 			// Geef catmans rechten om zelf termen toe te kennen (+ overzicht te bekijken) maar niet om te bewerken (+ toe te voegen) / te verwijderen!
-			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'update_core', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
+			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'update_core', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
