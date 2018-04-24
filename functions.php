@@ -3046,9 +3046,13 @@
 	add_shortcode( 'latest_newsletter', 'get_latest_newsletter', 2 );
 
 	function get_latest_newsletter() {
+		global $sitepress;
+
 		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
 		// Map met enkel de productnieuwsbrieven
-		$folder_id = 'd302e08412';
+		$folder_id_nl = 'd302e08412';
+		$folder_id_fr = '2d4de81b52';
+		$folder_id_en = $folder_id_nl;
 
 		$args = array(
 			'headers' => array(
@@ -3056,7 +3060,7 @@
 			),
 		);
 
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?status=sent&list_id='.MC_LIST_ID.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=DESC&count=1', $args );
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?status=sent&list_id='.MC_LIST_ID.'&folder_id='.$folder_id_{$sitepress->get_current_language()}.'&sort_field=send_time&sort_dir=DESC&count=1', $args );
 		
 		if ( $response['response']['code'] == 200 ) {
 			$body = json_decode($response['body']);
