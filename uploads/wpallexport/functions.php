@@ -144,23 +144,19 @@
 	function split_by_paragraph( $text ) {
 		$parts = explode( '</p><p>', html_entity_decode( $text, ENT_QUOTES ) );
 		$bits = explode( '<br>', $parts[0] );
-		$pieces = explode( '<br/>', $bits[0] );
 		return wp_strip_all_tags( $pieces[0] );
 	}
 
 	function split_after_300_characters( $text ) {
-		$text = str_replace( '<br>', ' ', html_entity_decode( $text, ENT_QUOTES ) );
-		$text = str_replace( '<br/>', ' ', $text );
-		$text = str_replace( '</p><p>', ' ', $text );
-		write_log($text);
-		$ignored = substr( $text, 0, 300 );
+		$ignored = substr( html_entity_decode( $text, ENT_QUOTES ), 0, 300 );
 		if ( substr( $text, 300 ) ) {
 			$parts = explode( '.', substr( $text, 300 ) );
 			$chopped = $parts[0].'.';
 		} else {
 			$chopped = '';
 		}
-		return wp_strip_all_tags( $ignored.$chopped );
+		// Verwijder alle line breaks m.b.v. 2de parameter
+		return wp_strip_all_tags( $ignored.$chopped, true );
 	}
 
 	function decode_html( $value ) {
