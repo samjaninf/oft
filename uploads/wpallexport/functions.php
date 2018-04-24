@@ -117,7 +117,7 @@
 	}
 
 	function get_countries_from_partners( $partners ) {
-		$terms = explode( ',', $partners );
+		$terms = explode( '|', $partners );
 		$countries = array();
 		foreach ( $terms as $term ) {
 			$parts = explode( '>', $term );
