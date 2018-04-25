@@ -1433,7 +1433,11 @@
 	add_filter( 'private_title_format', 'hide_private_on_title' );
 
 	function hide_private_on_title( $format ) {
-		return 'NIET ZICHTBAAR: %s';
+		if ( is_feed() ) {
+			return '%s';
+		} else {
+			return 'NIET ZICHTBAAR: %s';
+		}
 	}
 
 	// Voeg klasse toe indien recent product
