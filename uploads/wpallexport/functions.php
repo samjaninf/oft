@@ -1,28 +1,44 @@
 <?php
 	function contains( $allergens ) {
 		$parts = explode( '|', $allergens );
+		$none = false;
+		$other = false;
 		foreach ( $parts as $part ) {
 			$term = explode( '>', $part );
 			if ( $term[0] == 'Geen meldingsplichtige allergenen' ) {
-				return '/';
+				$none = true;
+			} elseif( $term[0] == 'Kan sporen bevatten van' ) {
+				$other = true;
 			} elseif ( $term[0] == 'Product bevat' ) {
 				$contains[] = decode_html($term[1]);
 			}
 		}
-		return implode( ', ', $contains );
+		if ( ! isset($contains) and ( $none or $other ) ) {
+			return '/';
+		} else {
+			return implode( ', ', $contains );	
+		}
 	}
 
 	function may_contain( $allergens ) {
 		$parts = explode( '|', $allergens );
+		$none = false;
+		$other = false;
 		foreach ( $parts as $part ) {
 			$term = explode( '>', $part );
 			if ( $term[0] == 'Geen meldingsplichtige allergenen' ) {
-				return '/';
+				$none = true;
+			} elseif( $term[0] == 'Product bevat' ) {
+				$other = true;
 			} elseif ( $term[0] == 'Kan sporen bevatten van' ) {
 				$may_contain[] = decode_html($term[1]);
 			}
 		}
-		return implode( ', ', $may_contain );
+		if ( ! isset($may_contain) and ( $none or $other ) ) {
+			return '/';
+		} else {
+			return implode( ', ', $may_contain );	
+		}
 	}
 
 	function format_price( $price ) {
