@@ -3,8 +3,10 @@
 		$parts = explode( '|', $allergens );
 		foreach ( $parts as $part ) {
 			$term = explode( '>', $part );
-			if ( $term[0] == 'Product bevat' ) {
-				$contains[] = html_entity_decode( $term[1], ENT_QUOTES );
+			if ( $term[0] == 'Geen meldingsplichtige allergenen' ) {
+				return '/';
+			} elseif ( $term[0] == 'Product bevat' ) {
+				$contains[] = decode_html($term[1]);
 			}
 		}
 		return implode( ', ', $contains );
@@ -14,8 +16,10 @@
 		$parts = explode( '|', $allergens );
 		foreach ( $parts as $part ) {
 			$term = explode( '>', $part );
-			if ( $term[0] == 'Kan sporen bevatten van' ) {
-				$may_contain[] = html_entity_decode( $term[1], ENT_QUOTES );
+			if ( $term[0] == 'Geen meldingsplichtige allergenen' ) {
+				return '/';
+			} elseif ( $term[0] == 'Kan sporen bevatten van' ) {
+				$may_contain[] = decode_html($term[1]);
 			}
 		}
 		return implode( ', ', $may_contain );
@@ -63,7 +67,7 @@
 		$terms = explode( '|', $string );
 		foreach ( $terms as $term ) {
 			$parts = explode( '>', $term );
-			$partners[] = html_entity_decode( $parts[2].', '.$parts[1], ENT_QUOTES );
+			$partners[] = decode_html( $parts[2].', '.$parts[1] );
 		}
 		if ( count($partners) > 0 ) {
 			sort($partners);
@@ -90,7 +94,7 @@
 		$terms = explode( '|', $string );
 		foreach ( $terms as $term ) {
 			$parts = explode( '>', $term );
-			$lowest_terms[] = html_entity_decode( $parts[count($parts)-1], ENT_QUOTES );
+			$lowest_terms[] = decode_html( $parts[count($parts)-1] );
 		}
 		if ( count($lowest_terms) > 0 ) {
 			$single_terms = array_unique($lowest_terms);
@@ -105,7 +109,7 @@
 		$terms = explode( '|', $string );
 		foreach ( $terms as $term ) {
 			$parts = explode( '>', $term );
-			$second_to_last_terms[] = html_entity_decode( $parts[count($parts)-2], ENT_QUOTES );
+			$second_to_last_terms[] = decode_html( $parts[count($parts)-2] );
 		}
 		if ( count($second_to_last_terms) > 0 ) {
 			$single_terms = array_unique($second_to_last_terms);
@@ -127,7 +131,7 @@
 		if ( count($countries) > 0 ) {
 			$single_countries = array_unique($countries);
 			sort($single_countries);
-			return html_entity_decode( implode( ', ', $single_countries ), ENT_QUOTES );
+			return decode_html( implode( ', ', $single_countries ) );
 		} else {
 			return '';
 		}
@@ -142,13 +146,13 @@
 	}
 
 	function split_by_paragraph( $text ) {
-		$parts = explode( '</p><p>', html_entity_decode( $text, ENT_QUOTES ) );
+		$parts = explode( '</p><p>', decode_html($text) );
 		$bits = explode( '<br>', $parts[0] );
 		return wp_strip_all_tags( $pieces[0] );
 	}
 
 	function split_after_300_characters( $text ) {
-		$ignored = substr( html_entity_decode( $text, ENT_QUOTES ), 0, 300 );
+		$ignored = substr( decode_html($text), 0, 300 );
 		if ( substr( $text, 300 ) ) {
 			$parts = explode( '.', substr( $text, 300 ) );
 			$chopped = $parts[0].'.';
