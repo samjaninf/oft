@@ -18,7 +18,7 @@
 		if ( ( $handle = fopen( $file_path,'r' ) ) !== false ) {
 			echo parse_csv_to_table( $handle );
 		} else {
-			echo '<p>'.__( 'Nog geen wijzingen geregistreerd.', 'oftc-admin' ).'</p>';
+			echo '<p>'.__( 'Nog geen wijzigingen geregistreerd.', 'oftc-admin' ).'</p>';
 		}
 	?>
 </div>
