@@ -1274,6 +1274,7 @@
 		global $wp, $the_product;
 		
 		if ( $column === 'pa_merk' ) {
+			// BIJ CONCEPTEN LIJKT HET OPHALEN VAN DE WAARDE EEN PROBLEEM TE VORMEN
 			if ( ! empty( $the_product->get_attribute('pa_merk') ) ) {
 				// OPGELET: Kan theoretisch meer dan één term bevatten!
 				$attribute = get_term_by( 'name', $the_product->get_attribute('pa_merk'), 'pa_merk' );
