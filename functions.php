@@ -3314,7 +3314,7 @@
 	// Voeg custom producttaxonomieën toe aan de WC API
 	add_filter( 'woocommerce_rest_prepare_product_object', 'add_custom_taxonomies_to_response', 10, 3 );
 
-	function add_custom_taxonomies_to_response( $response, $object, $request ) {
+	function add_custom_taxonomies_to_response( $response, $product, $request ) {
 		if ( empty( $response->data ) ) {
 			return $response;
 		}
@@ -3323,17 +3323,17 @@
 		foreach ( $custom_taxonomies as $taxonomy ) {
 			$logger = wc_get_logger();
 			$context = array( 'source' => 'WC REST API' );
-			$logger->debug( wc_print_r( $object, true ), $context );
+			$logger->debug( wc_print_r( $product->get_sku(), true ), $context );
 			
-			// PRODUCT RECHTSTREEKS BENADEREN VIA ID = WOOCOMMERCE BOOS
-			foreach ( wp_get_object_terms( $object->id, $taxonomy ) as $term ) {
+			// Filter wordt enkel doorlopen bij producten dus we kunnen ID zeker op deze manier ophalen
+			foreach ( wp_get_object_terms( $product->get_id(), $taxonomy ) as $term ) {
 				$terms[] = array(
 					'id'   => $term->term_id,
 					'name' => $term->name,
 					'slug' => $term->slug,
 				);
 			}
-			
+
 			if ( isset($terms) ) {
 				$response->data[$taxonomy] = $terms;
 				unset($terms);
