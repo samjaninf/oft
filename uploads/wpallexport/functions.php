@@ -164,6 +164,7 @@
 	function split_by_paragraph( $text ) {
 		$parts = explode( '</p><p>', decode_html($text) );
 		$bits = explode( '<br>', $parts[0] );
+		$pieces = explode( '<br/>', $bits[0] );
 		return wp_strip_all_tags( $pieces[0] );
 	}
 

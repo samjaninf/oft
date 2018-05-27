@@ -3321,6 +3321,11 @@
 		
 		$custom_taxonomies = array( 'product_allergen', 'product_grape', 'product_taste', 'product_recipe' );
 		foreach ( $custom_taxonomies as $taxonomy ) {
+			$logger = wc_get_logger();
+			$context = array( 'source' => 'WC REST API' );
+			$logger->debug( wc_print_r( $object, true ), $context );
+			
+			// PRODUCT RECHTSTREEKS BENADEREN VIA ID = WOOCOMMERCE BOOS
 			foreach ( wp_get_object_terms( $object->id, $taxonomy ) as $term ) {
 				$terms[] = array(
 					'id'   => $term->term_id,
@@ -3328,8 +3333,11 @@
 					'slug' => $term->slug,
 				);
 			}
-			$response->data[$taxonomy] = $terms;
-			unset($terms);
+			
+			if ( isset($terms) ) {
+				$response->data[$taxonomy] = $terms;
+				unset($terms);
+			}
 		}
 
 		return $response;
