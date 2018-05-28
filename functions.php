@@ -42,8 +42,7 @@
 	
 	function disable_manual_product_removal( $post_id ){
 		if ( get_post_type($post_id) == 'product' ) {
-			echo "You are not authorized to delete this page.";
-			exit;
+			wp_die( sprintf( 'Uit veiligheidsoverwegingen is het verwijderen van producten niet toegestaan, voor geen enkele gebruikersrol! Deze vormen immers de centrale database met alle gegevens. Vraag &ndash; indien nodig &ndash; dat de hogere machten op %s deze beperking tijdelijk opheffen, zodat je je vuile zaakjes kunt opknappen.', '<a href="mailto:'.get_option('admin_email').'">'.get_option('admin_email').'</a>' ) );
 		}
 	}
 

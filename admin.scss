@@ -9,9 +9,9 @@
 	Text Domain:	oft
 */
 
-/* Verberg nutteloos keuzemenu voor producttype */
+/* Verberg nutteloos keuzemenu voor producttype (sowieso verdwenen vanaf WC 3.4+?) */
 body.wp-admin.post-type-product div.actions select#dropdown_product_type {
-	// display: none;
+	display: none;
 }
 
 /* Verberg 'Prullenbak leegmaken'-knop */
