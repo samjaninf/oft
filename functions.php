@@ -2841,9 +2841,11 @@
 			$status = get_status_in_mailchimp_list( $posted_data['newsletter-email'] );
 						
 			if ( $status['response']['code'] == 200 ) {
-				$body = json_decode($status['body']);
-				write_log("IEMAND DIE AL INGESCHREVEN WAS PROBEERT ZICH TE ABONNEREN OP DE NIEUWSBRIEF");
+				$logger = wc_get_logger();
+				$context = array( 'source' => 'MailChimp API' );
+				$logger->notice( $posted_data['newsletter-email'].' is trying to resubscribe', $context );
 
+				$body = json_decode($status['body']);
 				if ( $body->status === "subscribed" ) {
 					$timestamp = strtotime($body->timestamp_opt);
 					if ( $timestamp !== false ) {
@@ -3328,12 +3330,12 @@
 			return $response;
 		}
 		
+		$logger = wc_get_logger();
+		$context = array( 'source' => 'WooCommerce API' );
+		$logger->info( 'Quality data of SKU '.$product->get_sku().' accessed from '.wc_print_r( $request->get_header('geoip_addr'), true ), $context );
+
 		$custom_taxonomies = array( 'product_allergen', 'product_grape', 'product_taste', 'product_recipe' );
-		foreach ( $custom_taxonomies as $taxonomy ) {
-			// $logger = wc_get_logger();
-			// $context = array( 'source' => 'WC REST API' );
-			// $logger->debug( wc_print_r( $product->get_sku(), true ), $context );
-			
+		foreach ( $custom_taxonomies as $taxonomy ) {	
 			// Filter wordt enkel doorlopen bij producten dus we kunnen ID zeker op deze manier ophalen
 			foreach ( wp_get_object_terms( $product->get_id(), $taxonomy ) as $term ) {
 				$terms[] = array(
