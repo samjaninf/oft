@@ -2,14 +2,20 @@
 	Theme Name:		Oxfam Fair Trade
 	Theme URI:		https://github.com/OxfamFairTrade/oft
 	Author:			Frederik Neirynck
-	Author URI:		https://www.lecouperet.net
+	Author URI:		https://www.oxfamfairtrade.be
 	Description:	Toevoegingen voor custom Oxfam-pagina's in de back-end.
 	Template:		alone
-	Version:		1.1.3
+	Version:		1.1.4
 	Text Domain:	oft
 */
 
+/* Verberg nutteloos keuzemenu voor producttype */
 body.wp-admin.post-type-product div.actions select#dropdown_product_type {
+	// display: none;
+}
+
+/* Verberg 'Prullenbak leegmaken'-knop */
+div.tablenav input#delete_all {
 	display: none;
 }
 

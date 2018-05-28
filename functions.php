@@ -26,7 +26,7 @@
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
 	function load_admin_css() {
-		wp_enqueue_style( 'oft-admin', get_stylesheet_directory_uri().'/admin.css', '1.1.3' );
+		wp_enqueue_style( 'oft-admin', get_stylesheet_directory_uri().'/admin.css', '1.1.4' );
 	}
 
 	// Sta HTML-attribuut 'target' toe in beschrijvingen van taxonomieën
@@ -35,6 +35,16 @@
 	function allow_target_tag() { 
 		global $allowedtags;
 		$allowedtags['a']['target'] = 1;
+	}
+
+	// Verhinder het permanent verwijderen van producten (maar na 1 jaar wel automatische clean-up door Wordpress, zie wp-config.php!)
+	add_action( 'before_delete_post', 'disable_manual_product_removal', 10, 1 );
+	
+	function disable_manual_product_removal( $post_id ){
+		if ( get_post_type($post_id) == 'product' ) {
+			echo "You are not authorized to delete this page.";
+			exit;
+		}
 	}
 
 	// Voeg een menu toe met onze custom functies
@@ -3321,9 +3331,9 @@
 		
 		$custom_taxonomies = array( 'product_allergen', 'product_grape', 'product_taste', 'product_recipe' );
 		foreach ( $custom_taxonomies as $taxonomy ) {
-			$logger = wc_get_logger();
-			$context = array( 'source' => 'WC REST API' );
-			$logger->debug( wc_print_r( $product->get_sku(), true ), $context );
+			// $logger = wc_get_logger();
+			// $context = array( 'source' => 'WC REST API' );
+			// $logger->debug( wc_print_r( $product->get_sku(), true ), $context );
 			
 			// Filter wordt enkel doorlopen bij producten dus we kunnen ID zeker op deze manier ophalen
 			foreach ( wp_get_object_terms( $product->get_id(), $taxonomy ) as $term ) {
