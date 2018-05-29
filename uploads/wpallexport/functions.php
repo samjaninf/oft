@@ -286,4 +286,9 @@
 		asort( $product_names, SORT_NUMERIC );
 		return implode( ', ', $product_names );
 	}
+
+	function get_visible_product_price( $product_id ) {
+		$product = wc_get_product($product_id);
+		return html_entity_decode( wp_strip_all_tags( $product->get_price_html() ) );
+	}
 ?>
