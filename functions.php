@@ -1283,10 +1283,11 @@
 		global $wp, $the_product;
 		
 		if ( $column === 'pa_merk' ) {
-			// BIJ CONCEPTEN LIJKT HET OPHALEN VAN DE WAARDE EEN PROBLEEM TE VORMEN
 			if ( ! empty( $the_product->get_attribute('pa_merk') ) ) {
-				// OPGELET: Kan theoretisch meer dan één term bevatten!
-				$attribute = get_term_by( 'name', $the_product->get_attribute('pa_merk'), 'pa_merk' );
+				// Opgelet: attribuut kan theoretisch meer dan één term bevatten, in de praktijk ook effectief zo indien vertaling nog niet aangemaakt!
+				$terms = explode( ', ', $the_product->get_attribute('pa_merk') );
+				// var_dump_pre($terms);
+				$attribute = get_term_by( 'name', $terms[0], 'pa_merk' );
 				// Gebruik home_url( add_query_arg( 'term', $attribute->slug ) ) indien je de volledige huidige query-URL wil behouden
 				echo '<a href="/wp-admin/edit.php?post_type=product&taxonomy=pa_merk&term='.$attribute->slug.'">'.$attribute->name.'</a>';
 			} else {
