@@ -1296,7 +1296,7 @@
 		}
 	}
 
-	// Creëer extra merkenfilter bovenaan de productenlijst VOORLOPIG WEGLATEN
+	// Creëer extra merkenfilter bovenaan de productenlijst WERKT NIET GOED
 	// add_action( 'restrict_manage_posts', 'add_filters_to_products' );
 
 	function add_filters_to_products() {
@@ -1304,17 +1304,16 @@
 		if ( $pagenow === 'edit.php' and $post_type === 'product' ) {
 			$args = array( 'taxonomy' => 'pa_merk', 'hide_empty' => false );
 			$terms = get_terms( $args );
-			$values_brand = array();
+			$brands = array();
 			foreach ( $terms as $term ) {
-				$values_brand[$term->slug] = $term->name;
+				$brands[$term->slug] = $term->name;
 			}
 			
-			$current_brand = isset( $_REQUEST['term'] ) ? wc_clean( wp_unslash( $_REQUEST['term'] ) ) : false;
-			// echo '<select name="taxonomy"><option value="pa_merk"></option></select>';
-			echo '<select name="term">';
+			$current_brand = isset( $_REQUEST['pa_merk'] ) ? wc_clean( wp_unslash( $_REQUEST['pa_merk'] ) ) : false;
+			echo '<select name="pa_merk" id="pa_merk">';
 				echo '<option value="">'.__( 'Op merk filteren', 'oft-admin' ).'</option>';
-				foreach ( $values_brand as $status => $label ) {
-					echo '<option value="'.$status.'" '.selected( $status, $current_brand, false ).'>'.$label.'</option>';
+				foreach ( $brands as $brand_slug => $brand_name ) {
+					echo '<option value="'.$brand_slug.'" '.selected( $brand_slug, $current_brand, false ).'>'.$brand_name.'</option>';
 				}
 			echo '</select>';
 		}
@@ -1325,20 +1324,20 @@
 
 	function make_attribute_columns_sortable( $columns ) {
 		$columns['featured'] = 'featured';
-		// BETER VIA FILTERS BOVENAAN
 		// $columns['pa_merk'] = 'pa_merk';
-		// $columns['is_in_stock'] = 'is_in_stock';
 		return $columns;
 	}
 
-	// Voer de sortering uit tijdens het bekijken van producten in de admin NIET NODIG VOOR STANDAARD EIGENSCHAPPEN
+	// Voer de sortering van custom velden uit tijdens het bekijken van producten in de admin WERKT NIET GOED
 	// add_action( 'pre_get_posts', 'sort_products_on_custom_column', 20 );
 	
 	function sort_products_on_custom_column( $query ) {
 		global $pagenow, $post_type;
 		if ( $pagenow === 'edit.php' and $post_type === 'product' and $query->query['post_type'] === 'product' ) {
 			// Check of we moeten sorteren op één van onze custom kolommen
+			// write_log( wc_print_r( $query, true ) );
 			if ( $query->get( 'orderby' ) === 'pa_merk' ) {
+				// Moet dit geen tax_query zijn?
 				$query->set( 'meta_key', 'pa_merk' );
 				$query->set( 'orderby', 'meta_value' );
 			}
