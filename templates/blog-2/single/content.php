@@ -57,12 +57,13 @@ $article_classes = array(
 
 						$skus = explode( ',', get_post_meta( get_the_ID(), 'oft_post_product', true ) );
 						if ( count($skus) > 0 ) {
+							global $sitepress;
 							echo '<div class="woocommerce columns-3">';
 							woocommerce_product_loop_start();
 							foreach ( $skus as $sku ) {
 								// Kan het een geldig artikelnummer zijn?
 								if ( intval($sku) > 10000 ) {
-									$post_object = get_post( wc_get_product_id_by_sku($sku) );
+									$post_object = get_post( apply_filters( 'wpml_object_id', wc_get_product_id_by_sku($sku), 'product', false, $sitepress->get_current_language() ) );
 									if ( $post_object !== NULL ) {
 										setup_postdata( $GLOBALS['post'] =& $post_object );
 										wc_get_template_part( 'content', 'product' );
