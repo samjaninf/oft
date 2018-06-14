@@ -1846,7 +1846,7 @@
 					'label' => __( 'Energie', 'oft' ).' (kJ)'.$hint,
 					'type' => 'number',
 					'custom_attributes' => array(
-						'step' => 'any',
+						'step' => '1',
 						'min' => '1',
 						'max' => '10000',
 					),
