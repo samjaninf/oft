@@ -1,0 +1,34 @@
+<wpml-config>
+	<custom-fields>
+		<custom-field action="copy">oft_post_product</custom-field>
+		<custom-field action="copy">_choavl</custom-field>
+		<custom-field action="copy">_cu_ean</custom-field>
+		<custom-field action="copy">_empty_fee</custom-field>
+		<custom-field action="copy">_energy</custom-field>
+		<custom-field action="copy">_fairtrade_share</custom-field>
+		<custom-field action="copy">_famscis</custom-field>
+		<custom-field action="copy">_fapucis</custom-field>
+		<custom-field action="copy">_fasat</custom-field>
+		<custom-field action="copy">_fat</custom-field>
+		<custom-field action="copy">_fibtg</custom-field>
+		<custom-field action="copy">_intrastat</custom-field>
+		<custom-field action="copy">_multiple</custom-field>
+		<custom-field action="copy">_net_content</custom-field>
+		<custom-field action="copy">_net_unit</custom-field>
+		<custom-field action="copy">_pal_number_of_layers</custom-field>
+		<custom-field action="copy">_pal_number_per_layer</custom-field>
+		<custom-field action="copy">_polyl</custom-field>
+		<custom-field action="copy">_pro</custom-field>
+		<custom-field action="copy">_salteq</custom-field>
+		<custom-field action="copy">_shelf_life</custom-field>
+		<custom-field action="copy">_shopplus_sku</custom-field>
+		<custom-field action="copy">_starch</custom-field>
+		<custom-field action="copy">_steh_ean</custom-field>
+		<custom-field action="copy">_steh_height</custom-field>
+		<custom-field action="copy">_steh_length</custom-field>
+		<custom-field action="copy">_steh_weight</custom-field>
+		<custom-field action="copy">_steh_width</custom-field>
+		<custom-field action="copy">_sugar</custom-field>
+		<custom-field action="copy">_unit_price</custom-field>
+	</custom-fields>
+</wpml-config>
