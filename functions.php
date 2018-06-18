@@ -3078,7 +3078,7 @@
 
 		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?status=sent&list_id='.MC_LIST_ID.'&folder_id='.$folder_id[$sitepress->get_current_language()].'&sort_field=send_time&sort_dir=DESC&count=1', $args );
 		
-		if ( $response['response']['code'] == 200 ) {
+		if ( ! is_wp_error($response) and $response['response']['code'] == 200 ) {
 			$body = json_decode($response['body']);
 			$campaign = reset($body->campaigns);
 			$mailing = sprintf( __( 'Bekijk <a href="%s" target="_blank">de recentste nieuwsbrief</a>.', 'oft' ), $campaign->long_archive_url );
