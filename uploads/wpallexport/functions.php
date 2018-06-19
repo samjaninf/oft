@@ -291,4 +291,13 @@
 		$product = wc_get_product($product_id);
 		return html_entity_decode( wp_strip_all_tags( $product->get_price_html() ) );
 	}
+
+	// Actiedatums vallen op middernacht, waardoor ze de neiging hebben om een dag vroeger te retourneren wegens tijdzoneverschillen
+	function move_date_by_12_hours( $timestamp ) {
+		if ( $timestamp > 1000 ) {
+			return date( 'Y-m-d', $timestamp + 12*3600 );
+		} else {
+			return '';
+		}
+	}
 ?>

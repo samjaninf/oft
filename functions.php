@@ -511,7 +511,7 @@
 
 		// Voeg tabje met voedingswaardes toe (indien niet leeg)
 		if ( get_tab_content('food') !== false ) {
-			$unit = $product->get_meta( '_net_unit' );
+			$unit = $product->get_meta('_net_unit');
 			if ( $unit === 'cl' ) {
 				$suffix = 'ml';
 			} else {
