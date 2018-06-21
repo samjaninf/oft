@@ -608,10 +608,13 @@
 				<th><?php _e( 'Netto-inhoud', 'oft' ); ?></th>
 				<td><?php echo get_net_weight($product); ?></td>
 			</tr>
-			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php _e( 'Fairtradepercentage', 'oft' ); ?></th>
-				<td><?php echo $product->get_meta('_fairtrade_share').' %' ?></td>
-			</tr>
+			<?php if ( ! empty ( $product->get_meta('_fairtrade_share') ) ) : ?>
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th><?php _e( 'Fairtradepercentage', 'oft' ); ?></th>
+					<td><?php echo $product->get_meta('_fairtrade_share').' %'; ?></td>
+				</tr>
+			<?php endif; ?>
+			
 			<?php
 
 			$product_attributes = array( 'pa_fairtrade', 'pa_bio' );
@@ -913,7 +916,10 @@
 
 					/* Disable/enable het bovenliggende land bij aan/afvinken van een partner en reset de aanvinkstatus van de parent */
 					jQuery( '#product_partner-all' ).find( 'input[type=checkbox]' ).on( 'change', function() {
-						jQuery(this).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', jQuery(this).is(":checked") );
+						/* Enkel doen indien er geen andere partners aangevinkt zijn! */
+						if ( jQuery(this).closest( 'ul.children' ).find( 'input[type=checkbox]' ).is(":checked").length == 0 ) {
+							jQuery(this).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', jQuery(this).is(":checked") );
+						}
 					});
 
 					/* Disable/enable het overeenkomstige allergeen in contains/may-contain bij aan/afvinken van may-contain/contains */
@@ -2674,7 +2680,7 @@
 		$templatecontent = str_replace( "###INGREDIENTS_OPTIONAL###", $ingredients_text, $templatecontent );
 		$templatecontent = str_replace( "###LEGEND_OPTIONAL###", $ingredients_legend, $templatecontent );
 		$templatecontent = str_replace( "###ORIGIN###", $origin_text, $templatecontent );
-		$templatecontent = str_replace( "###FAIRTRADE_SHARE###", $product->get_meta('_fairtrade_share'), $templatecontent );
+		$templatecontent = str_replace( "###FAIRTRADE_SHARE###", intval( $product->get_meta('_fairtrade_share') ), $templatecontent );
 		
 		$templatecontent = str_replace( "###ALLERGENS###", $allergens_text, $templatecontent );
 		$templatecontent = str_replace( "###LABELS_OPTIONAL###", $labels_text, $templatecontent );
