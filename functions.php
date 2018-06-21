@@ -184,7 +184,7 @@
 	}
 
 	// Extra metadata definiëren en bewaren op partnertaxonomie
-	// add_action( 'product_partner_add_form_fields', 'add_partner_node_field', 10, 2 );
+	add_action( 'product_partner_add_form_fields', 'add_partner_node_field', 10, 2 );
 	add_action( 'created_product_partner', 'save_partner_node_meta', 10, 2 );
 	add_action( 'product_partner_edit_form_fields', 'edit_partner_node_field', 10, 2 );
 	add_action( 'edited_product_partner', 'save_partner_node_meta', 10, 2 );
@@ -209,7 +209,10 @@
 		<?php
 	}
 
+	// WORDT PAS GESYNCED MET ANDERE TALEN BIJ 2DE KEER OPSLAAN
+	// ZIE https://wpml.org/forums/topic/custom-field-values-are-not-synced/
 	function save_partner_node_meta( $term_id, $tt_id ) {
+		// write_log($_POST);
 		if ( isset( $_POST['partner_node'] ) ) {
 			update_term_meta( $term_id, 'partner_node', absint($_POST['partner_node']) );
 		} else {
