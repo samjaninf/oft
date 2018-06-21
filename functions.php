@@ -916,9 +916,18 @@
 
 					/* Disable/enable het bovenliggende land bij aan/afvinken van een partner en reset de aanvinkstatus van de parent */
 					jQuery( '#product_partner-all' ).find( 'input[type=checkbox]' ).on( 'change', function() {
-						/* Enkel doen indien er geen andere partners aangevinkt zijn! */
-						if ( jQuery(this).closest( 'ul.children' ).find( 'input[type=checkbox]' ).is(":checked").length == 0 ) {
-							jQuery(this).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', jQuery(this).is(":checked") );
+						var changed_box = jQuery(this);
+						/* Enable enkel indien er geen andere partners meer aangevinkt zijn! */
+						if ( changed_box.closest( 'ul.children' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
+							changed_box.closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop({
+								disabled: false,
+								checked: false,
+							});
+						} else {
+							changed_box.closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop({
+								disabled: true,
+								checked: false,
+							});
 						}
 					});
 
@@ -928,7 +937,10 @@
 						var label = changed_box.closest( 'label.selectit' ).text();
 						changed_box.closest( 'ul.children' ).closest( 'li' ).siblings().find( 'label.selectit' ).each( function() {
 							if ( jQuery(this).text() == label ) {
-								jQuery(this).find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', changed_box.is(":checked") );
+								jQuery(this).find( 'input[type=checkbox]' ).prop({
+									disabled: changed_box.is(':checked'),
+									checked: false,
+								});
 							}
 						});
 					});
@@ -936,12 +948,18 @@
 					/* Disable alle allergenen indien expliciet aangegeven werd dat er geen allergenen zijn */
 					jQuery( '#in-product_allergen-<?php echo $none_term->term_id; ?>:checked' ).each( function() {
 						var none_box = jQuery(this);
-						none_box.closest( 'li' ).siblings().find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', none_box.is(":checked") );
+						none_box.closest( 'li' ).siblings().find( 'input[type=checkbox]' ).prop({
+							disabled: none_box.is(':checked'),
+							checked: false,
+						});
 					});
 					/* Ook on toggle */
 					jQuery( '#in-product_allergen-<?php echo $none_term->term_id; ?>' ).on( 'change', function() {
 						var none_box = jQuery(this);
-						none_box.closest( 'li' ).siblings().find( 'input[type=checkbox]' ).prop( 'checked', false ).prop( 'disabled', none_box.is(":checked") );
+						none_box.closest( 'li' ).siblings().find( 'input[type=checkbox]' ).prop({
+							disabled: none_box.is(':checked'),
+							checked: false,
+						});
 					});
 
 					/* Disable en verberg checkboxes rode en witte druiven */
@@ -1597,7 +1615,7 @@
 				array( 
 					'id' => '_update_product_sheet',
 					'label' => __( 'Fiches updaten', 'oft' ),
-					'description' => __( 'Vink dit aan als je de PDF\'s wil bijwerken wanneer je het product opslaat (werkt ook voor niet-OFT-producten!)', 'oft' ),
+					'description' => __( 'Vink dit aan als je de PDF\'s wil bijwerken wanneer je het product opslaat (werkt ook voor niet-OFT-producten, packshot moet aanwezig zijn!)', 'oft' ),
 				)
 			);
 
