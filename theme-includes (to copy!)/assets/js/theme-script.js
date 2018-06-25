@@ -1754,7 +1754,8 @@
         Bears.liquidButton();
 
         // event booking form
-        Bears.eventBooking();
+        // UITSCHAKELEN, VEROORZAAKT WELLICHT 'Error not defined, Please reload page and try again!'
+        // Bears.eventBooking();
 
         // countdown
         Bears.countdown();
