@@ -2228,7 +2228,7 @@
 	function alter_rss_feed_excerpt( $feed_type = null ) {
 		global $more, $post;
 		$more_restore = $more;
-		if ( !$feed_type ) {
+		if ( ! $feed_type ) {
 			$feed_type = get_default_feed();
 		}
 		// Reset aantal woorden zodat de inleiding na <!--more--> afgeknipt wordt, net zoals op de site
@@ -2238,7 +2238,7 @@
 		$more = $more_restore;
 		
 		// Sta slechts bepaalde HTML-tags toe
-		$allowed_tags = '<h4>,<em>,<b>,<strong>,<u>,<a>,<br>,<ul>,<ol>,<li>,<table>,<tr>,<th>,<td>';
+		$allowed_tags = '<h4>,<p>,<em>,<b>,<strong>,<u>,<a>,<br>,<ul>,<ol>,<li>,<table>,<tr>,<th>,<td>';
 		$content = strip_tags( $content, $allowed_tags );
 		
 		// Verwijder de linebreaks vooraleer we betrouwbare preg_match kunnen doen (dubbele quotes verplicht!)
@@ -2247,7 +2247,6 @@
 		// Voeg extra witruimte toe en zorg ervoor dat tabellen ook in oude versies van Outlook de huidige typografie van de B2B-nieuwsbrief overnemen
 		$content = str_replace( array(
 			'<h4>',
-			'<p>',
 			'<th class="column-1">',
 			'<th class="column-2">',
 			'<th class="column-3">',
@@ -2256,7 +2255,6 @@
 			'<td class="column-3">'
 		), array(
 			'<br><h4>',
-			'<br><p>',
 			'<th class="column-1" style="color: #202020; font-family: Helvetica; font-size: 13px; line-height: 125%; text-align: left; width: 28%;">',
 			'<th class="column-2" style="color: #202020; font-family: Helvetica; font-size: 13px; line-height: 125%; text-align: left; width: 28%;">',
 			'<th class="column-3" style="color: #202020; font-family: Helvetica; font-size: 13px; line-height: 125%; text-align: left; width: 44%;">',
@@ -2265,6 +2263,15 @@
 			'<td class="column-3" style="color: #202020; font-family: Helvetica; font-size: 13px; line-height: 125%; text-align: left; width: 44%;">'
 		), $content );
 		
+		$terms = get_the_category($post->ID);
+		foreach ( $terms as $category ) {
+			$categories[] = $category->name;
+		}
+		if ( ! in_array( 'Nieuws', $categories ) and ! in_array( 'Nouvelles', $categories ) and ! in_array( 'News', $categories ) ) {
+			// Extra witruimte in voorraadnieuws en gewijzigde deadlines
+			$content = str_replace( '<p>', '<br><p>', $content );
+		}
+
 		$image = '';
 		if ( has_post_thumbnail( $post->ID ) ) {
 			$image = '<a href="'.get_permalink($post->ID).'" target="_blank">'.get_the_post_thumbnail( $post->ID, 'shop_single' ).'</a><br>&nbsp;<br>';
