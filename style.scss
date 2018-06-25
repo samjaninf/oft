@@ -5,7 +5,7 @@
 	Author URI:		https://www.lecouperet.net
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.15
+	Version:		1.2.16
 	Text Domain:	oft
 */
 
@@ -298,8 +298,9 @@ body.woocommerce-page:not(.single-product) {
 
 .post-single-entry-header {
 	.post-sing-image-background {
-		background-position: 50% 20% !important;
+		background-position: 50% 40% !important;
 		// background-repeat: no-repeat !important;
+		background-size: 100% auto !important;
 	}
 
 	.post-category {

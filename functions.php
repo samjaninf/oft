@@ -15,8 +15,7 @@
 
 	function load_child_theme() {
 		// Zorgt ervoor dat de stylesheet van het child theme ZEKER NA alone.css ingeladen wordt
-		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.15' );
-		// BOOTSTRAP REEDS INGELADEN DOOR ALONE
+		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.16' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
 		load_child_theme_textdomain( 'oft', get_stylesheet_directory().'/languages' );
@@ -2239,7 +2238,7 @@
 		$more = $more_restore;
 		
 		// Sta slechts bepaalde HTML-tags toe
-		$allowed_tags = '<h4>,<p>,<em>,<b>,<strong>,<u>,<a>,<br>,<ul>,<ol>,<li>,<table>,<tr>,<th>,<td>';
+		$allowed_tags = '<h4>,<em>,<b>,<strong>,<u>,<a>,<br>,<ul>,<ol>,<li>,<table>,<tr>,<th>,<td>';
 		$content = strip_tags( $content, $allowed_tags );
 		
 		// Verwijder de linebreaks vooraleer we betrouwbare preg_match kunnen doen (dubbele quotes verplicht!)
