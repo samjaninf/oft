@@ -987,7 +987,7 @@
 							msg += '* Je moet het fairtradepercentage nog ingeven!\n';
 						}
 
-						<?php if ( $parent->slug !== 'wijn' or $parent->slug === 'vin' or $parent->slug === 'wine' ) : ?>
+						<?php if ( $parent->slug !== 'wijn' and $parent->slug !== 'vin' and $parent->slug !== 'wine' ) : ?>
 							if ( jQuery( '#general_product_data' ).find( 'textarea#_ingredients' ).val() == '' ) {
 								pass = false;
 								msg += '* Je moet de ingrediëntenlijst nog ingeven!\n';
