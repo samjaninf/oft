@@ -1575,7 +1575,7 @@
 
 			$args_north = array( 
 				'id' => '_is_north_product',
-				'label' => __( 'Is Noordproduct?', 'oft' ),
+				'label' => __( 'Noordproduct?', 'oft' ),
 				'wrapper_class' => 'important-for-catman',
 				'description' => __( 'Vink dit aan als het om een lokaal / solidair product gaat waarbij het fairtradepercentage hieronder geen betekenis heeft', 'oft-admin' ),
 			);
@@ -1588,7 +1588,7 @@
 
 			$args_share = array( 
 				'id' => '_fairtrade_share',
-				'label' => __( 'Aandeel fairtrade (%)', 'oft-admin' ),
+				'label' => __( 'Fairtradepercentage (%)', 'oft-admin' ),
 				'type' => 'number',
 				'wrapper_class' => 'important-for-catman',
 				'custom_attributes' => array(
@@ -1610,7 +1610,8 @@
 					'id' => '_ingredients',
 					'label' => __( 'Ingrediëntenlijst', 'oft-admin' ).'<br>* = '.__( 'fair trade', 'oft-admin' ).'<br>° = '.__( 'biologisch', 'oft-admin' ).'<br>'.mb_strtoupper( __( 'allergeen', 'oft-admin' ) ),
 					'wrapper_class' => 'important-for-catman',
-					'rows' => 4,
+					'rows' => 5,
+					'description' => __( 'Wordt gebruikt in productfiches én webshops. Legende van sterretjes en bolletjes wordt automatisch toegevoegd indien van toepassing. De Franse en Engelse versies zijn enkel noodzakelijk voor OFT-producten.', 'oft-admin' ),
 				)
 			);
 
