@@ -1572,14 +1572,18 @@
 				)
 			);
 
-			woocommerce_wp_checkbox( 
-				array( 
-					'id' => '_is_north_product',
-					'label' => __( 'Is Noordproduct?', 'oft' ),
-					'wrapper_class' => 'important-for-catman',
-					'description' => __( 'Vink dit aan als het om een lokaal / solidair product gaat waarbij het fairtradepercentage hieronder geen betekenis heeft', 'oft-admin' ),
-				)
+			$args_north = array( 
+				'id' => '_is_north_product',
+				'label' => __( 'Is Noordproduct?', 'oft' ),
+				'wrapper_class' => 'important-for-catman',
+				'description' => __( 'Vink dit aan als het om een lokaal / solidair product gaat waarbij het fairtradepercentage hieronder geen betekenis heeft', 'oft-admin' ),
 			);
+
+			if ( ! post_language_equals_site_language() ) {
+				$args_north['custom_attributes']['disabled'] = true;
+			}
+
+			woocommerce_wp_checkbox($args_north);
 
 			$args_share = array( 
 				'id' => '_fairtrade_share',
@@ -1598,7 +1602,7 @@
 				$args_share['custom_attributes']['readonly'] = true;
 			}
 
-			woocommerce_wp_text_input( $args_share );
+			woocommerce_wp_text_input($args_share);
 
 			woocommerce_wp_textarea_input(
 				array( 
