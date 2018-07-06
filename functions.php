@@ -610,7 +610,7 @@
 				<th><?php _e( 'Netto-inhoud', 'oft' ); ?></th>
 				<td><?php echo get_net_weight($product); ?></td>
 			</tr>
-			<?php if ( ! empty ( $product->get_meta('_fairtrade_share') ) ) : ?>
+			<?php if ( $product->get_meta('_is_north_product') !== 'yes' and ! empty ( $product->get_meta('_fairtrade_share') ) ) : ?>
 				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 					<th><?php _e( 'Fairtradepercentage', 'oft' ); ?></th>
 					<td><?php echo $product->get_meta('_fairtrade_share').' %'; ?></td>
@@ -981,7 +981,7 @@
 							pass = false;
 							msg += '* Je moet de productcategorie nog aanvinken!\n';
 						}
-						if ( jQuery( '#general_product_data' ).find( 'input#_fairtrade_share' ).val() == '' ) {
+						if ( jQuery( '#general_product_data' ).find( 'input#_fairtrade_share' ).val() == '' and ! jQuery( '#general_product_data' ).find( 'input#_is_north_product' ).is(':checked') ) {
 							pass = false;
 							msg += '* Je moet het fairtradepercentage nog ingeven!\n';
 						}
@@ -1571,6 +1571,14 @@
 				)
 			);
 
+			woocommerce_wp_checkbox( 
+				array( 
+					'id' => '_is_north_product',
+					'label' => __( 'Noordproduct', 'oft' ),
+					'description' => __( 'Vink dit aan als het om een lokaal / solidair product gaat waar het fairtradepercentage geen betekenis heeft', 'oft' ),
+				)
+			);
+
 			$args_share = array( 
 				'id' => '_fairtrade_share',
 				'label' => __( 'Aandeel fairtrade (%)', 'oft-admin' ),
@@ -1931,6 +1939,7 @@
 		$regular_meta_keys = array(
 			'_net_unit',
 			'_net_content',
+			'_is_north_product',
 			'_fairtrade_share',
 			'_ingredients',
 			'_promo_text',
@@ -2562,6 +2571,12 @@
 			$ingredients_text .= '</p>';
 		}
 
+		if ( $product->get_meta('_is_north_product') === 'yes' ) {
+			$fairtrade_text = __( 'Dit is een fair en solidair Noord-product.', 'oft' );
+		} else {
+			$fairtrade_text = sprintf( __( 'Totaal fairtrade-ingrediënten: %d %', 'oft' ), intval( $product->get_meta('_fairtrade_share') ) );
+		}
+
 		$ingredients_legend = '';
 		if ( count( get_ingredients_legend($product) ) > 0 ) {
 			$ingredients_legend = '<p style="font-size: 8pt; text-align: right; margin-top: 0;">';
@@ -2707,7 +2722,7 @@
 		$templatecontent = str_replace( "###INGREDIENTS_OPTIONAL###", $ingredients_text, $templatecontent );
 		$templatecontent = str_replace( "###LEGEND_OPTIONAL###", $ingredients_legend, $templatecontent );
 		$templatecontent = str_replace( "###ORIGIN###", $origin_text, $templatecontent );
-		$templatecontent = str_replace( "###FAIRTRADE_SHARE###", intval( $product->get_meta('_fairtrade_share') ), $templatecontent );
+		$templatecontent = str_replace( "###FAIRTRADE_SHARE###", $fairtrade_text, $templatecontent );
 		
 		$templatecontent = str_replace( "###ALLERGENS###", $allergens_text, $templatecontent );
 		$templatecontent = str_replace( "###LABELS_OPTIONAL###", $labels_text, $templatecontent );
@@ -3642,6 +3657,7 @@
 			'_net_unit',
 			'_net_content',
 			'_unit_price',
+			'_is_north_product',
 			'_fairtrade_share',
 			'_ingredients',
 			'_promo_text',
