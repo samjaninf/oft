@@ -3,7 +3,8 @@
 	use Spipu\Html2Pdf\Html2Pdf;
 	use Spipu\Html2Pdf\Exception\Html2PdfException;
 	use Spipu\Html2Pdf\Exception\ExceptionFormatter;
-	setlocale( LC_ALL, 'nl_NL' );
+	// Conflicteert dit niet met WPML?
+	// setlocale( LC_ALL, 'nl_NL' );
 	
 	if ( ! defined('ABSPATH') ) exit;
 
@@ -1574,8 +1575,9 @@
 			woocommerce_wp_checkbox( 
 				array( 
 					'id' => '_is_north_product',
-					'label' => __( 'Noordproduct', 'oft' ),
-					'description' => __( 'Vink dit aan als het om een lokaal / solidair product gaat waar het fairtradepercentage geen betekenis heeft', 'oft' ),
+					'label' => __( 'Is Noordproduct?', 'oft' ),
+					'wrapper_class' => 'important-for-catman',
+					'description' => __( 'Vink dit aan als het om een lokaal / solidair product gaat waarbij het fairtradepercentage hieronder geen betekenis heeft', 'oft-admin' ),
 				)
 			);
 
@@ -1613,7 +1615,7 @@
 					'label' => __( 'Actuele promotekst', 'oft-admin' ),
 					'wrapper_class' => 'important-for-catman',
 					'desc_tip' => true,
-					'description' => __( 'Dit tekstje dient enkel om te tonen aan particulieren in de wijnkiezer en de webshops. Te combineren met de actieprijs en -periode hierboven.', 'oft-admin' ),
+					'description' => __( 'Dit tekstje dient enkel om te tonen aan particulieren in de wijnkiezer en de webshops. Te combineren met de actieprijs en -periode bovenaan.', 'oft-admin' ),
 				)
 			);
 
@@ -1624,8 +1626,8 @@
 			woocommerce_wp_checkbox( 
 				array( 
 					'id' => '_update_product_sheet',
-					'label' => __( 'Fiches updaten', 'oft' ),
-					'description' => __( 'Vink dit aan als je de PDF\'s wil bijwerken wanneer je het product opslaat (werkt ook voor niet-OFT-producten, packshot moet aanwezig zijn!)', 'oft' ),
+					'label' => __( 'Update fiches?', 'oft' ),
+					'description' => __( 'Vink dit aan als je de PDF\'s wil bijwerken wanneer je het product opslaat (packshot moet aanwezig zijn, werkt ook voor niet-OFT-producten)', 'oft-admin' ),
 				)
 			);
 
@@ -2572,7 +2574,7 @@
 		}
 
 		if ( $product->get_meta('_is_north_product') === 'yes' ) {
-			$fairtrade_text = __( 'Dit is een fair en solidair Noord-product.', 'oft' );
+			$fairtrade_text = __( 'Dit is een lokaal / solidair Noordproduct.', 'oft' );
 		} else {
 			$fairtrade_text = sprintf( __( 'Totaal fairtrade-ingrediënten: %d %', 'oft' ), intval( $product->get_meta('_fairtrade_share') ) );
 		}
@@ -2897,10 +2899,11 @@
 				if ( $body->status === "subscribed" ) {
 					$timestamp = strtotime($body->timestamp_opt);
 					if ( $timestamp !== false ) {
-						$signup_text = ' '.sprintf( __( 'sinds %s', 'oft' ), date_i18n( 'j F Y', $timestamp ) );
+						$signup_text = sprintf( __( ' sinds %s', 'oft' ), date_i18n( 'j F Y', $timestamp ) );
 					} else {
 						$signup_text = '';
 					}
+					/* translators: %s: bevat optioneel de datum van inschrijving */
 					$posted_data['validation_error'] = sprintf( __( 'Je bent%s reeds geabonneerd op onze nieuwsbrief!', 'oft' ), $signup_text );
 					// Patch de bestaande gegevens met eventuele aanvullingen
 					$updated = update_user_in_mailchimp_list( $body->merge_fields, $posted_data['newsletter-email'], $posted_data['newsletter-name'] );
