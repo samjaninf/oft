@@ -1031,6 +1031,7 @@
 						jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', false );
 						jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', false );
 						jQuery( '#general_product_data' ).find( 'select#_net_unit' ).prop( 'disabled', false );
+						jQuery( '#general_product_data' ).find( 'input#_is_north_product' ).prop( 'disabled', false );
 						jQuery( '#inventory_product_data' ).find( 'select#_stock_status' ).prop( 'disabled', false );
 						jQuery( '#shipping_product_data' ).find( 'select#product_shipping_class' ).prop( 'disabled', false );
 
