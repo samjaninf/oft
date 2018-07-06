@@ -1611,6 +1611,7 @@
 					'label' => __( 'Ingrediëntenlijst', 'oft-admin' ).'<br>* = '.__( 'fair trade', 'oft-admin' ).'<br>° = '.__( 'biologisch', 'oft-admin' ).'<br>'.mb_strtoupper( __( 'allergeen', 'oft-admin' ) ),
 					'wrapper_class' => 'important-for-catman',
 					'rows' => 5,
+					'desc_tip' => true,
 					'description' => __( 'Wordt gebruikt in productfiches én webshops. Legende van sterretjes en bolletjes wordt automatisch toegevoegd indien van toepassing. De Franse en Engelse versies zijn enkel noodzakelijk voor OFT-producten.', 'oft-admin' ),
 				)
 			);
