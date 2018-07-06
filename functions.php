@@ -39,7 +39,7 @@
 	// Verhinder het permanent verwijderen van producten (maar na 1 jaar wel automatische clean-up door Wordpress, zie wp-config.php!)
 	add_action( 'before_delete_post', 'disable_manual_product_removal', 10, 1 );
 	
-	function disable_manual_product_removal( $post_id ){
+	function disable_manual_product_removal( $post_id ) {
 		if ( get_post_type($post_id) == 'product' ) {
 			wp_die( sprintf( 'Uit veiligheidsoverwegingen is het verwijderen van producten niet toegestaan, voor geen enkele gebruikersrol! Deze vormen immers de centrale database met alle gegevens. Vraag &ndash; indien nodig &ndash; dat de hogere machten op %s deze beperking tijdelijk opheffen, zodat je je vuile zaakjes kunt opknappen.', '<a href="mailto:'.get_option('admin_email').'">'.get_option('admin_email').'</a>' ) );
 		}
