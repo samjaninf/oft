@@ -982,7 +982,7 @@
 							pass = false;
 							msg += '* Je moet de productcategorie nog aanvinken!\n';
 						}
-						if ( jQuery( '#general_product_data' ).find( 'input#_fairtrade_share' ).val() == '' and ! jQuery( '#general_product_data' ).find( 'input#_is_north_product' ).is(':checked') ) {
+						if ( jQuery( '#general_product_data' ).find( 'input#_fairtrade_share' ).val() == '' && ! jQuery( '#general_product_data' ).find( 'input#_is_north_product' ).is(':checked') ) {
 							pass = false;
 							msg += '* Je moet het fairtradepercentage nog ingeven!\n';
 						}

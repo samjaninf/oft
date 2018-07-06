@@ -5,6 +5,7 @@
 		<custom-field action="copy">_cu_ean</custom-field>
 		<custom-field action="copy">_empty_fee</custom-field>
 		<custom-field action="copy">_energy</custom-field>
+		<custom-field action="copy">_is_north_product</custom-field>
 		<custom-field action="copy">_fairtrade_share</custom-field>
 		<custom-field action="copy">_famscis</custom-field>
 		<custom-field action="copy">_fapucis</custom-field>
