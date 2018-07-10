@@ -2505,6 +2505,13 @@
 		return $wp_query;
 	}
 
+	// Verleng de logs tot 90 dagen
+	add_filter( 'relevanssi_30days', 'prolong_relevanssi_logs' );
+
+	function prolong_relevanssi_logs() {
+		return 90;
+	}
+
 	// Enkel PDF-attachments indexeren
 	add_filter( 'relevanssi_do_not_index', 'rlv_only_pdfs', 10, 2 );
 	
