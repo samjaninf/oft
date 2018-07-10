@@ -78,9 +78,13 @@
 		return $unit;
 	}
 
-	function translate_stock_status( $flag ) {
-		if ( $flag === 'aan' ) {
-			return 'instock';
+	function translate_stock_status( $eshop, $available, $stock ) {
+		if ( $eshop === 'aan' ) {
+			if ( intval($stock) > 0 ) {
+				return 'instock';
+			} else {
+				return 'onbackorder';
+			}
 		} else {
 			return 'outofstock';
 		}

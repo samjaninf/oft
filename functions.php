@@ -1324,6 +1324,14 @@
 		}
 	}
 
+	// Wijzig benamingen voorraadstatus in back-end
+	add_filter( 'woocommerce_admin_stock_html', 'oft_show_custom_availability', 1, 1 );
+	add_filter( 'woocommerce_product_filters', 'oft_show_custom_availability', 1, 1 );
+	
+	function oft_show_custom_availability( $html ) {
+		return str_replace( 'Uitverkocht', 'Niet bestelbaar', $html );
+	}
+
 	// Creëer extra merkenfilter bovenaan de productenlijst WERKT NIET GOED
 	// add_action( 'restrict_manage_posts', 'add_filters_to_products' );
 
