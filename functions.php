@@ -2290,6 +2290,7 @@
 		), $content );
 		
 		$terms = get_the_category($post->ID);
+		$categories = array();
 		foreach ( $terms as $category ) {
 			$categories[] = $category->name;
 		}
@@ -2598,7 +2599,8 @@
 		if ( $product->get_meta('_is_north_product') === 'yes' ) {
 			$fairtrade_text = __( 'Dit is een lokaal / solidair Noordproduct.', 'oft' );
 		} else {
-			$fairtrade_text = sprintf( __( 'Totaal fairtrade-ingrediënten: %d %', 'oft' ), intval( $product->get_meta('_fairtrade_share') ) );
+			// Procentteken escapen!
+			$fairtrade_text = sprintf( __( 'Totaal fairtrade-ingrediënten: %d %%', 'oft' ), intval( $product->get_meta('_fairtrade_share') ) );
 		}
 
 		$ingredients_legend = '';
