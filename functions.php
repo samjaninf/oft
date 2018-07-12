@@ -181,6 +181,32 @@
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
 		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
+		add_filter( 'manage_edit-'.$taxonomy_name.'_columns', 'add_custom_partner_taxonomy_columns' );
+		add_filter( 'manage_'.$taxonomy_name.'_custom_column', 'return_custom_partner_taxonomy_values', 15, 3 );
+		// add_filter( 'manage_edit-'.$taxonomy_name.'_sortable_columns', 'make_custom_partner_taxonomy_columns_sortable' );
+	}
+
+	function add_custom_partner_taxonomy_columns( $original_columns ) {
+		$original_columns['description'] = __( 'Quote', 'oft-admin' );
+		$new_columns['partner_type'] = __( 'Type', 'oft-admin' );
+		$new_columns['partner_image_id'] = __( 'Foto-ID', 'oft-admin' );
+		return array_merge( $original_columns, $new_columns );
+	}
+
+	function return_custom_partner_taxonomy_values( $row, $column_name, $term_id ) {
+		if ( $column_name === 'partner_type' ) {
+			// Niet van toepassing tonen bij continenten/landen?
+			return get_term_meta( $term_id, 'partner_type', true );
+		}
+		if ( $column_name === 'partner_image_id' ) {
+			return get_term_meta( $term_id, 'partner_image_id', true );
+		}
+	}
+
+	function make_custom_partner_taxonomy_columns_sortable( $columns ) {
+		// Hoe kunnen we hier op get_term_meta( $term_id, 'partner_type', true ) sorteren???
+		$columns['partner_type'] = 'partner_type';
+		return $columns;
 	}
 
 	// Extra metadata definiëren en bewaren op partnertaxonomie
