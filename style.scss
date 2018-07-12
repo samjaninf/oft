@@ -158,10 +158,11 @@ article.post {
 }
 
 /* Winkelmelding onderaan plaatsen en iets subtieler maken */
-.woocommerce-store-notice {
+p.demo_store {
 	padding: 0.5em 0;
 	background-color: $black-title;
-	top: auto;
+	position: fixed;
+	top: initial !important;
 	bottom: 0;
 }
 
