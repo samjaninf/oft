@@ -1,13 +1,11 @@
 <?php
 
+	if ( ! defined('ABSPATH') ) exit;
+	
 	use Spipu\Html2Pdf\Html2Pdf;
 	use Spipu\Html2Pdf\Exception\Html2PdfException;
 	use Spipu\Html2Pdf\Exception\ExceptionFormatter;
-	// Conflicteert dit niet met WPML?
-	// setlocale( LC_ALL, 'nl_NL' );
 	
-	if ( ! defined('ABSPATH') ) exit;
-
 	// Nonces niet checken in VC-grids, oplossing voor cachingprobleem?
 	add_filter( 'vc_grid_get_grid_data_access','__return_true' );
 

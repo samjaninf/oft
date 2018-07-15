@@ -1,9 +1,9 @@
 php_value max_input_vars 10000
 
-<FilesMatch "\.(css|js|gif|tiff|jpeg|jpg|png)$">
-    Header set Cache-Control "max-age=68400, public"
+<FilesMatch "\.(pdf)$">
+    Header set Cache-Control "max-age=172800, public"
 </FilesMatch>
-<FilesMatch "\.(pdf|mp4|woff|eot|ttf|ico|svg)$">
+<FilesMatch "\.(png|gif|tiff|jpeg|jpg|css|js|mp4|woff|eot|ttf|ico|svg)$">
     Header set Cache-Control "max-age=604800, public"
 </FilesMatch>
 <FilesMatch ".(ttf|otf|eot|woff)$">
@@ -27,7 +27,10 @@ Redirect 301	/geschenken						/nl/producten/geschenken/
 Redirect 301	/over-ons						/nl/waarom-oxfam/
 Redirect 301	/contact						/nl/contact/
 Redirect 301	/nl/category?groupid=chocolade	/nl/categorie/snacks-drinks/chocolade/
+Redirect 301	/nl/category?groupid=koffie		/nl/categorie/koffie-thee/koffie/
 
+Redirect 301	/francais						/fr/
+Redirect 301	/oftfrancais					/fr/
 Redirect 301	/produits						/fr/produits/
 Redirect 301	/fr/category?groupid=chocolade	/fr/categorie/snacks-drinks/chocolat/
 Redirect 301	/fr/category?groupid=koffie		/fr/categorie/cafe-the/cafe/
@@ -35,19 +38,20 @@ Redirect 301	/service-cafe					/fr/produits/service-cafe/
 Redirect 301	/contactez-nous					/fr/contact/
 Redirect 301	/qui-sommes-nous				/fr/contact/
 
-Redirect 301	/products						http://www.oxfam-fairtrade.be/products
-Redirect 301	/about-us						http://www.oxfam-fairtrade.be/about-us
-Redirect 301	/contact-us						http://www.oxfam-fairtrade.be/contact-us
-Redirect 301	/en/category?groupid=chocolade	http://www.oxfam-fairtrade.be/en/category?groupid=chocolade
-# Redirect 301	/products						/en/products/
-# Redirect 301	/about-us						/en/contact/
-# Redirect 301	/en/category?groupid=chocolade	/en/category/snacks-drinks/chocolate/
+Redirect 301	/oftenglish						/en/
+Redirect 301	/products						/en/products/
+Redirect 301	/about-us						/en/contact/
+Redirect 301	/contact-us						/en/contact/
+Redirect 301	/en/category?groupid=chocolade	/en/category/snacks-drinks/chocolate/
+Redirect 301	/en/category?groupid=koffie		/en/category/coffee-tea/coffee/
 
-# RewriteEngine On
-# RewriteCond %{HTTP_HOST} !oxfamfairtrade.be$ [NC]
-# RewriteRule ^(.*)$ https://www.oxfamfairtrade.be/$1 [R=301,L]
-# RewriteCond %{HTTPS} !=on
-# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+Redirect 301	"/documenten/Oxfam Fairtrade/Factuurvoorwaarden-OFT.pdf"	/Factuurvoorwaarden-OFT.pdf
+
+RewriteEngine On
+RewriteCond %{HTTP_HOST} !oxfamfairtrade.be$ [NC]
+RewriteRule ^(.*)$ https://www.oxfamfairtrade.be/$1 [R=301,L]
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
@@ -72,10 +76,8 @@ RewriteRule . /index.php [L]
 	Allow from all
 	Allow from 127.0.0.1
 	Allow from 141.138.168.148
-	Allow from 81.82.253.84
-	Allow from 188.118.18.210
 	Allow from 84.199.185.74
 	Allow from 213.118.15.186
 </Limit>
 
-ErrorDocument 403 /403.html
+ErrorDocument 403 https://www.oxfamfairtrade.be/403.html
