@@ -1308,26 +1308,23 @@
 				// Inhoud van deze kolom is al door WooCommerce gedefinieerd, dit zorgt er gewoon voor dat de kolom ook beschikbaar is indien de optie 'woocommerce_manage_stock' op 'no' staat
 				$new_columns['is_in_stock'] = __( 'BestelWeb', 'oft-admin' );
 			}
-			// Nutteloze kolom met producttype weglaten
-			if ( $key !== 'product_type' ) {
-				if ( $key === 'sku' ) {
-					$new_columns[$key] = __( 'Ompaknummer', 'oft-admin' );
-				} elseif ( $key === 'price' ) {
-					if ( get_option('woocommerce_tax_display_shop') === 'excl' ) {
-						$new_columns[$key] = __( 'Prijs (excl. BTW)', 'oft-admin' );
-					} else {
-						$new_columns[$key] = __( 'Prijs (incl. BTW)', 'oft-admin' );
-					}
-				} elseif ( $key === 'icl_translations' ) {
-					$new_columns[$key] = __( 'Talen', 'oft-admin' );
+			if ( $key === 'sku' ) {
+				$new_columns[$key] = __( 'Ompaknummer', 'oft-admin' );
+			} elseif ( $key === 'price' ) {
+				if ( get_option('woocommerce_tax_display_shop') === 'excl' ) {
+					$new_columns[$key] = __( 'Prijs (excl. BTW)', 'oft-admin' );
 				} else {
-					$new_columns[$key] = $title;
+					$new_columns[$key] = __( 'Prijs (incl. BTW)', 'oft-admin' );
 				}
+			} elseif ( $key === 'icl_translations' ) {
+				$new_columns[$key] = __( 'Talen', 'oft-admin' );
+			} else {
+				$new_columns[$key] = $title;
 			}
-			// Toon 'verwijderd op'-datum enkel indien we de prullenbak aan het bekijken zijn!
-			if ( isset( $_GET['post_status'] ) and $_GET['post_status'] === 'trash' ) {
-				$new_columns['deleted_on'] = __( 'Verwijderd', 'oft-admin' );
-			}
+		}
+		// 'Verwijderd op'-datum achteraan toevoegen, enkel tonen indien we in de prullenbak zitten!
+		if ( isset( $_GET['post_status'] ) and $_GET['post_status'] === 'trash' ) {
+			$new_columns['deleted_on'] = __( 'Verwijderd op', 'oft-admin' );
 		}
 		return $new_columns;
 	}
@@ -1362,7 +1359,7 @@
 		if ( $column === 'deleted_on' ) {
 			if ( $the_product->meta_exists('_wp_trash_meta_time') ) {
 				// Ga ervan uit dat er slechts één timestamp is
-				echo date_i18n( 'j F Y H:i:s', $the_product->get_meta('_wp_trash_meta_time') );
+				echo date_i18n( 'j F Y', $the_product->get_meta('_wp_trash_meta_time') );
 			} else {
 				echo '<i>'.__( 'niet beschikbaar', 'oft-admin' ).'</i>';
 			}
