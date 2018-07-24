@@ -157,6 +157,12 @@ article.post {
 	margin-top: 150px;
 }
 
+/* Cookiebanner iets hoger plaatsen en nog boven winkelmelding plaatsen */
+.widget_eu_cookie_law_widget {
+	bottom: 2em;
+	z-index: 100000;
+}
+
 /* Winkelmelding onderaan plaatsen en iets subtieler maken */
 p.demo_store {
 	padding: 0.5em 0;

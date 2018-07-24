@@ -1324,12 +1324,24 @@
 					$new_columns[$key] = $title;
 				}
 			}
+			// Toon 'verwijderd op'-datum enkel indien we de prullenbak aan het bekijken zijn!
+			if ( isset( $_GET['post_status'] ) and $_GET['post_status'] === 'trash' ) {
+				$new_columns['deleted_on'] = __( 'Verwijderd', 'oft-admin' );
+			}
 		}
 		return $new_columns;
 	}
 
+	// Maak bepaalde kolommen sorteerbaar
+	add_filter( 'manage_edit-product_sortable_columns', 'make_product_columns_sortable' );
+	
+	function make_product_columns_sortable( $columns ) {
+		$columns['deleted_on'] = '_wp_trash_meta_time';
+		return $columns;
+	}
+
 	// Toon de data van elk order in de kolom
-	add_action( 'manage_product_posts_custom_column' , 'get_attribute_column_value', 10, 2 );
+	add_action( 'manage_product_posts_custom_column', 'get_attribute_column_value', 10, 2 );
 	
 	function get_attribute_column_value( $column, $post_id ) {
 		global $wp, $the_product;
@@ -1344,6 +1356,15 @@
 				echo '<a href="/wp-admin/edit.php?post_type=product&taxonomy=pa_merk&term='.$attribute->slug.'">'.$attribute->name.'</a>';
 			} else {
 				echo '<span aria-hidden="true">&#8212;</span>';
+			}
+		}
+
+		if ( $column === 'deleted_on' ) {
+			if ( $the_product->meta_exists('_wp_trash_meta_time') ) {
+				// Ga ervan uit dat er slechts één timestamp is
+				echo date_i18n( 'j F Y H:i:s', $the_product->get_meta('_wp_trash_meta_time') );
+			} else {
+				echo '<i>'.__( 'niet beschikbaar', 'oft-admin' ).'</i>';
 			}
 		}
 	}
