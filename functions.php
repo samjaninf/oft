@@ -1333,7 +1333,7 @@
 	add_filter( 'manage_edit-product_sortable_columns', 'make_product_columns_sortable' );
 	
 	function make_product_columns_sortable( $columns ) {
-		$columns['deleted_on'] = '_wp_trash_meta_time';
+		$columns['deleted_on'] = 'deleted_on';
 		return $columns;
 	}
 
@@ -1362,6 +1362,25 @@
 				echo date_i18n( 'j F Y', $the_product->get_meta('_wp_trash_meta_time') );
 			} else {
 				echo '<i>'.__( 'niet beschikbaar', 'oft-admin' ).'</i>';
+			}
+		}
+	}
+
+	// Voer de sortering van kolommen op custom parameters uit
+	add_action( 'pre_get_posts', 'sort_columns_on_custom_parameters', 20 );
+	
+	function sort_columns_on_custom_parameters( $query ) {
+		global $pagenow, $post_type;
+
+		if( ! is_admin() ) {
+			return;
+		}
+		
+		if ( $pagenow === 'edit.php' and $post_type === 'product' and $query->query['post_type'] === 'product' ) {
+			// Check of we moeten sorteren op één van onze custom kolommen
+			if ( $query->get('orderby') === 'deleted_on' ) {
+				$query->set( 'meta_key', '_wp_trash_meta_time' );
+				$query->set( 'orderby', 'meta_value_num' );
 			}
 		}
 	}
