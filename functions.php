@@ -3468,6 +3468,8 @@
 		
 		$logger = wc_get_logger();
 		$context = array( 'source' => 'WooCommerce API' );
+		// Eventueel de standaardperiode van 30 dagen wijzigen m.b.v. add_filter( 'woocommerce_logger_days_to_retain_logs' );
+		$logger->clear_expired_logs();
 		$logger->info( 'Quality data of SKU '.$product->get_sku().' accessed from '.wc_print_r( $request->get_header('geoip_addr'), true ), $context );
 
 		$custom_taxonomies = array( 'product_allergen', 'product_grape', 'product_taste', 'product_recipe' );
