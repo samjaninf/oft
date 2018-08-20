@@ -70,7 +70,7 @@
 		if ( $content !== false and $unit !== false ) {
 			$content = intval( str_replace( ',', '', $content ) );
 			if ( $content >= 1000 ) {
-				$content = $content/1000;
+				$content = str_replace( '.', ',', $content/1000 );
 				$unit = 'k'.$unit;
 			}
 			return $content.' '.$unit;
@@ -95,7 +95,7 @@
 
 	function get_bio_label( $bio ) {
 		$label = mb_strtolower($bio);
-		if ( $label === 'ja' or $label === 'oui' or $label === 'yes' ) {
+		if ( strpos( $label, 'ja' ) !== false ) {
 			return ':biobol.psd';
 		} else {
 			return ':geenbio.psd';
@@ -298,6 +298,22 @@
 			return date( 'Y-m-d', $timestamp + 12*3600 );
 		} else {
 			return '';
+		}
+	}
+
+	function price_tags_description( $product_id ) {
+		$terms = get_the_terms( $product_id, 'product_grape' );
+		
+		if ( is_array($terms) ) {
+			$grapes = array();
+			foreach ( $terms as $term ) {
+				$grapes[$term->term_id] = $term->name;
+			}
+			asort($grapes);
+			return 'Druif: '.implode( ', ', $grapes );
+		} else {
+			$product = wc_get_product($product_id);
+			return split_by_paragraph( $product->get_short_description() );
 		}
 	}
 ?>
