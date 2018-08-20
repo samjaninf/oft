@@ -2,6 +2,8 @@
 	function alter_brand( $raw_brand ) {
 		if ( $raw_brand === 'Oxfam Fairtrade' ) {
 			$brand = 'Oxfam Fair Trade';
+		} elseif ( $raw_brand === 'Fair Trade Original' ) {
+			$brand = 'Fairtrade Original';
 		} elseif ( $raw_brand === 'CTM Altromercato' ) {
 			$brand = 'Altromercato';
 		} else {
