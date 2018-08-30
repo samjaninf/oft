@@ -95,7 +95,7 @@
 
 	function get_bio_label( $bio ) {
 		$label = mb_strtolower($bio);
-		if ( strpos( $label, 'ja' ) !== false ) {
+		if ( strpos( $label, 'ja' ) !== false or strpos( $label, 'oui' ) !== false or strpos( $label, 'yes' ) !== false ) {
 			return ':biobol.psd';
 		} else {
 			return ':geenbio.psd';
