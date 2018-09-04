@@ -52,6 +52,19 @@
 		add_media_page( __( 'Bulkregistratie', 'oft-admin' ), __( 'Bulkregistratie', 'oft-admin' ), 'publish_products', 'oxfam-photos', 'oxfam_photos_callback' );
 	}
 
+	// Verhinder het manueel aanmaken van producten / bestellingen
+	add_filter( 'woocommerce_register_post_type_product', 'disable_post_creation' );
+	add_filter( 'woocommerce_register_post_type_shop_order', 'disable_post_creation' );
+	
+	function disable_post_creation( $fields ) {
+		if ( ! current_user_can('update_core') ) {
+			$fields['capabilities'] = array(
+				'create_posts' => false,
+			);
+		}
+		return $fields;
+	}
+
 	function oxfam_product_changelog_callback() {
 		include get_stylesheet_directory().'/changelog.php';
 	}
