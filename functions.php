@@ -3059,7 +3059,7 @@
 	}
 
 	// BIJ HET AANROEPEN VAN DEZE FILTER ZIJN WE ZEKER DAT ALLES AL GEVALIDEERD IS
-	add_filter( 'wpcf7_before_send_mail', 'handle_mailchimp_subscribe', 20, 1 );
+	add_action( 'wpcf7_before_send_mail', 'handle_mailchimp_subscribe', 20, 1 );
 
 	function handle_mailchimp_subscribe( $wpcf7 ) {
 		$submission = WPCF7_Submission::get_instance();
