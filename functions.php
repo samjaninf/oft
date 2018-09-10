@@ -57,7 +57,7 @@
 	add_filter( 'woocommerce_register_post_type_shop_order', 'disable_post_creation' );
 	
 	function disable_post_creation( $fields ) {
-		if ( ! current_user_can('manage_woocommerce') ) {
+		if ( ! current_user_can('edit_products') ) {
 			$fields['capabilities'] = array(
 				'create_posts' => false,
 			);
