@@ -719,7 +719,7 @@
 			// Legende toevoegen indien ingrediënten aanwezig met deze eigenschap
 			if ( $type === 'ingredients' ) {
 				if ( count( get_ingredients_legend($product) ) > 0 ) {
-					echo '<p class="legend">'.implode( '<br>', get_ingredients_legend($product) ).'</p>';
+					echo '<p class="legend">'.implode( '<br/>', get_ingredients_legend($product) ).'</p>';
 				}
 			}
 			return ob_get_clean();
@@ -772,6 +772,9 @@
 			}
 			if ( strpos( $product->get_meta('_ingredients'), '°' ) !== false ) {
 				$legend[] = '° '.__( 'ingrediënt van biologische landbouw', 'oft' );
+			}
+			if ( strpos( $product->get_meta('_ingredients'), '†' ) !== false ) {
+				$legend[] = '† '.__( 'ingrediënt verkregen in de periode van omschakeling naar biologische landbouw', 'oft' );
 			}
 		}
 		return $legend;
@@ -1690,7 +1693,7 @@
 			woocommerce_wp_textarea_input(
 				array( 
 					'id' => '_ingredients',
-					'label' => __( 'Ingrediëntenlijst', 'oft-admin' ).'<br>* = '.__( 'fair trade', 'oft-admin' ).'<br>° = '.__( 'biologisch', 'oft-admin' ).'<br>'.mb_strtoupper( __( 'allergeen', 'oft-admin' ) ),
+					'label' => __( 'Ingrediëntenlijst', 'oft-admin' ).'<br/>* = '.__( 'fair trade', 'oft-admin' ).'<br/>° = '.__( 'biologisch', 'oft-admin' ).'<br/>† = '.__( 'bijna bio', 'oft-admin' ).'<br/>'.mb_strtoupper( __( 'allergeen', 'oft-admin' ) ),
 					'wrapper_class' => 'important-for-catman',
 					'rows' => 5,
 					'desc_tip' => true,
@@ -2680,7 +2683,7 @@
 		$ingredients_legend = '';
 		if ( count( get_ingredients_legend($product) ) > 0 ) {
 			$ingredients_legend = '<p style="font-size: 8pt; text-align: right; margin-top: 0;">';
-			$ingredients_legend .= implode( '<br>', get_ingredients_legend($product) );
+			$ingredients_legend .= implode( '<br/>', get_ingredients_legend($product) );
 			$ingredients_legend .= '</p>';
 		}
 
@@ -2873,7 +2876,7 @@
 	}
 
 	function format_pdf_ean13( $code ) {
-		return '<br><barcode dimension="1D" type="EAN13" value="'.$code.'" label="label" style="width: 80%; height: 10mm; font-size: 9pt;"></barcode>';
+		return '<br/><barcode dimension="1D" type="EAN13" value="'.$code.'" label="label" style="width: 80%; height: 10mm; font-size: 9pt;"></barcode>';
 	}
 
 	function add_html2pdf_notice_var( $location ) {
