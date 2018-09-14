@@ -1697,7 +1697,7 @@
 					'wrapper_class' => 'important-for-catman',
 					'rows' => 5,
 					'desc_tip' => true,
-					'description' => __( 'Wordt gebruikt in productfiches én webshops. Legende van sterretjes en bolletjes wordt automatisch toegevoegd indien van toepassing. De Franse en Engelse versies zijn enkel noodzakelijk voor OFT-producten.', 'oft-admin' ),
+					'description' => __( 'Wordt gebruikt in productfiches én webshops. Legende van sterretjes, bolletjes en obelisken wordt automatisch toegevoegd indien van toepassing. De Franse en Engelse versies zijn enkel noodzakelijk voor OFT-producten.', 'oft-admin' ),
 				)
 			);
 
@@ -2618,6 +2618,13 @@
 		$main_product_id = apply_filters( 'wpml_object_id', $product_id, 'product', false, 'nl' );
 		$prev_lang = $sitepress->get_current_language();
 
+		// Vraag het productobject in de lokale taal op (false = val niet terug op hoofdproduct indien het nog niet bestaat)
+		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, $language ) );
+		if ( $product === false ) {
+			// Stop meteen als het product nog niet bestaat in deze taal!
+			return;
+		}
+
 		// Switch eerst naar Nederlands voor het vergelijken van taalgevoelige slugs
 		$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
 		$icons = array();
@@ -2643,9 +2650,6 @@
 		$lang_details = $sitepress->get_language_details($language);
 		unload_textdomain( 'oft' );
 		load_textdomain( 'oft', WP_CONTENT_DIR.'/languages/themes/oft-'.$lang_details['default_locale'].'.mo' );
-
-		// Creëer product in lokale taal (false = negeer indien het nog niet bestaat)
-		$product = wc_get_product( apply_filters( 'wpml_object_id', $product_id, 'product', false, $language ) );
 
 		$templatefile = fopen( $templatelocatie, 'r' );
 		$templatecontent = fread( $templatefile, filesize($templatelocatie) );
