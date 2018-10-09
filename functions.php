@@ -1475,6 +1475,7 @@
 
 		$brand = $product->get_attribute('pa_merk');
 		if ( $post->post_status !== 'draft' and $brand !== '' and $brand !== 'Oxfam Fair Trade' and $brand !== 'Maya' ) {
+			write_log("SETTING POST ".$product->get_id()." TO PRIVATE ...");
 			$product->set_status('private');
 			$product->save();
 		}
@@ -1523,6 +1524,7 @@
 				$fr_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'fr' );
 				$fr_product = wc_get_product($fr_product_id);
 				if ( $fr_product !== false ) {
+					write_log("SETTING FRENCH POST ".$product->get_id()." TO PRIVATE ...");
 					$fr_product->set_status($status);
 					$fr_product->save();
 				}
@@ -1530,6 +1532,7 @@
 				$en_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'en' );
 				$en_product = wc_get_product($en_product_id);
 				if ( $en_product !== false ) {
+					write_log("SETTING ENGLISH POST ".$product->get_id()." TO PRIVATE ...");
 					$en_product->set_status($status);
 					$en_product->save();
 				}
