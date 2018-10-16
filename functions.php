@@ -5,6 +5,18 @@
 	use Spipu\Html2Pdf\Html2Pdf;
 	use Spipu\Html2Pdf\Exception\Html2PdfException;
 	use Spipu\Html2Pdf\Exception\ExceptionFormatter;
+
+	// Corrigeer conversieprobleem bij Engelstalige kommagetallen met 1 decimaal
+	add_filter( 'woocommerce_product_get_price', 'fix_english_prices', 100, 2 );
+	
+	function fix_english_prices( $price, $product ) {
+		global $sitepress;
+		if ( ! is_admin() and $sitepress->get_current_language() === 'en' ) {
+			// var_dump_pre($price);
+			$price = str_replace( ',', '.', $price );
+		}
+		return $price;
+	}
 	
 	// Nonces niet checken in VC-grids, oplossing voor cachingprobleem?
 	add_filter( 'vc_grid_get_grid_data_access','__return_true' );
@@ -1474,8 +1486,7 @@
 		}
 
 		$brand = $product->get_attribute('pa_merk');
-		if ( $post->post_status !== 'draft' and $brand !== '' and $brand !== 'Oxfam Fair Trade' and $brand !== 'Maya' ) {
-			write_log("SETTING POST ".$product->get_id()." TO PRIVATE ...");
+		if ( $post->post_status !== 'draft' and $brand !== '' and $brand !== 'Oxfam Fair Trade' and $brand !== 'Maya' and get_option('oft_erp_import_active') !== 'yes' ) {
 			$product->set_status('private');
 			$product->save();
 		}
@@ -1524,7 +1535,6 @@
 				$fr_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'fr' );
 				$fr_product = wc_get_product($fr_product_id);
 				if ( $fr_product !== false ) {
-					write_log("SETTING FRENCH POST ".$product->get_id()." TO PRIVATE ...");
 					$fr_product->set_status($status);
 					$fr_product->save();
 				}
@@ -1532,7 +1542,6 @@
 				$en_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'en' );
 				$en_product = wc_get_product($en_product_id);
 				if ( $en_product !== false ) {
-					write_log("SETTING ENGLISH POST ".$product->get_id()." TO PRIVATE ...");
 					$en_product->set_status($status);
 					$en_product->save();
 				}
@@ -3288,15 +3297,15 @@
 
 	function update_unit_price( $post_id, $price = false, $content = false, $unit = false, $from_database = true ) {
 		global $sitepress;
-		if ( get_option( 'oft_erp_import_active' ) === 'yes' ) {
-			$product = wc_get_product( $post_id );
+		if ( get_option('oft_erp_import_active') === 'yes' ) {
+			$product = wc_get_product($post_id);
 			if ( $product !== false ) {
 				if ( $from_database === true ) {
 					$price = $product->get_regular_price();
 					$content = $product->get_meta('_net_content');
 					$unit = $product->get_meta('_net_unit');
 				}
-				if ( ! empty( $price ) and ! empty( $content ) and ! empty( $unit ) ) {
+				if ( ! empty($price) and ! empty($content) and ! empty($unit) ) {
 					$unit_price = calculate_unit_price( $price, $content, $unit );
 					// PROBLEEM: deze WC-functie voert eigenlijk een delete/create i.p.v. update uit, waardoor onze logs overspoeld worden
 					// $product->update_meta_data( '_unit_price', number_format( $unit_price, 2, '.', '' ) );
@@ -3331,8 +3340,8 @@
 	add_action( 'pmxi_after_xml_import', 'rename_import_file', 10, 1 );
 
 	function rename_import_file( $import_id ) {
-		delete_option( 'oft_import_active' );
-		delete_option( 'oft_erp_import_active' );
+		delete_option('oft_import_active');
+		delete_option('oft_erp_import_active');
 
 		if ( $import_id == 10 ) {
 			$old = WP_CONTENT_DIR."/pos-import.csv";
