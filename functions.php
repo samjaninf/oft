@@ -6,6 +6,16 @@
 	use Spipu\Html2Pdf\Exception\Html2PdfException;
 	use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 
+	// Leeg de promotekst bij het aflopen van de promoprijs
+	add_action( 'wc_after_products_ending_sales', 'remove_promo_text', 10, 1 );
+
+	function remove_promo_text( $product_ids ) {
+		foreach ( $product_ids as $product_id ) {
+			update_post_meta( $product_id, '_promo_text', '' );
+			write_log('PROMO TEXT REMOVED ON PRODUCT ID '.$product_id);
+		}
+	}
+
 	// Corrigeer conversieprobleem bij Engelstalige kommagetallen met 1 decimaal
 	add_filter( 'woocommerce_product_get_price', 'fix_english_prices', 100, 2 );
 	
