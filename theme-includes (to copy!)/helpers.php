@@ -2257,11 +2257,12 @@ if ( ! function_exists( 'alone_related_articles' ) ) :
 		}
 
 		$args = array(
-			'posts_per_page' => 2,
+			// GEWIJZIGD: Gebruik de variabele i.p.v. altijd 2 posts
+			'posts_per_page' => $post_count,
 			'orderby'        => 'date',
 			'post_status'    => 'publish',
 			'post_type'      => 'post',
-			'post_type' 		 => get_post_type($post->ID),
+			'post_type' 	 => get_post_type($post->ID),
 			'post__not_in'   => array( $post->ID ),
 			'tax_query'      => array(
 				array(

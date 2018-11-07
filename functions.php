@@ -36,7 +36,7 @@
 
 	function load_child_theme() {
 		// Zorgt ervoor dat de stylesheet van het child theme ZEKER NA alone.css ingeladen wordt
-		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.17' );
+		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.18' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
 		load_child_theme_textdomain( 'oft', get_stylesheet_directory().'/languages' );
@@ -3470,15 +3470,16 @@
 
 
 
-	############
-	#  WP API  #
-	############
+	###############
+	#  WP/WC API  #
+	###############
 
-	// Activeer de WP API
-	add_action( 'wp_enqueue_scripts', 'load_extra_scripts' );
+	// Activeer extra scripts
+	add_action( 'wp_enqueue_scripts', 'load_extra_scripts', 9999 );
 
 	function load_extra_scripts() {
-		wp_enqueue_script( 'wp-api' );
+		wp_enqueue_script('prettyphoto');
+		wp_deregister_script('prettyphoto');
 	}
 
 	// Verhinder het lekken van gegevens via de WP API NIET DOEN, BLOKKEERT DE WERKING VAN CF7

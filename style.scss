@@ -5,7 +5,7 @@
 	Author URI:		https://www.fullstackahead.be
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.17
+	Version:		1.2.18
 	Text Domain:	oft
 */
 
@@ -347,7 +347,23 @@ body.woocommerce-page:not(.single-product) {
 }
 
 .post-single-content-text {
-	
+	/* Geen witruimte tussen datum en titel */
+	h2.post-title {
+		margin-top: 0;
+	}
+
+	/* Meer witruimte rond inleiding */
+	h3 {
+		margin-top: 30px;
+		margin-bottom: 30px;
+	}
+
+	.woocommerce > ul.products {
+		/* Verminder witruimte onder productenrij op artikelpagina's (misschien veralgemenen?) */
+		& > .product {
+			margin-bottom: 0;
+		}
+	}
 }
 
 
@@ -511,7 +527,7 @@ body.search {
 @mixin banner( $color: $yellow, $font-size: 85% ) {
 	color: white;
 	position: absolute;
-	top: 0em;
+	top: 0;
 	left: 0.25em;
 	padding: 0 0.5em;
 	font-size: $font-size;

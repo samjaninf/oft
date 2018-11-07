@@ -15,40 +15,28 @@ $article_classes = array(
 	'post',
 	'post-details',
 	'clearfix',
-  'post-single-creative-layout-' . $alone_general_posts_options['blog_type'],
+	'post-single-creative-layout-' . $alone_general_posts_options['blog_type'],
 );
 ?>
 <article id="post-<?php the_ID(); ?>" <?php post_class( implode(' ', $article_classes) ); ?> itemscope="itemscope" itemtype="http://schema.org/BlogPosting" itemprop="blogPost">
 	<div class="col-inner">
 		<div class="entry-content clearfix" itemprop="text">
-			<div class="post-single-entry-header"> <!-- Start .single-entry-header -->
-				<?php echo "{$image_background_elem}"; ?>
-				<div class="heading-entry-wrap">
-					<!-- Cat & tag -->
-				  <div class="cat-meta">
-				    <?php echo ! empty( $alone_post_options['category_list'] ) ? '<div class="post-category">' . $alone_post_options['category_list'] . '</div>' : ''; ?>
-				  </div>
-
-					<!-- title -->
-				  <?php echo "{$alone_post_options['title']}"; ?>
-
-					<div class="extra-meta">
-				    <!-- post date -->
-				    <div class="post-date" title="<?php _e('Date', 'alone'); ?>">
-				      <?php echo "{$alone_post_options['date']}"; ?>
-				    </div>
-
-				    <!-- GEWIJZIGD: Andere metadata niet tonen -->
-
-				  </div>
-				</div>
-			</div> <!-- End .single-entry-header -->
-			<div class="row">
+			<div class="row" style="margin-top: 2em;">
 				<div class="col-md-2">
-					<?php echo alone_share_post(array('facebook' => true, 'twitter' => true, 'google_plus' => true, 'linkedin' => true, 'pinterest' => false));//echo do_shortcode('[x_share title="'. esc_html__(' ', 'alone') .'" facebook="true" twitter="true" google_plus="true" linkedin="true" pinterest="true"]'); ?>
+					<?php echo alone_share_post( array('facebook' => true, 'twitter' => true, 'google_plus' => false, 'linkedin' => true, 'pinterest' => false) ); ?>
 				</div>
 				<div class="col-md-10">
 					<div class="post-single-content-text">
+						<div class="extra-meta heading-entry-wrap" style="font-size: 80%;">
+							<div class="post-date">
+								<?php echo "{$alone_post_options['date']}"; ?>
+								<?php echo ! empty( $alone_post_options['category_list'] ) ? ' &mdash; '.$alone_post_options['category_list'] : ''; ?>
+							</div>
+						</div>
+
+						<!-- title -->
+						<?php echo "{$alone_post_options['title']}"; ?>
+
 						<?php
 						/* content */
 						the_content();

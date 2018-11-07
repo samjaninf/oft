@@ -4,7 +4,7 @@ $alone_enable_related_articles  = defined( 'FW' ) ? fw_get_db_customizer_option(
 
 if( $alone_enable_related_articles['selected'] != 'yes') return;
 
-// Functie retourneert ALTIJD twee posts, ondanks parameter
+// Parameter voor aantal posts wordt niet uitgelezen, zie fix in theme-inclues/helpers.php
 $alone_related_articles = alone_related_articles(4);
 
 if ( ! empty( $alone_related_articles ) ) : ?>
@@ -14,22 +14,26 @@ if ( ! empty( $alone_related_articles ) ) : ?>
 				<h3 class="bt-title-related"><strong><?php esc_html_e( 'Related Articles', 'alone' ); ?></strong></h3>
 			</div>
 			<div class="related-article-list">
-				<?php foreach ( $alone_related_articles as $item ) : // echo '<pre>'; print_r($item); echo '</pre>';
-					$post_settings  = alone_get_settings_by_post_id($item->ID);
-					$wrap_title				= isset($posts_general_settings['blog_title']['selected']) ? $posts_general_settings['blog_title']['selected'] : 'h2';
-					$image_size				= 'alone-image-medium';// isset($post_settings['post_general_tab']['image_size']) ? $post_settings['post_general_tab']['image_size'] : 'medium-large' ;
+				<?php foreach ( $alone_related_articles as $item ) :
+					$post_settings = alone_get_settings_by_post_id($item->ID);
+					$wrap_title	= isset($posts_general_settings['blog_title']['selected']) ? $posts_general_settings['blog_title']['selected'] : 'h4';
+					$image_size	= 'medium';
+
+					// Levert een array op met 'main' (voor) en 'extended' (na de 'more'-tag)
+					$fix_post_content = get_extended( $item->post_content );
 
 					$post_data = array(
-						'title_link' 			=> "<a href='". get_permalink($item->ID) ."' class='post-title-link'><{$wrap_title} class='post-title'>". $item->post_title ."</{$wrap_title}></a>",
-						'featured_image' 	=> "<a href='". get_permalink($item->ID) ."' title='". $item->post_title ."'>" . alone_get_image(get_post_thumbnail_id($item->ID), array('size' => $image_size)) . "</a>",
-						'trim_content'		=> wp_trim_words( (!empty($item->post_excerpt) ? $item->post_excerpt : $item->post_content), $num_words = 10, $more = '...' ),
+						'title_link' => "<a href='". get_permalink($item->ID) ."' class='post-title-link'><{$wrap_title} class='post-title oft-grid-post-title' style='font-weight: bold; letter-spacing: 1px; padding: 0 1em;'>". $item->post_title ."</{$wrap_title}></a>",
+						'featured_image' => "<a href='". get_permalink($item->ID) ."' title='". $item->post_title ."'>" . alone_get_image(get_post_thumbnail_id($item->ID), array('size' => $image_size)) . "</a>",
+						// Strip shortcodes (o.a. WPBakery) maar bewaar de tekstinhoud (geen strip_shortcodes() gebruiken!)
+						'trim_content' => preg_replace( "~(?:\[/?)[^/\]]+/?\]~s", '', wp_trim_words( ! empty($item->post_excerpt) ? $item->post_excerpt : $fix_post_content['main'], $num_words = 50, $more = '...' ) ),
 					);
 				?>
-					<div class="col-md-3 col-sm-3">
-						<div class="related-article-item">
+					<div class="col-md-3 col-sm-3" style="padding: 0 1em;">
+						<div class="related-article-item" style="background-color: #f4f4f4; padding: 0; border: 0;">
 							<?php echo "{$post_data['featured_image']}"; ?>
 							<?php echo "{$post_data['title_link']}"; ?>
-							<?php echo "<p>{$post_data['trim_content']}</p>"; ?>
+							<?php echo "<p class='oft-grid-post-excerpt' style='padding: 0 1em 2em 1em;'>{$post_data['trim_content']}</p>"; ?>
 						</div>
 					</div>
 				<?php endforeach; ?>
