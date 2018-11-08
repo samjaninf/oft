@@ -312,6 +312,7 @@ body.woocommerce-page:not(.single-product) {
 /***************/
 
 .post-single-entry-header {
+	/* Niet meer nodig! */
 	.post-sing-image-background {
 		background-position: 50% 40% !important;
 		// background-repeat: no-repeat !important;
@@ -333,7 +334,9 @@ body.woocommerce-page:not(.single-product) {
 }
 
 .share-post-wrap {
-	margin: auto;
+	margin-left: auto;
+	margin-right: 10px;
+	width: 45px !important;
 
 	.share-post-item {
 		border-radius: 50%;
@@ -354,7 +357,7 @@ body.woocommerce-page:not(.single-product) {
 
 	/* Meer witruimte rond inleiding */
 	h3 {
-		margin-top: 30px;
+		margin-top: 15px;
 		margin-bottom: 30px;
 	}
 
@@ -1174,7 +1177,7 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	}
 }
 
-@media (min-width: 768px) {
+@media (min-width: 769px) {
 	.two-column input[type=submit] {
 		float: right;
 		position: relative;
@@ -1182,7 +1185,7 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	}
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
 	.two-column > p {
 		width: 95%;
 		display: block;
@@ -1207,7 +1210,13 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	}
 }
 
-@media (max-width: 989px) {
+@media (min-width: 992px) {
+	.row.oft-blog-detail-top {
+		margin-top: 2em;
+	}
+}
+
+@media (max-width: 991px) {
 	.oft-image-minimal-height {
 		min-height: 450px;
 	}
@@ -1230,6 +1239,10 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 		.products .product-item.bt-col-3 {
 			width: 32%;
 		}
+	}
+
+	.share-post-wrap {
+		display: none !important;
 	}
 }
 
@@ -1277,9 +1290,7 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 			width: 49%;
 		}
 	}
-}
 
-@media (max-width: 768px) {
 	.oft-coffee-featured {
 		.wpb_column:not(.oft-coffee-first) .vc_column-inner {
 			/* Marge boven kolommen wat verhogen, aangezien ze nu collapsen */

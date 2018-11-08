@@ -11,7 +11,7 @@ if ( ! empty( $alone_related_articles ) ) : ?>
 	<div class="bt-wrap-related-article bt-<?php echo basename(__FILE__, '.php'); ?>">
 		<div class="row">
 			<div class="col-md-12">
-				<h3 class="bt-title-related"><strong><?php esc_html_e( 'Related Articles', 'alone' ); ?></strong></h3>
+				<h4><?php esc_html_e( 'Related Articles', 'alone' ); ?></h4>
 			</div>
 			<div class="related-article-list">
 				<?php foreach ( $alone_related_articles as $item ) :

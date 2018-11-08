@@ -3474,8 +3474,15 @@
 	#  WP/WC API  #
 	###############
 
-	// Activeer extra scripts
-	add_action( 'wp_enqueue_scripts', 'load_extra_scripts', 9999 );
+	// Laat de Jetpack-galerijen de volle breedte benutten
+	add_filter( 'tiled_gallery_content_width', 'expand_tiled_gallery_width' ); 
+	
+	function expand_tiled_gallery_width() {
+		return 945;
+	}
+
+	// Schakel lelijke PrettyPhoto-lightbox uit op media grids
+	// add_action( 'wp_enqueue_scripts', 'load_extra_scripts', 9999 );
 
 	function load_extra_scripts() {
 		wp_enqueue_script('prettyphoto');

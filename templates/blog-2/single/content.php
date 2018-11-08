@@ -21,13 +21,11 @@ $article_classes = array(
 <article id="post-<?php the_ID(); ?>" <?php post_class( implode(' ', $article_classes) ); ?> itemscope="itemscope" itemtype="http://schema.org/BlogPosting" itemprop="blogPost">
 	<div class="col-inner">
 		<div class="entry-content clearfix" itemprop="text">
-			<div class="row" style="margin-top: 2em;">
-				<div class="col-md-2">
-					<?php echo alone_share_post( array('facebook' => true, 'twitter' => true, 'google_plus' => false, 'linkedin' => true, 'pinterest' => false) ); ?>
-				</div>
+			<div class="row oft-blog-detail-top">
+				<div class="col-md-2"></div>
 				<div class="col-md-10">
 					<div class="post-single-content-text">
-						<div class="extra-meta heading-entry-wrap" style="font-size: 80%;">
+						<div class="extra-meta" style="font-size: 80%;">
 							<div class="post-date">
 								<?php echo "{$alone_post_options['date']}"; ?>
 								<?php echo ! empty( $alone_post_options['category_list'] ) ? ' &mdash; '.$alone_post_options['category_list'] : ''; ?>
@@ -36,7 +34,15 @@ $article_classes = array(
 
 						<!-- title -->
 						<?php echo "{$alone_post_options['title']}"; ?>
-
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					<?php echo alone_share_post( array( 'facebook' => true, 'twitter' => true, 'google_plus' => false, 'linkedin' => true, 'pinterest' => false ) ); ?>
+				</div>
+				<div class="col-md-10">
+					<div class="post-single-content-text">
 						<?php
 						/* content */
 						the_content();
