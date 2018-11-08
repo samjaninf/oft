@@ -5,7 +5,7 @@
 	Author URI:		https://www.fullstackahead.be
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.18
+	Version:		1.2.19
 	Text Domain:	oft
 */
 
@@ -350,6 +350,10 @@ body.woocommerce-page:not(.single-product) {
 }
 
 .post-single-content-text {
+	.post-date {
+		margin-top: 2em;
+	}
+
 	/* Geen witruimte tussen datum en titel */
 	h2.post-title {
 		margin-top: 0;
@@ -1210,12 +1214,6 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 	}
 }
 
-@media (min-width: 992px) {
-	.row.oft-blog-detail-top {
-		margin-top: 2em;
-	}
-}
-
 @media (max-width: 991px) {
 	.oft-image-minimal-height {
 		min-height: 450px;
@@ -1238,6 +1236,12 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 		/* Niet meteen naar 2 kolommen gaan in overzichtspagina's (default = rijen van 3) */
 		.products .product-item.bt-col-3 {
 			width: 32%;
+		}
+	}
+
+	.post-single-content-text {
+		.post-date {
+			margin-top: 0;
 		}
 	}
 

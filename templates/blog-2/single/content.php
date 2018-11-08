@@ -21,7 +21,7 @@ $article_classes = array(
 <article id="post-<?php the_ID(); ?>" <?php post_class( implode(' ', $article_classes) ); ?> itemscope="itemscope" itemtype="http://schema.org/BlogPosting" itemprop="blogPost">
 	<div class="col-inner">
 		<div class="entry-content clearfix" itemprop="text">
-			<div class="row oft-blog-detail-top">
+			<div class="row">
 				<div class="col-md-2"></div>
 				<div class="col-md-10">
 					<div class="post-single-content-text">
