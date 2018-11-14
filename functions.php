@@ -3485,8 +3485,9 @@
 	// add_action( 'wp_enqueue_scripts', 'load_extra_scripts', 9999 );
 
 	function load_extra_scripts() {
-		wp_enqueue_script('prettyphoto');
-		wp_deregister_script('prettyphoto');
+		wp_enqueue_script('wp-api');
+		// wp_enqueue_script('prettyphoto');
+		// wp_deregister_script('prettyphoto');
 	}
 
 	// Verhinder het lekken van gegevens via de WP API NIET DOEN, BLOKKEERT DE WERKING VAN CF7
