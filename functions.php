@@ -70,8 +70,11 @@
 	add_action( 'admin_menu', 'register_oft_menus', 99 );
 
 	function register_oft_menus() {
+		global $submenu;
 		add_submenu_page( 'edit.php?post_type=product', 'Changelog', 'Changelog', 'publish_products', 'product-changelog', 'oxfam_product_changelog_callback' );
 		add_media_page( __( 'Bulkregistratie', 'oft-admin' ), __( 'Bulkregistratie', 'oft-admin' ), 'publish_products', 'oxfam-photos', 'oxfam_photos_callback' );
+		// Toon een expliciete link naar de featured producten (niet meer sorteerbaar sinds WC3+)
+		$submenu['edit.php?post_type=product'][] = array( __( 'Uitgelicht', 'oft-admin' ), 'manage_woocommerce', admin_url('edit.php').'?post_type=product&product_visibility=featured' );
 	}
 
 	// Verhinder het manueel aanmaken van producten / bestellingen
@@ -1455,11 +1458,12 @@
 	}
 
 	// Maak sorteren op custom kolommen mogelijk
-	add_filter( 'manage_edit-product_sortable_columns', 'make_attribute_columns_sortable', 10, 1 );
+	// add_filter( 'manage_edit-product_sortable_columns', 'make_attribute_columns_sortable', 10, 1 );
 
 	function make_attribute_columns_sortable( $columns ) {
-		$columns['featured'] = 'featured';
-		// $columns['pa_merk'] = 'pa_merk';
+		// Werkt niet meer in WC3+
+		// $columns['featured'] = 'featured';
+		$columns['pa_merk'] = 'pa_merk';
 		return $columns;
 	}
 
