@@ -3526,7 +3526,7 @@
 		// Eventueel de standaardperiode van 30 dagen wijzigen m.b.v. add_filter( 'woocommerce_logger_days_to_retain_logs' );
 		$logger->clear_expired_logs();
 		if ( wc_print_r( $request->get_header('geoip_addr'), true ) === gethostbyname( gethostname() ) ) {
-			$logger->info( 'SKU '.$product->get_sku().' data accessed from internal server';
+			$logger->info( 'SKU '.$product->get_sku().' data accessed from internal server' );
 		} else {
 			$logger->notice( 'SKU '.$product->get_sku().' data accessed from '.wc_print_r( $request->get_header('geoip_addr'), true ), $context );
 		}
