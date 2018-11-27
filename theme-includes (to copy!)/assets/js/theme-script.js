@@ -169,10 +169,10 @@
 
         this.touches = [];
         this.noise = options.noise || 0;
-        document.body.addEventListener('touchstart', this.touchHandler);
-        document.body.addEventListener('touchmove', this.touchHandler);
-        document.body.addEventListener('touchend', this.clearHandler);
-        document.body.addEventListener('touchcancel', this.clearHandler);
+        // document.body.addEventListener('touchstart', this.touchHandler);
+        // document.body.addEventListener('touchmove', this.touchHandler);
+        // document.body.addEventListener('touchend', this.clearHandler);
+        // document.body.addEventListener('touchcancel', this.clearHandler);
         this.svg.addEventListener('mousemove', this.mouseHandler);
         this.svg.addEventListener('mouseout', this.clearHandler);
         this.initOrigins();
@@ -1222,7 +1222,7 @@
                 data = $this.data('bears-counterup'),
                 delay = data.delay,
                 time = data.time;
-            console.log(data);
+            // console.log(data);
             $this._once(function() {
                 $this.counterUp({
                     delay: delay,
@@ -1782,6 +1782,86 @@
         Bears.reCallScriptAfterAjax();
     }
 
+	// Semon addon script
+	var SemonAddonHandle = function () {
+
+		this.ShowGoogleMap = function() {
+
+			$('[data-google-map-elem]').each(function() {
+				var $thisEl = $(this),
+					lat = $thisEl.data('lat'),
+					log = $thisEl.data('long'),
+					info = $thisEl.data('info');
+				console.log(lat, log, info);
+				// create map
+				var map = new google.maps.Map(this, {
+					center: new google.maps.LatLng(lat, log),
+					zoom: 19,
+					mapTypeId: google.maps.MapTypeId.ROADMAP
+				});
+
+				// marker options
+				var options = {
+					position: new google.maps.LatLng(lat, log),
+					map: map
+				};
+
+				// add markers to map
+				var marker = new google.maps.Marker(options);
+			})
+		}
+
+		// button trigger modal
+		this.ButtonTriggerModal = function() {
+			$('body').on('click', '[data-semon-trigger-modal]', function(e) {
+				e.preventDefault();
+
+				var pid = $(this).data('semon-id'),
+					ModalSelector = $(this).attr('href'),
+					ModalElem = $(ModalSelector);
+
+				ModalElem.trigger('_load_content_by_id', [pid]);
+			})
+		}
+
+		// modal
+		this.ModalHandle = function() {
+			$('[data-semon-modal]').each(function() {
+				var $thisEl = $(this),
+					$ModalTitle = $thisEl.find('[data-semon-modal-title]'),
+					$ModalBody = $thisEl.find('[data-semon-modal-content]');
+
+				$thisEl.on({
+					'_load_content_by_id' (e, id) {
+						$.ajax({
+							type: 'POST',
+							url: BtPhpVars.ajax_url,
+							data: {action: '_alone_semon_load_media_template', pid: id},
+							success (res) {
+								console.log(res);
+								$ModalTitle.html(res.title);
+								$ModalBody.html(res.content);
+							},
+							error (e) {
+								console.log(e)
+							}
+						})
+					},
+				})
+			})
+		}
+
+		this.init = function() {
+			this.ShowGoogleMap();
+			this.ButtonTriggerModal();
+			this.ModalHandle()
+		}
+
+		return this;
+	}
+	var SemonAddonObject = new SemonAddonHandle();
+	SemonAddonObject.init();
+
     /* DOM Ready */
     $(function() {
 
@@ -1926,4 +2006,29 @@
 
         parallaxFn();
     })
+
+    // add js code animate
+
+    /* Browser load complete */
+      jQuery(window).load(function() {
+        var $animateEl = jQuery('[data-animate]');
+        $animateEl.each(function () {
+            var $el = jQuery(this),
+                $name = $el.data('animate'),
+                $duration = $el.data('duration'),
+                $delay = $el.data('delay');
+
+            $duration = typeof $duration === 'undefined' ? '0.6' : $duration ;
+            $delay = typeof $delay === 'undefined' ? '0' : $delay ;
+
+            $el.waypoint(function () {
+                $el.addClass('animated ' + $name)
+                   .css({
+                        'animation-duration': $duration + 's',
+                        'animation-delay': $delay + 's'
+                   });
+            }, {offset: '98%'});
+        });
+      })
+
 })(jQuery)
