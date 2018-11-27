@@ -181,21 +181,21 @@
 		$labels = array(
 			'name' => __( 'Partners', 'oft' ),
 			'singular_name' => __( 'Partner', 'oft' ),
-			'all_items' => __( 'Alle partners', 'oft' ),
-			'edit_item' => __( 'Partner bewerken', 'oft' ),
-			'update_item' => __( 'Partner bijwerken', 'oft' ),
-			'view_item' => __( 'Partner bekijken', 'oft' ),
-			'add_new_item' => __( 'Voeg nieuwe partner toe', 'oft' ),
-			'new_item_name' => __( 'Nieuwe partner', 'oft' ),
-			'parent_item' => __( 'Land', 'oft' ),
-			'parent_item_colon' => __( 'Land:', 'oft' ),
-			'search_items' => __( 'Partners doorzoeken', 'oft' ),
-			'back_to_items' => __( 'Terug naar alle partners', 'oft' ),
+			'all_items' => __( 'Alle partners', 'oft-admin' ),
+			'edit_item' => __( 'Partner bewerken', 'oft-admin' ),
+			'update_item' => __( 'Partner bijwerken', 'oft-admin' ),
+			'view_item' => __( 'Partner bekijken', 'oft-admin' ),
+			'add_new_item' => __( 'Voeg nieuwe partner toe', 'oft-admin' ),
+			'new_item_name' => __( 'Nieuwe partner', 'oft-admin' ),
+			'parent_item' => __( 'Land', 'oft-admin' ),
+			'parent_item_colon' => __( 'Land:', 'oft-admin' ),
+			'search_items' => __( 'Partners doorzoeken', 'oft-admin' ),
+			'back_to_items' => __( 'Terug naar alle partners', 'oft-admin' ),
 		);
 
 		$args = array(
 			'labels' => $labels,
-			'description' => __( 'Ken het product toe aan een partner/land', 'oft' ),
+			'description' => __( 'Ken het product toe aan een partner/land', 'oft-admin' ),
 			'public' => true,
 			'publicly_queryable' => true,
 			'hierarchical' => true,
@@ -385,21 +385,21 @@
 		$labels = array(
 			'name' => __( 'Allergenen', 'oft' ),
 			'singular_name' => __( 'Allergeen', 'oft' ),
-			'all_items' => __( 'Alle allergenen', 'oft' ),
-			'parent_item' => __( 'Allergeen', 'oft' ),
-			'parent_item_colon' => __( 'Allergeen:', 'oft' ),
-			'new_item_name' => __( 'Nieuw allergeen', 'oft' ),
-			'add_new_item' => __( 'Voeg nieuw allergeen toe', 'oft' ),
-			'view_item' => __( 'Allergeen bekijken', 'oft' ),
-			'edit_item' => __( 'Allergeen bewerken', 'oft' ),
-			'update_item' => __( 'Allergeen bijwerken', 'oft' ),
-			'search_items' => __( 'Allergenen doorzoeken', 'oft' ),
-			'back_to_items' => __( 'Terug naar alle allergenen', 'oft' ),
+			'all_items' => __( 'Alle allergenen', 'oft-admin' ),
+			'parent_item' => __( 'Allergeen', 'oft-admin' ),
+			'parent_item_colon' => __( 'Allergeen:', 'oft-admin' ),
+			'new_item_name' => __( 'Nieuw allergeen', 'oft-admin' ),
+			'add_new_item' => __( 'Voeg nieuw allergeen toe', 'oft-admin' ),
+			'view_item' => __( 'Allergeen bekijken', 'oft-admin' ),
+			'edit_item' => __( 'Allergeen bewerken', 'oft-admin' ),
+			'update_item' => __( 'Allergeen bijwerken', 'oft-admin' ),
+			'search_items' => __( 'Allergenen doorzoeken', 'oft-admin' ),
+			'back_to_items' => __( 'Terug naar alle allergenen', 'oft-admin' ),
 		);
 
 		$args = array(
 			'labels' => $labels,
-			'description' => __( 'Geef aan dat het product dit bevat', 'oft' ),
+			'description' => __( 'Geef aan dat het product dit bevat', 'oft-admin' ),
 			'public' => false,
 			'publicly_queryable' => true,
 			'hierarchical' => true,
@@ -428,21 +428,21 @@
 		$labels = array(
 			'name' => __( 'Druivenrassen', 'oft' ),
 			'singular_name' => __( 'Druivenras', 'oft' ),
-			'all_items' => __( 'Alle druivenrassen', 'oft' ),
-			'parent_item' => __( 'Kleur', 'oft' ),
-			'parent_item_colon' => __( 'Kleur:', 'oft' ),
-			'new_item_name' => __( 'Nieuw druivenras', 'oft' ),
-			'add_new_item' => __( 'Voeg nieuw druivenras toe', 'oft' ),
-			'view_item' => __( 'Druivenras bekijken', 'oft' ),
-			'edit_item' => __( 'Druivenras bewerken', 'oft' ),
-			'update_item' => __( 'Druivenras bijwerken', 'oft' ),
-			'search_items' => __( 'Druivenrassen doorzoeken', 'oft' ),
-			'back_to_items' => __( 'Terug naar alle druivenrassen', 'oft' ),
+			'all_items' => __( 'Alle druivenrassen', 'oft-admin' ),
+			'parent_item' => __( 'Kleur', 'oft-admin' ),
+			'parent_item_colon' => __( 'Kleur:', 'oft-admin' ),
+			'new_item_name' => __( 'Nieuw druivenras', 'oft-admin' ),
+			'add_new_item' => __( 'Voeg nieuw druivenras toe', 'oft-admin' ),
+			'view_item' => __( 'Druivenras bekijken', 'oft-admin' ),
+			'edit_item' => __( 'Druivenras bewerken', 'oft-admin' ),
+			'update_item' => __( 'Druivenras bijwerken', 'oft-admin' ),
+			'search_items' => __( 'Druivenrassen doorzoeken', 'oft-admin' ),
+			'back_to_items' => __( 'Terug naar alle druivenrassen', 'oft-admin' ),
 		);
 
 		$args = array(
 			'labels' => $labels,
-			'description' => sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft' ), 'druif' ),
+			'description' => sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft-admin' ), 'druif' ),
 			'public' => false,
 			'publicly_queryable' => true,
 			'hierarchical' => true,
@@ -467,21 +467,21 @@
 		$labels = array(
 			'name' => __( 'Gerechten', 'oft' ),
 			'singular_name' => __( 'Gerecht', 'oft' ),
-			'all_items' => __( 'Alle gerechten', 'oft' ),
-			'parent_item' => __( 'Gerecht', 'oft' ),
-			'parent_item_colon' => __( 'Gerecht:', 'oft' ),
-			'new_item_name' => __( 'Nieuw gerecht', 'oft' ),
-			'add_new_item' => __( 'Voeg nieuw gerecht toe', 'oft' ),
-			'view_item' => __( 'Gerecht bekijken', 'oft' ),
-			'edit_item' => __( 'Gerecht bewerken', 'oft' ),
-			'update_item' => __( 'Gerecht bijwerken', 'oft' ),
-			'search_items' => __( 'Gerechten doorzoeken', 'oft' ),
-			'back_to_items' => __( 'Terug naar alle gerechten', 'oft' ),
+			'all_items' => __( 'Alle gerechten', 'oft-admin' ),
+			'parent_item' => __( 'Gerecht', 'oft-admin' ),
+			'parent_item_colon' => __( 'Gerecht:', 'oft-admin' ),
+			'new_item_name' => __( 'Nieuw gerecht', 'oft-admin' ),
+			'add_new_item' => __( 'Voeg nieuw gerecht toe', 'oft-admin' ),
+			'view_item' => __( 'Gerecht bekijken', 'oft-admin' ),
+			'edit_item' => __( 'Gerecht bewerken', 'oft-admin' ),
+			'update_item' => __( 'Gerecht bijwerken', 'oft-admin' ),
+			'search_items' => __( 'Gerechten doorzoeken', 'oft-admin' ),
+			'back_to_items' => __( 'Terug naar alle gerechten', 'oft-admin' ),
 		);
 
 		$args['labels'] = $labels;
 		$args['rewrite']['slug'] = 'gerecht';
-		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft' ), $args['rewrite']['slug'] );
+		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft-admin' ), $args['rewrite']['slug'] );
 		
 		$name = 'recipe';
 		register_taxonomy( 'product_'.$name, 'product', $args );
@@ -491,21 +491,21 @@
 		$labels = array(
 			'name' => __( 'Smaken', 'oft' ),
 			'singular_name' => __( 'Smaak', 'oft' ),
-			'all_items' => __( 'Alle smaken', 'oft' ),
-			'parent_item' => __( 'Smaak', 'oft' ),
-			'parent_item_colon' => __( 'Smaak:', 'oft' ),
-			'new_item_name' => __( 'Nieuwe smaak', 'oft' ),
-			'add_new_item' => __( 'Voeg nieuwe smaak toe', 'oft' ),
-			'view_item' => __( 'Smaak bekijken', 'oft' ),
-			'edit_item' => __( 'Smaak bewerken', 'oft' ),
-			'update_item' => __( 'Smaak bijwerken', 'oft' ),
-			'search_items' => __( 'Smaken doorzoeken', 'oft' ),
-			'back_to_items' => __( 'Terug naar alle smaken', 'oft' ),
+			'all_items' => __( 'Alle smaken', 'oft-admin' ),
+			'parent_item' => __( 'Smaak', 'oft-admin' ),
+			'parent_item_colon' => __( 'Smaak:', 'oft-admin' ),
+			'new_item_name' => __( 'Nieuwe smaak', 'oft-admin' ),
+			'add_new_item' => __( 'Voeg nieuwe smaak toe', 'oft-admin' ),
+			'view_item' => __( 'Smaak bekijken', 'oft-admin' ),
+			'edit_item' => __( 'Smaak bewerken', 'oft-admin' ),
+			'update_item' => __( 'Smaak bijwerken', 'oft-admin' ),
+			'search_items' => __( 'Smaken doorzoeken', 'oft-admin' ),
+			'back_to_items' => __( 'Terug naar alle smaken', 'oft-admin' ),
 		);
 
 		$args['labels'] = $labels;
 		$args['rewrite']['slug'] = 'smaak';
-		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft' ), $args['rewrite']['slug'] );
+		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft-admin' ), $args['rewrite']['slug'] );
 		
 		$name = 'flavour';
 		register_taxonomy( 'product_'.$name, 'product', $args );
@@ -581,9 +581,6 @@
 		// Titel wijzigen van standaardtabs kan maar prioriteit niet! (description = 10, additional_information = 20)
 		$tabs['additional_information']['title'] = __( 'Technische fiche', 'oft' );
 
-		// TIJDELIJK UITSCHAKELEN
-		unset($tabs['additional_information']);
-		
 		return $tabs;
 	}
 
@@ -1314,13 +1311,13 @@
 	function sku_sorting_orderby( $sortby ) {
 		unset( $sortby['popularity'] );
 		unset( $sortby['rating'] );
-		$sortby['date'] = __( 'Laatst toegevoegd', 'oft-admin' );
-		$sortby['alpha'] = __( 'Van A tot Z', 'oft-admin' );
-		$sortby['alpha-desc'] = __( 'Van Z tot A', 'oft-admin' );
-		$sortby['price'] = __( 'Stijgende prijs', 'oft-admin' );
-		$sortby['price-desc'] = __( 'Dalende prijs', 'oft-admin' );
-		$sortby['sku'] = __( 'Stijgend artikelnummer', 'oft-admin' );
-		$sortby['sku-desc'] = __( 'Dalend artikelnummer', 'oft-admin' );
+		$sortby['date'] = __( 'Laatst toegevoegd', 'oft' );
+		$sortby['alpha'] = __( 'Van A tot Z', 'oft' );
+		$sortby['alpha-desc'] = __( 'Van Z tot A', 'oft' );
+		$sortby['price'] = __( 'Stijgende prijs', 'oft' );
+		$sortby['price-desc'] = __( 'Dalende prijs', 'oft' );
+		$sortby['sku'] = __( 'Stijgend artikelnummer', 'oft' );
+		$sortby['sku-desc'] = __( 'Dalend artikelnummer', 'oft' );
 		return $sortby;
 	}
 
@@ -1673,7 +1670,7 @@
 
 			$args_north = array( 
 				'id' => '_is_north_product',
-				'label' => __( 'Noordproduct?', 'oft' ),
+				'label' => __( 'Noordproduct?', 'oft-admin' ),
 				'wrapper_class' => 'important-for-catman',
 				'description' => __( 'Vink dit aan als het om een lokaal / solidair product gaat waarbij het fairtradepercentage hieronder geen betekenis heeft', 'oft-admin' ),
 			);
@@ -1731,7 +1728,7 @@
 			woocommerce_wp_checkbox( 
 				array( 
 					'id' => '_update_product_sheet',
-					'label' => __( 'Update fiches?', 'oft' ),
+					'label' => __( 'Update fiches?', 'oft-admin' ),
 					'description' => __( 'Vink dit aan als je de PDF\'s wil bijwerken wanneer je het product opslaat (packshot moet aanwezig zijn, werkt ook voor niet-OFT-producten)', 'oft-admin' ),
 				)
 			);
@@ -2130,7 +2127,7 @@
 	add_action( 'save_post', 'oft_post_to_product_save' );
 
 	function register_custom_meta_boxes() {
-		add_meta_box( 'oft_post_to_product', __( 'Gelinkt product', 'oft' ), 'oft_post_to_product_callback', 'post', 'advanced', 'high' );
+		add_meta_box( 'oft_post_to_product', __( 'Gelinkt product', 'oft-admin' ), 'oft_post_to_product_callback', 'post', 'advanced', 'high' );
 	}
 
 	function oft_post_to_product_callback( $post ) {
@@ -2159,15 +2156,15 @@
 
 		?>
 			<p>
-				<label for="oft_post_product" class=""><?php printf( __( 'Kies 1 van de %d actuele OFT-producten om onderaan het bericht toe te voegen:', 'oft' ), count($list) ); ?></label>
+				<label for="oft_post_product" class=""><?php printf( __( 'Kies 1 van de %d actuele OFT-producten om onderaan het bericht toe te voegen:', 'oft-admin' ), count($list) ); ?></label>
 				<select name="oft_post_product" id="oft_post_product">
-					<option value=""><?php _e( '(selecteer)', 'oft' ); ?></option>
+					<option value=""><?php _e( '(selecteer)', 'oft-admin' ); ?></option>
 					<?php foreach ( $list as $sku => $title ) : ?>
 						<option value="<?php echo $sku; ?>" <?php if ( isset( $prfx_stored_meta['oft_post_product'] ) ) selected( $prfx_stored_meta['oft_post_product'][0], $sku ); ?>><?php echo $sku.': '.$title; ?></option>';
 					<?php endforeach; ?>
 				</select>
 			</p>
-			<p><?php _e( 'Gebruik de shortcode [products skus="A,B,C" columns="3"] indien je meerdere producten wil tonen!', 'oft' ); ?></p>
+			<p><?php _e( 'Gebruik de shortcode [products skus="A,B,C" columns="3"] indien je meerdere producten wil tonen!', 'oft-admin' ); ?></p>
 		<?php
 	}
 
