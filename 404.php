@@ -10,7 +10,7 @@
 					<h1 class="entry-title fw-title-404"><?php _e( 'Error 404', 'oft' ); ?></h1>
 					<h3 class="entry-title fw-title-404-sub"><?php _e( 'Oeps! Hier liep iets mis.', 'oft' ); ?></h3>
 					<div class="page-content">
-						<p><?php _e( 'We konden de pagina die je opvroeg niet vinden. Misschien kan een kleine zoektocht raad brengen?', 'oft' ); ?></p>
+						<p><?php echo __( 'We konden de pagina die je opvroeg niet vinden.', 'oft' ).' '.__( 'Misschien kan een kleine zoektocht raad brengen?', 'oft' ); ?></p>
 						<?php get_search_form(); ?>
 						<?php $page = get_page_by_path('contact'); ?>
 						<p><?php printf( __( 'Heb je een vraag voor ons? Stel die dan gerust via <a href="%s">ons formulier</a>.', 'oft' ), get_permalink($page->ID) ); ?></p>

@@ -192,7 +192,7 @@
 			'parent_item' => __( 'Land', 'oft' ),
 			'parent_item_colon' => __( 'Land:', 'oft' ),
 			'search_items' => __( 'Partners doorzoeken', 'oft' ),
-			'not_found' => __( 'Geen partners gevonden!', 'oft' ),
+			'back_to_items' => __( 'Terug naar alle partners', 'oft' ),
 		);
 
 		$args = array(
@@ -403,6 +403,7 @@
 			'edit_item' => __( 'Allergeen bewerken', 'oft' ),
 			'update_item' => __( 'Allergeen bijwerken', 'oft' ),
 			'search_items' => __( 'Allergenen doorzoeken', 'oft' ),
+			'back_to_items' => __( 'Terug naar alle allergenen', 'oft' ),
 		);
 
 		$args = array(
@@ -447,6 +448,7 @@
 			'edit_item' => __( 'Druivenras bewerken', 'oft' ),
 			'update_item' => __( 'Druivenras bijwerken', 'oft' ),
 			'search_items' => __( 'Druivenrassen doorzoeken', 'oft' ),
+			'back_to_items' => __( 'Terug naar alle druivenrassen', 'oft' ),
 		);
 
 		$args = array(
@@ -487,6 +489,7 @@
 			'edit_item' => __( 'Gerecht bewerken', 'oft' ),
 			'update_item' => __( 'Gerecht bijwerken', 'oft' ),
 			'search_items' => __( 'Gerechten doorzoeken', 'oft' ),
+			'back_to_items' => __( 'Terug naar alle gerechten', 'oft' ),
 		);
 
 		$args['labels'] = $labels;
@@ -512,6 +515,7 @@
 			'edit_item' => __( 'Smaak bewerken', 'oft' ),
 			'update_item' => __( 'Smaak bijwerken', 'oft' ),
 			'search_items' => __( 'Smaken doorzoeken', 'oft' ),
+			'back_to_items' => __( 'Terug naar alle smaken', 'oft' ),
 		);
 
 		$args['labels'] = $labels;
@@ -1147,15 +1151,16 @@
 		$taxonomy_name = 'product_hipster';
 		
 		$labels = array(
-			'name' => __( 'Hipstertermen', 'oft' ),
-			'singular_name' => __( 'Hipsterterm', 'oft' ),
-			'all_items' => __( 'Alle hipstertermen', 'oft' ),
-			'new_item_name' => __( 'Nieuwe hipsterterm', 'oft' ),
-			'add_new_item' => __( 'Voeg nieuwe hipsterterm toe', 'oft' ),
-			'view_item' => __( 'Hipsterterm bekijken', 'oft' ),
-			'edit_item' => __( 'Hipsterterm bewerken', 'oft' ),
-			'update_item' => __( 'Hipsterterm bijwerken', 'oft' ),
-			'search_items' => __( 'Hipstertermen doorzoeken', 'oft' ),
+			'name' => __( 'Diëten', 'oft' ),
+			'singular_name' => __( 'Dieet', 'oft' ),
+			'all_items' => __( 'Alle diëten', 'oft' ),
+			'new_item_name' => __( 'Nieuw dieet', 'oft' ),
+			'add_new_item' => __( 'Voeg nieuw dieet toe', 'oft' ),
+			'view_item' => __( 'Dieet bekijken', 'oft' ),
+			'edit_item' => __( 'Dieet bewerken', 'oft' ),
+			'update_item' => __( 'Dieet bijwerken', 'oft' ),
+			'search_items' => __( 'Diëten doorzoeken', 'oft' ),
+			'back_to_items' => __( 'Terug naar alle diëten', 'oft' ),
 		);
 
 		$args = array(
@@ -1201,6 +1206,7 @@
 			'edit_item' => __( 'Verpakkingswijze bewerken', 'oft' ),
 			'update_item' => __( 'Verpakkingswijze bijwerken', 'oft' ),
 			'search_items' => __( 'Verpakkingswijzes doorzoeken', 'oft' ),
+			'back_to_items' => __( 'Terug naar alle verpakkingswijzes', 'oft' ),
 		);
 
 		$args = array(
@@ -1242,6 +1248,7 @@
 			'edit_item' => __( 'Bewaarvoorschrift bewerken', 'oft' ),
 			'update_item' => __( 'Bewaarvoorschrift bijwerken', 'oft' ),
 			'search_items' => __( 'Bewaarvoorschriften doorzoeken', 'oft' ),
+			'back_to_items' => __( 'Terug naar alle bewaarvoorschriften', 'oft' ),
 		);
 
 		$args = array(
@@ -2689,7 +2696,7 @@
 
 		$origin_text = '';
 		if ( $partners = get_partner_terms_by_product($product) ) {
-			$origin_text .= __( 'Partners:', 'oft' ).' '.strip_tags( implode( ', ', $partners ) );
+			$origin_text .= _n( 'Partner:', 'Partners:', count($partners), 'oft' ).' '.strip_tags( implode( ', ', $partners ) );
 		} elseif ( $countries = get_country_terms_by_product($product) ) {
 			$origin_text .= __( 'Herkomst:', 'oft' ).' '.implode( ', ', $countries );
 		}
