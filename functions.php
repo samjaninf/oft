@@ -512,9 +512,8 @@
 		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft' ), $name );
 		$args['rewrite']['slug'] = $name;
 
-		// TO DO: switch van 'taste' naar 'flavour' (= 'product_'.$name) => vergt ook aanpassing in MySQL-tabel oft_term_taxonomy!
-		register_taxonomy( 'product_taste', 'product', $args );
-		register_taxonomy_for_object_type( 'product_taste', 'product' );
+		register_taxonomy( 'product_'.$name, 'product', $args );
+		register_taxonomy_for_object_type( 'product_'.$name, 'product' );
 	}
 
 	// Maak onze custom taxonomiën altijd beschikbaar in de menu-editor
@@ -1061,7 +1060,7 @@
 								// pass = false;
 								msg += '* Je moet de gerechten nog aanvinken!\n';
 							}
-							if ( jQuery( '#product_taste-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
+							if ( jQuery( '#product_flavour-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
 								// pass = false;
 								msg += '* Je moet de smaken nog aanvinken!\n';
 							}
@@ -1130,7 +1129,7 @@
 		if ( $remove ) {
 			remove_meta_box( 'product_grapediv', 'product', 'normal' );
 			remove_meta_box( 'product_recipediv', 'product', 'normal' );
-			remove_meta_box( 'product_tastediv', 'product', 'normal' );
+			remove_meta_box( 'product_flavourdiv', 'product', 'normal' );
 		}
 	}
 
@@ -3528,7 +3527,7 @@
 			$logger->notice( 'SKU '.$product->get_sku().' data accessed from '.wc_print_r( $request->get_header('geoip_addr'), true ), $context );
 		}
 
-		$custom_taxonomies = array( 'product_allergen', 'product_grape', 'product_taste', 'product_recipe' );
+		$custom_taxonomies = array( 'product_allergen', 'product_grape', 'product_flavour', 'product_recipe' );
 		foreach ( $custom_taxonomies as $taxonomy ) {	
 			// Filter wordt enkel doorlopen bij producten dus we kunnen ID zeker op deze manier ophalen
 			foreach ( wp_get_object_terms( $product->get_id(), $taxonomy ) as $term ) {
@@ -3718,7 +3717,7 @@
 			'product_allergen',
 			'product_hipster',
 			'product_grape',
-			'product_taste',
+			'product_flavour',
 			'product_recipe',
 			'product_packaging',
 			'product_storage',
