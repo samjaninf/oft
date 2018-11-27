@@ -178,8 +178,6 @@
 	add_action( 'init', 'register_origin_taxonomy', 2 );
 	
 	function register_origin_taxonomy() {
-		$name = 'origin';
-		
 		$labels = array(
 			'name' => __( 'Partners', 'oft' ),
 			'singular_name' => __( 'Partner', 'oft' ),
@@ -209,16 +207,18 @@
 			'description' => __( 'Ken het product toe aan een partner/land', 'oft' ),
 			'hierarchical' => true,
 			'query_var' => true,
-			'rewrite' => array( 'slug' => $name, 'with_front' => true, 'hierarchical' => true ),
 			// Geef catmans rechten om zelf termen toe te kennen (+ overzicht te bekijken) maar niet om te bewerken (+ toe te voegen) / te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'update_core', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
+			// Slug kan via WPML vertaald worden
+			'rewrite' => array( 'slug' => 'herkomst', 'with_front' => true, 'hierarchical' => true ),
 		);
 
-		// TO DO: switch van 'partner' naar 'origin' (= 'product_'.$name) => vergt ook aanpassing in MySQL-tabel oft_term_taxonomy!
-		register_taxonomy( 'product_partner', 'product', $args );
-		register_taxonomy_for_object_type( 'product_partner', 'product' );
-		add_filter( 'manage_edit-product_'.'partner'.'_columns', 'add_custom_origin_taxonomy_columns' );
-		add_filter( 'manage_product_'.'partner'.'_custom_column', 'return_custom_origin_taxonomy_values', 15, 3 );
+		// TO DO: switch van 'partner' naar 'origin' => vergt ook aanpassing in MySQL-tabel oft_term_taxonomy!
+		$taxonomy_name = 'product_partner';
+		register_taxonomy( $taxonomy_name, 'product', $args );
+		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
+		add_filter( 'manage_edit-'.$taxonomy_name.'_columns', 'add_custom_origin_taxonomy_columns' );
+		add_filter( 'manage_'.$taxonomy_name.'_custom_column', 'return_custom_origin_taxonomy_values', 15, 3 );
 	}
 
 	function add_custom_origin_taxonomy_columns( $original_columns ) {
@@ -382,8 +382,6 @@
 	add_action( 'init', 'register_allergen_taxonomy', 4 );
 
 	function register_allergen_taxonomy() {
-		$taxonomy_name = 'product_allergen';
-		
 		$labels = array(
 			'name' => __( 'Allergenen', 'oft' ),
 			'singular_name' => __( 'Allergeen', 'oft' ),
@@ -418,6 +416,7 @@
 			'rewrite' => array( 'slug' => 'allergeen', 'with_front' => false, 'hierarchical' => true ),
 		);
 
+		$taxonomy_name = 'product_allergen';
 		register_taxonomy( $taxonomy_name, 'product', $args );
 		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
 	}
@@ -426,8 +425,6 @@
 	add_action( 'init', 'register_wine_taxonomy', 100 );
 	
 	function register_wine_taxonomy() {
-		$name = 'grape';
-		
 		$labels = array(
 			'name' => __( 'Druivenrassen', 'oft' ),
 			'singular_name' => __( 'Druivenras', 'oft' ),
@@ -445,7 +442,7 @@
 
 		$args = array(
 			'labels' => $labels,
-			'description' => sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft' ), $name ),
+			'description' => sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft' ), 'druif' ),
 			'public' => false,
 			'publicly_queryable' => true,
 			'hierarchical' => true,
@@ -459,15 +456,14 @@
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
 			// In de praktijk niet bereikbaar op deze URL want niet publiek!
-			'rewrite' => array( 'slug' => $name, 'with_front' => false, 'hierarchical' => false ),
+			'rewrite' => array( 'slug' => 'druif', 'with_front' => false, 'hierarchical' => false ),
 		);
 
+		$name = 'grape';
 		register_taxonomy( 'product_'.$name, 'product', $args );
 		register_taxonomy_for_object_type( 'product_'.$name, 'product' );
 
-		unset( $labels );
-		$name = 'recipe';
-		
+		unset($labels);
 		$labels = array(
 			'name' => __( 'Gerechten', 'oft' ),
 			'singular_name' => __( 'Gerecht', 'oft' ),
@@ -484,15 +480,14 @@
 		);
 
 		$args['labels'] = $labels;
-		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft' ), $name );
-		$args['rewrite']['slug'] = $name;
-
+		$args['rewrite']['slug'] = 'gerecht';
+		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft' ), $args['rewrite']['slug'] );
+		
+		$name = 'recipe';
 		register_taxonomy( 'product_'.$name, 'product', $args );
 		register_taxonomy_for_object_type( 'product_'.$name, 'product' );
 
-		unset( $labels );
-		$name = 'flavour';
-		
+		unset($labels);
 		$labels = array(
 			'name' => __( 'Smaken', 'oft' ),
 			'singular_name' => __( 'Smaak', 'oft' ),
@@ -509,9 +504,10 @@
 		);
 
 		$args['labels'] = $labels;
-		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft' ), $name );
-		$args['rewrite']['slug'] = $name;
-
+		$args['rewrite']['slug'] = 'smaak';
+		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft' ), $args['rewrite']['slug'] );
+		
+		$name = 'flavour';
 		register_taxonomy( 'product_'.$name, 'product', $args );
 		register_taxonomy_for_object_type( 'product_'.$name, 'product' );
 	}
@@ -1133,12 +1129,10 @@
 		}
 	}
 
-	// Creëer een custom vlakke taxonomie op producten om hipsterinfo in op te slaan
-	add_action( 'init', 'register_hipster_taxonomy', 50 );
+	// Creëer een custom vlakke taxonomie op producten om diëtisteninfo in op te slaan
+	add_action( 'init', 'register_diet_taxonomy', 50 );
 
-	function register_hipster_taxonomy() {
-		$name = 'diet';
-		
+	function register_diet_taxonomy() {
 		$labels = array(
 			'name' => __( 'Diëten', 'oft' ),
 			'singular_name' => __( 'Dieet', 'oft' ),
@@ -1169,7 +1163,7 @@
 			// Geef catmans rechten om zelf termen toe te kennen (+ overzicht te bekijken) maar niet om te bewerken (+ toe te voegen) / te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'update_core', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
 			// Slug kan via WPML vertaald worden
-			'rewrite' => array( 'slug' => $name, 'with_front' => false, 'hierarchical' => false ),
+			'rewrite' => array( 'slug' => 'dieet', 'with_front' => false, 'hierarchical' => false ),
 			// Zorgt ervoor dat de ID als term opgeslagen wordt, dus in de praktijk niet bruikbaar (WP 4.9)
 			// 'meta_box_cb' => 'post_categories_meta_box',
 		);
@@ -1183,8 +1177,6 @@
 	add_action( 'init', 'register_packaging_taxonomy', 50 );
 
 	function register_packaging_taxonomy() {
-		$name = 'packaging';
-		
 		$labels = array(
 			'name' => __( 'Verpakkingswijzes', 'oft' ),
 			'singular_name' => __( 'Verpakkingswijze', 'oft' ),
@@ -1216,19 +1208,18 @@
 			'query_var' => true,
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
-			'rewrite' => array( 'slug' => $name, 'with_front' => false, 'hierarchical' => true ),
+			// Slug kan via WPML vertaald worden
+			'rewrite' => array( 'slug' => 'verpakking', 'with_front' => false, 'hierarchical' => true ),
 		);
 
-		register_taxonomy( 'product_'.$name, 'product', $args );
-		register_taxonomy_for_object_type( 'product_'.$name, 'product' );
+		register_taxonomy( 'product_packaging', 'product', $args );
+		register_taxonomy_for_object_type( 'product_packaging', 'product' );
 	}
 
 	// Creëer een custom vlakke taxonomie op producten om bewaar- en gebruiksvoorschriften in op te slaan
 	add_action( 'init', 'register_storage_taxonomy', 50 );
 
 	function register_storage_taxonomy() {
-		$name = 'storage';
-		
 		$labels = array(
 			'name' => __( 'Bewaarvoorschriften', 'oft' ),
 			'singular_name' => __( 'Bewaarvoorschrift', 'oft' ),
@@ -1258,11 +1249,11 @@
 			'query_var' => true,
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
-			'rewrite' => array( 'slug' => $name, 'with_front' => false, 'hierarchical' => false ),
+			'rewrite' => array( 'slug' => 'bewaring', 'with_front' => false, 'hierarchical' => false ),
 		);
 
-		register_taxonomy( 'product_'.$name, 'product', $args );
-		register_taxonomy_for_object_type( 'product_'.$name, 'product' );
+		register_taxonomy( 'product_storage', 'product', $args );
+		register_taxonomy_for_object_type( 'product_storage', 'product' );
 	}
 
 
