@@ -20,19 +20,14 @@ Redirect 301	/homepage						/
 Redirect 301	/ofthome						/nl/
 Redirect 301	/word-klant						/nl/klant-worden/
 Redirect 301	/producten						/nl/producten/
-Redirect 301	/pageview.aspx?pv_mid=8872		/nl/producten/
 Redirect 301	/koffieservice					/nl/producten/koffieservice/
 Redirect 301	/geschenken						/nl/producten/geschenken/
 Redirect 301	/over-ons						/nl/waarom-oxfam/
 Redirect 301	/contact						/nl/contact/
-Redirect 301	/nl/category?groupid=chocolade	/nl/categorie/snacks-drinks/chocolade/
-Redirect 301	/nl/category?groupid=koffie		/nl/categorie/koffie-thee/koffie/
 
 Redirect 301	/francais						/fr/
 Redirect 301	/oftfrancais					/fr/
 Redirect 301	/produits						/fr/produits/
-Redirect 301	/fr/category?groupid=chocolade	/fr/categorie/snacks-drinks/chocolat/
-Redirect 301	/fr/category?groupid=koffie		/fr/categorie/cafe-the/cafe/
 Redirect 301	/service-cafe					/fr/produits/service-cafe/
 Redirect 301	/contactez-nous					/fr/contact/
 Redirect 301	/qui-sommes-nous				/fr/contact/
@@ -41,8 +36,6 @@ Redirect 301	/oftenglish						/en/
 Redirect 301	/products						/en/products/
 Redirect 301	/about-us						/en/contact/
 Redirect 301	/contact-us						/en/contact/
-Redirect 301	/en/category?groupid=chocolade	/en/category/snacks-drinks/chocolate/
-Redirect 301	/en/category?groupid=koffie		/en/category/coffee-tea/coffee/
 
 Redirect 301	"/documenten/Oxfam Fairtrade/Factuurvoorwaarden-OFT.pdf"	/Factuurvoorwaarden-OFT.pdf
 

@@ -2266,28 +2266,30 @@
 			$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
 			
 			if ( strtolower( $product->get_attribute('pa_bio') ) === 'ja' ) {
-				echo "<div class='icon-organic'></div>";
+				// Archieven eventueel publiek maken en link toevoegen: <a href="'.get_term_link( 'ja', 'pa_bio' ).'"></a>
+				echo '<div class="icon-organic"></div>';
 			}
 			
 			$icons = array();
 			foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
-				$icons[] = $term->slug;
-			}
-			if ( in_array( 'veganistisch', $icons ) ) {
-				echo "<div class='icon-vegan'></div>";
-			}
-			if ( in_array( 'glutenvrij', $icons ) ) {
-				echo "<div class='icon-gluten-free'></div>";
-			}
-			if ( in_array( 'zonder-toegevoegde-suiker', $icons ) ) {
-				echo "<div class='icon-no-added-sugar'></div>";
-			}
-			if ( in_array( 'lactosevrij', $icons ) ) {
-				echo "<div class='icon-lactose-free'></div>";
+				$icons[$term->slug] = $term->term_id;
 			}
 
-			// Switch terug naar gebruikerstaal
+			// Switch terug naar gebruikerstaal, onderstaande taxonomielinks worden automatisch vertaald
 			$sitepress->switch_lang( $prev_lang, true );
+
+			if ( array_key_exists( 'veganistisch', $icons ) ) {
+				echo '<a href="'.get_term_link( $icons['veganistisch'], 'product_hipster' ).'"><div class="icon-vegan"></div></a>';
+			}
+			if ( array_key_exists( 'glutenvrij', $icons ) ) {
+				echo '<a href="'.get_term_link( $icons['glutenvrij'], 'product_hipster' ).'"><div class="icon-gluten-free"></div></a>';
+			}
+			if ( array_key_exists( 'zonder-toegevoegde-suiker', $icons ) ) {
+				echo '<a href="'.get_term_link( $icons['zonder-toegevoegde-suiker'], 'product_hipster' ).'"><div class="icon-no-added-sugar"></div></a>';
+			}
+			if ( array_key_exists( 'lactosevrij', $icons ) ) {
+				echo '<a href="'.get_term_link( $icons['lactosevrij'], 'product_hipster' ).'"><div class="icon-lactose-free"></div></a>';
+			}
 		echo '</div>';
 	}
 
@@ -2546,6 +2548,8 @@
 					// Er is geen parent dus de oorspronkelijke term is een land
 				}
 			}
+		} elseif ( is_tax('product_hipster') ) {
+			echo '<p>'.term_description().'</p>';
 		}
 	}
 
