@@ -195,8 +195,10 @@
 
 		$args = array(
 			'labels' => $labels,
+			'description' => __( 'Ken het product toe aan een partner/land', 'oft' ),
 			'public' => true,
 			'publicly_queryable' => true,
+			'hierarchical' => true,
 			'show_ui' => true,
 			'show_in_menu' => true,
 			'show_in_nav_menus' => true,
@@ -204,13 +206,11 @@
 			'show_tagcloud' => true,
 			'show_in_quick_edit' => false,
 			'show_admin_column' => true,
-			'description' => __( 'Ken het product toe aan een partner/land', 'oft' ),
-			'hierarchical' => true,
 			'query_var' => true,
 			// Geef catmans rechten om zelf termen toe te kennen (+ overzicht te bekijken) maar niet om te bewerken (+ toe te voegen) / te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'update_core', 'manage_terms' => 'edit_products', 'delete_terms' => 'update_core' ),
 			// Slug kan via WPML vertaald worden
-			'rewrite' => array( 'slug' => 'herkomst', 'with_front' => true, 'hierarchical' => true ),
+			'rewrite' => array( 'slug' => 'herkomst', 'with_front' => false, 'hierarchical' => true ),
 		);
 
 		// TO DO: switch van 'partner' naar 'origin' => vergt ook aanpassing in MySQL-tabel oft_term_taxonomy!
@@ -456,7 +456,7 @@
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
 			// In de praktijk niet bereikbaar op deze URL want niet publiek!
-			'rewrite' => array( 'slug' => 'druif', 'with_front' => false, 'hierarchical' => false ),
+			'rewrite' => array( 'slug' => 'druif', 'with_front' => false, 'hierarchical' => true ),
 		);
 
 		$name = 'grape';
@@ -1151,7 +1151,7 @@
 			'description' => __( 'Duid de eigenschappen van het product aan', 'oft' ),
 			'public' => true,
 			'publicly_queryable' => true,
-			'hierarchical' => true,
+			'hierarchical' => false,
 			'show_ui' => true,
 			'show_in_menu' => true,
 			'show_in_nav_menus' => true,
@@ -1163,7 +1163,7 @@
 			// Geef catmans rechten om zelf termen toe te kennen (+ overzicht te bekijken) maar niet om te bewerken (+ toe te voegen) / te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'update_core', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
 			// Slug kan via WPML vertaald worden
-			'rewrite' => array( 'slug' => 'dieet', 'with_front' => false, 'hierarchical' => false ),
+			'rewrite' => array( 'slug' => 'dieet', 'with_front' => false, 'hierarchical' => true ),
 			// Zorgt ervoor dat de ID als term opgeslagen wordt, dus in de praktijk niet bruikbaar (WP 4.9)
 			// 'meta_box_cb' => 'post_categories_meta_box',
 		);
@@ -1249,7 +1249,7 @@
 			'query_var' => true,
 			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen maar niet om te verwijderen!
 			'capabilities' => array( 'assign_terms' => 'manage_product_terms', 'edit_terms' => 'manage_product_terms', 'manage_terms' => 'manage_product_terms', 'delete_terms' => 'update_core' ),
-			'rewrite' => array( 'slug' => 'bewaring', 'with_front' => false, 'hierarchical' => false ),
+			'rewrite' => array( 'slug' => 'bewaring', 'with_front' => false, 'hierarchical' => true ),
 		);
 
 		register_taxonomy( 'product_storage', 'product', $args );
