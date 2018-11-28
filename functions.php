@@ -2284,7 +2284,7 @@
 			
 			if ( strtolower( $product->get_attribute('pa_bio') ) === 'ja' ) {
 				// Archieven eventueel publiek maken en link toevoegen: <a href="'.get_term_link( 'ja', 'pa_bio' ).'"></a>
-				echo '<div class="icon-organic"></div>';
+				echo '<i class="diet-icon diet-icon-organic"></i>';
 			}
 			
 			$icons = array();
@@ -2298,7 +2298,7 @@
 			// Map met assets dient PNG-afbeeldingen te bevatten met als naam 'icon-' + Nederlandstalige slug
 			foreach ( $icons as $slug => $id ) {
 				$local_term = get_term_by( 'id', $id, 'product_hipster' );
-				echo '<a href="'.get_term_link( $id, 'product_hipster' ).'" title="'.__( 'Bekijk alle producten', 'oft' ).'"><i class="icon" aria-label="'.$local_term->name.'" style="background-image: url('.get_stylesheet_directory_uri().'/assets/icon-'.$slug.'.png);"></i></a>';
+				echo '<a href="'.get_term_link( $id, 'product_hipster' ).'" title="'.__( 'Bekijk alle producten', 'oft' ).'"><i class="diet-icon" aria-label="'.$local_term->name.'" style="background-image: url('.get_stylesheet_directory_uri().'/assets/icon-'.$slug.'.png);"></i></a>';
 			}
 		echo '</div>';
 	}

@@ -808,7 +808,7 @@ body.search {
 	display: none !important;
 }
 
-@mixin icon() {
+.diet-icon {
 	color: transparent;
 	display: inline-block;
 	margin: -10px;
@@ -821,8 +821,7 @@ body.search {
 	background-position: center center;
 }
 
-.icon-organic {
-	@include icon();
+.diet-icon-organic {
 	background-image: url('assets/icon-organic.png');
 	margin-right: -20px;
 }
