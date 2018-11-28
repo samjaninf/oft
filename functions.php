@@ -122,22 +122,23 @@
 			remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', array( YITH_WCQV_Frontend(), 'yith_add_quick_view_button' ), 10 );
 		}
 		remove_action( 'admin_notices', '_alone_admin_notice_theme_message' );
-		// PROBLEEM: Als we de 'Producten'-pagina instellen als winkelpagina verschijnen de subcategorieën daar én wordt de custom CSS van WPBakery er niet ingeladen
-		remove_filter( 'woocommerce_product_loop_start', 'woocommerce_maybe_show_product_subcategories' );
-		// add_action( 'wp_head', 'fix_missing_vc_custom_css' );
 	}
 
+	// Custom CSS van WPBakery wordt niet ingeladen op hoofdwinkelpagina
+	// add_action( 'wp_head', 'fix_missing_vc_custom_css', 100 );
+
 	function fix_missing_vc_custom_css() {
-		global $post;
-		if ( $post->ID == wc_get_page_id('shop') ) {
-			write_log("HELLO FROM POST-ID ".$post);
-			$shortcodes_custom_css = get_post_meta( 3403, '_wpb_shortcodes_custom_css', true );
+		// Werkt niet omdat de hoofdwinkelpagina als is_post_type_archive('product') beschouwd wordt
+		if ( is_page( wc_get_page_id('shop') ) ) {
+			$shortcodes_custom_css = get_post_meta( wc_get_page_id('shop'), '_wpb_shortcodes_custom_css', true );
 			if ( ! empty( $shortcodes_custom_css ) ) {
 				$shortcodes_custom_css = strip_tags( $shortcodes_custom_css );
 				echo '<style type="text/css" data-type="vc_shortcodes-custom-css">';
 				echo $shortcodes_custom_css;
 				echo '</style>';
 			}
+			// Laat de productcategorieën niet automatisch toevoegen op de hoofdwinkelpagina
+			remove_filter( 'woocommerce_product_loop_start', 'woocommerce_maybe_show_product_subcategories' );
 		}
 	}
 
