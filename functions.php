@@ -1182,9 +1182,8 @@
 			// 'meta_box_cb' => 'post_categories_meta_box',
 		);
 
-		// TO DO: switch van 'hipster' naar 'diet' (= 'product_'.$name) => vergt ook aanpassing in MySQL-tabel oft_term_taxonomy!
-		register_taxonomy( 'product_hipster', 'product', $args );
-		register_taxonomy_for_object_type( 'product_hipster', 'product' );
+		register_taxonomy( 'product_diet', 'product', $args );
+		register_taxonomy_for_object_type( 'product_diet', 'product' );
 	}
 
 	// Creëer een custom hiërarchische taxonomie op producten om verpakkingsinfo in op te slaan
@@ -2288,7 +2287,7 @@
 			}
 			
 			$icons = array();
-			foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
+			foreach ( wp_get_object_terms( $product->get_id(), 'product_diet' ) as $term ) {
 				$icons[$term->slug] = $term->term_id;
 			}
 
@@ -2297,8 +2296,8 @@
 
 			// Map met assets dient PNG-afbeeldingen te bevatten met als naam 'icon-' + Nederlandstalige slug
 			foreach ( $icons as $slug => $id ) {
-				$local_term = get_term_by( 'id', $id, 'product_hipster' );
-				echo '<a href="'.get_term_link( $id, 'product_hipster' ).'" title="'.__( 'Bekijk al deze producten', 'oft' ).'"><i class="diet-icon" aria-label="'.$local_term->name.'" style="background-image: url('.get_stylesheet_directory_uri().'/assets/icon-'.$slug.'.png);"></i></a>';
+				$local_term = get_term_by( 'id', $id, 'product_diet' );
+				echo '<a href="'.get_term_link( $id, 'product_diet' ).'" title="'.__( 'Bekijk al deze producten', 'oft' ).'"><i class="diet-icon" aria-label="'.$local_term->name.'" style="background-image: url('.get_stylesheet_directory_uri().'/assets/icon-'.$slug.'.png);"></i></a>';
 			}
 		echo '</div>';
 	}
@@ -2558,7 +2557,7 @@
 					// Er is geen parent dus de oorspronkelijke term is een land
 				}
 			}
-		} elseif ( is_tax('product_hipster') ) {
+		} elseif ( is_tax('product_diet') ) {
 			echo '<p>'.term_description().'</p>';
 		}
 	}
@@ -2653,7 +2652,7 @@
 		$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
 		
 		$icons = array();
-		foreach ( wp_get_object_terms( $main_product_id, 'product_hipster' ) as $term ) {
+		foreach ( wp_get_object_terms( $main_product_id, 'product_diet' ) as $term ) {
 			$icons[] = $term->slug;
 		}
 		$icons_text = '';
@@ -3710,7 +3709,7 @@
 			'product_tag',
 			'product_partner',
 			'product_allergen',
-			'product_hipster',
+			'product_diet',
 			'product_grape',
 			'product_flavour',
 			'product_recipe',
