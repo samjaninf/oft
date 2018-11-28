@@ -36,7 +36,7 @@
 
 	function load_child_theme() {
 		// Zorgt ervoor dat de stylesheet van het child theme ZEKER NA alone.css ingeladen wordt
-		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.21' );
+		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.22' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
 		load_child_theme_textdomain( 'oft', get_stylesheet_directory().'/languages' );
@@ -2298,7 +2298,7 @@
 			// Map met assets dient PNG-afbeeldingen te bevatten met als naam 'icon-' + Nederlandstalige slug
 			foreach ( $icons as $slug => $id ) {
 				$local_term = get_term_by( 'id', $id, 'product_hipster' );
-				echo '<a href="'.get_term_link( $id, 'product_hipster' ).'" title="'.__( 'Bekijk alle producten', 'oft' ).'"><i class="diet-icon" aria-label="'.$local_term->name.'" style="background-image: url('.get_stylesheet_directory_uri().'/assets/icon-'.$slug.'.png);"></i></a>';
+				echo '<a href="'.get_term_link( $id, 'product_hipster' ).'" title="'.__( 'Bekijk al deze producten', 'oft' ).'"><i class="diet-icon" aria-label="'.$local_term->name.'" style="background-image: url('.get_stylesheet_directory_uri().'/assets/icon-'.$slug.'.png);"></i></a>';
 			}
 		echo '</div>';
 	}
