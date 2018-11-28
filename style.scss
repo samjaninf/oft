@@ -5,7 +5,7 @@
 	Author URI:		https://www.fullstackahead.be
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.20
+	Version:		1.2.22
 	Text Domain:	oft
 */
 
@@ -808,8 +808,7 @@ body.search {
 	display: none !important;
 }
 
-@mixin icon() {
-	color: transparent;
+.diet-icon {
 	display: inline-block;
 	margin: -10px;
 	padding: 0;
@@ -819,37 +818,16 @@ body.search {
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center center;
+	border-radius: 50px;
 }
 
-.icon-organic {
-	@include icon();
+a:hover > .diet-icon {
+	background-color: $grey-background;
+}
+
+.diet-icon-organic {
 	background-image: url('assets/icon-organic.png');
 	margin-right: -20px;
-}
-
-.icon-vegetarian {
-	@include icon();
-	background-image: url('assets/icon-vegetarian.png');
-}
-
-.icon-vegan {
-	@include icon();
-	background-image: url('assets/icon-vegan.png');
-}
-
-.icon-gluten-free {
-	@include icon();
-	background-image: url('assets/icon-gluten-free.png');
-}
-
-.icon-no-added-sugar {
-	@include icon();
-	background-image: url('assets/icon-no-added-sugar.png');
-}
-
-.icon-lactose-free {
-	@include icon();
-	background-image: url('assets/icon-lactose-free.png');
 }
 
 
