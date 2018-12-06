@@ -498,9 +498,11 @@
 		);
 
 		$args['labels'] = $labels;
+		$args['hierarchical'] = false;
 		$args['rewrite']['slug'] = 'gerecht';
 		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft-admin' ), $args['rewrite']['slug'] );
 		
+		// TO DO: switch van 'recipe' naar 'dish' => vergt ook aanpassing in MySQL-tabel oft_term_taxonomy!
 		$name = 'recipe';
 		register_taxonomy( 'product_'.$name, 'product', $args );
 		register_taxonomy_for_object_type( 'product_'.$name, 'product' );
@@ -1252,7 +1254,7 @@
 			'description' => __( 'Duid de eigenschappen van het product aan', 'oft' ),
 			'public' => false,
 			'publicly_queryable' => false,
-			'hierarchical' => true,
+			'hierarchical' => false,
 			'show_ui' => true,
 			'show_in_menu' => true,
 			'show_in_nav_menus' => false,
