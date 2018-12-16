@@ -3676,6 +3676,18 @@
 	#  LOGGING  #
 	#############
 
+	// Google Analytics wordt standaard uitgeschakeld voor users met de rechten 'manage_options' (= enkel superadmins)
+	add_filter( 'woocommerce_ga_disable_tracking', 'disable_ga_tracking_for_certain_users', 10, 2 );
+
+	function disable_ga_tracking_for_certain_users( $disable, $type ) {
+		// Parameter $type bevat het soort GA-tracking
+		if ( current_user_can('manage_woocommerce') ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	// Schakel autosaves op producten uit
 	add_action( 'admin_enqueue_scripts', 'disable_autosave' );
 	
