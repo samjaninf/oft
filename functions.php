@@ -74,7 +74,7 @@
 		add_submenu_page( 'edit.php?post_type=product', 'Changelog', 'Changelog', 'publish_products', 'product-changelog', 'oxfam_product_changelog_callback' );
 		add_media_page( __( 'Bulkregistratie', 'oft-admin' ), __( 'Bulkregistratie', 'oft-admin' ), 'publish_products', 'oxfam-photos', 'oxfam_photos_callback' );
 		// Toon een expliciete link naar de featured producten (niet meer sorteerbaar sinds WC3+)
-		$submenu['edit.php?post_type=product'][] = array( __( 'Uitgelicht', 'oft-admin' ), 'manage_woocommerce', admin_url('edit.php').'?post_type=product&product_visibility=featured' );
+		$submenu['edit.php?post_type=product'][] = array( __( 'Uitgelicht', 'oft-admin' ), 'edit_products', admin_url('edit.php').'?post_type=product&product_visibility=featured' );
 	}
 
 	// Verhinder het manueel aanmaken van producten / bestellingen
@@ -3681,7 +3681,7 @@
 
 	function disable_ga_tracking_for_certain_users( $disable, $type ) {
 		// Parameter $type bevat het soort GA-tracking
-		if ( current_user_can('manage_woocommerce') ) {
+		if ( current_user_can('manage_woocommerce') or current_user_can('edit_products') ) {
 			return true;
 		} else {
 			return false;
