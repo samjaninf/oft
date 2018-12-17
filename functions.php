@@ -498,7 +498,6 @@
 		);
 
 		$args['labels'] = $labels;
-		$args['hierarchical'] = false;
 		$args['rewrite']['slug'] = 'gerecht';
 		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft-admin' ), $args['rewrite']['slug'] );
 		
@@ -1254,7 +1253,7 @@
 			'description' => __( 'Duid de eigenschappen van het product aan', 'oft' ),
 			'public' => false,
 			'publicly_queryable' => false,
-			'hierarchical' => false,
+			'hierarchical' => true,
 			'show_ui' => true,
 			'show_in_menu' => true,
 			'show_in_nav_menus' => false,
