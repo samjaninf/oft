@@ -2918,15 +2918,18 @@
 		}
 	}
 
-	// Voeg berichten toe aan adminpagina's
-	add_action( 'admin_notices', 'oxfam_admin_notices' );
+	// Voeg berichten toe bovenaan adminpagina's
+	add_action( 'admin_head', 'show_only_oxfam_notices', 10000 );
+
+	function show_only_oxfam_notices() {
+		// Gelijkaardige 'Show plugins/themes notices to admin only'-optie van User Role Editor niet inschakelen!
+		remove_all_actions('admin_notices');
+		add_action( 'admin_notices', 'oxfam_admin_notices' );
+	}
 
 	function oxfam_admin_notices() {
 		global $pagenow;
-		// $screen = get_current_screen();
-		// var_dump($screen);
-
-		// Pas op dat de 'Show plugins/themes notices to admin only'-optie van User Role Editor meldingen niet verbergt!
+		
 		if ( $pagenow === 'post-new.php' and ( isset( $_GET['post_type'] ) and $_GET['post_type'] === 'product' ) ) {
 			if ( ! isset( $_GET['lang'] ) or ( isset( $_GET['lang'] ) and $_GET['lang'] === 'nl' ) ) {
 				echo '<div class="notice notice-warning">';
