@@ -3,7 +3,7 @@
 Plugin Name: WP All Export Pro
 Plugin URI: http://www.wpallimport.com/export/
 Description: Export any post type to a CSV or XML file. Edit the exported data, and then re-import it later using WP All Import.
-Version: 1.5.3
+Version: 1.5.4
 Author: Soflyy
 */
 
@@ -47,7 +47,7 @@ else {
 	 */
 	define('PMXE_PREFIX', 'pmxe_');
 
-	define('PMXE_VERSION', '1.5.3');
+	define('PMXE_VERSION', '1.5.4');
 
 	define('PMXE_EDITION', 'paid');
 
@@ -139,10 +139,10 @@ else {
 
 		public static $session = null;
 
-		// GEWIJZIGD: Ook catmans toegang geven tot exports door toe te staan bij custom 'wpallexport_run_exports'-capability toe te kennen
-		// Creëert eigenlijk een security lek, aangezien je vanuit WP All Export alle PHP-code kunt doen uitvoeren ...
+		// GEWIJZIGD: Ook catmans toegang geven tot exports door custom 'wpallexport_run_exports'-capability toe te kennen
+		// Creëert eigenlijk een security lek, aangezien je vanuit WP All Export alle PHP-code kunt uitvoeren ...
 		public static $capabilities = 'wpallexport_run_exports';
-
+		
 		public static $cache_key = '';
 
 		private static $hasActiveSchedulingLicense = null;
