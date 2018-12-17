@@ -2923,7 +2923,9 @@
 
 	function show_only_oxfam_notices() {
 		// Gelijkaardige 'Show plugins/themes notices to admin only'-optie van User Role Editor niet inschakelen!
-		remove_all_actions('admin_notices');
+		if ( ! current_user_can('update_core') ) {
+			remove_all_actions('admin_notices');
+		}
 		add_action( 'admin_notices', 'oxfam_admin_notices' );
 	}
 
@@ -3493,7 +3495,7 @@
 	// add_filter( 'rest_authentication_errors', 'only_allow_administrator_rest_access' );
 
 	function only_allow_administrator_rest_access( $access ) {
-		if( ! is_user_logged_in() or ! current_user_can( 'update_core' ) ) {
+		if( ! is_user_logged_in() or ! current_user_can('update_core') ) {
 			return new WP_Error( 'rest_cannot_access', 'Access prohibited!', array( 'status' => rest_authorization_required_code() ) );
 		}
 		return $access;
