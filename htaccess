@@ -46,9 +46,9 @@ RewriteCond %{HTTPS} !=on
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
 # Hipstertermen hernoemen
-RewriteRule ^nl/eco/(.*)$ nl/dieet/$1 [L]
-RewriteRule ^fr/eco/(.*)$ fr/regime/$1 [L]
-RewriteRule ^en/eco/(.*)$ en/diet/$1 [L]
+RewriteRule ^nl/eco/(.*)$ https://www.oxfamfairtrade.be/nl/dieet/$1 [L]
+RewriteRule ^fr/eco/(.*)$ https://www.oxfamfairtrade.be/fr/regime/$1 [L]
+RewriteRule ^en/eco/(.*)$ https://www.oxfamfairtrade.be/en/diet/$1 [L]
 
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
