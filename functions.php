@@ -779,7 +779,7 @@
 			} else {
 				$result['label'] = __( 'Druivenrassen', 'oft' );
 			}
-			$result['value'] = implode( ', ', $grapes );
+			$result['value'] = implode( '*, ', $grapes );
 		} elseif ( ! empty( $product->get_meta('_ingredients') ) ) {
 			if ( $with_colon === true ) {
 				$result['label'] = __( 'Ingrediënten:', 'oft' );
@@ -796,14 +796,15 @@
 	// Haal de legende op die bij het ingrediëntenlijstje hoort
 	function get_ingredients_legend( $product ) {
 		$legend = array();
-		if ( ! empty( $product->get_meta('_ingredients') ) ) {
-			if ( strpos( $product->get_meta('_ingredients'), '*' ) !== false ) {
+		$ingredients = get_ingredients($product);
+		if ( $ingredients and ! empty( $ingredients['value'] ) ) {
+			if ( strpos( $ingredients['value'], '*' ) !== false ) {
 				$legend[] = '* '.__( 'ingrediënt uit een eerlijke handelsrelatie', 'oft' );
 			}
-			if ( strpos( $product->get_meta('_ingredients'), '°' ) !== false ) {
+			if ( strpos( $ingredients['value'], '°' ) !== false ) {
 				$legend[] = '° '.__( 'ingrediënt van biologische landbouw', 'oft' );
 			}
-			if ( strpos( $product->get_meta('_ingredients'), '†' ) !== false ) {
+			if ( strpos( $ingredients['value'], '†' ) !== false ) {
 				$legend[] = '† '.__( 'ingrediënt verkregen in de periode van omschakeling naar biologische landbouw', 'oft' );
 			}
 		}
