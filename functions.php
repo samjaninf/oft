@@ -779,7 +779,11 @@
 			} else {
 				$result['label'] = __( 'Druivenrassen', 'oft' );
 			}
-			$result['value'] = implode( '*, ', $grapes );
+			// Voeg FT-sterretje automatisch toe aan elk druivenras
+			foreach ( $grapes as $key => $grape ) {
+				$grapes[$key] = $grape.'*';
+			}
+			$result['value'] = implode( ', ', $grapes );
 		} elseif ( ! empty( $product->get_meta('_ingredients') ) ) {
 			if ( $with_colon === true ) {
 				$result['label'] = __( 'Ingrediënten:', 'oft' );
