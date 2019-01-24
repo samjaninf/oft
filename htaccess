@@ -1,7 +1,7 @@
 php_value max_input_vars 10000
 
 <FilesMatch "\.(pdf)$">
-    Header set Cache-Control "max-age=172800, public"
+    Header set Cache-Control "max-age=86400, must-revalidate"
 </FilesMatch>
 <FilesMatch "\.(png|gif|tiff|jpeg|jpg|css|js|mp4|woff|eot|ttf|ico|svg)$">
     Header set Cache-Control "max-age=604800, public"
@@ -16,24 +16,18 @@ IndexIgnore .htaccess */.??* *~ *# */HEADER* */README* */_vti*
 
 AddOutputFilterByType DEFLATE text/plain text/html text/xml text/css text/javascript application/xml application/xhtml+xml application/rss+xml application/javascript application/x-javascript image/svg+xml AddType x-font/otf .otf AddType x-font/ttf .ttf AddType x-font/eot .eot AddType x-font/woff .woff AddType image/x-icon .ico AddType image/png .png AddType image/svg+xml .svg
 
-Redirect 301	/crafts							https://www.fairtradecrafts.be/nl/
 Redirect 301	/homepage						/
 Redirect 301	/ofthome						/nl/
 Redirect 301	/word-klant						/nl/klant-worden/
 Redirect 301	/producten						/nl/producten/
-Redirect 301	/pageview.aspx?pv_mid=8872		/nl/producten/
 Redirect 301	/koffieservice					/nl/producten/koffieservice/
 Redirect 301	/geschenken						/nl/producten/geschenken/
 Redirect 301	/over-ons						/nl/waarom-oxfam/
 Redirect 301	/contact						/nl/contact/
-Redirect 301	/nl/category?groupid=chocolade	/nl/categorie/snacks-drinks/chocolade/
-Redirect 301	/nl/category?groupid=koffie		/nl/categorie/koffie-thee/koffie/
 
 Redirect 301	/francais						/fr/
 Redirect 301	/oftfrancais					/fr/
 Redirect 301	/produits						/fr/produits/
-Redirect 301	/fr/category?groupid=chocolade	/fr/categorie/snacks-drinks/chocolat/
-Redirect 301	/fr/category?groupid=koffie		/fr/categorie/cafe-the/cafe/
 Redirect 301	/service-cafe					/fr/produits/service-cafe/
 Redirect 301	/contactez-nous					/fr/contact/
 Redirect 301	/qui-sommes-nous				/fr/contact/
@@ -42,8 +36,6 @@ Redirect 301	/oftenglish						/en/
 Redirect 301	/products						/en/products/
 Redirect 301	/about-us						/en/contact/
 Redirect 301	/contact-us						/en/contact/
-Redirect 301	/en/category?groupid=chocolade	/en/category/snacks-drinks/chocolate/
-Redirect 301	/en/category?groupid=koffie		/en/category/coffee-tea/coffee/
 
 Redirect 301	"/documenten/Oxfam Fairtrade/Factuurvoorwaarden-OFT.pdf"	/Factuurvoorwaarden-OFT.pdf
 
@@ -52,6 +44,11 @@ RewriteCond %{HTTP_HOST} !oxfamfairtrade.be$ [NC]
 RewriteRule ^(.*)$ https://www.oxfamfairtrade.be/$1 [R=301,L]
 RewriteCond %{HTTPS} !=on
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Hipstertermen hernoemen
+RewriteRule ^nl/eco/(.*)$ https://www.oxfamfairtrade.be/nl/dieet/$1 [L]
+RewriteRule ^fr/eco/(.*)$ https://www.oxfamfairtrade.be/fr/regime/$1 [L]
+RewriteRule ^en/eco/(.*)$ https://www.oxfamfairtrade.be/en/diet/$1 [L]
 
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
@@ -65,19 +62,12 @@ RewriteRule . /index.php [L]
 
 # END WordPress
 
-<Limit GET POST>
-	Order Deny,Allow
-	# OMDAT de Ahrefs-, DotBot- en Yandex-crawlers enorm hevig indexeren, zonder nuttig resultaat
-	BrowserMatchNoCase ahrefsbot bad_bot
-	BrowserMatchNoCase dotbot bad_bot
-	BrowserMatchNoCase yandex bad_bot
-	Deny from env=bad_bot
-	# OPTIONEEL de site afschermen voor iedereen behalve onze IP-adressen
-	Allow from all
-	Allow from 127.0.0.1
-	Allow from 141.138.168.148
-	Allow from 84.199.185.74
-	Allow from 213.118.15.186
-</Limit>
+# LIMITEER toegang
+# Require ip 127.0.0.1 141.138.168.148 84.199.185.74 212.166.48.196 81.165.195.41
+
+# BLOKKEER agressieve crawlers
+<If "%{HTTP_USER_AGENT} == 'ahrefsbot' || %{HTTP_USER_AGENT} == 'dotbot' || %{HTTP_USER_AGENT} == 'yandex'">
+	Require all denied
+</If>
 
 ErrorDocument 403 https://www.oxfamfairtrade.be/403.html

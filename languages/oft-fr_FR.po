@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam Fair Trade\n"
-"POT-Creation-Date: 2018-11-27 18:04+0100\n"
-"PO-Revision-Date: 2018-11-27 18:04+0100\n"
+"POT-Creation-Date: 2018-11-28 10:48+0100\n"
+"PO-Revision-Date: 2018-11-28 10:49+0100\n"
 "Last-Translator: Frederik Neirynck <info@fullstackahead.be>\n"
 "Language-Team: Communicatie <web@oww.be>\n"
 "Language: fr_FR\n"
@@ -84,813 +84,817 @@ msgstr ""
 msgid "Uitgelicht"
 msgstr ""
 
-#: functions.php:182
+#: functions.php:199
 msgid "Partners"
 msgstr "Partenaires"
 
-#: functions.php:183
+#: functions.php:200
 msgid "Partner"
 msgstr "Partenaire"
 
-#: functions.php:184
+#: functions.php:201
 msgid "Alle partners"
 msgstr "Tous les partenaires"
 
-#: functions.php:185
+#: functions.php:202
 msgid "Partner bewerken"
 msgstr ""
 
-#: functions.php:186
+#: functions.php:203
 msgid "Partner bijwerken"
 msgstr ""
 
-#: functions.php:187
+#: functions.php:204
 msgid "Partner bekijken"
 msgstr ""
 
-#: functions.php:188
+#: functions.php:205
 msgid "Voeg nieuwe partner toe"
 msgstr ""
 
-#: functions.php:189
+#: functions.php:206
 msgid "Nieuwe partner"
 msgstr ""
 
-#: functions.php:190
+#: functions.php:207
 msgid "Land"
 msgstr ""
 
-#: functions.php:191
+#: functions.php:208
 msgid "Land:"
 msgstr ""
 
-#: functions.php:192
+#: functions.php:209
 msgid "Partners doorzoeken"
 msgstr ""
 
-#: functions.php:193
+#: functions.php:210
 msgid "Terug naar alle partners"
 msgstr ""
 
-#: functions.php:198
+#: functions.php:215
 msgid "Ken het product toe aan een partner/land"
 msgstr ""
 
-#: functions.php:225
+#: functions.php:242
 msgid "Quote"
 msgstr ""
 
-#: functions.php:226 functions.php:1181
+#: functions.php:243 functions.php:1198
 msgid "Type"
 msgstr ""
 
-#: functions.php:227
+#: functions.php:244
 msgid "Foto-ID"
 msgstr ""
 
-#: functions.php:252 functions.php:291
+#: functions.php:269 functions.php:308
 msgid "Node OWW-site"
 msgstr ""
 
-#: functions.php:256 functions.php:298
+#: functions.php:273 functions.php:315
 msgid "Partnertype"
 msgstr ""
 
-#: functions.php:310
+#: functions.php:327
 msgid "Beeld"
 msgstr ""
 
-#: functions.php:318
+#: functions.php:335
 msgid "Kies foto"
 msgstr ""
 
-#: functions.php:319
+#: functions.php:336
 msgid "Verwijder foto"
 msgstr ""
 
-#: functions.php:340
+#: functions.php:357
 msgid "Stel in"
 msgstr ""
 
-#: functions.php:386
+#: functions.php:403
 msgid "Allergenen"
 msgstr "Allergènes"
 
-#: functions.php:387 functions.php:389
+#: functions.php:404 functions.php:406
 msgid "Allergeen"
 msgstr "Allergène"
 
-#: functions.php:388
+#: functions.php:405
 msgid "Alle allergenen"
 msgstr "Tous les allergènes"
 
-#: functions.php:390
+#: functions.php:407
 msgid "Allergeen:"
 msgstr "Allergène :"
 
-#: functions.php:391
+#: functions.php:408
 msgid "Nieuw allergeen"
 msgstr ""
 
-#: functions.php:392
+#: functions.php:409
 msgid "Voeg nieuw allergeen toe"
 msgstr ""
 
-#: functions.php:393
+#: functions.php:410
 msgid "Allergeen bekijken"
 msgstr ""
 
-#: functions.php:394
+#: functions.php:411
 msgid "Allergeen bewerken"
 msgstr ""
 
-#: functions.php:395
+#: functions.php:412
 msgid "Allergeen bijwerken"
 msgstr ""
 
-#: functions.php:396
+#: functions.php:413
 msgid "Allergenen doorzoeken"
 msgstr ""
 
-#: functions.php:397
+#: functions.php:414
 msgid "Terug naar alle allergenen"
 msgstr ""
 
-#: functions.php:402
+#: functions.php:419
 msgid "Geef aan dat het product dit bevat"
 msgstr ""
 
-#: functions.php:429 functions.php:761
+#: functions.php:446 functions.php:778
 msgid "Druivenrassen"
 msgstr "Cépages"
 
-#: functions.php:430
+#: functions.php:447
 msgid "Druivenras"
 msgstr "Cépage"
 
-#: functions.php:431
+#: functions.php:448
 msgid "Alle druivenrassen"
 msgstr "Tous les cépages"
 
-#: functions.php:432
+#: functions.php:449
 msgid "Kleur"
 msgstr ""
 
-#: functions.php:433
+#: functions.php:450
 msgid "Kleur:"
 msgstr ""
 
-#: functions.php:434
+#: functions.php:451
 msgid "Nieuw druivenras"
 msgstr ""
 
-#: functions.php:435
+#: functions.php:452
 msgid "Voeg nieuw druivenras toe"
 msgstr ""
 
-#: functions.php:436
+#: functions.php:453
 msgid "Druivenras bekijken"
 msgstr ""
 
-#: functions.php:437
+#: functions.php:454
 msgid "Druivenras bewerken"
 msgstr ""
 
-#: functions.php:438
+#: functions.php:455
 msgid "Druivenras bijwerken"
 msgstr ""
 
-#: functions.php:439
+#: functions.php:456
 msgid "Druivenrassen doorzoeken"
 msgstr ""
 
-#: functions.php:440
+#: functions.php:457
 msgid "Terug naar alle druivenrassen"
 msgstr ""
 
-#: functions.php:445 functions.php:484 functions.php:508
+#: functions.php:462 functions.php:501 functions.php:525
 #, php-format
 msgid "Voeg de wijn toe aan een %s in de wijnkiezer"
 msgstr ""
 
-#: functions.php:468
+#: functions.php:485
 msgid "Gerechten"
 msgstr "Plats"
 
-#: functions.php:469 functions.php:471
+#: functions.php:486 functions.php:488
 msgid "Gerecht"
 msgstr "Plat"
 
-#: functions.php:470
+#: functions.php:487
 msgid "Alle gerechten"
 msgstr "Tous les plats"
 
-#: functions.php:472
+#: functions.php:489
 msgid "Gerecht:"
 msgstr "Plat:"
 
-#: functions.php:473
+#: functions.php:490
 msgid "Nieuw gerecht"
 msgstr ""
 
-#: functions.php:474
+#: functions.php:491
 msgid "Voeg nieuw gerecht toe"
 msgstr ""
 
-#: functions.php:475
+#: functions.php:492
 msgid "Gerecht bekijken"
 msgstr ""
 
-#: functions.php:476
+#: functions.php:493
 msgid "Gerecht bewerken"
 msgstr ""
 
-#: functions.php:477
+#: functions.php:494
 msgid "Gerecht bijwerken"
 msgstr ""
 
-#: functions.php:478
+#: functions.php:495
 msgid "Gerechten doorzoeken"
 msgstr ""
 
-#: functions.php:479
+#: functions.php:496
 msgid "Terug naar alle gerechten"
 msgstr ""
 
-#: functions.php:492
+#: functions.php:509
 msgid "Smaken"
 msgstr "Saveurs"
 
-#: functions.php:493 functions.php:495
+#: functions.php:510 functions.php:512
 msgid "Smaak"
 msgstr "Saveur"
 
-#: functions.php:494
+#: functions.php:511
 msgid "Alle smaken"
 msgstr "Toutes les saveurs"
 
-#: functions.php:496
+#: functions.php:513
 msgid "Smaak:"
 msgstr "Saveur :"
 
-#: functions.php:497
+#: functions.php:514
 msgid "Nieuwe smaak"
 msgstr ""
 
-#: functions.php:498
+#: functions.php:515
 msgid "Voeg nieuwe smaak toe"
 msgstr ""
 
-#: functions.php:499
+#: functions.php:516
 msgid "Smaak bekijken"
 msgstr ""
 
-#: functions.php:500
+#: functions.php:517
 msgid "Smaak bewerken"
 msgstr ""
 
-#: functions.php:501
+#: functions.php:518
 msgid "Smaak bijwerken"
 msgstr ""
 
-#: functions.php:502
+#: functions.php:519
 msgid "Smaken doorzoeken"
 msgstr ""
 
-#: functions.php:503
+#: functions.php:520
 msgid "Terug naar alle smaken"
 msgstr ""
 
-#: functions.php:552
+#: functions.php:569
 msgid "Wijnbeschrijving"
 msgstr "Description du vin"
 
-#: functions.php:561 functions.php:768
+#: functions.php:578 functions.php:785
 msgid "Ingrediënten"
 msgstr "Ingrédients"
 
-#: functions.php:575
+#: functions.php:592
 #, php-format
 msgid "Voedingswaarde per 100 %s"
 msgstr "Valeur nutritionnelle par 100 %s"
 
-#: functions.php:582
+#: functions.php:599
 msgid "Technische fiche"
 msgstr "Fiche technique"
 
-#: functions.php:610 functions.php:1984
+#: functions.php:627 functions.php:2001
 msgid "Energie"
 msgstr "Energie"
 
-#: functions.php:618 functions.php:1932
+#: functions.php:635 functions.php:1949
 msgid "Vetten"
 msgstr "Lipides"
 
-#: functions.php:619 functions.php:1937
+#: functions.php:636 functions.php:1954
 msgid "waarvan verzadigde vetzuren"
 msgstr "dont acides gras saturés"
 
-#: functions.php:620 functions.php:1942
+#: functions.php:637 functions.php:1959
 msgid "waarvan enkelvoudig onverzadigde vetzuren"
 msgstr "dont acides gras monoinsaturés"
 
-#: functions.php:621 functions.php:1947
+#: functions.php:638 functions.php:1964
 msgid "waarvan meervoudig onverzadigde vetzuren"
 msgstr "dont acides gras polyinsaturés"
 
-#: functions.php:622 functions.php:1952
+#: functions.php:639 functions.php:1969
 msgid "Koolhydraten"
 msgstr "Glucides"
 
-#: functions.php:623 functions.php:1957
+#: functions.php:640 functions.php:1974
 msgid "waarvan suikers"
 msgstr "dont sucres"
 
-#: functions.php:624 functions.php:1962
+#: functions.php:641 functions.php:1979
 msgid "waarvan polyolen"
 msgstr "dont polyols"
 
-#: functions.php:625 functions.php:1967
+#: functions.php:642 functions.php:1984
 msgid "waarvan zetmeel"
 msgstr "dont amidon"
 
-#: functions.php:626 functions.php:1972
+#: functions.php:643 functions.php:1989
 msgid "Vezels"
 msgstr "Fibres"
 
-#: functions.php:627 functions.php:1977
+#: functions.php:644 functions.php:1994
 msgid "Eiwitten"
 msgstr "Protéines"
 
-#: functions.php:628 functions.php:2020
+#: functions.php:645 functions.php:2037
 msgid "Zout"
 msgstr "Sel"
 
-#: functions.php:659
+#: functions.php:676
 msgid "Netto-inhoud"
 msgstr "Contenu net"
 
-#: functions.php:664
+#: functions.php:681
 msgid "Fairtradepercentage"
 msgstr "Pourcentage de commerce équitable"
 
-#: functions.php:694
+#: functions.php:711
 msgid "Dit product bevat"
 msgstr "Ce produit contient"
 
-#: functions.php:701 functions.php:716
+#: functions.php:718 functions.php:733
 msgid "geen meldingsplichtige allergenen"
 msgstr "aucun allergène à déclaration obligatoire"
 
-#: functions.php:709 functions.php:2712
+#: functions.php:726 functions.php:2718
 msgid "Kan sporen bevatten van"
 msgstr "Peut contenir des traces de"
 
-#: functions.php:748
+#: functions.php:765
 msgid "Geen info beschikbaar."
 msgstr "Pas d'information disponible."
 
-#: functions.php:759
+#: functions.php:776
 msgid "Druivenrassen:"
 msgstr "Cépages :"
 
-#: functions.php:766
+#: functions.php:783
 msgid "Ingrediënten:"
 msgstr "Ingrédients :"
 
-#: functions.php:782
+#: functions.php:799
 msgid "ingrediënt uit een eerlijke handelsrelatie"
 msgstr "ingrédient d'une relation commerciale fair trade"
 
-#: functions.php:785
+#: functions.php:802
 msgid "ingrediënt van biologische landbouw"
 msgstr "ingrédient d'agriculture biologique"
 
-#: functions.php:788
+#: functions.php:805
 msgid ""
 "ingrediënt verkregen in de periode van omschakeling naar biologische landbouw"
 msgstr ""
 "ingrédient obtenu pendant la période de conversion en agriculture biologique"
 
-#: functions.php:1134
+#: functions.php:1151
 msgid "Diëten"
 msgstr "Régimes"
 
-#: functions.php:1135
+#: functions.php:1152
 msgid "Dieet"
 msgstr "Régime"
 
-#: functions.php:1136
+#: functions.php:1153
 msgid "Alle diëten"
 msgstr "Tous les régimes"
 
-#: functions.php:1137
+#: functions.php:1154
 msgid "Nieuw dieet"
 msgstr ""
 
-#: functions.php:1138
+#: functions.php:1155
 msgid "Voeg nieuw dieet toe"
 msgstr ""
 
-#: functions.php:1139
+#: functions.php:1156
 msgid "Dieet bekijken"
 msgstr ""
 
-#: functions.php:1140
+#: functions.php:1157
 msgid "Dieet bewerken"
 msgstr ""
 
-#: functions.php:1141
+#: functions.php:1158
 msgid "Dieet bijwerken"
 msgstr ""
 
-#: functions.php:1142
+#: functions.php:1159
 msgid "Diëten doorzoeken"
 msgstr ""
 
-#: functions.php:1143
+#: functions.php:1160
 msgid "Terug naar alle diëten"
 msgstr ""
 
-#: functions.php:1148 functions.php:1194 functions.php:1235
+#: functions.php:1165 functions.php:1211 functions.php:1252
 msgid "Duid de eigenschappen van het product aan"
 msgstr ""
 
-#: functions.php:1178
+#: functions.php:1195
 msgid "Verpakkingswijzes"
 msgstr "Emballages"
 
-#: functions.php:1179
+#: functions.php:1196
 msgid "Verpakkingswijze"
 msgstr "Emballage"
 
-#: functions.php:1180
+#: functions.php:1197
 msgid "Alle verpakkingswijzes"
 msgstr "Tous les emballages"
 
-#: functions.php:1182
+#: functions.php:1199
 msgid "Type:"
 msgstr ""
 
-#: functions.php:1183
+#: functions.php:1200
 msgid "Nieuwe verpakkingswijze"
 msgstr ""
 
-#: functions.php:1184
+#: functions.php:1201
 msgid "Voeg nieuwe verpakkingswijze toe"
 msgstr ""
 
-#: functions.php:1185
+#: functions.php:1202
 msgid "Verpakkingswijzes bekijken"
 msgstr ""
 
-#: functions.php:1186
+#: functions.php:1203
 msgid "Verpakkingswijze bewerken"
 msgstr ""
 
-#: functions.php:1187
+#: functions.php:1204
 msgid "Verpakkingswijze bijwerken"
 msgstr ""
 
-#: functions.php:1188
+#: functions.php:1205
 msgid "Verpakkingswijzes doorzoeken"
 msgstr ""
 
-#: functions.php:1189
+#: functions.php:1206
 msgid "Terug naar alle verpakkingswijzes"
 msgstr ""
 
-#: functions.php:1221
+#: functions.php:1238
 msgid "Bewaarvoorschriften"
 msgstr "Conseils de stockage"
 
-#: functions.php:1222
+#: functions.php:1239
 msgid "Bewaarvoorschrift"
 msgstr "Conseil de stockage"
 
-#: functions.php:1223
+#: functions.php:1240
 msgid "Alle bewaarvoorschriften"
 msgstr "Tous les conseils de stockage"
 
-#: functions.php:1224
+#: functions.php:1241
 msgid "Nieuw bewaarvoorschrift"
 msgstr ""
 
-#: functions.php:1225
+#: functions.php:1242
 msgid "Voeg nieuw bewaarvoorschrift toe"
 msgstr ""
 
-#: functions.php:1226
+#: functions.php:1243
 msgid "Bewaarvoorschriften bekijken"
 msgstr ""
 
-#: functions.php:1227
+#: functions.php:1244
 msgid "Bewaarvoorschrift bewerken"
 msgstr ""
 
-#: functions.php:1228
+#: functions.php:1245
 msgid "Bewaarvoorschrift bijwerken"
 msgstr ""
 
-#: functions.php:1229
+#: functions.php:1246
 msgid "Bewaarvoorschriften doorzoeken"
 msgstr ""
 
-#: functions.php:1230
+#: functions.php:1247
 msgid "Terug naar alle bewaarvoorschriften"
 msgstr ""
 
-#: functions.php:1314
+#: functions.php:1331
 msgid "Laatst toegevoegd"
 msgstr ""
 
-#: functions.php:1315
+#: functions.php:1332
 msgid "Van A tot Z"
 msgstr ""
 
-#: functions.php:1316
+#: functions.php:1333
 msgid "Van Z tot A"
 msgstr ""
 
-#: functions.php:1317
+#: functions.php:1334
 msgid "Stijgende prijs"
 msgstr ""
 
-#: functions.php:1318
+#: functions.php:1335
 msgid "Dalende prijs"
 msgstr ""
 
-#: functions.php:1319
+#: functions.php:1336
 msgid "Stijgend artikelnummer"
 msgstr ""
 
-#: functions.php:1320
+#: functions.php:1337
 msgid "Dalend artikelnummer"
 msgstr ""
 
-#: functions.php:1332
+#: functions.php:1349
 msgid "Merk"
 msgstr ""
 
-#: functions.php:1334
+#: functions.php:1351
 msgid "BestelWeb"
 msgstr ""
 
-#: functions.php:1337
+#: functions.php:1354
 msgid "Ompaknummer"
 msgstr ""
 
-#: functions.php:1340
+#: functions.php:1357
 msgid "Prijs (excl. BTW)"
 msgstr ""
 
-#: functions.php:1342
+#: functions.php:1359
 msgid "Prijs (incl. BTW)"
 msgstr ""
 
-#: functions.php:1345
+#: functions.php:1362
 msgid "Talen"
 msgstr ""
 
-#: functions.php:1352
+#: functions.php:1369
 msgid "Verwijderd op"
 msgstr ""
 
-#: functions.php:1389
+#: functions.php:1406
 msgid "niet beschikbaar"
 msgstr "indisponible"
 
-#: functions.php:1436
+#: functions.php:1453
 msgid "Op merk filteren"
 msgstr ""
 
-#: functions.php:1616
+#: functions.php:1633
 msgid "Leeggoed (&euro;)"
 msgstr ""
 
-#: functions.php:1627
+#: functions.php:1644
 #, php-format
 msgid "Eenheidsprijs (%s)"
 msgstr ""
 
-#: functions.php:1628
+#: functions.php:1645
 msgid "nog niet berekenbaar"
 msgstr ""
 
-#: functions.php:1630
+#: functions.php:1647
 msgid ""
 "Deze waarde wordt automatisch berekend bij het opslaan, op voorwaarde dat "
 "zowel prijs, inhoudsmaat als netto-inhoud ingevuld zijn."
 msgstr ""
 
-#: functions.php:1641
+#: functions.php:1658
 msgid "Inhoudsmaat"
 msgstr ""
 
-#: functions.php:1643 functions.php:2161
+#: functions.php:1660 functions.php:2178
 msgid "(selecteer)"
 msgstr "(sélectionnez)"
 
-#: functions.php:1644
+#: functions.php:1661
 msgid "gram (vast product)"
 msgstr ""
 
-#: functions.php:1645
+#: functions.php:1662
 msgid "centiliter (vloeibaar product)"
 msgstr ""
 
-#: functions.php:1660
+#: functions.php:1677
 #, php-format
 msgid "Netto-inhoud (%s)"
 msgstr "Contenu net (%s)"
 
-#: functions.php:1673
+#: functions.php:1690
 msgid "Noordproduct?"
 msgstr ""
 
-#: functions.php:1675
+#: functions.php:1692
 msgid ""
 "Vink dit aan als het om een lokaal / solidair product gaat waarbij het "
 "fairtradepercentage hieronder geen betekenis heeft"
 msgstr ""
 
-#: functions.php:1686
+#: functions.php:1703
 msgid "Fairtradepercentage (%)"
 msgstr ""
 
-#: functions.php:1706
+#: functions.php:1723
 msgid "Ingrediëntenlijst"
 msgstr ""
 
-#: functions.php:1706
+#: functions.php:1723
 msgid "fair trade"
 msgstr ""
 
-#: functions.php:1706
+#: functions.php:1723
 msgid "biologisch"
 msgstr ""
 
-#: functions.php:1706
+#: functions.php:1723
 msgid "bijna bio"
 msgstr ""
 
-#: functions.php:1706
+#: functions.php:1723
 msgid "allergeen"
 msgstr "allergène"
 
-#: functions.php:1710
+#: functions.php:1727
 msgid ""
 "Wordt gebruikt in productfiches én webshops. Legende van sterretjes, "
 "bolletjes en obelisken wordt automatisch toegevoegd indien van toepassing. "
 "De Franse en Engelse versies zijn enkel noodzakelijk voor OFT-producten."
 msgstr ""
 
-#: functions.php:1717
+#: functions.php:1734
 msgid "Actuele promotekst"
 msgstr ""
 
-#: functions.php:1720
+#: functions.php:1737
 msgid ""
 "Dit tekstje dient enkel om te tonen aan particulieren in de wijnkiezer en de "
 "webshops. Te combineren met de actieprijs en -periode bovenaan."
 msgstr ""
 
-#: functions.php:1731
+#: functions.php:1748
 msgid "Update fiches?"
 msgstr ""
 
-#: functions.php:1732
+#: functions.php:1749
 msgid ""
 "Vink dit aan als je de PDF's wil bijwerken wanneer je het product opslaat "
 "(packshot moet aanwezig zijn, werkt ook voor niet-OFT-producten)"
 msgstr ""
 
-#: functions.php:1740
+#: functions.php:1757
 msgid "Download PDF"
 msgstr ""
 
-#: functions.php:1752
+#: functions.php:1769
 msgid "ShopPlus"
 msgstr ""
 
-#: functions.php:1762
+#: functions.php:1779
 msgid "Houdbaarheid na productie (dagen)"
 msgstr ""
 
-#: functions.php:1803
+#: functions.php:1820
 msgid "EAN-code"
 msgstr ""
 
-#: functions.php:1808
+#: functions.php:1825
 msgid "EAN-code <u>ompak</u>"
 msgstr ""
 
-#: functions.php:1813
+#: functions.php:1830
 msgid "Aantal stuks per ompak"
 msgstr ""
 
-#: functions.php:1818
+#: functions.php:1835
 msgid "Aantal ompakken per laag"
 msgstr ""
 
-#: functions.php:1823
+#: functions.php:1840
 msgid "Aantal lagen per pallet"
 msgstr ""
 
-#: functions.php:1830
+#: functions.php:1847
 msgid "Intrastatcode"
 msgstr ""
 
-#: functions.php:1849
+#: functions.php:1866
 msgid "Gewicht <u>ompak</u> (kg)"
 msgstr ""
 
 # GEEN VERTALING NODIG
-#: functions.php:1852
+#: functions.php:1869
 msgid "Weight in decimal form"
 msgstr ""
 
-#: functions.php:1862
+#: functions.php:1879
 #, php-format
 msgid "Afmetingen <u>ompak</u> (%s)"
 msgstr ""
 
 # GEEN VERTALING NODIG
-#: functions.php:1864
+#: functions.php:1881
 msgid "Length"
 msgstr ""
 
 # GEEN VERTALING NODIG
-#: functions.php:1865
+#: functions.php:1882
 msgid "Width"
 msgstr ""
 
 # GEEN VERTALING NODIG
-#: functions.php:1866
+#: functions.php:1883
 msgid "Height"
 msgstr ""
 
 # GEEN VERTALING NODIG
-#: functions.php:1868
+#: functions.php:1885
 msgid "LxWxH in decimal form"
 msgstr ""
 
-#: functions.php:1877
+#: functions.php:1894
 msgid "Voedingsinfo"
 msgstr ""
 
-#: functions.php:1882
+#: functions.php:1899
 msgid "Logistiek"
 msgstr ""
 
-#: functions.php:1893
+#: functions.php:1910
 msgid "per 100 gram"
 msgstr ""
 
-#: functions.php:2130
+#: functions.php:2147
 msgid "Gelinkt product"
 msgstr ""
 
-#: functions.php:2159
+#: functions.php:2176
 #, php-format
 msgid ""
 "Kies 1 van de %d actuele OFT-producten om onderaan het bericht toe te voegen:"
 msgstr ""
 
-#: functions.php:2167
+#: functions.php:2184
 msgid ""
 "Gebruik de shortcode [products skus=\"A,B,C\" columns=\"3\"] indien je "
 "meerdere producten wil tonen!"
 msgstr ""
 
-#: functions.php:2196 functions.php:2676
+#: functions.php:2213 functions.php:2682
 msgid "Partner:"
 msgid_plural "Partners:"
 msgstr[0] "Partenaire :"
 msgstr[1] "Partenaires :"
 
-#: functions.php:2247
+#: functions.php:2264
 #, php-format
 msgid "Lees ook de blogpost \"%s\"."
 msgstr "Lisez aussi l'article \"%s\"."
 
-#: functions.php:2257
+#: functions.php:2274
 msgid "Download de productfiche"
 msgstr "Téléchargez la feuille de produit"
 
-#: functions.php:2449
+#: functions.php:2301
+msgid "Bekijk al deze producten"
+msgstr "Consultez tous ces produits"
+
+#: functions.php:2461
 msgid "Toon de datum en eventuele categorieën van de post."
 msgstr ""
 
-#: functions.php:2470
+#: functions.php:2482
 msgid "Gepubliceerd:"
 msgstr "Publié :"
 
-#: functions.php:2470
+#: functions.php:2482
 msgid "Categorie:"
 msgstr "Catégorie :"
 
-#: functions.php:2533
+#: functions.php:2545
 msgid ""
 "Deze boeren zijn voor ons geen leveranciers, het zijn partners. Dankzij "
 "jullie steun kunnen coöperaties uitgroeien tot bloeiende ondernemingen die "
@@ -901,116 +905,116 @@ msgstr ""
 "développer en entreprises fleurissantes qui vendent leurs produits "
 "équitables dans le monde entier."
 
-#: functions.php:2536
+#: functions.php:2548
 msgid "Lees meer over deze producent op oxfamwereldwinkels.be"
 msgstr ""
 "Lisez plus sur ce producteur sur oxfamwereldwinkels.be (en néerlandais)"
 
-#: functions.php:2543
+#: functions.php:2555
 #, php-format
 msgid "Momenteel verkopen wij één product van deze partner:"
 msgid_plural "Momenteel verkopen wij %s producten van deze partner:"
 msgstr[0] "À ce moment, nous vendons un produit de ce partenaire :"
 msgstr[1] "À ce moment, nous vendons %s produits de ce partenaire :"
 
-#: functions.php:2559
+#: functions.php:2573
 msgid "Zoekresultaten"
 msgstr "Résultats de récherche"
 
-#: functions.php:2560
+#: functions.php:2574
 msgid "Vorige"
 msgstr "Précédent"
 
-#: functions.php:2561
+#: functions.php:2575
 msgid "Volgende"
 msgstr "Suivant"
 
-#: functions.php:2669
+#: functions.php:2675
 msgid "bekijk product online"
 msgstr "consultez le produit sur le site"
 
-#: functions.php:2678
+#: functions.php:2684
 msgid "Herkomst:"
 msgstr "Origine :"
 
-#: functions.php:2691
+#: functions.php:2697
 msgid "Dit is een lokaal / solidair Noordproduct."
 msgstr "Ceci est un produit local / solidaire venant du Nord."
 
-#: functions.php:2694
+#: functions.php:2700
 #, php-format
 msgid "Totaal fairtrade-ingrediënten: %d %%"
 msgstr "Total ingrédients fair trade : %d %%"
 
-#: functions.php:2709
+#: functions.php:2715
 msgid "Bevat"
 msgstr "Contient de"
 
-#: functions.php:2709 functions.php:2712
+#: functions.php:2715 functions.php:2718
 msgid "en"
 msgstr "et"
 
-#: functions.php:2715
+#: functions.php:2721
 msgid "Geen meldingsplichtige allergenen aanwezig."
 msgstr "Aucun allergène à déclaration obligatoire présent."
 
-#: functions.php:2739 functions.php:2745
+#: functions.php:2745 functions.php:2751
 msgid "met statiegeld"
 msgstr "avec consigne"
 
-#: functions.php:2771
+#: functions.php:2777
 msgid "Labels"
 msgstr "Labels"
 
-#: functions.php:2803
+#: functions.php:2809
 msgid "Houdbaarheid na productie"
 msgstr "Conservation après production"
 
-#: functions.php:2803
+#: functions.php:2809
 msgid "dagen"
 msgstr "jours"
 
-#: functions.php:2867
+#: functions.php:2873
 #, php-format
 msgid "Aangemaakt %s"
 msgstr "Créé %s"
 
-#: functions.php:2972
+#: functions.php:2978
 msgid "Dit e-mailadres is reeds ingeschreven!"
 msgstr "Cette adresse est déjà inscrite !"
 
-#: functions.php:2974
+#: functions.php:2980
 msgid "Dit e-mailadres was al eens ingeschreven!"
 msgstr "Cette adresse a déjà été inscrite auparavant !"
 
-#: functions.php:3002
+#: functions.php:3008
 msgid "Gelieve de fouten op te lossen."
 msgstr "Veuillez éliminer les erreurs."
 
-#: functions.php:3017
+#: functions.php:3023
 #, php-format
 msgid " sinds %s"
 msgstr " depuis le %s"
 
 #. translators: %s: bevat optioneel de datum van inschrijving
-#: functions.php:3022
+#: functions.php:3028
 #, php-format
 msgid "Je bent%s reeds geabonneerd op onze nieuwsbrief!"
 msgstr "Vous êtes déjà inscrit à notre bulletin d'information%s !"
 
-#: functions.php:3026
+#: functions.php:3032
 msgid "We werkten je gegevens bij."
 msgstr "Nous avons actualisé vos données."
 
-#: functions.php:3029
+#: functions.php:3035
 msgid "Je was vroeger al eens geabonneerd op onze nieuwsbrief!"
 msgstr "Vous étiez déjà inscrit à notre bulletin d'information auparavant !"
 
-#: functions.php:3033
+#: functions.php:3039
 msgid "We heractiveerden je inschrijving."
 msgstr "Nous avons réactivé votre inscription."
 
-#: functions.php:3036
+#: functions.php:3042
 #, php-format
 msgid ""
 "We konden je inschrijving niet automatisch vernieuwen. <a href=\"%s\" target="
@@ -1021,7 +1025,7 @@ msgstr ""
 "\"%s\" target=\"_blank\">Veuillez utiliser ce formulaire d'inscription</a> "
 "et tapez le lien de confirmation."
 
-#: functions.php:3099
+#: functions.php:3105
 msgid ""
 "Er was een onbekend probleem met Contact Form 7. Probeer het later eens "
 "opnieuw."
@@ -1029,14 +1033,14 @@ msgstr ""
 "Il s'est produit un problème inconnu avec Contact Form 7. Veuillez l'essayer "
 "encore une fois plus tard."
 
-#: functions.php:3112
+#: functions.php:3118
 msgid ""
 "Bedankt, je bent vanaf nu geabonneerd op de nieuwsbrief van Oxfam Fair Trade!"
 msgstr ""
 "Merci, désormais vous êtes inscrit au bulletin d'information d'Oxfam Fair "
 "Trade !"
 
-#: functions.php:3115
+#: functions.php:3121
 msgid ""
 "Je inschrijving kon niet uitgevoerd worden op de MailChimp-servers. Probeer "
 "het later eens opnieuw."
@@ -1044,7 +1048,7 @@ msgstr ""
 "Votre inscription ne pouvait pas être complété sur les serveurs de "
 "MailChimp. Veuillez le réessayer plus tard."
 
-#: functions.php:3250
+#: functions.php:3257
 #, php-format
 msgid "Bekijk <a href=\"%s\" target=\"_blank\">de recentste nieuwsbrief</a>."
 msgstr "Consultez <a href=\"%s\" target=\"_blank\">le dernier bulletin</a>."

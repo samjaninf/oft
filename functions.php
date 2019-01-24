@@ -36,7 +36,7 @@
 
 	function load_child_theme() {
 		// Zorgt ervoor dat de stylesheet van het child theme ZEKER NA alone.css ingeladen wordt
-		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.20' );
+		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.22' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
 		load_child_theme_textdomain( 'oft', get_stylesheet_directory().'/languages' );
@@ -74,7 +74,7 @@
 		add_submenu_page( 'edit.php?post_type=product', 'Changelog', 'Changelog', 'publish_products', 'product-changelog', 'oxfam_product_changelog_callback' );
 		add_media_page( __( 'Bulkregistratie', 'oft-admin' ), __( 'Bulkregistratie', 'oft-admin' ), 'publish_products', 'oxfam-photos', 'oxfam_photos_callback' );
 		// Toon een expliciete link naar de featured producten (niet meer sorteerbaar sinds WC3+)
-		$submenu['edit.php?post_type=product'][] = array( __( 'Uitgelicht', 'oft-admin' ), 'manage_woocommerce', admin_url('edit.php').'?post_type=product&product_visibility=featured' );
+		$submenu['edit.php?post_type=product'][] = array( __( 'Uitgelicht', 'oft-admin' ), 'edit_products', admin_url('edit.php').'?post_type=product&product_visibility=featured' );
 	}
 
 	// Verhinder het manueel aanmaken van producten / bestellingen
@@ -125,6 +125,24 @@
 			remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', array( YITH_WCQV_Frontend(), 'yith_add_quick_view_button' ), 10 );
 		}
 		remove_action( 'admin_notices', '_alone_admin_notice_theme_message' );
+	}
+
+	// Custom CSS van WPBakery wordt niet ingeladen op hoofdwinkelpagina
+	// add_action( 'wp_head', 'fix_missing_vc_custom_css', 100 );
+
+	function fix_missing_vc_custom_css() {
+		// Werkt niet omdat de hoofdwinkelpagina als is_post_type_archive('product') beschouwd wordt
+		if ( is_page( wc_get_page_id('shop') ) ) {
+			$shortcodes_custom_css = get_post_meta( wc_get_page_id('shop'), '_wpb_shortcodes_custom_css', true );
+			if ( ! empty( $shortcodes_custom_css ) ) {
+				$shortcodes_custom_css = strip_tags( $shortcodes_custom_css );
+				echo '<style type="text/css" data-type="vc_shortcodes-custom-css">';
+				echo $shortcodes_custom_css;
+				echo '</style>';
+			}
+			// Laat de productcategorieën niet automatisch toevoegen op de hoofdwinkelpagina
+			remove_filter( 'woocommerce_product_loop_start', 'woocommerce_maybe_show_product_subcategories' );
+		}
 	}
 
 	// Alle verwijzingen naar promoties (badge, doorstreepte adviesprijs) uitschakelen in B2B-setting
@@ -486,6 +504,7 @@
 		$args['rewrite']['slug'] = 'gerecht';
 		$args['description'] = sprintf( __( 'Voeg de wijn toe aan een %s in de wijnkiezer', 'oft-admin' ), $args['rewrite']['slug'] );
 		
+		// TO DO: switch van 'recipe' naar 'dish' => vergt ook aanpassing in MySQL-tabel oft_term_taxonomy!
 		$name = 'recipe';
 		register_taxonomy( 'product_'.$name, 'product', $args );
 		register_taxonomy_for_object_type( 'product_'.$name, 'product' );
@@ -763,6 +782,10 @@
 			} else {
 				$result['label'] = __( 'Druivenrassen', 'oft' );
 			}
+			// Voeg FT-sterretje automatisch toe aan elk druivenras
+			foreach ( $grapes as $key => $grape ) {
+				$grapes[$key] = $grape.'*';
+			}
 			$result['value'] = implode( ', ', $grapes );
 		} elseif ( ! empty( $product->get_meta('_ingredients') ) ) {
 			if ( $with_colon === true ) {
@@ -780,14 +803,15 @@
 	// Haal de legende op die bij het ingrediëntenlijstje hoort
 	function get_ingredients_legend( $product ) {
 		$legend = array();
-		if ( ! empty( $product->get_meta('_ingredients') ) ) {
-			if ( strpos( $product->get_meta('_ingredients'), '*' ) !== false ) {
+		$ingredients = get_ingredients($product);
+		if ( $ingredients and ! empty( $ingredients['value'] ) ) {
+			if ( strpos( $ingredients['value'], '*' ) !== false ) {
 				$legend[] = '* '.__( 'ingrediënt uit een eerlijke handelsrelatie', 'oft' );
 			}
-			if ( strpos( $product->get_meta('_ingredients'), '°' ) !== false ) {
+			if ( strpos( $ingredients['value'], '°' ) !== false ) {
 				$legend[] = '° '.__( 'ingrediënt van biologische landbouw', 'oft' );
 			}
-			if ( strpos( $product->get_meta('_ingredients'), '†' ) !== false ) {
+			if ( strpos( $ingredients['value'], '†' ) !== false ) {
 				$legend[] = '† '.__( 'ingrediënt verkregen in de periode van omschakeling naar biologische landbouw', 'oft' );
 			}
 		}
@@ -1151,7 +1175,7 @@
 			'description' => __( 'Duid de eigenschappen van het product aan', 'oft' ),
 			'public' => true,
 			'publicly_queryable' => true,
-			'hierarchical' => false,
+			'hierarchical' => true,
 			'show_ui' => true,
 			'show_in_menu' => true,
 			'show_in_nav_menus' => true,
@@ -1168,9 +1192,8 @@
 			// 'meta_box_cb' => 'post_categories_meta_box',
 		);
 
-		// TO DO: switch van 'hipster' naar 'diet' (= 'product_'.$name) => vergt ook aanpassing in MySQL-tabel oft_term_taxonomy!
-		register_taxonomy( 'product_hipster', 'product', $args );
-		register_taxonomy_for_object_type( 'product_hipster', 'product' );
+		register_taxonomy( 'product_diet', 'product', $args );
+		register_taxonomy_for_object_type( 'product_diet', 'product' );
 	}
 
 	// Creëer een custom hiërarchische taxonomie op producten om verpakkingsinfo in op te slaan
@@ -2269,28 +2292,23 @@
 			$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
 			
 			if ( strtolower( $product->get_attribute('pa_bio') ) === 'ja' ) {
-				echo "<div class='icon-organic'></div>";
+				// Archieven eventueel publiek maken en link toevoegen: <a href="'.get_term_link( 'ja', 'pa_bio' ).'"></a>
+				echo '<i class="diet-icon diet-icon-organic"></i>';
 			}
 			
 			$icons = array();
-			foreach ( wp_get_object_terms( $product->get_id(), 'product_hipster' ) as $term ) {
-				$icons[] = $term->slug;
-			}
-			if ( in_array( 'veganistisch', $icons ) ) {
-				echo "<div class='icon-vegan'></div>";
-			}
-			if ( in_array( 'glutenvrij', $icons ) ) {
-				echo "<div class='icon-gluten-free'></div>";
-			}
-			if ( in_array( 'zonder-toegevoegde-suiker', $icons ) ) {
-				echo "<div class='icon-no-added-sugar'></div>";
-			}
-			if ( in_array( 'lactosevrij', $icons ) ) {
-				echo "<div class='icon-lactose-free'></div>";
+			foreach ( wp_get_object_terms( $product->get_id(), 'product_diet' ) as $term ) {
+				$icons[$term->slug] = $term->term_id;
 			}
 
-			// Switch terug naar gebruikerstaal
+			// Switch terug naar gebruikerstaal, onderstaande taxonomielinks worden automatisch vertaald
 			$sitepress->switch_lang( $prev_lang, true );
+
+			// Map met assets dient PNG-afbeeldingen te bevatten met als naam 'icon-' + Nederlandstalige slug
+			foreach ( $icons as $slug => $id ) {
+				$local_term = get_term_by( 'id', $id, 'product_diet' );
+				echo '<a href="'.get_term_link( $id, 'product_diet' ).'" title="'.__( 'Bekijk al deze producten', 'oft' ).'"><i class="diet-icon" aria-label="'.$local_term->name.'" style="background-image: url('.get_stylesheet_directory_uri().'/assets/icon-'.$slug.'.png);"></i></a>';
+			}
 		echo '</div>';
 	}
 
@@ -2549,6 +2567,8 @@
 					// Er is geen parent dus de oorspronkelijke term is een land
 				}
 			}
+		} elseif ( is_tax('product_diet') ) {
+			echo '<p>'.term_description().'</p>';
 		}
 	}
 
@@ -2640,22 +2660,14 @@
 
 		// Switch eerst naar Nederlands voor het vergelijken van taalgevoelige slugs
 		$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
+		
 		$icons = array();
-		foreach ( wp_get_object_terms( $main_product_id, 'product_hipster' ) as $term ) {
+		foreach ( wp_get_object_terms( $main_product_id, 'product_diet' ) as $term ) {
 			$icons[] = $term->slug;
 		}
 		$icons_text = '';
-		if ( in_array( 'veganistisch', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-vegan.png" style="width: 60px; margin-left: -12px; margin-bottom: -12px;">';
-		}
-		if ( in_array( 'glutenvrij', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-gluten-free.png" style="width: 60px; margin-left: -12px; margin-bottom: -12px;">';
-		}
-		if ( in_array( 'zonder-toegevoegde-suiker', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-no-added-sugar.png" style="width: 60px; margin-left: -12px; margin-bottom: -12px;">';
-		}
-		if ( in_array( 'lactosevrij', $icons ) ) {
-			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-lactose-free.png" style="width: 60px; margin-left: -12px; margin-bottom: -12px;">';
+		foreach ( $icons as $slug ) {
+			$icons_text .= '<img src="'.get_stylesheet_directory_uri().'/assets/icon-'.$slug.'.png" style="width: 60px; margin-left: -12px; margin-bottom: -12px;">';
 		}
 		
 		// Switch nu naar de gevraagde fichetaal
@@ -2914,15 +2926,20 @@
 		}
 	}
 
-	// Voeg berichten toe aan adminpagina's
-	add_action( 'admin_notices', 'oxfam_admin_notices' );
+	// Voeg berichten toe bovenaan adminpagina's
+	add_action( 'admin_head', 'show_only_oxfam_notices', 10000 );
+
+	function show_only_oxfam_notices() {
+		// Gelijkaardige 'Show plugins/themes notices to admin only'-optie van User Role Editor niet inschakelen!
+		if ( ! current_user_can('update_core') ) {
+			remove_all_actions('admin_notices');
+		}
+		add_action( 'admin_notices', 'oxfam_admin_notices' );
+	}
 
 	function oxfam_admin_notices() {
 		global $pagenow;
-		// $screen = get_current_screen();
-		// var_dump($screen);
-
-		// Pas op dat de 'Show plugins/themes notices to admin only'-optie van User Role Editor meldingen niet verbergt!
+		
 		if ( $pagenow === 'post-new.php' and ( isset( $_GET['post_type'] ) and $_GET['post_type'] === 'product' ) ) {
 			if ( ! isset( $_GET['lang'] ) or ( isset( $_GET['lang'] ) and $_GET['lang'] === 'nl' ) ) {
 				echo '<div class="notice notice-warning">';
@@ -3486,7 +3503,7 @@
 	// add_filter( 'rest_authentication_errors', 'only_allow_administrator_rest_access' );
 
 	function only_allow_administrator_rest_access( $access ) {
-		if( ! is_user_logged_in() or ! current_user_can( 'update_core' ) ) {
+		if( ! is_user_logged_in() or ! current_user_can('update_core') ) {
 			return new WP_Error( 'rest_cannot_access', 'Access prohibited!', array( 'status' => rest_authorization_required_code() ) );
 		}
 		return $access;
@@ -3671,6 +3688,18 @@
 	#  LOGGING  #
 	#############
 
+	// Google Analytics wordt standaard uitgeschakeld voor users met de rechten 'manage_options' (= enkel superadmins)
+	add_filter( 'woocommerce_ga_disable_tracking', 'disable_ga_tracking_for_certain_users', 10, 2 );
+
+	function disable_ga_tracking_for_certain_users( $disable, $type ) {
+		// Parameter $type bevat het soort GA-tracking
+		if ( current_user_can('manage_woocommerce') or current_user_can('edit_products') ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	// Schakel autosaves op producten uit
 	add_action( 'admin_enqueue_scripts', 'disable_autosave' );
 	
@@ -3707,7 +3736,7 @@
 			'product_tag',
 			'product_partner',
 			'product_allergen',
-			'product_hipster',
+			'product_diet',
 			'product_grape',
 			'product_flavour',
 			'product_recipe',
