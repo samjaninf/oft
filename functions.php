@@ -57,11 +57,39 @@
 		$allowedtags['a']['target'] = 1;
 	}
 
+	// Geef waarschuwing wanneer een product naar de prullenmand verplaatst wordt dat nog gelinkt is in gepubliceerde posts
+	add_action( 'wp_trash_post', 'oft_coupled_posts_warning_on_delete', 10, 1 );
+	
+	function oft_coupled_posts_warning_on_delete( $post_id ) {
+		if ( get_post_type($post_id) === 'product' ) {
+			$product = wc_get_product($post_id);
+			$args = array(
+				'post_type' => 'post',
+				'post_status' => 'publish',
+				'meta_key' => 'oft_post_product',
+				'meta_value' => $product->get_sku(),
+				'meta_compare' => '=',
+				'numberposts' => -1,
+			);
+			$news_posts = new WP_Query( $args );
+
+			if ( $news_posts->have_posts() ) {
+				$logger = wc_get_logger();
+				$context = array( 'source' => 'Old Products Cleanup' );
+				while ( $news_posts->have_posts() ) {
+					$news_posts->the_post();
+					$logger->notice( 'SKU '.$product->get_sku().' will be trashed but is still coupled to '.get_the_title(), $context );
+				}
+				wp_reset_postdata();
+			}
+		}
+	}
+
 	// Verhinder het permanent verwijderen van producten (maar na 1 jaar wel automatische clean-up door Wordpress, zie wp-config.php!)
 	add_action( 'before_delete_post', 'disable_manual_product_removal', 10, 1 );
 	
 	function disable_manual_product_removal( $post_id ) {
-		if ( get_post_type($post_id) == 'product' ) {
+		if ( get_post_type($post_id) === 'product' ) {
 			wp_die( sprintf( 'Uit veiligheidsoverwegingen is het verwijderen van producten niet toegestaan, voor geen enkele gebruikersrol! Deze vormen immers de centrale database met alle gegevens. Vraag &ndash; indien nodig &ndash; dat de hogere machten op %s deze beperking tijdelijk opheffen, zodat je je vuile zaakjes kunt opknappen.', '<a href="mailto:'.get_option('admin_email').'">'.get_option('admin_email').'</a>' ) );
 		}
 	}
