@@ -63,6 +63,7 @@
 	function oft_coupled_posts_warning_on_delete( $post_id ) {
 		if ( get_post_type($post_id) === 'product' ) {
 			$product = wc_get_product($post_id);
+			// VOEG CHECK TOE OP TAAL
 			$args = array(
 				'post_type' => 'post',
 				'post_status' => 'publish',
@@ -78,7 +79,7 @@
 				$context = array( 'source' => 'Old Products Cleanup' );
 				while ( $news_posts->have_posts() ) {
 					$news_posts->the_post();
-					$logger->notice( 'SKU '.$product->get_sku().' will be trashed but is still coupled to '.get_the_title(), $context );
+					$logger->notice( 'SKU '.$product->get_sku().' will be trashed but still coupled to '.get_the_title(), $context );
 				}
 				wp_reset_postdata();
 			}
@@ -1372,7 +1373,29 @@
 		return $sortby;
 	}
 
-	// Voeg ook een kolom toe aan het besteloverzicht in de back-end
+	// Wijzig benamingen voorraadstatus in back-end
+	add_filter( 'gettext', 'oft_override_woocommerce_translations', 10, 3 );
+	
+	function oft_override_woocommerce_translations( $translation, $text, $domain ) {
+		if ( is_admin() and $domain === 'woocommerce' ) {
+			switch ( $text ) {
+				case 'Out of stock':
+					$translation = __( 'Niet bestelbaar', 'oft' );
+					break;
+			}
+		}
+		return $translation;
+	}
+
+	// Verwijder bepaalde filters boven het productoverzicht in de back-end (beschikbaar vanaf WC3.5+)
+	add_filter( 'woocommerce_products_admin_list_table_filters', 'oft_remove_product_filters', 10, 1 );
+
+	function oft_remove_product_filters( $filters ) {
+		unset($filters['product_type']);
+		return $filters;
+	}
+
+	// Voeg bepaalde kolommen toe aan het productoverzicht in de back-end
 	add_filter( 'manage_edit-product_columns', 'add_attribute_columns', 20, 1 );
 
 	function add_attribute_columns( $columns ) {
@@ -1413,7 +1436,7 @@
 		return $columns;
 	}
 
-	// Toon de data van elk order in de kolom
+	// Haal de productdata voor elke kolom op
 	add_action( 'manage_product_posts_custom_column', 'get_attribute_column_value', 10, 2 );
 	
 	function get_attribute_column_value( $column, $post_id ) {
@@ -1461,12 +1484,14 @@
 		}
 	}
 
-	// Wijzig benamingen voorraadstatus in back-end
-	add_filter( 'woocommerce_admin_stock_html', 'oft_show_custom_availability', 1, 1 );
-	add_filter( 'woocommerce_product_filters', 'oft_show_custom_availability', 1, 1 );
-	
-	function oft_show_custom_availability( $html ) {
-		return str_replace( 'Uitverkocht', 'Niet bestelbaar', $html );
+	// Maak sorteren op custom kolommen mogelijk
+	// add_filter( 'manage_edit-product_sortable_columns', 'make_attribute_columns_sortable', 10, 1 );
+
+	function make_attribute_columns_sortable( $columns ) {
+		// Werkt niet meer in WC3+
+		$columns['featured'] = 'featured';
+		$columns['pa_merk'] = 'pa_merk';
+		return $columns;
 	}
 
 	// Creëer extra merkenfilter bovenaan de productenlijst WERKT NIET GOED
@@ -1490,16 +1515,6 @@
 				}
 			echo '</select>';
 		}
-	}
-
-	// Maak sorteren op custom kolommen mogelijk
-	// add_filter( 'manage_edit-product_sortable_columns', 'make_attribute_columns_sortable', 10, 1 );
-
-	function make_attribute_columns_sortable( $columns ) {
-		// Werkt niet meer in WC3+
-		// $columns['featured'] = 'featured';
-		$columns['pa_merk'] = 'pa_merk';
-		return $columns;
 	}
 
 	// Voer de sortering van custom velden uit tijdens het bekijken van producten in de admin WERKT NIET GOED
@@ -2945,24 +2960,24 @@
 			$chars = str_split( trim($ean) );
 			$ints = array_map( 'intval', $chars );
 			// Rekenregel toepassen op de 12 eerste cijfers
-			$check_sum = $ints[0]+$ints[2]+$ints[4]+$ints[6]+$ints[8]+$ints[10] + 3*($ints[1]+$ints[3]+$ints[5]+$ints[7]+$ints[9]+$ints[11]);
+			$check_sum = $ints[0] + $ints[2] + $ints[4] + $ints[6] + $ints[8] + $ints[10] + 3 * ( $ints[1] + $ints[3] + $ints[5] + $ints[7] + $ints[9] + $ints[11] );
 			$check_digit = ( 10 - ($check_sum % 10) ) % 10;
 			return ( $check_digit === $ints[12] );
 		}
 	}
 
 	// Voeg berichten toe bovenaan adminpagina's
-	add_action( 'admin_head', 'show_only_oxfam_notices', 10000 );
+	add_action( 'admin_head', 'oft_show_only_oxfam_notices', 10000 );
 
-	function show_only_oxfam_notices() {
+	function oft_show_only_oxfam_notices() {
 		// Gelijkaardige 'Show plugins/themes notices to admin only'-optie van User Role Editor niet inschakelen!
 		if ( ! current_user_can('update_core') ) {
 			remove_all_actions('admin_notices');
 		}
-		add_action( 'admin_notices', 'oxfam_admin_notices' );
+		add_action( 'admin_notices', 'oft_admin_notices' );
 	}
 
-	function oxfam_admin_notices() {
+	function oft_admin_notices() {
 		global $pagenow;
 		
 		if ( $pagenow === 'post-new.php' and ( isset( $_GET['post_type'] ) and $_GET['post_type'] === 'product' ) ) {
@@ -3120,7 +3135,7 @@
 		return true;
 	}
 
-	// BIJ HET AANROEPEN VAN DEZE FILTER ZIJN WE ZEKER DAT ALLES AL GEVALIDEERD IS
+	// Bij het aanroepen van deze filter zijn we zeker dat alles al gevalideerd is!
 	add_action( 'wpcf7_before_send_mail', 'handle_mailchimp_subscribe', 20, 1 );
 
 	function handle_mailchimp_subscribe( $wpcf7 ) {
