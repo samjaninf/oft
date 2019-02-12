@@ -316,4 +316,24 @@
 			return split_by_paragraph( $product->get_short_description() );
 		}
 	}
+
+	function translate_tax( $tax_class ) {
+		if ( $tax_class === 'voeding' ) {
+			return '6%';
+		} elseif ( $tax_class === 'vrijgesteld' ) {
+			return '0%';
+		} else {
+			return '21%';
+		}
+	}
+
+	function get_woocommerce_single_size( $url ) {
+		$image = wp_get_attachment_image_src( attachment_url_to_postid($url), 'woocommerce_single' );
+		if ( $image !== false ) {
+			// URL staat steeds op 1ste plaats!
+			return $image[0];
+		} else {
+			return $url;
+		}
+	}
 ?>
