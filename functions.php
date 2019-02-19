@@ -6,14 +6,13 @@
 	use Spipu\Html2Pdf\Exception\Html2PdfException;
 	use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 
-	// Leeg de promotekst bij het aflopen van de promoprijs
-	add_action( 'wc_after_products_ending_sales', 'remove_promo_text', 10, 1 );
+	// Laad de WooCommerce JS en CSS ook bij blogposts, zodat het zoekveld werkt
+	add_filter( 'woocommerce_screen_ids', 'oft_include_wc_scripts' );
 
-	function remove_promo_text( $product_ids ) {
-		foreach ( $product_ids as $product_id ) {
-			update_post_meta( $product_id, '_promo_text', '' );
-			write_log('PROMO TEXT REMOVED ON PRODUCT ID '.$product_id);
-		}
+	function oft_include_wc_scripts( $screen_ids ) {
+		$screen_ids[] = 'post';
+		$screen_ids[] = 'post-new';
+		return $screen_ids;
 	}
 
 	// Corrigeer conversieprobleem bij Engelstalige kommagetallen met 1 decimaal
@@ -179,6 +178,16 @@
 
 	function format_sale_as_regular_price( $price, $regular_price, $sale_price ) {
 		return wc_price($regular_price);
+	}
+
+	// Leeg de promotekst bij het aflopen van de promoprijs
+	add_action( 'wc_after_products_ending_sales', 'remove_promo_text', 10, 1 );
+
+	function remove_promo_text( $product_ids ) {
+		foreach ( $product_ids as $product_id ) {
+			update_post_meta( $product_id, '_promo_text', '' );
+			write_log('PROMO TEXT REMOVED ON PRODUCT ID '.$product_id);
+		}
 	}
 
 	// Laad niet-prioritaire JavaScript (die bv. moet wachten op jQuery) 
