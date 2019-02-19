@@ -49,7 +49,8 @@ $article_classes = array(
 
 						// GEWIJZIGD: Link naar vorige / volgende post niet tonen
 
-						$skus = explode( ',', get_post_meta( get_the_ID(), 'oft_post_product', true ) );
+						// GEWIJZIGD: Gelinkte producten toevoegen onder bericht
+						$skus = get_post_meta( get_the_ID(), 'oft_post_products', true );
 						if ( count($skus) > 0 ) {
 							global $sitepress;
 							echo '<div class="woocommerce columns-3">';
@@ -60,6 +61,7 @@ $article_classes = array(
 									$post_object = get_post( apply_filters( 'wpml_object_id', wc_get_product_id_by_sku($sku), 'product', false, $sitepress->get_current_language() ) );
 									if ( $post_object !== NULL ) {
 										setup_postdata( $GLOBALS['post'] =& $post_object );
+										// Voorlopig weer uitgeschakelen, is niet zo mooi
 										// wc_get_template_part( 'content', 'product' );
 										wp_reset_postdata();
 									}

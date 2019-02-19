@@ -1,6 +1,6 @@
 <wpml-config>
 	<custom-fields>
-		<custom-field action="copy">oft_post_product</custom-field>
+		<custom-field action="copy">oft_post_products</custom-field>
 		<custom-field action="copy">_choavl</custom-field>
 		<custom-field action="copy">_cu_ean</custom-field>
 		<custom-field action="copy">_empty_fee</custom-field>
