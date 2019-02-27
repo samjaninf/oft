@@ -49,27 +49,26 @@ $article_classes = array(
 
 						// GEWIJZIGD: Link naar vorige / volgende post niet tonen
 
-						// GEWIJZIGD: Gelinkte producten toevoegen onder bericht
-						$skus = get_post_meta( get_the_ID(), 'oft_post_products', true );
-						if ( count($skus) > 0 ) {
-							global $sitepress;
-							echo '<div class="woocommerce columns-3">';
-							woocommerce_product_loop_start();
-							foreach ( $skus as $sku ) {
-								// Kan het een geldig artikelnummer zijn?
-								if ( intval($sku) > 10000 ) {
-									$post_object = get_post( apply_filters( 'wpml_object_id', wc_get_product_id_by_sku($sku), 'product', false, $sitepress->get_current_language() ) );
-									if ( $post_object !== NULL ) {
-										setup_postdata( $GLOBALS['post'] =& $post_object );
-										// Voorlopig weer uitgeschakelen, is niet zo mooi
-										// wc_get_template_part( 'content', 'product' );
-										wp_reset_postdata();
-									}
-								}
-							}
-							woocommerce_product_loop_end();
-							echo '</div>';
-						}
+						// GEWIJZIGD: Gelinkte producten toevoegen onder bericht VOORLOPIG UITGESCHAKELEN, IS NIET ZO MOOI 
+						// $skus = get_post_meta( get_the_ID(), 'oft_post_products', true );
+						// if ( count($skus) > 0 ) {
+						// 	global $sitepress;
+						// 	echo '<div class="woocommerce columns-3">';
+						// 	woocommerce_product_loop_start();
+						// 	foreach ( $skus as $sku ) {
+						// 		// Kan het een geldig artikelnummer zijn?
+						// 		if ( intval($sku) > 10000 ) {
+						// 			$post_object = get_post( apply_filters( 'wpml_object_id', wc_get_product_id_by_sku($sku), 'product', false, $sitepress->get_current_language() ) );
+						// 			if ( $post_object !== NULL ) {
+						// 				setup_postdata( $GLOBALS['post'] =& $post_object );
+						// 				wc_get_template_part( 'content', 'product' );
+						// 				wp_reset_postdata();
+						// 			}
+						// 		}
+						// 	}
+						// 	woocommerce_product_loop_end();
+						// 	echo '</div>';
+						// }
 
 						/* tags */
 						if(isset($alone_post_options['tag_list']) && ! empty($alone_post_options['tag_list'])) {
