@@ -6,6 +6,9 @@
 	use Spipu\Html2Pdf\Exception\Html2PdfException;
 	use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 
+	// Schakel de default compressie van 90% uit die WordPress toepast op JPG's
+	// add_filter( 'jpeg_quality', function( $quality ) { return 100; } );
+
 	// Laad de WooCommerce JS en CSS ook bij blogposts, zodat het zoekveld werkt
 	add_filter( 'woocommerce_screen_ids', 'oft_include_wc_scripts' );
 
