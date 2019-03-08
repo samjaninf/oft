@@ -6,14 +6,16 @@
 	use Spipu\Html2Pdf\Exception\Html2PdfException;
 	use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 
-	// Leeg de promotekst bij het aflopen van de promoprijs
-	add_action( 'wc_after_products_ending_sales', 'remove_promo_text', 10, 1 );
+	// Schakel de default compressie van 90% uit die WordPress toepast op JPG's
+	// add_filter( 'jpeg_quality', function( $quality ) { return 100; } );
 
-	function remove_promo_text( $product_ids ) {
-		foreach ( $product_ids as $product_id ) {
-			update_post_meta( $product_id, '_promo_text', '' );
-			write_log('PROMO TEXT REMOVED ON PRODUCT ID '.$product_id);
-		}
+	// Laad de WooCommerce JS en CSS ook bij blogposts, zodat het zoekveld werkt
+	add_filter( 'woocommerce_screen_ids', 'oft_include_wc_scripts' );
+
+	function oft_include_wc_scripts( $screen_ids ) {
+		$screen_ids[] = 'post';
+		$screen_ids[] = 'post-new';
+		return $screen_ids;
 	}
 
 	// Corrigeer conversieprobleem bij Engelstalige kommagetallen met 1 decimaal
@@ -57,11 +59,42 @@
 		$allowedtags['a']['target'] = 1;
 	}
 
+	// Geef waarschuwing wanneer een product naar de prullenmand verplaatst wordt dat nog gelinkt is in gepubliceerde posts
+	add_action( 'wp_trash_post', 'oft_coupled_posts_warning_on_delete', 10, 1 );
+	
+	function oft_coupled_posts_warning_on_delete( $post_id ) {
+		if ( get_post_type($post_id) === 'product' ) {
+			$product = wc_get_product($post_id);
+			$args = array(
+				'post_type' => 'post',
+				'post_status' => 'publish',
+				'meta_key' => 'oft_post_products', 
+				// Kijk of het artikelnummer in de geserialiseerde array voorkomt
+				'meta_value' => serialize( strval( $product->get_sku() ) ),
+				'meta_compare' => 'LIKE',
+				'numberposts' => -1,
+				// Retourneer enkel posts in huidige taal
+				'suppress_filters' => false,
+			);
+			$news_posts = new WP_Query( $args );
+
+			if ( $news_posts->have_posts() ) {
+				$logger = wc_get_logger();
+				$context = array( 'source' => 'Old Products Cleanup' );
+				while ( $news_posts->have_posts() ) {
+					$news_posts->the_post();
+					$logger->notice( 'SKU '.$product->get_sku().' will be trashed but still coupled to '.get_the_title(), $context );
+				}
+				wp_reset_postdata();
+			}
+		}
+	}
+
 	// Verhinder het permanent verwijderen van producten (maar na 1 jaar wel automatische clean-up door Wordpress, zie wp-config.php!)
 	add_action( 'before_delete_post', 'disable_manual_product_removal', 10, 1 );
 	
 	function disable_manual_product_removal( $post_id ) {
-		if ( get_post_type($post_id) == 'product' ) {
+		if ( get_post_type($post_id) === 'product' ) {
 			wp_die( sprintf( 'Uit veiligheidsoverwegingen is het verwijderen van producten niet toegestaan, voor geen enkele gebruikersrol! Deze vormen immers de centrale database met alle gegevens. Vraag &ndash; indien nodig &ndash; dat de hogere machten op %s deze beperking tijdelijk opheffen, zodat je je vuile zaakjes kunt opknappen.', '<a href="mailto:'.get_option('admin_email').'">'.get_option('admin_email').'</a>' ) );
 		}
 	}
@@ -151,6 +184,16 @@
 
 	function format_sale_as_regular_price( $price, $regular_price, $sale_price ) {
 		return wc_price($regular_price);
+	}
+
+	// Leeg de promotekst bij het aflopen van de promoprijs
+	add_action( 'wc_after_products_ending_sales', 'remove_promo_text', 10, 1 );
+
+	function remove_promo_text( $product_ids ) {
+		foreach ( $product_ids as $product_id ) {
+			update_post_meta( $product_id, '_promo_text', '' );
+			write_log('PROMO TEXT REMOVED ON PRODUCT ID '.$product_id);
+		}
 	}
 
 	// Laad niet-prioritaire JavaScript (die bv. moet wachten op jQuery) 
@@ -1347,7 +1390,29 @@
 		return $sortby;
 	}
 
-	// Voeg ook een kolom toe aan het besteloverzicht in de back-end
+	// Wijzig benamingen voorraadstatus in back-end
+	add_filter( 'gettext', 'oft_override_woocommerce_translations', 10, 3 );
+	
+	function oft_override_woocommerce_translations( $translation, $text, $domain ) {
+		if ( is_admin() and $domain === 'woocommerce' ) {
+			switch ( $text ) {
+				case 'Out of stock':
+					$translation = __( 'Niet bestelbaar', 'oft' );
+					break;
+			}
+		}
+		return $translation;
+	}
+
+	// Verwijder bepaalde filters boven het productoverzicht in de back-end (beschikbaar vanaf WC3.5+)
+	add_filter( 'woocommerce_products_admin_list_table_filters', 'oft_remove_product_filters', 10, 1 );
+
+	function oft_remove_product_filters( $filters ) {
+		unset($filters['product_type']);
+		return $filters;
+	}
+
+	// Voeg bepaalde kolommen toe aan het productoverzicht in de back-end
 	add_filter( 'manage_edit-product_columns', 'add_attribute_columns', 20, 1 );
 
 	function add_attribute_columns( $columns ) {
@@ -1388,7 +1453,7 @@
 		return $columns;
 	}
 
-	// Toon de data van elk order in de kolom
+	// Haal de productdata voor elke kolom op
 	add_action( 'manage_product_posts_custom_column', 'get_attribute_column_value', 10, 2 );
 	
 	function get_attribute_column_value( $column, $post_id ) {
@@ -1436,12 +1501,14 @@
 		}
 	}
 
-	// Wijzig benamingen voorraadstatus in back-end
-	add_filter( 'woocommerce_admin_stock_html', 'oft_show_custom_availability', 1, 1 );
-	add_filter( 'woocommerce_product_filters', 'oft_show_custom_availability', 1, 1 );
-	
-	function oft_show_custom_availability( $html ) {
-		return str_replace( 'Uitverkocht', 'Niet bestelbaar', $html );
+	// Maak sorteren op custom kolommen mogelijk
+	// add_filter( 'manage_edit-product_sortable_columns', 'make_attribute_columns_sortable', 10, 1 );
+
+	function make_attribute_columns_sortable( $columns ) {
+		// Werkt niet meer in WC3+
+		$columns['featured'] = 'featured';
+		$columns['pa_merk'] = 'pa_merk';
+		return $columns;
 	}
 
 	// Creëer extra merkenfilter bovenaan de productenlijst WERKT NIET GOED
@@ -1465,16 +1532,6 @@
 				}
 			echo '</select>';
 		}
-	}
-
-	// Maak sorteren op custom kolommen mogelijk
-	// add_filter( 'manage_edit-product_sortable_columns', 'make_attribute_columns_sortable', 10, 1 );
-
-	function make_attribute_columns_sortable( $columns ) {
-		// Werkt niet meer in WC3+
-		// $columns['featured'] = 'featured';
-		$columns['pa_merk'] = 'pa_merk';
-		return $columns;
 	}
 
 	// Voer de sortering van custom velden uit tijdens het bekijken van producten in de admin WERKT NIET GOED
@@ -2150,69 +2207,93 @@
 	}
 
 	add_action( 'add_meta_boxes', 'register_custom_meta_boxes' );
-	add_action( 'save_post', 'oft_post_to_product_save' );
+	add_action( 'save_post', 'oft_post_products_save' );
 
 	function register_custom_meta_boxes() {
-		add_meta_box( 'oft_post_to_product', __( 'Gelinkt product', 'oft-admin' ), 'oft_post_to_product_callback', 'post', 'advanced', 'high' );
+		add_meta_box( 'oft_post_products', __( 'Gelinkte producten', 'oft-admin' ), 'oft_post_products_callback', 'post', 'advanced', 'high' );
 	}
 
-	function oft_post_to_product_callback( $post ) {
-		wp_nonce_field( basename( __FILE__ ), 'oft_post_to_product_nonce' );
-		$prfx_stored_meta = get_post_meta( $post->ID );
+	function oft_post_products_callback( $post ) {
+		$coupled_product_skus = get_post_meta( $post->ID, 'oft_post_products', true );
+		if ( ! is_array($coupled_product_skus) ) {
+			$coupled_product_skus = array();
+		}
 
-		$query_args = array(
-			'post_type'			=> 'product',
-			'post_status'		=> array( 'publish' ),
-			'posts_per_page'	=> 500,
-			'meta_key'			=> '_sku',
-			'orderby'			=> 'meta_value_num',
-			'order'				=> 'ASC',
+		// Migreer oud veld
+		// $coupled_product_sku = get_post_meta( $post->ID, 'oft_post_product', true );
+		// if ( $coupled_product_sku !== '' ) {
+		// 	$coupled_product_skus[] = $coupled_product_sku;
+		// }
+
+		$args = array(
+			'post_type'	=> 'product',
+			// Enkel OFT-producten hebben zin
+			'post_status' => 'publish',
+			'posts_per_page' => 250,
+			'meta_key' => '_sku',
+			'orderby' => 'meta_value_num',
+			'order'	=> 'ASC',
 		);
 
-		$current_products = new WP_Query( $query_args );
+		$current_products = new WP_Query( $args );
 		
 		if ( $current_products->have_posts() ) {
 			while ( $current_products->have_posts() ) {
 				$current_products->the_post();
-				$sku = get_post_meta( get_the_ID(), '_sku', true );
-				$list[$sku] = get_the_title();
+				$oft_product_ids[] = get_the_ID();
 			}
 			wp_reset_postdata();
 		}
 
 		?>
 			<p>
-				<label for="oft_post_product" class=""><?php printf( __( 'Kies 1 van de %d actuele OFT-producten om onderaan het bericht toe te voegen:', 'oft-admin' ), count($list) ); ?></label>
-				<select name="oft_post_product" id="oft_post_product">
-					<option value=""><?php _e( '(selecteer)', 'oft-admin' ); ?></option>
-					<?php foreach ( $list as $sku => $title ) : ?>
-						<option value="<?php echo $sku; ?>" <?php if ( isset( $prfx_stored_meta['oft_post_product'] ) ) selected( $prfx_stored_meta['oft_post_product'][0], $sku ); ?>><?php echo $sku.': '.$title; ?></option>';
-					<?php endforeach; ?>
+				<label for="oft_post_products"><?php printf( __( 'Koppel één of meerdere van de %d gepubliceerde OFT-producten aan dit bericht (zodat het nieuwsbericht ook op de productpagina verschijnt):', 'oft-admin' ), count($oft_product_ids) ); ?></label><br/>
+				<!-- Zorg ervoor dat de JS en CSS voor selectWoo() ingeladen is op deze adminpagina, zodat het veld automatisch getransformeerd wordt in een lookup -->
+				<!-- Specifieke limiet laat toe om in de JSON-response te switchen van ID's naar SKU's -->
+				<!-- Enkel input toelaten in het Nederlands (wordt gekopieerd naar andere talen) -->
+				<select class="wc-product-search" multiple="multiple" id="oft_post_products" name="oft_post_products[]" style="width: 100%;" data-action="woocommerce_json_search_products_and_variations" data-limit="6969" data-include="<?php echo json_encode($oft_product_ids); ?>" <?php echo post_language_equals_site_language() ? '' : 'disabled'; ?>>
+					<?php
+					foreach ( $oft_product_ids as $product_id ) {
+						$product = wc_get_product( $product_id );
+						if ( is_object( $product ) ) {
+							echo '<option value="' . esc_attr( $product->get_sku() ) . '"' . selected( in_array( $product->get_sku(), $coupled_product_skus ), true, false ) . '>' . wp_kses_post( $product->get_formatted_name() ) . '</option>';
+						}
+					}
+					?>
 				</select>
 			</p>
-			<p><?php _e( 'Gebruik de shortcode [products skus="A,B,C" columns="3"] indien je meerdere producten wil tonen!', 'oft-admin' ); ?></p>
 		<?php
 	}
 
-	function oft_post_to_product_save( $post_id ) {
-		$is_autosave = wp_is_post_autosave( $post_id );
-		$is_revision = wp_is_post_revision( $post_id );
-		$is_valid_nonce = ( isset( $_POST['oft_post_to_product_nonce'] ) && wp_verify_nonce( $_POST['oft_post_to_product_nonce'], basename( __FILE__ ) ) ) ? 'true' : 'false';
-		
-		if ( $is_autosave or $is_revision or ! $is_valid_nonce ) {
+	add_filter( 'woocommerce_json_search_found_products', 'oft_use_product_skus_in_ajax_search', 10, 1 );
+
+	function oft_use_product_skus_in_ajax_search( $product_data ) {
+		// Vuile truc om te detecteren of we met oft_post_products bezig zijn
+		if ( ! empty( $_GET['limit'] ) and $_GET['limit'] == 6969 ) {
+			$modified_data = array();
+			foreach ( $product_data as $product_id => $product_formatted_name ) {
+				$modified_data[get_post_meta( $product_id, '_sku', true )] = $product_formatted_name;
+			}
+			return $modified_data;
+		}
+		return $product_data;
+	}
+
+	function oft_post_products_save( $post_id ) {
+		if ( wp_is_post_autosave($post_id) or wp_is_post_revision($post_id) ) {
 			return;
 		}
 	 
-		if ( isset( $_POST['oft_post_product'] ) ) {
-			update_post_meta( $post_id, 'oft_post_product', sanitize_text_field( $_POST['oft_post_product'] ) );
+		if ( isset( $_POST['oft_post_products'] ) ) {
+			update_post_meta( $post_id, 'oft_post_products', $_POST['oft_post_products'] );
 		} else {
-			delete_post_meta( $post_id, 'oft_post_product' );
+			update_post_meta( $post_id, 'oft_post_products', array() );
 		}
 	}
 
-	add_action( 'woocommerce_single_product_summary', 'show_additional_information', 70 );
+	add_action( 'woocommerce_single_product_summary', 'oft_show_additional_information', 70 );
 
-	function show_additional_information() {
+	function oft_show_additional_information() {
 		global $product, $sitepress;
 		
 		$partners = get_partner_terms_by_product($product);
@@ -2260,13 +2341,14 @@
 			'post_status' => 'publish',
 			'orderby' => 'date',
 			'order' => 'DESC',
-			'meta_key' => 'oft_post_product',
-			'meta_value' => $product->get_sku(),
-			'meta_compare' => '=',
 			'numberposts' => 1,
+			'meta_key' => 'oft_post_products', 
+			// Kijk of het artikelnummer in de geserialiseerde array voorkomt
+			'meta_value' => serialize( strval( $product->get_sku() ) ),
+			'meta_compare' => 'LIKE',
 		);
 		$news_posts = new WP_Query( $args );
-
+		
 		if ( $news_posts->have_posts() ) {
 			while ( $news_posts->have_posts() ) {
 				$news_posts->the_post();
@@ -2920,24 +3002,24 @@
 			$chars = str_split( trim($ean) );
 			$ints = array_map( 'intval', $chars );
 			// Rekenregel toepassen op de 12 eerste cijfers
-			$check_sum = $ints[0]+$ints[2]+$ints[4]+$ints[6]+$ints[8]+$ints[10] + 3*($ints[1]+$ints[3]+$ints[5]+$ints[7]+$ints[9]+$ints[11]);
+			$check_sum = $ints[0] + $ints[2] + $ints[4] + $ints[6] + $ints[8] + $ints[10] + 3 * ( $ints[1] + $ints[3] + $ints[5] + $ints[7] + $ints[9] + $ints[11] );
 			$check_digit = ( 10 - ($check_sum % 10) ) % 10;
 			return ( $check_digit === $ints[12] );
 		}
 	}
 
 	// Voeg berichten toe bovenaan adminpagina's
-	add_action( 'admin_head', 'show_only_oxfam_notices', 10000 );
+	add_action( 'admin_head', 'oft_show_only_oxfam_notices', 10000 );
 
-	function show_only_oxfam_notices() {
+	function oft_show_only_oxfam_notices() {
 		// Gelijkaardige 'Show plugins/themes notices to admin only'-optie van User Role Editor niet inschakelen!
 		if ( ! current_user_can('update_core') ) {
 			remove_all_actions('admin_notices');
 		}
-		add_action( 'admin_notices', 'oxfam_admin_notices' );
+		add_action( 'admin_notices', 'oft_admin_notices' );
 	}
 
-	function oxfam_admin_notices() {
+	function oft_admin_notices() {
 		global $pagenow;
 		
 		if ( $pagenow === 'post-new.php' and ( isset( $_GET['post_type'] ) and $_GET['post_type'] === 'product' ) ) {
@@ -3095,7 +3177,7 @@
 		return true;
 	}
 
-	// BIJ HET AANROEPEN VAN DEZE FILTER ZIJN WE ZEKER DAT ALLES AL GEVALIDEERD IS
+	// Bij het aanroepen van deze filter zijn we zeker dat alles al gevalideerd is!
 	add_action( 'wpcf7_before_send_mail', 'handle_mailchimp_subscribe', 20, 1 );
 
 	function handle_mailchimp_subscribe( $wpcf7 ) {
@@ -3516,7 +3598,7 @@
 		'single' => true,
 		'show_in_rest' => true,
 	);
-	register_meta( 'post', 'oft_post_product', $api_args );
+	register_meta( 'post', 'oft_post_products', $api_args );
 
 	// Voeg custom producttaxonomieën toe aan de WC API
 	add_filter( 'woocommerce_rest_prepare_product_object', 'add_custom_taxonomies_to_response', 10, 3 );
