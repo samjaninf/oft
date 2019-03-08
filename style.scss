@@ -253,6 +253,11 @@ p.demo_store {
 		text-underline-position: under !important;
 		-webkit-text-underline-position: under !important;
 	}
+
+	/* Icoontjes ook wit maken */
+	i.fa {
+		color: white;
+	}
 }
 
 .bt-content-area .breadcrumbs {
