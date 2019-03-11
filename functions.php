@@ -2581,9 +2581,13 @@
 		return '<p class="oft-grid-post-date-tags">{{ post_data:post_date_categories }}</p>';
 	}
 
+	// Sorteerparameters verbergen om het catalogusgevoel te vergroten
+	if ( !is_user_logged_in() ) {
+		remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count', 20 );
+		remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30 );
+	}
+	
 	remove_action( 'woocommerce_archive_description', 'woocommerce_taxonomy_archive_description', 10 );
-	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count', 20 );
-	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30 );
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
 	add_action( 'woocommerce_single_product_summary', 'output_full_product_description', 20 );
 	add_action( 'woocommerce_before_shop_loop', 'output_oft_partner_info', 10 );
