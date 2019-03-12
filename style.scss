@@ -5,7 +5,7 @@
 	Author URI:		https://www.fullstackahead.be
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.22
+	Version:		1.2.23
 	Text Domain:	oft
 */
 
@@ -231,6 +231,39 @@ p.demo_store {
 		font-size: 14px !important;
 		background-color:  transparent !important;
 	}
+}
+
+/* Voeg verduidelijkend label toe aan header */
+.bt-header-container.fw-absolute-header.fw-sticky-header {
+	position: relative;
+
+	& > .container:after {
+		// font-family: 'Arial';
+		color: rgba(255, 255, 255, 0.6);
+		position: absolute;
+		border-width: 0 1px 1px 1px;
+		border-color: rgba(255, 255, 255, 0.2);
+		border-style: solid;
+		padding: 8px 12px;
+		bottom: -50%;
+		margin-left: 40px;
+	}
+}
+
+body.is-header-sticky .bt-header-container.fw-absolute-header.fw-sticky-header > .container:after {
+	display: none;
+}
+
+:lang(nl) .bt-header-container.fw-absolute-header.fw-sticky-header > .container:after {
+	content: 'VOOR BEDRIJVEN';
+}
+
+:lang(fr) .bt-header-container.fw-absolute-header.fw-sticky-header > .container:after {
+	content: 'POUR ENTERPRISES';
+}
+
+:lang(en) .bt-header-container.fw-absolute-header.fw-sticky-header > .container:after {
+	content: 'FOR COMPANIES';
 }
 
 #bt-menu-primary > .bt-nav-menu  {
