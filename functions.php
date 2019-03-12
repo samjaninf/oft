@@ -141,16 +141,25 @@
 	add_action( 'init', 'remove_alone_actions', 20 );
 
 	function remove_alone_actions() {
-		// Voeg standaard winkelmandknop weer toe aan cataloguspagina's en detailpagina's
-		add_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
-		add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
-		
 		// Verwijder alle buttons om te kopen via de custom acties die door Bears Themes gedefinieerd werden
-		// remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', 'woocommerce_template_loop_add_to_cart', 10 );
-		// remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', '_bearsthemes_yith_add_compare_button', 10 );
-		// remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
-		// remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
+		remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', 'woocommerce_template_loop_add_to_cart', 10 );
+		remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', '_bearsthemes_yith_add_compare_button', 10 );
+		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
+		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
 		
+		if ( is_user_logged_in() ) {
+			// Voeg standaard koopknop weer toe aan cataloguspagina's en detailpagina's
+			add_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
+			add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
+		}
+
+		// Sorteerparameters verbergen om het catalogusgevoel te vergroten
+		if ( ! is_user_logged_in() ) {
+			remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count', 20 );
+			remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30 );
+		}
+		
+		// Voeg dropdown voor sortering weer toe met een vroegere prioriteit
 		// add_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 10 );
 		remove_action( 'woocommerce_before_shop_loop_item', 'woocommerce_template_loop_product_link_open', 10 );
 		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_product_link_close', 5 );
@@ -2581,12 +2590,6 @@
 		return '<p class="oft-grid-post-date-tags">{{ post_data:post_date_categories }}</p>';
 	}
 
-	// Sorteerparameters verbergen om het catalogusgevoel te vergroten
-	if ( !is_user_logged_in() ) {
-		remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count', 20 );
-		remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30 );
-	}
-	
 	remove_action( 'woocommerce_archive_description', 'woocommerce_taxonomy_archive_description', 10 );
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
 	add_action( 'woocommerce_single_product_summary', 'output_full_product_description', 20 );
