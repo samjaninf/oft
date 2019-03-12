@@ -3894,6 +3894,7 @@
 			'_regular_price',
 			'_sale_price',
 			'_thumbnail_id',
+			'_product_image_gallery',
 			'_tax_class',
 			'_weight',
 			'_length',
