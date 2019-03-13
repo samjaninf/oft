@@ -3857,6 +3857,11 @@
 	}
 
 	function calculate_nutri_score_points_a( $product ) {
+		//  $product->get_meta('_salteq') === '' niet evalueren
+		if ( $product->get_meta('_energy') === '' or $product->get_meta('_sugar') === '' or $product->get_meta('_fasat') === '' ) {
+			return false;
+		}
+
 		// ALTERNATIEVE BEREKENING VOOR BEVERAGES TOEVOEGEN
 		$part_a = min( floor( ( intval( $product->get_meta('_energy') ) - 1 ) / 335 ), 10 );
 		$part_b = min( floor( ( floatval( $product->get_meta('_sugar') ) - 0.1 ) / 4.5 ), 10 );
@@ -3867,6 +3872,11 @@
 	}
 
 	function calculate_nutri_score_points_c( $product ) {
+		if ( $product->get_meta('_fibtg') === '' or $product->get_meta('_pro') === '' ) {
+			// Dit is overkill, indien niet gekend is het wellicht 0
+			// return false;
+		}
+
 		// Geen parameter die het fruit/groenten bijhoudt, ga voorlopig altijd uit van 0%
 		// ALTERNATIEVE BEREKENING VOOR BEVERAGES TOEVOEGEN
 		$part_a = 0;
@@ -3878,12 +3888,18 @@
 
 	function calculate_nutri_score( $product_id ) {
 		$product = wc_get_product( $product_id );
-		if ( $product !== false ) {
+		if ( $product === false ) {
 			return false;
 		}
 
 		$points_a = calculate_nutri_score_points_a( $product );
+		// write_log("Points A: ".$points_a);
 		$points_c = calculate_nutri_score_points_c( $product );
+		// write_log("Points C: ".$points_c);
+
+		if ( $points_a === false or $points_c === false ) {
+			return false;
+		}
 
 		if ( $points_a < 11 ) {
 			return $points_a - $points_c;
@@ -3898,10 +3914,11 @@
 	function calculate_nutri_label( $product_id ) {
 		$score = calculate_nutri_score( $product_id );
 		if ( $score === false ) {
-			$label = '/';
+			return '/';
 		}
 
 		// ALTERNATIEVE BEREKENING VOOR BEVERAGES TOEVOEGEN
+		write_log("Score: ".$score);
 		if ( $score <= -1 ) {
 			$label = 'A';
 		} elseif ( $score <= 2 ) {
