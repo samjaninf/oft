@@ -3856,6 +3856,67 @@
 		}
 	}
 
+	function calculate_nutri_score_points_a( $product ) {
+		// ALTERNATIEVE BEREKENING VOOR BEVERAGES TOEVOEGEN
+		$part_a = min( floor( ( intval( $product->get_meta('_energy') ) - 1 ) / 335 ), 10 );
+		$part_b = min( floor( ( floatval( $product->get_meta('_sugar') ) - 0.1 ) / 4.5 ), 10 );
+		$part_c = min( floor( ( floatval( $product->get_meta('_fasat') ) - 0.1 ) / 1 ), 10 );
+		$part_d = min( floor( ( floatval( $product->get_meta('_salteq') ) - 0.001 ) / 0.09 ), 10 );
+
+		return $part_a + $part_b + $part_c + $part_d;
+	}
+
+	function calculate_nutri_score_points_c( $product ) {
+		// Geen parameter die het fruit/groenten bijhoudt, ga voorlopig altijd uit van 0%
+		// ALTERNATIEVE BEREKENING VOOR BEVERAGES TOEVOEGEN
+		$part_a = 0;
+		$part_b = min( floor( ( floatval( $product->get_meta('_fibtg') ) - 0.1 ) / 0.7 ), 5 );
+		$part_c = min( floor( ( floatval( $product->get_meta('_pro') ) - 0.1 ) / 1.6 ), 5 );
+
+		return $part_a + $part_b + $part_c;
+	}
+
+	function calculate_nutri_score( $product_id ) {
+		$product = wc_get_product( $product_id );
+		if ( $product !== false ) {
+			return false;
+		}
+
+		$points_a = calculate_nutri_score_points_a( $product );
+		$points_c = calculate_nutri_score_points_c( $product );
+
+		if ( $points_a < 11 ) {
+			return $points_a - $points_c;
+		} else {
+			// Geen parameter die het fruit/groenten bijhoudt, ga voorlopig altijd uit van 0%
+			$part_a = 0;
+			$part_b = min( floor( ( floatval( $product->get_meta('_fibtg') ) - 0.1 ) / 0.7 ), 5 );
+			return $points_a - ( $part_b + $part_a );
+		}
+	}
+
+	function calculate_nutri_label( $product_id ) {
+		$score = calculate_nutri_score( $product_id );
+		if ( $score === false ) {
+			$label = '/';
+		}
+
+		// ALTERNATIEVE BEREKENING VOOR BEVERAGES TOEVOEGEN
+		if ( $score <= -1 ) {
+			$label = 'A';
+		} elseif ( $score <= 2 ) {
+			$label = 'B';
+		} elseif ( $score <= 10 ) {
+			$label = 'C';
+		} elseif ( $score <= 18 ) {
+			$label = 'D';
+		} elseif ( $score <= 40 ) {
+			$label = 'E';
+		}
+
+		return $label;
+	}
+
 	// Log wijzigingen aan metadata (en taxonomieën?)
 	add_action( 'added_post_meta', 'hook_product_meta_adds', 100, 4 );
 	add_action( 'updated_post_meta', 'hook_product_meta_updates', 100, 4 );
