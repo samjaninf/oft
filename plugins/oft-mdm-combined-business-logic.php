@@ -15,7 +15,12 @@
 
 		public function __construct( $param = 'oft' ) {
 			self::$company = $param;
-			
+
+			// Vermijd dat bv. is_user_logged_in() nog niet gedefinieerd is!
+			add_action( 'init', array( $this, 'delay_actions_and_filters_till_load_completed' ) );
+		}
+
+		public function delay_actions_and_filters_till_load_completed() {
 			// Toon/verberg bepaalde tabbladen onder 'Mijn account'
 			add_filter( 'woocommerce_account_menu_items', array( $this, 'modify_my_account_menu_items' ), 10, 1 );
 
@@ -41,7 +46,7 @@
 			add_filter( 'woocommerce_apply_base_tax_for_local_pickup', '__return_false' );
 
 			if ( ! is_user_logged_in() ) {
-				// Alle koopfuncties uitschakelen voor niet-ingelogde gebruikers
+				// Alle koopfuncties verhinderen voor niet-ingelogde gebruikers
 				add_filter( 'woocommerce_is_purchasable', '__return_false' );
 			}
 		}
