@@ -142,15 +142,15 @@
 
 	function remove_alone_actions() {
 		// Verwijder alle buttons om te kopen via de custom acties die door Bears Themes gedefinieerd werden
-		remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', 'woocommerce_template_loop_add_to_cart', 10 );
-		remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', '_bearsthemes_yith_add_compare_button', 10 );
-		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
-		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
+		// remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', 'woocommerce_template_loop_add_to_cart', 10 );
+		// remove_action( 'bearsthemes_woocommerce_after_thumbnail_loop', '_bearsthemes_yith_add_compare_button', 10 );
+		// remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
+		// remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
 		
 		if ( is_user_logged_in() ) {
 			// Voeg standaard koopknop weer toe aan cataloguspagina's en detailpagina's
-			add_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
-			add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
+			// add_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
+			// add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
 		}
 
 		// Sorteerparameters verbergen om het catalogusgevoel te vergroten

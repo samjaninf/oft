@@ -39,6 +39,11 @@
 
 			// Bereken belastingen ook bij afhalingen steeds volgens het factuuradres van de klant!
 			add_filter( 'woocommerce_apply_base_tax_for_local_pickup', '__return_false' );
+
+			if ( ! is_user_logged_in() ) {
+				// Alle koopfuncties uitschakelen voor niet-ingelogde gebruikers
+				add_filter( 'woocommerce_is_purchasable', '__return_false' );
+			}
 		}
 
 		public function modify_my_account_menu_items( $items ) {
