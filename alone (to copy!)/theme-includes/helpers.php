@@ -238,7 +238,7 @@ if( !function_exists('alone_scss_handle') ) :
 		global $wp_filesystem;
 		if( empty( $wp_filesystem ) ) {
 				if(defined('FW')) {
-	        fw_render_view(ABSPATH .'/wp-admin/includes/file.php', array(), false);
+	        require_once(ABSPATH .'/wp-admin/includes/file.php');
 	      }
 		    WP_Filesystem();
 		}
@@ -1196,11 +1196,13 @@ if ( ! function_exists( 'alone_paging_navigation' ) ) :
 
         $alone_pagination_type = function_exists('fw_get_db_customizer_option') ? fw_get_db_customizer_option('post_settings/blog_pagination', 'paging-navigation-type-1') : 'paging-navigation-type-1';
         if( $alone_pagination_type == 'paging-navigation-type-2' ) {
+            // GEWIJZIGD: Correct vertaalbaar maken
             $prev_text = esc_html__( 'Vorige', 'oft' );
             $next_text = esc_html__( 'Volgende', 'oft' );
             $prev_icon = '<i class="ion-ios-arrow-thin-left"></i>';
             $next_icon = '<i class="ion-ios-arrow-thin-right"></i>';
-        } else {
+        }
+        else {
             $prev_text = esc_html__( 'Vorige', 'oft' );
             $next_text = esc_html__( 'Volgende', 'oft' );
             $prev_icon = '<i class="fa fa-angle-left"></i>';
@@ -1670,7 +1672,7 @@ if(! function_exists('alone_title_bar_default') ) :
 				// for blog page
 				if( is_home() ) {
 						$page_for_posts = get_option( 'page_for_posts' );
-						$title = ($page_for_posts != 0) ? get_the_title($page_for_posts) : esc_html__( 'Blog', 'alone' );
+						$title = ($page_for_posts != 0) ? get_the_title($page_for_posts) : esc_html__('Blog', 'alone');
 				}
 			}
 		}
@@ -1708,8 +1710,8 @@ if(!function_exists('alone_title_bar')) :
 		if( is_page() ){
 			// for page (default template)
 			$post_id = $post->ID;
-			$image = fw_get_db_post_option( $post_id, 'header_image', '' );
-			if ( $image == '' ) {
+			$image   = fw_get_db_post_option($post_id, 'header_image', '');
+			if($image == ''){
 				// GEWIJZIGD: Probeer het ook nog eens met de moederpagina
 				$image = fw_get_db_post_option( wp_get_post_parent_id( $post_id ), 'header_image', '' );
 
@@ -1754,19 +1756,20 @@ if(!function_exists('alone_title_bar')) :
 			}
 			else{
 				$archive = true;
-				if ( is_post_type_archive('product') ) {
-					$title = esc_html__( 'Products', 'alone' );
+				if( is_post_type_archive('product')){
+					$title = esc_html__('Products', 'alone');
 				}
-				elseif ( is_search() ) {
+				elseif( is_search() ){
+					// GEWIJZIGD: Correct vertaalbaar maken
 					$title = esc_html__( 'Zoekresultaten', 'oft' );
 				}
 				else{
 					$title = alone_get_the_archive_title();
-					// for blog page
-					if( is_home() ) {
-						$page_for_posts = get_option( 'page_for_posts' );
-						$title = ($page_for_posts != 0) ? get_the_title($page_for_posts) : esc_html__('Blog', 'alone');
-					}
+          // for blog page
+          if( is_home() ) {
+              $page_for_posts = get_option( 'page_for_posts' );
+              $title = ($page_for_posts != 0) ? get_the_title($page_for_posts) : esc_html__('Blog', 'alone');
+          }
 				}
 			}
 
@@ -1823,8 +1826,6 @@ if(!function_exists('alone_title_bar')) :
 			$post_id       = $post->ID;
 			$image         = fw_get_db_post_option($post_id, 'header_image', '');
 			if($image == ''){
-				// if image from post is empty - get image from general theme settings
-				$image = isset($general_title_bar_options['title_bar_image']) ? $general_title_bar_options['title_bar_image'] : array();
 				// GEWIJZIGD: Geen title bar tonen indien header image niet expliciet ingevuld
 				return;
 			}
@@ -1949,7 +1950,7 @@ if(!function_exists('alone_get_extra_typography')) :
 
 		switch($type) {
 			case 'element_select_option' :
-				if(count($customizer_option > 0)) {
+				if(count($customizer_option) > 0) {
 					$result = array();
 					/* default */
 					array_push($result, array('value' => '', 'label' => esc_html__('Default', 'alone')));
@@ -1963,7 +1964,7 @@ if(!function_exists('alone_get_extra_typography')) :
 				break;
 
 			case 'get_style_font_by_name' :
-				if(count($customizer_option > 0) && !empty($name)) {
+				if(count($customizer_option) > 0 && !empty($name)) {
 					foreach($customizer_option as $index => $item) {
 						$label = !empty($item['name']) ? $item['name'] : 'Custom Form';
 						$value = "{$index}-" . str_replace(' ', '-', $label);
@@ -1979,7 +1980,7 @@ if(!function_exists('alone_get_extra_typography')) :
 				break;
 
 			case 'build_class_css' :
-				if(count($customizer_option > 0)) {
+				if(count($customizer_option) > 0) {
 					$result = '';
 					foreach($customizer_option as $index => $item) {
 						$font_data = alone_get_font_array($item['typography'], $alone_color_settings);
@@ -2262,7 +2263,7 @@ if ( ! function_exists( 'alone_related_articles' ) ) :
 			'orderby'        => 'date',
 			'post_status'    => 'publish',
 			'post_type'      => 'post',
-			'post_type' 	 => get_post_type($post->ID),
+			'post_type' 		 => get_post_type($post->ID),
 			'post__not_in'   => array( $post->ID ),
 			'tax_query'      => array(
 				array(
@@ -2640,7 +2641,6 @@ if ( ! function_exists( 'alone_woocommerce_get_product_thumbnail' ) ) :
 		<div class="woocommerce-imagewrapper">
 			<?php echo '<div class="woocommerce_before_thumbnail_loop">'; do_action( 'bearsthemes_woocommerce_before_thumbnail_loop' ); echo '</div>'; ?>
 			<?php
-			// GEWIJZIGD: Eventueel andere placeholder tonen
 			$thumbnail_html = "<img src='". get_template_directory_uri() . '/assets/images/image-default.jpg' ."' alt=''>";
 			if ( has_post_thumbnail() ) {
 		    // echo get_the_post_thumbnail( $post->ID, $size );

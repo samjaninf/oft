@@ -540,28 +540,28 @@ add_action( 'admin_enqueue_scripts', '_alone_admin_enqueue_scripts' );
 
 if(! function_exists('_alone_woocommerce_init_hook')) :
 	function _alone_woocommerce_init_hook() {
-		// GEWIJZIGD: Zoombox uitschakelen
-		// add_theme_support( 'wc-product-gallery-zoom' );
+		// woo 3.x
+		add_theme_support( 'wc-product-gallery-zoom' );
 		add_theme_support( 'wc-product-gallery-lightbox' );
 		add_theme_support( 'wc-product-gallery-slider' );
 
 		// remove woocommerce breadcrumb
 		remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20, 0 );
 
-		// GEWIJZIGD: Eventueel de standaard WooCommerce-afbeeldingen gebruiken, maar dan wijzigingen nodig aan SASS-file
 		remove_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail', 10);
 		add_action( 'woocommerce_before_shop_loop_item_title', '_alone_woocommerce_template_loop_product_thumbnail', 10);
 
 		//remove link wrap product loop
-		remove_action( 'woocommerce_before_shop_loop_item', 'woocommerce_template_loop_product_link_open', 10 );
-		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_product_link_close', 5 );
+	  remove_action( 'woocommerce_before_shop_loop_item', 'woocommerce_template_loop_product_link_open', 10 );
+	  remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_product_link_close', 5 );
 
 		// wrap link -> title
 		add_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_link_open', 10 );
 		add_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_product_link_close', 5 );
 		add_action( 'woocommerce_after_shop_loop_item_title', '_bearsthemes_woocommerce_get_taxonomy_loop', 10 );
 
-		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
+
+	  remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
 
 		add_action( 'bearsthemes_woocommerce_after_thumbnail_loop', 'woocommerce_template_loop_add_to_cart', 10 );
 		if(function_exists('YITH_WCQV_Frontend')) :
@@ -765,9 +765,7 @@ if (!function_exists('_alone_action_print_google_fonts_link')) :
 		// echo $post->ID;
 		// echo '<pre>'; print_r($fw_theme_google_fonts_list); echo '</pre>';
 
-		// GEWIJZIGD: Uitgeschakeld wegens 'Trying to get property of non-object'-notice
-		// $off_googlefont = get_post_meta($post->ID, 'off-googlefont', true);
-		if ( ! empty($fw_theme_google_fonts_list) ) {
+		if (! empty($fw_theme_google_fonts_list)) {
 			wp_register_style('fw-googleFonts', alone_get_remote_fonts($fw_theme_google_fonts_list));
 			wp_enqueue_style('fw-googleFonts');
 		}
@@ -1524,21 +1522,116 @@ if(! function_exists('_the_bears_filter_fw_ext_backups_demos')) :
 	function _alone_filter_fw_ext_backups_demos($demos)
 	{
 		$demos_array = array(
+			'alone-minimal-3' => array(
+				'title' => esc_html__('Alone Minimal 3', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-minimal-3/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-minimal-3/',
+			),
+			'alone-minimal-2' => array(
+				'title' => esc_html__('Alone Minimal 2', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-minimal-2/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-minimal-2/',
+			),
+			'alone-minimal' => array(
+				'title' => esc_html__('Alone Minimal', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-minimal/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-minimal/',
+			),
+			'alone-community-church' => array(
+				'title' => esc_html__('Alone Community Church', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-community-church/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-community-church/',
+			),
+			'alone-fundraising' => array(
+				'title' => esc_html__('Alone Fundraising', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-fundraising/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-fundraising/',
+			),
+			'alone-animal' => array(
+				'title' => esc_html__('Alone Animal', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-animal/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-animal/',
+			),
+			'alone-candidate' => array(
+				'title' => esc_html__('Alone Candidate', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-candidate/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-candidate/',
+			),
+			'alone-rescue' => array(
+				'title' => esc_html__('Alone Rescue', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-rescue/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-rescue/',
+			),
+			'alone-give' => array(
+				'title' => esc_html__('Alone Give', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-give/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-give/',
+			),
+			'alone-political' => array(
+				'title' => esc_html__('Alone Political', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-political/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-political/',
+			),
+			'alone-foundation' => array(
+				'title' => esc_html__('Alone Foundation', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-foundation/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-foundation/',
+			),
+			'alone-charity' => array(
+				'title' => esc_html__('Alone Charity', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-charity/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-charity/',
+			),
+			'alone-charitable' => array(
+				'title' => esc_html__('Alone Charitable', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-charitable/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-charitable/',
+			),
+			'alone-childrents' => array(
+				'title' => esc_html__('Alone Childrents', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-childrents/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-childrents/',
+			),
+			'alone-event-party' => array(
+				'title' => esc_html__('Alone Event Party', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-event-party/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-event-party/',
+			),
+			'alone-organization' => array(
+				'title' => esc_html__('Alone NGO Organization', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-organization/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-organization/',
+			),
+			'alone-church-2' => array(
+				'title' => esc_html__('Alone Church 2', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-church-2/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-church-2/',
+			),
+			'alone-church' => array(
+				'title' => esc_html__('Alone Church', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-church/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-church/',
+			),
+			'alone-autism' => array(
+				'title' => esc_html__('Alone Autism', 'alone'),
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-autism/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-autismdemo/',
+			),
 			'alone-ngo' => array(
 				'title' => esc_html__('Alone - NGO', 'alone'),
-				'screenshot' => 'http://theme.bearsthemes.com/import_demo/alone/alone-ngo/screenshot.png',
-				'preview_link' => 'http://theme.bearsthemes.com/wordpress/alone-ngo/',
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-ngo/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-ngo/',
 			),
 			'alone-5' => array(
 				'title' => esc_html__('Alone 5', 'alone'),
-				'screenshot' => 'http://theme.bearsthemes.com/import_demo/alone/alone-5/screenshot.png',
-				'preview_link' => 'http://theme.bearsthemes.com/wordpress/alone-5/',
+				'screenshot' => 'http://package.bearsthemespremium.com/alone/alone-5/screenshot.png',
+				'preview_link' => 'https://bearsthemespremium.com/theme/alone-5/',
 			),
 		);
 
 		foreach ($demos_array as $id => $data) {
 			$demo = new FW_Ext_Backups_Demo($id, 'piecemeal', array(
-				'url' => 'http://theme.bearsthemes.com/import_demo/alone/',
+				'url' => 'http://package.bearsthemespremium.com/alone/',
 				'file_id' => $id,
 			));
 			$demo->set_title($data['title']);
@@ -1708,5 +1801,128 @@ if(! function_exists('_alone_notification_center_action')) :
 		echo fw_render_view(get_template_directory() . '/templates/notification_center/content.php', array(), true);
 	}
 endif;
-// GEWIJZIGD: Notification center uitschakelen ("undefined variable: background_style" vermijden)
-// add_action( 'wp_footer', '_alone_notification_center_action' );
+// GEWIJZIGD: Berichtencentrum eventueel uitschakelen, veroorzaakt 'Undefined variable: background_style'-notice
+add_action( 'wp_footer', '_alone_notification_center_action' );
+
+// php code animate
+if(! function_exists('bevc_add_param')){
+  // Link your VC elements's folder
+  function bevc_add_param(){
+    /* For Row */
+    vc_add_param('vc_row', array(
+        'type' => 'textfield',
+        'heading' => "Animate Delay",
+        'param_name' => 'animate_delay',
+        'value' => '0',
+        'description' => __("Animate delay (s). Example: 0.5", "bears-elements-vc")
+    ));
+    vc_add_param('vc_row', array(
+        'type' => 'textfield',
+        'heading' => "Animate Duration",
+        'param_name' => 'animate_duration',
+        'value' => '.6',
+        'description' => __("Animate duration (s). Example: 0.6", "bears-elements-vc")
+    ));
+    /* For Column */
+    vc_add_param('vc_column', array(
+        'type' => 'textfield',
+        'heading' => "Animate Delay",
+        'param_name' => 'animate_delay',
+        'value' => '0',
+        'description' => __("Animate delay (s). Example: 0.5", "bears-elements-vc")
+    ));
+    vc_add_param('vc_column', array(
+        'type' => 'textfield',
+        'heading' => "Animate Duration",
+        'param_name' => 'animate_duration',
+        'value' => '.6',
+        'description' => __("Animate duration (s). Example: 0.6", "bears-elements-vc")
+    ));
+    /* For Text */
+    vc_add_param('vc_column_text', array(
+        'type' => 'textfield',
+        'heading' => "Animate Delay",
+        'param_name' => 'animate_delay',
+        'value' => '0',
+        'description' => __("Animate delay (s). Example: 0.5", "bears-elements-vc")
+    ));
+    vc_add_param('vc_column_text', array(
+        'type' => 'textfield',
+        'heading' => "Animate Duration",
+        'param_name' => 'animate_duration',
+        'value' => '.6',
+        'description' => __("Animate duration (s). Example: 0.6", "bears-elements-vc")
+    ));
+    /* For Button */
+    vc_add_param('vc_btn', array(
+        'type' => 'textfield',
+        'heading' => "Animate Delay",
+        'param_name' => 'animate_delay',
+        'value' => '0',
+        'description' => __("Animate delay (s). Example: 0.5", "bears-elements-vc")
+    ));
+    vc_add_param('vc_btn', array(
+        'type' => 'textfield',
+        'heading' => "Animate Duration",
+        'param_name' => 'animate_duration',
+        'value' => '.6',
+        'description' => __("Animate duration (s). Example: 0.6", "bears-elements-vc")
+    ));
+    /* For Button */
+    vc_add_param('vc_custom_heading', array(
+        'type' => 'textfield',
+        'heading' => "Animate Delay",
+        'param_name' => 'animate_delay',
+        'value' => '0',
+        'description' => __("Animate delay (s). Example: 0.5", "bears-elements-vc")
+    ));
+    vc_add_param('vc_custom_heading', array(
+        'type' => 'textfield',
+        'heading' => "Animate Duration",
+        'param_name' => 'animate_duration',
+        'value' => '.6',
+        'description' => __("Animate duration (s). Example: 0.6", "bears-elements-vc")
+    ));
+  }
+}
+include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+
+// check for plugin using plugin name
+if ( is_plugin_active( 'js_composer/js_composer.php' ) ) {
+  add_action( 'vc_after_init', 'bevc_add_param' );
+}
+function cpt_bears_team() {
+
+	/**
+	 * Post Type: Teams.
+	 */
+
+	$labels = array(
+		"name" => __( "Teams", "alone" ),
+		"singular_name" => __( "Team", "alone" ),
+	);
+
+	$args = array(
+		"label" => __( "Teams", "alone" ),
+		"labels" => $labels,
+		"description" => "",
+		"public" => true,
+		//"publicly_queryable" => false,
+		"show_ui" => true,
+		"show_in_rest" => false,
+		"rest_base" => "",
+		"has_archive" => false,
+		"show_in_menu" => true,
+		"exclude_from_search" => false,
+		"capability_type" => "post",
+		"map_meta_cap" => true,
+		"hierarchical" => false,
+		"rewrite" => array( "slug" => "team", "with_front" => true ),
+		"query_var" => true,
+		"supports" => array( "title", "editor", "thumbnail", "excerpt" ),
+	);
+
+	register_post_type( "team", $args );
+}
+
+add_action( 'init', 'cpt_bears_team' );
