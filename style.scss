@@ -233,7 +233,7 @@ p.demo_store {
 	}
 }
 
-@keyframes 'wobble' {
+@keyframes 'nudge' {
 	0% { transform: rotate(0deg); }
 	2% { transform: rotate(15deg); }
 	4% { transform: rotate(-10deg); }
@@ -249,9 +249,8 @@ p.demo_store {
 .bt-header-container.fw-absolute-header.fw-sticky-header {
 	position: relative;
 
-	& > .container:hover:after,
-	& > .container:focus:after {
-		// animation: wobble 10s ease-out;
+	& > .container:after {
+		
 	}
 }
 
@@ -268,7 +267,7 @@ body.is-header-sticky .bt-header-container.fw-absolute-header.fw-sticky-header >
 	margin-left: 110px;
 	position: absolute;
 	bottom: -100%;
-	animation: wobble 10s ease-out 3s infinite;
+	animation: nudge 10s ease-out 3s infinite;
 	transform-origin: 45% 11%;
 }
 
