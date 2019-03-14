@@ -250,7 +250,32 @@ p.demo_store {
 	position: relative;
 
 	& > .container:after {
-		
+		background-repeat: no-repeat;
+		background-size: cover;
+		width: 142px;
+		height: 106px;
+		margin-left: 110px;
+		position: absolute;
+		bottom: -100%;
+		// Zet eventueel op 'infite' om te blijven herhalen
+		animation: nudge 30s ease-out 1s 1;
+		transform-origin: 45% 11%;
+
+		// Subtielere tekstversie
+		// content: 'VOOR BEDRIJVEN';
+		// color: rgba(255, 255, 255, 0.6);
+		// border-width: 0 1px 1px 1px;
+		// border-color: rgba(255, 255, 255, 0.2);
+		// border-style: solid;
+		// padding: 8px 12px;
+		// margin-left: 40px;
+		// position: absolute;
+		// bottom: -50%;
+	}
+
+	& > .container:hover:after,
+	& > .container:focus:after {
+		animation: nudge 30s ease-out 1s;
 	}
 }
 
@@ -260,32 +285,14 @@ body.is-header-sticky .bt-header-container.fw-absolute-header.fw-sticky-header >
 
 :lang(nl) .bt-header-container.fw-absolute-header.fw-sticky-header > .container:after {
 	background-image: url('assets/label-companies-nl.svg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	width: 142px;
-	height: 106px;
-	margin-left: 110px;
-	position: absolute;
-	bottom: -100%;
-	animation: nudge 30s ease-out 2s infinite;
-	transform-origin: 45% 11%;
 }
 
 :lang(fr) .bt-header-container.fw-absolute-header.fw-sticky-header > .container:after {
-	content: 'POUR ENTERPRISES';
-	// font-family: 'Arial';
-	color: rgba(255, 255, 255, 0.6);
-	border-width: 0 1px 1px 1px;
-	border-color: rgba(255, 255, 255, 0.2);
-	border-style: solid;
-	padding: 8px 12px;
-	margin-left: 40px;
-	position: absolute;
-	bottom: -50%;
+	background-image: url('assets/label-companies-fr.svg');
 }
 
 :lang(en) .bt-header-container.fw-absolute-header.fw-sticky-header > .container:after {
-	// content: 'FOR COMPANIES';
+	background-image: url('assets/label-companies-en.svg');
 }
 
 #bt-menu-primary > .bt-nav-menu  {
