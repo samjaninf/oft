@@ -263,11 +263,10 @@ p.demo_store {
 		margin-left: 110px;
 		position: absolute;
 		bottom: -100%;
-		// Zet eventueel op 'infite' om te blijven herhalen
-		animation: nudge 2s ease-out 1s;
 		transform-origin: 45% 11%;
 		opacity: 0;
-		animation: appear 1s ease-out;
+		// Zet eventueel op 'infite' om te blijven herhalen
+		animation: appear 1s ease-out, nudge 2s ease-out 1s;
 
 		// Subtielere tekstversie
 		// content: 'VOOR BEDRIJVEN';
