@@ -235,14 +235,20 @@ p.demo_store {
 
 @keyframes 'nudge' {
 	0% { transform: rotate(0deg); }
-	1% { transform: rotate(15deg); }
-	2% { transform: rotate(-10deg); }
-	3% { transform: rotate(6deg); }
-	4% { transform: rotate(-3deg); }
-	5% { transform: rotate(2deg); }
-	6% { transform: rotate(-1deg); }
-	7% { transform: rotate(0deg); }
+	10% { transform: rotate(20deg); }
+	20% { transform: rotate(-15deg); }
+	30% { transform: rotate(12deg); }
+	40% { transform: rotate(-9deg); }
+	50% { transform: rotate(6deg); }
+	60% { transform: rotate(-4deg); }
+	70% { transform: rotate(2deg); }
+	80% { transform: rotate(-1deg); }
+	90% { transform: rotate(1deg); }
 	100% { transform: rotate(0deg); }
+}
+
+@keyframes 'appear' {
+	100% { opacity: 1; };
 }
 
 /* Voeg verduidelijkend label toe aan header */
@@ -258,8 +264,10 @@ p.demo_store {
 		position: absolute;
 		bottom: -100%;
 		// Zet eventueel op 'infite' om te blijven herhalen
-		animation: nudge 30s ease-out 1s 1;
+		animation: nudge 2s ease-out 1s;
 		transform-origin: 45% 11%;
+		opacity: 0;
+		animation: appear 1s ease-out;
 
 		// Subtielere tekstversie
 		// content: 'VOOR BEDRIJVEN';
@@ -275,7 +283,7 @@ p.demo_store {
 
 	& > .container:hover:after,
 	& > .container:focus:after {
-		animation: nudge 30s ease-out 1s;
+		animation: nudge 2s ease-out;
 	}
 }
 
