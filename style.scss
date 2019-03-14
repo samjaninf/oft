@@ -235,13 +235,13 @@ p.demo_store {
 
 @keyframes 'nudge' {
 	0% { transform: rotate(0deg); }
-	2% { transform: rotate(15deg); }
-	4% { transform: rotate(-10deg); }
-	6% { transform: rotate(6deg); }
-	8% { transform: rotate(-3deg); }
-	10% { transform: rotate(2deg); }
-	12% { transform: rotate(-1deg); }
-	14% { transform: rotate(0deg); }
+	1% { transform: rotate(15deg); }
+	2% { transform: rotate(-10deg); }
+	3% { transform: rotate(6deg); }
+	4% { transform: rotate(-3deg); }
+	5% { transform: rotate(2deg); }
+	6% { transform: rotate(-1deg); }
+	7% { transform: rotate(0deg); }
 	100% { transform: rotate(0deg); }
 }
 
@@ -259,7 +259,7 @@ body.is-header-sticky .bt-header-container.fw-absolute-header.fw-sticky-header >
 }
 
 :lang(nl) .bt-header-container.fw-absolute-header.fw-sticky-header > .container:after {
-	background-image: url('assets/label-companies.svg');
+	background-image: url('assets/label-companies-nl.svg');
 	background-repeat: no-repeat;
 	background-size: cover;
 	width: 142px;
@@ -267,7 +267,7 @@ body.is-header-sticky .bt-header-container.fw-absolute-header.fw-sticky-header >
 	margin-left: 110px;
 	position: absolute;
 	bottom: -100%;
-	animation: nudge 10s ease-out 3s infinite;
+	animation: nudge 30s ease-out 2s infinite;
 	transform-origin: 45% 11%;
 }
 
