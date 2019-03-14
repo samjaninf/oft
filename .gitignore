@@ -1,3 +1,5 @@
 *.codekit3
 *.htaccess
 wp-content/
+plugins/oauth2-client/
+plugins/microsoft-graph/
