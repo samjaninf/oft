@@ -247,8 +247,9 @@ p.demo_store {
 	100% { transform: rotate(0deg); }
 }
 
-@keyframes 'appear' {
-	100% { opacity: 1; };
+@keyframes 'fadein' {
+	from { opacity: 0; }
+	to { opacity: 1; }
 }
 
 /* Voeg verduidelijkend label toe aan header */
@@ -264,9 +265,8 @@ p.demo_store {
 		position: absolute;
 		bottom: -100%;
 		transform-origin: 45% 11%;
-		opacity: 0;
 		// Zet eventueel op 'infite' om te blijven herhalen
-		animation: appear 1s ease-out, nudge 2s ease-out 1s;
+		animation: fadein 1s ease-out, nudge 2s ease-out 1s;
 
 		// Subtielere tekstversie
 		// content: 'VOOR BEDRIJVEN';
