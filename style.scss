@@ -235,14 +235,14 @@ p.demo_store {
 
 @keyframes 'nudge' {
 	0% { opacity: 0; }
-	36% { opacity: 0; transform: rotate(-20deg); }
-	44% { opacity: 1; transform: rotate(16deg); }
-	52% { transform: rotate(-12deg); }
+	20% { opacity: 1; }
+	30% { transform: rotate(-20deg); }
+	40% { transform: rotate(16deg); }
+	50% { transform: rotate(-12deg); }
 	60% { transform: rotate(9deg); }
-	68% { transform: rotate(-6deg); }
-	76% { transform: rotate(4deg); }
-	84% { transform: rotate(-2deg); }
-	92% { transform: rotate(1deg); }
+	70% { transform: rotate(-6deg); }
+	80% { transform: rotate(4deg); }
+	90% { transform: rotate(-2deg); }
 	100% { transform: rotate(0deg); }
 }
 
@@ -260,7 +260,7 @@ p.demo_store {
 		bottom: -100%;
 		transform-origin: 45% 11%;
 		// Zet eventueel op 'infite' om te blijven herhalen
-		animation: nudge 3s ease-out;
+		animation: nudge 2.5s ease-out;
 
 		// Subtielere tekstversie
 		// content: 'VOOR BEDRIJVEN';
