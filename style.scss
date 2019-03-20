@@ -5,7 +5,7 @@
 	Author URI:		https://www.fullstackahead.be
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.24
+	Version:		1.2.25
 	Text Domain:	oft
 */
 
@@ -276,6 +276,7 @@ p.demo_store {
 
 	& > .container:hover:after,
 	& > .container:focus:after {
+		// Doet het hangertje ook weer verdwijnen ...
 		// animation: nudge 3s ease-out;
 	}
 }
