@@ -5,7 +5,7 @@
 	Author URI:		https://www.fullstackahead.be
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.26
+	Version:		1.2.27
 	Text Domain:	oft
 */
 
@@ -235,9 +235,10 @@ p.demo_store {
 
 @keyframes 'nudge' {
 	0% { opacity: 0; }
-	40% { opacity: 1; }
-	50% { transform: rotate(-15deg); }
-	60% { transform: rotate(10deg); }
+	30% { opacity: 1; transform: rotate(-20deg); }
+	40% { transform: rotate(16deg); }
+	50% { transform: rotate(-12deg); }
+	60% { transform: rotate(9deg); }
 	70% { transform: rotate(-6deg); }
 	80% { transform: rotate(3deg); }
 	90% { transform: rotate(-1deg); }
