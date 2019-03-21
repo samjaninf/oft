@@ -51,6 +51,9 @@
 			if ( ! is_user_logged_in() ) {
 				// Alle koopfuncties uitschakelen voor niet-ingelogde gebruikers
 				add_filter( 'woocommerce_is_purchasable', '__return_false' );
+
+				// Verberg alle niet-OFT-voedingsproducten VERGT AANPASSING AAN 'PRIVATE'-SYSTEEM
+				add_action( 'woocommerce_product_query', array( $this, 'hide_external_products' ) );
 			} else {
 				// Pas verkoopprijzen aan volgens klantentype
 				add_filter( 'woocommerce_product_get_price', array( $this, 'get_price_for_current_client' ), 100, 2 );
@@ -60,6 +63,23 @@
 				add_filter( 'woocommerce_product_title', array( $this, 'add_consumer_units_per_order_unit' ), 1000, 2 );
 				add_filter( 'woocommerce_cart_item_name', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
 				add_filter( 'woocommerce_order_item_name', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
+			}
+		}
+
+		public function hide_external_products( $query ) {
+			// Altijd alle producten zichtbaar voor beheerders
+			if ( ! current_user_can('manage_woocommerce') ) {
+				$meta_query = (array) $query->get('meta_query');
+
+				if ( $this->get_client_type() !== 'OWW' ) {
+					$tax_query[] = array(
+						'key' => '_product_attributes',
+						'value' => 'Oxfam Fair Trade',
+						'operator' => 'LIKE',
+					);
+				}
+				
+				$query->set( 'meta_query', $meta_query );	
 			}
 		}
 

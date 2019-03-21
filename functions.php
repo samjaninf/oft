@@ -1575,8 +1575,9 @@
 
 		$brand = $product->get_attribute('pa_merk');
 		if ( $post->post_status !== 'draft' and $brand !== '' and $brand !== 'Oxfam Fair Trade' and $brand !== 'Maya' and get_option('oft_erp_import_active') !== 'yes' ) {
-			$product->set_status('private');
-			$product->save();
+			// NIET MEER DOEN, VERBERG M.B.V. WOOCOMMERCE_PRODUCT_QUERY
+			// $product->set_status('private');
+			// $product->save();
 		}
 
 		// Update de productfiches na een handmatige bewerking
