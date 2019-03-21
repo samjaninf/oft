@@ -72,14 +72,14 @@
 				$meta_query = (array) $query->get('meta_query');
 
 				if ( $this->get_client_type() !== 'OWW' ) {
-					$tax_query[] = array(
+					$meta_query[] = array(
 						'key' => '_product_attributes',
 						'value' => 'Oxfam Fair Trade',
-						'operator' => 'LIKE',
+						'compare' => 'LIKE',
 					);
 				}
-				
-				$query->set( 'meta_query', $meta_query );	
+				$query->set( 'meta_query', $meta_query );
+				// var_dump_pre($query);	
 			}
 		}
 
@@ -131,8 +131,7 @@
 			}
 
 			// Retourneert ook een lege string indien klantenrol niet ingesteld
-			// return get_user_meta( $user_id, 'client_type', true );
-			return 'OWW';
+			return get_user_meta( $user_id, 'client_type', true );
 		}
 
 		public function add_consumer_units_per_order_unit( $title, $product ) {
