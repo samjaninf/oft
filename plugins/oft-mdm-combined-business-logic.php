@@ -15,12 +15,13 @@
 
 		public function __construct( $param = 'oft' ) {
 			self::$company = $param;
-
-			// Vermijd dat bv. is_user_logged_in() nog niet gedefinieerd is!
+			
+			// Sommige WP-functies (o.a. is_user_logged_in) zijn pas beschikbaar na de 'init'-actie!
 			add_action( 'init', array( $this, 'delay_actions_and_filters_till_load_completed' ) );
-		}
 
-		public function delay_actions_and_filters_till_load_completed() {
+			// Voeg verkoopseenheid én hoeveelheidsspinner toe aan template voor cataloguspagina's (die we ook laden op productdetailpagina's) */
+			add_filter( 'woocommerce_loop_add_to_cart_link', array( $this, 'add_quantity_inputs_to_add_to_cart_link' ), 10, 2 );
+
 			// Toon/verberg bepaalde tabbladen onder 'Mijn account'
 			add_filter( 'woocommerce_account_menu_items', array( $this, 'modify_my_account_menu_items' ), 10, 1 );
 
@@ -44,12 +45,85 @@
 
 			// Bereken belastingen ook bij afhalingen steeds volgens het factuuradres van de klant!
 			add_filter( 'woocommerce_apply_base_tax_for_local_pickup', '__return_false' );
+		}
 
+		public function delay_actions_and_filters_till_load_completed() {
 			if ( ! is_user_logged_in() ) {
-				// Alle koopfuncties verhinderen voor niet-ingelogde gebruikers
+				// Alle koopfuncties uitschakelen voor niet-ingelogde gebruikers
 				add_filter( 'woocommerce_is_purchasable', '__return_false' );
+			} else {
+				// Pas verkoopprijzen aan volgens klantentype
+				add_filter( 'woocommerce_product_get_price', array( $this, 'get_price_for_current_client' ), 100, 2 );
+				add_filter( 'woocommerce_product_get_regular_price', array( $this, 'get_regular_price_for_current_client' ), 100, 2 );
+
+				// Voeg ompakinfo toe
+				add_filter( 'woocommerce_product_title', array( $this, 'add_consumer_units_per_order_unit' ), 1000, 2 );
+				add_filter( 'woocommerce_cart_item_name', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
+				add_filter( 'woocommerce_order_item_name', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
 			}
 		}
+
+		public function add_quantity_inputs_to_add_to_cart_link( $html, $product ) {
+			if ( $product->is_type('simple') and $product->is_purchasable() and $product->is_in_stock() and ! $product->is_sold_individually() ) {
+				$html = woocommerce_quantity_input( array(
+					'min_value'   => apply_filters( 'woocommerce_quantity_input_min', $product->get_min_purchase_quantity(), $product ),
+					'max_value'   => apply_filters( 'woocommerce_quantity_input_max', $product->get_max_purchase_quantity(), $product ),
+					'input_value' => isset( $_POST['quantity'] ) ? wc_stock_amount( $_POST['quantity'] ) : $product->get_min_purchase_quantity(),
+				), $product, false ) . $html;
+			}
+			return $html;
+		}
+
+		public function get_price_for_current_client( $price, $product, $user_id = false, $regular = false ) {
+			// Filter wordt ook doorlopen in back-end, prijs daar nooit manipuleren!
+			if ( ! is_admin() ) {
+				// Huidige prijs expliciet doorgeven aan functie want anders infinite loop!
+				$price = $this->get_price_by_client_type( $product, $this->get_client_type($user_id), $price, $regular );
+			}
+			return $price;
+		}
+
+		// Wrapperfunctie om $regular === true door te geven aan universele get_price_for_current_client()
+		public function get_regular_price_for_current_client( $price, $product, $user_id = false ) {
+			return $this->get_price_for_current_client( $price, $product, $user_id, true );
+		}
+
+		public function get_price_by_client_type( $product, $client_type, $price = false, $regular = false ) {
+			if ( $client_type !== '' ) {
+				if ( $product->meta_exists( '_price_for_client_type_' . strtolower($client_type) ) ) {
+					// BTW WORDT NADIEN NOG AFGETROKKEN WANT CP'S GEVEN WE IN INCL BTW ...
+					$price = floatval( $product->get_meta( '_price_for_client_type_' . strtolower($client_type) ) );
+				} else {
+					// TIJDELIJKE FIX, ODISY ZAL OMPAKPRIJZEN DOORGEVEN
+					if ( intval( $product->get_meta('_multiple') ) > 1 ) {
+						$price *= intval( $product->get_meta('_multiple') );
+					}
+				}
+			}
+
+			return $price;
+		}
+
+		public function get_client_type( $user_id = false ) {
+			if ( $user_id === false ) {
+				// Levert 0 op indien niet ingelogd
+				$user_id = get_current_user_id();
+			}
+
+			// Retourneert ook een lege string indien klantenrol niet ingesteld
+			// return get_user_meta( $user_id, 'client_type', true );
+			return 'OWW';
+		}
+
+		public function add_consumer_units_per_order_unit( $title, $product ) {
+			if ( $product instanceof WC_Product_Simple ) {
+				return $title . ' X '.$product->get_meta('_multiple');
+			} else {
+				return $title . ' X '.$product['data']->get_meta('_multiple');
+			}
+		}
+
+		
 
 		public function modify_my_account_menu_items( $items ) {
 			// unset($items['dashboard']);
