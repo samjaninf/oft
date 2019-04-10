@@ -2912,7 +2912,9 @@
 		$total = $multiple * $subtotal;
 
 		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('pa_merk'), $templatecontent );
-		$templatecontent = str_replace( "###LOGO###", sanitize_title( $product->get_attribute('pa_merk'), 'oxfam-fair-trade' ), $templatecontent );
+		// Soms blijven de termen uit de moedertaal plakken dus voor alle zekerheid ontdubbelen ...
+		$brands = explode( ', ', $product->get_attribute('pa_merk') );
+		$templatecontent = str_replace( "###LOGO###", sanitize_title( $brands[0], 'oxfam-fair-trade' ), $templatecontent );
 		$templatecontent = str_replace( "###PERMALINK###", $permalink, $templatecontent );
 		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
 		$templatecontent = str_replace( "###IMAGE_URL###", $image_url, $templatecontent );
