@@ -80,8 +80,8 @@
 		return $unit;
 	}
 
-	function translate_stock_status( $eshop, $available, $stock ) {
-		if ( $eshop === 'aan' ) {
+	function translate_stock_status( $eshop, $purchasable, $stock ) {
+		if ( $eshop === 'aan' and $purchasable === 'ja' ) {
 			if ( intval($stock) > 0 ) {
 				return 'instock';
 			} else {
