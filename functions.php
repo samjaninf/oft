@@ -365,6 +365,7 @@
 						<option value="A" <?php selected( 'A', $partner_type ); ?>>A</option>
 						<option value="B" <?php selected( 'B', $partner_type ); ?>>B</option>
 						<option value="C" <?php selected( 'C', $partner_type ); ?>>C</option>
+						<option value="EXTINCT" <?php selected( 'EXTINCT', $partner_type ); ?>><?php _e( 'Uitdovend', 'oft-admin' ); ?></option>
 					</select>
 				</td>
 			</tr>
