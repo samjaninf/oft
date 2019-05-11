@@ -2303,31 +2303,26 @@
 					echo '<div class="oft-partners-td">'.str_replace( ')', ')</span>', str_replace( '(', '<span class="oft-country">(', implode( ', ', $partners ) ) ).'</div>';
 				echo '</div>';
 				echo '<div class="oft-partners-row">';
-					$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
-					$quoted_term_image_id = intval( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ) );
+					// Kies een random partner om uit te lichten
+					$quoted_partner = get_term_by( 'id', array_rand($partners), 'product_partner' );
+					$quoted_partner_image_id = intval( get_term_meta( $quoted_partner->term_id, 'partner_image_id', true ) );
 					$cnt = 0;
-					while( ( strlen($quoted_term->description) < 20 or $quoted_term_image_id < 1 ) and $cnt < 3*count($partners) ) {
-						$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
-						$quoted_term_image_id = intval( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ) );
+					while( ( strlen($quoted_partner->description) < 20 or $quoted_partner_image_id < 1 ) and $cnt < 3*count($partners) ) {
+						// Selecteer een andere random partner indien geen foto én quote beschikbaar
+						$quoted_partner = get_term_by( 'id', array_rand($partners), 'product_partner' );
+						$quoted_partner_image_id = intval( get_term_meta( $quoted_partner->term_id, 'partner_image_id', true ) );
+						// Maximum 3x het aantal gekoppelde partners opnieuw proberen (omwille van randomisatie)
 						$cnt++;
 					}
-					if ( strlen($quoted_term->description) >= 20 and $quoted_term_image_id >= 1 ) {
-						$quoted_parent_term = get_term_by( 'id', $quoted_term->parent, 'product_partner' );
-						echo '<div class="oft-partners-th">'.wp_get_attachment_image( $quoted_term_image_id, array( '110', '110' ), false ).'</div>';
+					if ( strlen($quoted_partner->description) >= 20 and $quoted_partner_image_id >= 1 ) {
+						$quoted_partner_country = get_term_by( 'id', $quoted_partner->parent, 'product_partner' );
+						echo '<div class="oft-partners-th">'.wp_get_attachment_image( $quoted_partner_image_id, array( '110', '110' ), false ).'</div>';
 						echo '<div class="oft-partners-td">';
-						echo '<p class="oft-partners-quote">'.trim($quoted_term->description).'</p>';
-						$quoted_term_node = intval( get_term_meta( $quoted_term->term_id, 'partner_node', true ) );
-						if ($quoted_term_node > 0 ) {
-							$url = 'https://www.oxfamwereldwinkels.be/node/'.$quoted_term_node;
-							// $handle = curl_init($url);
-							// curl_setopt( $handle, CURLOPT_RETURNTRANSFER, true );
-							// $response = curl_exec($handle);
-							// $code = curl_getinfo( $handle, CURLINFO_HTTP_CODE );
-							// if ( $code !== 404 ) {
-							// Link staat publiek en mag dus getoond worden WERKT NIET DOOR DE REDIRECTS
-							echo '<a href="'.$url.'" target="_blank"><p class="oft-partners-link">'.trim($quoted_term->name).', '.trim($quoted_parent_term->name).'</p></a>';
-							// }
-							// curl_close($handle);	
+						echo '<p class="oft-partners-quote">'.trim($quoted_partner->description).'</p>';
+						// Voorlopig enkel link leggen naar OWW-site bij A-partners
+						if ( get_term_meta( $quoted_partner->term_id, 'partner_type', true ) === 'A' ) {
+							$url = 'https://www.oxfamwereldwinkels.be/partners/'.$quoted_partner->slug;
+							echo '<a href="'.$url.'" target="_blank"><p class="oft-partners-link">'.trim($quoted_partner->name).', '.trim($quoted_partner_country->name).'</p></a>';
 						}
 						echo '</div>';
 					}
