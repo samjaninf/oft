@@ -2615,22 +2615,22 @@
 					// Er is opnieuw een parent dus de oorspronkelijke term is een partner
 					$grandparent_term = get_term( $grandparent_term_id, 'product_partner' );
 					
-					if ( strlen(term_description()) > 10 ) {
+					if ( strlen( term_description() ) > 10 ) {
 						remove_filter( 'term_description', 'wpautop' );
 						echo '<blockquote>&laquo; '.term_description().' &raquo;</blockquote>';
 						echo '<p style="text-align: right;">'.single_term_title( '', false ).' &mdash; '.$parent_term->name.', '.$grandparent_term->name.'</p>';
 						add_filter( 'term_description', 'wpautop' );
-						$image_id = get_term_meta( get_queried_object()->term_id, 'partner_image_id', true );
-						if ($image_id) {
+						$image_id = get_term_meta( $term_id, 'partner_image_id', true );
+						if ( $image_id ) {
 							echo wp_get_attachment_image( $image_id, array(300,300), false, array( 'class' => 'partner-quote-icon' ) );
 						}
 					}
 
 					echo '<p style="margin: 2em 0;">';
 						_e( 'Deze boeren zijn voor ons geen leveranciers, het zijn partners. Dankzij jullie steun kunnen coöperaties uitgroeien tot bloeiende ondernemingen die hun fairtradeproducten wereldwijd verkopen.', 'oft' );
-						$partner_node = get_term_meta( get_queried_object()->term_id, 'partner_node', true );
-						if ( $partner_node > 0 ) {
-							echo ' <a href="https://www.oxfamwereldwinkels.be/node/'.$partner_node.'" target="_blank">'.__( 'Lees meer over deze producent op oxfamwereldwinkels.be', 'oft' ).'.</a>';
+						// Voorlopig enkel link leggen naar OWW-site bij A-partners
+						if ( get_term_meta( $term_id, 'partner_type', true ) === 'A' ) {
+							echo ' <a href="https://www.oxfamwereldwinkels.be/partners/'.get_queried_object()->slug.'" target="_blank">'.__( 'Lees meer over deze producent op oxfamwereldwinkels.be', 'oft' ).'.</a>';
 						}
 					echo '</p>';
 
