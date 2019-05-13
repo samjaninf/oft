@@ -607,11 +607,11 @@
 			foreach ( $categories as $category_id ) {
 				$category = get_term( $category_id, 'product_cat' );
 				while ( intval($category->parent) !== 0 ) {
-					$parent = get_term( $category->parent, 'product_cat' );
+					$parent = get_term( apply_filters( 'wpml_object_id', intval($category->parent), 'product_cat', true, 'nl' ), 'product_cat' );
 					$category = $parent;
 				}
 			}
-			if ( $parent->slug === 'wijn' or $parent->slug === 'vin' or $parent->slug === 'wine' ) {
+			if ( $parent->slug === 'wijn' ) {
 				// Sommelierinfo uit lange beschrijving tonen
 				$tabs['description']['title'] = __( 'Wijnbeschrijving', 'oft' );
 			} else {
@@ -1006,7 +1006,7 @@
 			if ( is_array( $categories ) ) {
 				foreach ( $categories as $category ) {
 					while ( intval($category->parent) !== 0 ) {
-						$parent = get_term( $category->parent, 'product_cat' );
+						$parent = get_term( apply_filters( 'wpml_object_id', intval($category->parent), 'product_cat', true, 'nl' ), 'product_cat' );
 						$category = $parent;
 					}
 				}
@@ -1107,7 +1107,7 @@
 							msg += '* Je moet het fairtradepercentage nog ingeven!\n';
 						}
 
-						<?php if ( $parent->slug !== 'wijn' and $parent->slug !== 'vin' and $parent->slug !== 'wine' ) : ?>
+						<?php if ( $parent->slug !== 'wijn' ) : ?>
 							if ( jQuery( '#general_product_data' ).find( 'textarea#_ingredients' ).val() == '' ) {
 								pass = false;
 								msg += '* Je moet de ingrediëntenlijst nog ingeven!\n';
@@ -1178,12 +1178,11 @@
 			if ( is_array( $categories ) ) {
 				foreach ( $categories as $category ) {
 					while ( intval($category->parent) !== 0 ) {
-						$parent = get_term( $category->parent, 'product_cat' );
+						$parent = get_term( apply_filters( 'wpml_object_id', intval($category->parent), 'product_cat', true, 'nl' ), 'product_cat' );
 						$category = $parent;
 					}
 				}
-				// VERTALEN EN CHECKEN IN HOOFDTAAL
-				if ( $parent->slug === 'wijn' or $parent->slug === 'vin' or $parent->slug === 'wine' ) {
+				if ( $parent->slug === 'wijn' ) {
 					$remove = false;
 				}
 			}
@@ -1688,9 +1687,9 @@
 			}
 
 			$category_ids = $product->get_category_ids();
-			if ( is_array($category_ids) and count($category_ids) > 0 ) {
+			if ( is_array($category_ids) and count($category_ids) > 0 and intval($category_ids[0]) > 0 ) {
 				// In principe slechts één categorie geselecteerd bij ons, dus gewoon 1ste element nemen
-				$category = get_term( apply_filters( 'wpml_object_id', $category_ids[0], 'product_cat', true, 'nl' ), 'product_cat' );
+				$category = get_term( apply_filters( 'wpml_object_id', intval($category_ids[0]), 'product_cat', true, 'nl' ), 'product_cat' );
 				if ( $category->slug === 'fruitsap' or $category->slug === 'bier' ) {
 					woocommerce_wp_text_input(
 						array( 
@@ -2587,13 +2586,13 @@
 			foreach ( $categories as $category_id ) {
 				$category = get_term( $category_id, 'product_cat' );
 				while ( intval($category->parent) !== 0 ) {
-					$parent = get_term( $category->parent, 'product_cat' );
+					$parent = get_term( apply_filters( 'wpml_object_id', intval($category->parent), 'product_cat', true, 'nl' ), 'product_cat' );
 					$category = $parent;
 				}
 			}
 		}
 		echo '<div class="woocommerce-product-details__short-description">';
-			if ( $parent->slug === 'wijn' or $parent->slug === 'vin' or $parent->slug === 'wine' ) {
+			if ( $parent->slug === 'wijn' ) {
 				// Korte 'Lekker bij' tonen
 				the_excerpt();
 			} else {
