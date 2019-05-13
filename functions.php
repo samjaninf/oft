@@ -1690,8 +1690,8 @@
 			$category_ids = $product->get_category_ids();
 			if ( is_array($category_ids) and count($category_ids) > 0 ) {
 				// In principe slechts één categorie geselecteerd bij ons, dus gewoon 1ste element nemen
-				$category = get_term( $category_ids[0], 'product_cat' );
-				if ( $category->slug === 'fruitsap' or $category->slug === 'jus-de-fruit' or $category->slug === 'fruit-juice' ) {
+				$category = get_term( apply_filters( 'wpml_object_id', $category_ids[0], 'product_cat', true, 'nl' ), 'product_cat' );
+				if ( $category->slug === 'fruitsap' or $category->slug === 'bier' ) {
 					woocommerce_wp_text_input(
 						array( 
 							'id' => '_empty_fee',
