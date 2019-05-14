@@ -601,23 +601,13 @@
 	
 	function add_extra_product_tabs( $tabs ) {
 		global $product;
-		
-		$categories = $product->get_category_ids();
-		if ( is_array( $categories ) ) {
-			foreach ( $categories as $category_id ) {
-				$category = get_term( $category_id, 'product_cat' );
-				while ( intval($category->parent) !== 0 ) {
-					$parent = get_term( apply_filters( 'wpml_object_id', intval($category->parent), 'product_cat', true, 'nl' ), 'product_cat' );
-					$category = $parent;
-				}
-			}
-			if ( $parent->slug === 'wijn' ) {
-				// Sommelierinfo uit lange beschrijving tonen
-				$tabs['description']['title'] = __( 'Wijnbeschrijving', 'oft' );
-			} else {
-				// Schakel lange beschrijving uit (werd naar boven verplaatst)
-				unset($tabs['description']);
-			}
+
+		if ( has_product_cat_slug( 'wijn', $product ) ) {
+			// Sommelierinfo uit lange beschrijving tonen
+			$tabs['description']['title'] = __( 'Wijnbeschrijving', 'oft' );
+		} else {
+			// Schakel lange beschrijving uit (werd naar boven verplaatst)
+			unset($tabs['description']);
 		}
 
 		// Voeg tabje met ingrediënten en allergenen toe
@@ -1002,16 +992,6 @@
 			$args['taxonomy'] = 'product_grape';
 			$grapes = get_terms($args);
 
-			$categories = isset( $_GET['post'] ) ? get_the_terms( $_GET['post'], 'product_cat' ) : false;
-			if ( is_array( $categories ) ) {
-				foreach ( $categories as $category ) {
-					while ( intval($category->parent) !== 0 ) {
-						$parent = get_term( apply_filters( 'wpml_object_id', intval($category->parent), 'product_cat', true, 'nl' ), 'product_cat' );
-						$category = $parent;
-					}
-				}
-			}
-
 			?>
 			<script>
 				jQuery(document).ready( function() {
@@ -1107,7 +1087,7 @@
 							msg += '* Je moet het fairtradepercentage nog ingeven!\n';
 						}
 
-						<?php if ( $parent->slug !== 'wijn' ) : ?>
+						<?php if ( ! has_product_cat_slug('wijn') ) : ?>
 							if ( jQuery( '#general_product_data' ).find( 'textarea#_ingredients' ).val() == '' ) {
 								pass = false;
 								msg += '* Je moet de ingrediëntenlijst nog ingeven!\n';
@@ -1172,25 +1152,12 @@
 
 	function hide_wine_taxonomies() {
 		global $pagenow;
-		$remove = true;
-		if ( ( $pagenow === 'post.php' or $pagenow === 'post-new.php' ) and ( isset( $_GET['post'] ) and get_post_type( $_GET['post'] ) === 'product' ) ) {
-			$categories =  get_the_terms( $_GET['post'], 'product_cat' );
-			if ( is_array( $categories ) ) {
-				foreach ( $categories as $category ) {
-					while ( intval($category->parent) !== 0 ) {
-						$parent = get_term( apply_filters( 'wpml_object_id', intval($category->parent), 'product_cat', true, 'nl' ), 'product_cat' );
-						$category = $parent;
-					}
-				}
-				if ( $parent->slug === 'wijn' ) {
-					$remove = false;
-				}
-			}
-		}
-		if ( $remove ) {
-			remove_meta_box( 'product_grapediv', 'product', 'normal' );
-			remove_meta_box( 'product_recipediv', 'product', 'normal' );
-			remove_meta_box( 'product_flavourdiv', 'product', 'normal' );
+		if ( $pagenow === 'post.php' or $pagenow === 'post-new.php' ) {
+			if ( ! has_product_cat_slug('wijn') ) {
+				remove_meta_box( 'product_grapediv', 'product', 'normal' );
+				remove_meta_box( 'product_recipediv', 'product', 'normal' );
+				remove_meta_box( 'product_flavourdiv', 'product', 'normal' );
+			}	
 		}
 	}
 
@@ -1686,20 +1653,15 @@
 				$suffix .= '/kg';
 			}
 
-			$category_ids = $product->get_category_ids();
-			if ( is_array($category_ids) and count($category_ids) > 0 and intval($category_ids[0]) > 0 ) {
-				// In principe slechts één categorie geselecteerd bij ons, dus gewoon 1ste element nemen
-				$category = get_term( apply_filters( 'wpml_object_id', intval($category_ids[0]), 'product_cat', true, 'nl' ), 'product_cat' );
-				if ( $category->slug === 'fruitsap' or $category->slug === 'bier' ) {
-					woocommerce_wp_text_input(
-						array( 
-							'id' => '_empty_fee',
-							'label' => __( 'Leeggoed (&euro;)', 'oft-admin' ),
-							'wrapper_class' => 'important-for-catman',
-							'data_type' => 'price',
-						)
-					);
-				}
+			if ( has_product_cat_slug( 'fruitsap', $product, false ) or has_product_cat_slug( 'bier', $product, false ) ) {
+				woocommerce_wp_text_input(
+					array( 
+						'id' => '_empty_fee',
+						'label' => __( 'Leeggoed (&euro;)', 'oft-admin' ),
+						'wrapper_class' => 'important-for-catman',
+						'data_type' => 'price',
+					)
+				);
 			}
 
 			woocommerce_wp_text_input(
@@ -2434,7 +2396,7 @@
 	// Wijzig het formaat van de korte RSS-feed
 	add_filter( 'the_excerpt_rss', 'alter_rss_feed_excerpt' );
 
-	function alter_rss_feed_excerpt( $feed_type = null ) {
+	function alter_rss_feed_excerpt( $feed_type = NULL ) {
 		global $more, $post;
 		$more_restore = $more;
 		if ( ! $feed_type ) {
@@ -2560,7 +2522,7 @@
 	add_filter( 'vc_gitem_template_attribute_post_date_categories', 'vc_gitem_template_attribute_post_date_categories', 10, 2 );
 	function vc_gitem_template_attribute_post_date_categories( $value, $data ) {
 		extract( array_merge( array(
-			'post' => null,
+			'post' => NULL,
 			'data' => '',
 		), $data ) );
 		return __( 'Gepubliceerd:', 'oft' ).' '.get_the_date( 'd/m/Y' ).'<br>'.__( 'Categorie:', 'oft' ).' '.get_the_category_list( ', ' );
@@ -2581,18 +2543,8 @@
 
 	function output_full_product_description() {
 		global $product;
-		$categories = $product->get_category_ids();
-		if ( is_array( $categories ) ) {
-			foreach ( $categories as $category_id ) {
-				$category = get_term( $category_id, 'product_cat' );
-				while ( intval($category->parent) !== 0 ) {
-					$parent = get_term( apply_filters( 'wpml_object_id', intval($category->parent), 'product_cat', true, 'nl' ), 'product_cat' );
-					$category = $parent;
-				}
-			}
-		}
 		echo '<div class="woocommerce-product-details__short-description">';
-			if ( $parent->slug === 'wijn' ) {
+			if ( has_product_cat_slug( 'wijn', $product ) ) {
 				// Korte 'Lekker bij' tonen
 				the_excerpt();
 			} else {
@@ -4048,7 +4000,7 @@
 		echo '<pre>';
 		var_dump($variable);
 		echo '</pre>';
-		return null;
+		return;
 	}
 
 	// Tab-delimited CSV omzetten in een paginabrede tabel, ongeacht het aantal kolommen
@@ -4085,6 +4037,47 @@
 			$subject = substr_replace( $subject, $replace, $pos, strlen($search) );
 		}
 		return $subject;
+	}
+
+	function has_product_cat_slug( $slug, $product = false, $check_parents = true ) {
+		global $sitepress;
+		
+		// Functie get_term() wordt automatisch omgezet in huidige taal, dus gebruik de 'wpml_object_id'-filter niet en switch gewoon naar de hoofdtaal
+		$prev_lang = $sitepress->get_current_language();
+		$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
+		$has_category_slug = false;
+		
+		if ( $product === false ) {
+			// Back-end: leid het product af uit de GET-parameter
+			$categories = isset( $_GET['post'] ) ? get_the_terms( $_GET['post'], 'product_cat' ) : false;
+		} else {
+			$categories = $product->get_category_ids();	
+		}
+
+		// In principe is er slechts één categorie ingesteld maar speel op veilig
+		if ( is_array( $categories ) ) {
+			foreach ( $categories as $category_id ) {
+				$category = get_term( $category_id, 'product_cat' );
+				if ( $category->slug === $slug ) {
+					$has_category_slug = true;
+					break;
+				}
+				if ( $check_parents ) {
+					// Check ook de bovenliggende categorieën van het product, tot we op het hoogste niveau zitten
+					while ( intval($category->parent) !== 0 ) {
+						$parent_category = get_term( $category->parent, 'product_cat' );
+						$category = $parent_category;
+						if ( $category->slug === $slug ) {
+							$has_category_slug = true;
+							break 2;
+						}
+					}
+				}
+			}
+		}
+
+		$sitepress->switch_lang( $prev_lang, true );
+		return $has_category_slug;
 	}
 
 ?>
