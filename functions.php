@@ -7,7 +7,7 @@
 	use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 
 	// Schakel de default compressie van 90% uit die WordPress toepast op JPG's
-	// add_filter( 'jpeg_quality', function( $quality ) { return 100; } );
+	add_filter( 'jpeg_quality', function( $quality ) { return 95; } );
 
 	// Laad de WooCommerce JS en CSS ook bij blogposts, zodat het zoekveld werkt
 	add_filter( 'woocommerce_screen_ids', 'oft_include_wc_scripts' );
@@ -39,6 +39,7 @@
 	function load_child_theme() {
 		// Zorgt ervoor dat de stylesheet van het child theme ZEKER NA alone.css ingeladen wordt
 		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.23' );
+		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.28' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
 		load_child_theme_textdomain( 'oft', get_stylesheet_directory().'/languages' );
@@ -375,6 +376,7 @@
 						<option value="A" <?php selected( 'A', $partner_type ); ?>>A</option>
 						<option value="B" <?php selected( 'B', $partner_type ); ?>>B</option>
 						<option value="C" <?php selected( 'C', $partner_type ); ?>>C</option>
+						<option value="EXTINCT" <?php selected( 'EXTINCT', $partner_type ); ?>><?php _e( 'Uitdovend', 'oft-admin' ); ?></option>
 					</select>
 				</td>
 			</tr>
@@ -610,23 +612,13 @@
 	
 	function add_extra_product_tabs( $tabs ) {
 		global $product;
-		
-		$categories = $product->get_category_ids();
-		if ( is_array( $categories ) ) {
-			foreach ( $categories as $category_id ) {
-				$category = get_term( $category_id, 'product_cat' );
-				while ( intval($category->parent) !== 0 ) {
-					$parent = get_term( $category->parent, 'product_cat' );
-					$category = $parent;
-				}
-			}
-			if ( $parent->slug === 'wijn' or $parent->slug === 'vin' or $parent->slug === 'wine' ) {
-				// Sommelierinfo uit lange beschrijving tonen
-				$tabs['description']['title'] = __( 'Wijnbeschrijving', 'oft' );
-			} else {
-				// Schakel lange beschrijving uit (werd naar boven verplaatst)
-				unset($tabs['description']);
-			}
+
+		if ( has_product_cat_slug( 'wijn', $product ) ) {
+			// Sommelierinfo uit lange beschrijving tonen
+			$tabs['description']['title'] = __( 'Wijnbeschrijving', 'oft' );
+		} else {
+			// Schakel lange beschrijving uit (werd naar boven verplaatst)
+			unset($tabs['description']);
 		}
 
 		// Voeg tabje met ingrediënten en allergenen toe
@@ -1011,16 +1003,6 @@
 			$args['taxonomy'] = 'product_grape';
 			$grapes = get_terms($args);
 
-			$categories = isset( $_GET['post'] ) ? get_the_terms( $_GET['post'], 'product_cat' ) : false;
-			if ( is_array( $categories ) ) {
-				foreach ( $categories as $category ) {
-					while ( intval($category->parent) !== 0 ) {
-						$parent = get_term( $category->parent, 'product_cat' );
-						$category = $parent;
-					}
-				}
-			}
-
 			?>
 			<script>
 				jQuery(document).ready( function() {
@@ -1116,7 +1098,7 @@
 							msg += '* Je moet het fairtradepercentage nog ingeven!\n';
 						}
 
-						<?php if ( $parent->slug !== 'wijn' and $parent->slug !== 'vin' and $parent->slug !== 'wine' ) : ?>
+						<?php if ( ! has_product_cat_slug('wijn') ) : ?>
 							if ( jQuery( '#general_product_data' ).find( 'textarea#_ingredients' ).val() == '' ) {
 								pass = false;
 								msg += '* Je moet de ingrediëntenlijst nog ingeven!\n';
@@ -1181,26 +1163,12 @@
 
 	function hide_wine_taxonomies() {
 		global $pagenow;
-		$remove = true;
-		if ( ( $pagenow === 'post.php' or $pagenow === 'post-new.php' ) and ( isset( $_GET['post'] ) and get_post_type( $_GET['post'] ) === 'product' ) ) {
-			$categories =  get_the_terms( $_GET['post'], 'product_cat' );
-			if ( is_array( $categories ) ) {
-				foreach ( $categories as $category ) {
-					while ( intval($category->parent) !== 0 ) {
-						$parent = get_term( $category->parent, 'product_cat' );
-						$category = $parent;
-					}
-				}
-				// VERTALEN EN CHECKEN IN HOOFDTAAL
-				if ( $parent->slug === 'wijn' or $parent->slug === 'vin' or $parent->slug === 'wine' ) {
-					$remove = false;
-				}
-			}
-		}
-		if ( $remove ) {
-			remove_meta_box( 'product_grapediv', 'product', 'normal' );
-			remove_meta_box( 'product_recipediv', 'product', 'normal' );
-			remove_meta_box( 'product_flavourdiv', 'product', 'normal' );
+		if ( $pagenow === 'post.php' or $pagenow === 'post-new.php' ) {
+			if ( ! has_product_cat_slug('wijn') ) {
+				remove_meta_box( 'product_grapediv', 'product', 'normal' );
+				remove_meta_box( 'product_recipediv', 'product', 'normal' );
+				remove_meta_box( 'product_flavourdiv', 'product', 'normal' );
+			}	
 		}
 	}
 
@@ -1697,20 +1665,15 @@
 				$suffix .= '/kg';
 			}
 
-			$category_ids = $product->get_category_ids();
-			if ( is_array($category_ids) and count($category_ids) > 0 ) {
-				// In principe slechts één categorie geselecteerd bij ons, dus gewoon 1ste element nemen
-				$category = get_term( $category_ids[0], 'product_cat' );
-				if ( $category->slug === 'fruitsap' or $category->slug === 'jus-de-fruit' or $category->slug === 'fruit-juice' ) {
-					woocommerce_wp_text_input(
-						array( 
-							'id' => '_empty_fee',
-							'label' => __( 'Leeggoed (&euro;)', 'oft-admin' ),
-							'wrapper_class' => 'important-for-catman',
-							'data_type' => 'price',
-						)
-					);
-				}
+			if ( has_product_cat_slug( 'fruitsap', $product, false ) or has_product_cat_slug( 'bier', $product, false ) ) {
+				woocommerce_wp_text_input(
+					array( 
+						'id' => '_empty_fee',
+						'label' => __( 'Leeggoed (&euro;)', 'oft-admin' ),
+						'wrapper_class' => 'important-for-catman',
+						'data_type' => 'price',
+					)
+				);
 			}
 
 			woocommerce_wp_text_input(
@@ -2313,31 +2276,26 @@
 					echo '<div class="oft-partners-td">'.str_replace( ')', ')</span>', str_replace( '(', '<span class="oft-country">(', implode( ', ', $partners ) ) ).'</div>';
 				echo '</div>';
 				echo '<div class="oft-partners-row">';
-					$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
-					$quoted_term_image_id = intval( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ) );
+					// Kies een random partner om uit te lichten
+					$quoted_partner = get_term_by( 'id', array_rand($partners), 'product_partner' );
+					$quoted_partner_image_id = intval( get_term_meta( $quoted_partner->term_id, 'partner_image_id', true ) );
 					$cnt = 0;
-					while( ( strlen($quoted_term->description) < 20 or $quoted_term_image_id < 1 ) and $cnt < 3*count($partners) ) {
-						$quoted_term = get_term_by( 'id', array_rand($partners), 'product_partner' );
-						$quoted_term_image_id = intval( get_term_meta( $quoted_term->term_id, 'partner_image_id', true ) );
+					while( ( strlen($quoted_partner->description) < 20 or $quoted_partner_image_id < 1 ) and $cnt < 3*count($partners) ) {
+						// Selecteer een andere random partner indien geen foto én quote beschikbaar
+						$quoted_partner = get_term_by( 'id', array_rand($partners), 'product_partner' );
+						$quoted_partner_image_id = intval( get_term_meta( $quoted_partner->term_id, 'partner_image_id', true ) );
+						// Maximum 3x het aantal gekoppelde partners opnieuw proberen (omwille van randomisatie)
 						$cnt++;
 					}
-					if ( strlen($quoted_term->description) >= 20 and $quoted_term_image_id >= 1 ) {
-						$quoted_parent_term = get_term_by( 'id', $quoted_term->parent, 'product_partner' );
-						echo '<div class="oft-partners-th">'.wp_get_attachment_image( $quoted_term_image_id, array( '110', '110' ), false ).'</div>';
+					if ( strlen($quoted_partner->description) >= 20 and $quoted_partner_image_id >= 1 ) {
+						$quoted_partner_country = get_term_by( 'id', $quoted_partner->parent, 'product_partner' );
+						echo '<div class="oft-partners-th">'.wp_get_attachment_image( $quoted_partner_image_id, array( '110', '110' ), false ).'</div>';
 						echo '<div class="oft-partners-td">';
-						echo '<p class="oft-partners-quote">'.trim($quoted_term->description).'</p>';
-						$quoted_term_node = intval( get_term_meta( $quoted_term->term_id, 'partner_node', true ) );
-						if ($quoted_term_node > 0 ) {
-							$url = 'https://www.oxfamwereldwinkels.be/node/'.$quoted_term_node;
-							// $handle = curl_init($url);
-							// curl_setopt( $handle, CURLOPT_RETURNTRANSFER, true );
-							// $response = curl_exec($handle);
-							// $code = curl_getinfo( $handle, CURLINFO_HTTP_CODE );
-							// if ( $code !== 404 ) {
-							// Link staat publiek en mag dus getoond worden WERKT NIET DOOR DE REDIRECTS
-							echo '<a href="'.$url.'" target="_blank"><p class="oft-partners-link">'.trim($quoted_term->name).', '.trim($quoted_parent_term->name).'</p></a>';
-							// }
-							// curl_close($handle);	
+						echo '<p class="oft-partners-quote">'.trim($quoted_partner->description).'</p>';
+						// Voorlopig enkel link leggen naar OWW-site bij A-partners
+						if ( get_term_meta( $quoted_partner->term_id, 'partner_type', true ) === 'A' ) {
+							$url = 'https://www.oxfamwereldwinkels.be/partners/'.$quoted_partner->slug;
+							echo '<a href="'.$url.'" target="_blank"><p class="oft-partners-link">'.trim($quoted_partner->name).', '.trim($quoted_partner_country->name).'</p></a>';
 						}
 						echo '</div>';
 					}
@@ -2450,7 +2408,7 @@
 	// Wijzig het formaat van de korte RSS-feed
 	add_filter( 'the_excerpt_rss', 'alter_rss_feed_excerpt' );
 
-	function alter_rss_feed_excerpt( $feed_type = null ) {
+	function alter_rss_feed_excerpt( $feed_type = NULL ) {
 		global $more, $post;
 		$more_restore = $more;
 		if ( ! $feed_type ) {
@@ -2576,7 +2534,7 @@
 	add_filter( 'vc_gitem_template_attribute_post_date_categories', 'vc_gitem_template_attribute_post_date_categories', 10, 2 );
 	function vc_gitem_template_attribute_post_date_categories( $value, $data ) {
 		extract( array_merge( array(
-			'post' => null,
+			'post' => NULL,
 			'data' => '',
 		), $data ) );
 		return __( 'Gepubliceerd:', 'oft' ).' '.get_the_date( 'd/m/Y' ).'<br>'.__( 'Categorie:', 'oft' ).' '.get_the_category_list( ', ' );
@@ -2595,18 +2553,8 @@
 
 	function output_full_product_description() {
 		global $product;
-		$categories = $product->get_category_ids();
-		if ( is_array( $categories ) ) {
-			foreach ( $categories as $category_id ) {
-				$category = get_term( $category_id, 'product_cat' );
-				while ( intval($category->parent) !== 0 ) {
-					$parent = get_term( $category->parent, 'product_cat' );
-					$category = $parent;
-				}
-			}
-		}
 		echo '<div class="woocommerce-product-details__short-description">';
-			if ( $parent->slug === 'wijn' or $parent->slug === 'vin' or $parent->slug === 'wine' ) {
+			if ( has_product_cat_slug( 'wijn', $product ) ) {
 				// Korte 'Lekker bij' tonen
 				the_excerpt();
 			} else {
@@ -2628,22 +2576,22 @@
 					// Er is opnieuw een parent dus de oorspronkelijke term is een partner
 					$grandparent_term = get_term( $grandparent_term_id, 'product_partner' );
 					
-					if ( strlen(term_description()) > 10 ) {
+					if ( strlen( term_description() ) > 10 ) {
 						remove_filter( 'term_description', 'wpautop' );
 						echo '<blockquote>&laquo; '.term_description().' &raquo;</blockquote>';
 						echo '<p style="text-align: right;">'.single_term_title( '', false ).' &mdash; '.$parent_term->name.', '.$grandparent_term->name.'</p>';
 						add_filter( 'term_description', 'wpautop' );
-						$image_id = get_term_meta( get_queried_object()->term_id, 'partner_image_id', true );
-						if ($image_id) {
+						$image_id = get_term_meta( $term_id, 'partner_image_id', true );
+						if ( $image_id ) {
 							echo wp_get_attachment_image( $image_id, array(300,300), false, array( 'class' => 'partner-quote-icon' ) );
 						}
 					}
 
 					echo '<p style="margin: 2em 0;">';
 						_e( 'Deze boeren zijn voor ons geen leveranciers, het zijn partners. Dankzij jullie steun kunnen coöperaties uitgroeien tot bloeiende ondernemingen die hun fairtradeproducten wereldwijd verkopen.', 'oft' );
-						$partner_node = get_term_meta( get_queried_object()->term_id, 'partner_node', true );
-						if ( $partner_node > 0 ) {
-							echo ' <a href="https://www.oxfamwereldwinkels.be/node/'.$partner_node.'" target="_blank">'.__( 'Lees meer over deze producent op oxfamwereldwinkels.be', 'oft' ).'.</a>';
+						// Voorlopig enkel link leggen naar OWW-site bij A-partners
+						if ( get_term_meta( $term_id, 'partner_type', true ) === 'A' ) {
+							echo ' <a href="https://www.oxfamwereldwinkels.be/partners/'.get_queried_object()->slug.'" target="_blank">'.__( 'Lees meer over deze producent op oxfamwereldwinkels.be', 'oft' ).'.</a>';
 						}
 					echo '</p>';
 
@@ -2922,7 +2870,9 @@
 		$total = $multiple * $subtotal;
 
 		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('pa_merk'), $templatecontent );
-		$templatecontent = str_replace( "###LOGO###", sanitize_title( $product->get_attribute('pa_merk'), 'oxfam-fair-trade' ), $templatecontent );
+		// Soms blijven de termen uit de moedertaal plakken dus voor alle zekerheid ontdubbelen ...
+		$brands = explode( ', ', $product->get_attribute('pa_merk') );
+		$templatecontent = str_replace( "###LOGO###", sanitize_title( $brands[0], 'oxfam-fair-trade' ), $templatecontent );
 		$templatecontent = str_replace( "###PERMALINK###", $permalink, $templatecontent );
 		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
 		$templatecontent = str_replace( "###IMAGE_URL###", $image_url, $templatecontent );
@@ -3866,6 +3816,84 @@
 		}
 	}
 
+	function calculate_nutri_score_points_a( $product ) {
+		//  $product->get_meta('_salteq') === '' niet evalueren
+		if ( $product->get_meta('_energy') === '' or $product->get_meta('_sugar') === '' or $product->get_meta('_fasat') === '' ) {
+			return false;
+		}
+
+		// ALTERNATIEVE BEREKENING VOOR BEVERAGES TOEVOEGEN
+		$part_a = min( floor( ( intval( $product->get_meta('_energy') ) - 1 ) / 335 ), 10 );
+		$part_b = min( floor( ( floatval( $product->get_meta('_sugar') ) - 0.1 ) / 4.5 ), 10 );
+		$part_c = min( floor( ( floatval( $product->get_meta('_fasat') ) - 0.1 ) / 1 ), 10 );
+		$part_d = min( floor( ( floatval( $product->get_meta('_salteq') ) - 0.001 ) / 0.09 ), 10 );
+
+		return $part_a + $part_b + $part_c + $part_d;
+	}
+
+	function calculate_nutri_score_points_c( $product ) {
+		if ( $product->get_meta('_fibtg') === '' or $product->get_meta('_pro') === '' ) {
+			// Dit is overkill, indien niet gekend is het wellicht 0
+			// return false;
+		}
+
+		// Geen parameter die het fruit/groenten bijhoudt, ga voorlopig altijd uit van 0%
+		// ALTERNATIEVE BEREKENING VOOR BEVERAGES TOEVOEGEN
+		$part_a = 0;
+		$part_b = min( floor( ( floatval( $product->get_meta('_fibtg') ) - 0.1 ) / 0.7 ), 5 );
+		$part_c = min( floor( ( floatval( $product->get_meta('_pro') ) - 0.1 ) / 1.6 ), 5 );
+
+		return $part_a + $part_b + $part_c;
+	}
+
+	function calculate_nutri_score( $product_id ) {
+		$product = wc_get_product( $product_id );
+		if ( $product === false ) {
+			return false;
+		}
+
+		$points_a = calculate_nutri_score_points_a( $product );
+		// write_log("Points A: ".$points_a);
+		$points_c = calculate_nutri_score_points_c( $product );
+		// write_log("Points C: ".$points_c);
+
+		if ( $points_a === false or $points_c === false ) {
+			return false;
+		}
+
+		if ( $points_a < 11 ) {
+			return $points_a - $points_c;
+		} else {
+			// Geen parameter die het fruit/groenten bijhoudt, ga voorlopig altijd uit van 0%
+			$part_a = 0;
+			$part_b = min( floor( ( floatval( $product->get_meta('_fibtg') ) - 0.1 ) / 0.7 ), 5 );
+			return $points_a - ( $part_b + $part_a );
+		}
+	}
+
+	function calculate_nutri_label( $product_id ) {
+		$score = calculate_nutri_score( $product_id );
+		if ( $score === false ) {
+			return '/';
+		}
+
+		// ALTERNATIEVE BEREKENING VOOR BEVERAGES TOEVOEGEN
+		write_log("Score: ".$score);
+		if ( $score <= -1 ) {
+			$label = 'A';
+		} elseif ( $score <= 2 ) {
+			$label = 'B';
+		} elseif ( $score <= 10 ) {
+			$label = 'C';
+		} elseif ( $score <= 18 ) {
+			$label = 'D';
+		} elseif ( $score <= 40 ) {
+			$label = 'E';
+		}
+
+		return $label;
+	}
+
 	// Log wijzigingen aan metadata (en taxonomieën?)
 	add_action( 'added_post_meta', 'hook_product_meta_adds', 100, 4 );
 	add_action( 'updated_post_meta', 'hook_product_meta_updates', 100, 4 );
@@ -3904,6 +3932,7 @@
 			'_regular_price',
 			'_sale_price',
 			'_thumbnail_id',
+			'_product_image_gallery',
 			'_tax_class',
 			'_weight',
 			'_length',
@@ -3981,7 +4010,7 @@
 		echo '<pre>';
 		var_dump($variable);
 		echo '</pre>';
-		return null;
+		return;
 	}
 
 	// Tab-delimited CSV omzetten in een paginabrede tabel, ongeacht het aantal kolommen
@@ -4018,6 +4047,52 @@
 			$subject = substr_replace( $subject, $replace, $pos, strlen($search) );
 		}
 		return $subject;
+	}
+
+	function has_product_cat_slug( $slug, $product = false, $check_parents = true ) {
+		global $sitepress;
+		
+		$prev_lang = $sitepress->get_current_language();
+		$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
+		$has_category_slug = false;
+		
+		if ( $product === false ) {
+			// Back-end: leid het product af uit de GET-parameter
+			if ( isset( $_GET['post'] ) ) {
+				// Vraag expliciet de termen van het Nederlandstalige product op
+				$categories = get_the_terms( apply_filters( 'wpml_object_id', $_GET['post'], 'product', true, 'nl' ), 'product_cat' );
+			} else {
+				$categories = false;
+			}
+		} else {
+			// Front-end: levert automatisch de ID's in het Nederlands
+			$categories = $product->get_category_ids();	
+		}
+
+		// In principe is er slechts één categorie ingesteld maar speel op veilig
+		if ( is_array( $categories ) ) {
+			foreach ( $categories as $category_id ) {
+				$category = get_term( $category_id, 'product_cat' );
+				if ( $category->slug === $slug ) {
+					$has_category_slug = true;
+					break;
+				}
+				if ( $check_parents ) {
+					// Check ook de bovenliggende categorieën van het product, tot we op het hoogste niveau zitten
+					while ( intval($category->parent) !== 0 ) {
+						$parent_category = get_term( $category->parent, 'product_cat' );
+						$category = $parent_category;
+						if ( $category->slug === $slug ) {
+							$has_category_slug = true;
+							break 2;
+						}
+					}
+				}
+			}
+		}
+
+		$sitepress->switch_lang( $prev_lang, true );
+		return $has_category_slug;
 	}
 
 ?>

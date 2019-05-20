@@ -5,7 +5,7 @@
 	Author URI:		https://www.fullstackahead.be
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.23
+	Version:		1.2.28
 	Text Domain:	oft
 */
 
@@ -231,6 +231,53 @@ p.demo_store {
 		font-size: 14px !important;
 		background-color:  transparent !important;
 	}
+}
+
+@keyframes 'nudge' {
+	0% { opacity: 0; transform: rotate(-25deg); }
+	20% { opacity: 1; transform: rotate(18deg); }
+	40% { transform: rotate(-12deg); }
+	60% { transform: rotate(7deg); }
+	80% { transform: rotate(-3deg); }
+	100% { transform: rotate(0deg); }
+}
+
+/* Voeg verduidelijkend label toe aan header */
+.bt-header-container.fw-absolute-header.fw-sticky-header {
+	position: relative;
+
+	& > .container:after {
+		background-repeat: no-repeat;
+		background-size: cover;
+		width: 142px;
+		height: 106px;
+		margin-left: 110px;
+		position: absolute;
+		bottom: -100%;
+		transform-origin: 45% 11%;
+		// Zet op 'infite' om te blijven herhalen
+		animation: nudge 1.5s ease-out;
+	}
+}
+
+body.single-product,
+body.single-post,
+body.is-header-sticky {
+	.bt-header-container.fw-absolute-header.fw-sticky-header > .container:after {
+		display: none;
+	}
+}
+
+:lang(nl) .bt-header-container.fw-absolute-header.fw-sticky-header > .container:after {
+	background-image: url('assets/label-companies-nl.svg');
+}
+
+:lang(fr) .bt-header-container.fw-absolute-header.fw-sticky-header > .container:after {
+	background-image: url('assets/label-companies-fr.svg');
+}
+
+:lang(en) .bt-header-container.fw-absolute-header.fw-sticky-header > .container:after {
+	background-image: url('assets/label-companies-en.svg');
 }
 
 #bt-menu-primary > .bt-nav-menu  {
