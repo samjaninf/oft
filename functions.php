@@ -48,7 +48,7 @@
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
 	function load_admin_css() {
-		wp_enqueue_style( 'oft-admin', get_stylesheet_directory_uri().'/admin.css', '1.1.4' );
+		wp_enqueue_style( 'oft-admin', get_stylesheet_directory_uri().'/admin.css', '1.1.5' );
 	}
 
 	// Sta HTML-attribuut 'target' toe in beschrijvingen van taxonomieën
