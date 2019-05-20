@@ -4042,15 +4042,20 @@
 	function has_product_cat_slug( $slug, $product = false, $check_parents = true ) {
 		global $sitepress;
 		
-		// Functie get_term() wordt automatisch omgezet in huidige taal, dus gebruik de 'wpml_object_id'-filter niet en switch gewoon naar de hoofdtaal
 		$prev_lang = $sitepress->get_current_language();
 		$sitepress->switch_lang( apply_filters( 'wpml_default_language', NULL ) );
 		$has_category_slug = false;
 		
 		if ( $product === false ) {
 			// Back-end: leid het product af uit de GET-parameter
-			$categories = isset( $_GET['post'] ) ? get_the_terms( $_GET['post'], 'product_cat' ) : false;
+			if ( isset( $_GET['post'] ) ) {
+				// Vraag expliciet de termen van het Nederlandstalige product op
+				$categories = get_the_terms( apply_filters( 'wpml_object_id', $_GET['post'], 'product', true, 'nl' ), 'product_cat' );
+			} else {
+				$categories = false;
+			}
 		} else {
+			// Front-end: levert automatisch de ID's in het Nederlands
 			$categories = $product->get_category_ids();	
 		}
 
