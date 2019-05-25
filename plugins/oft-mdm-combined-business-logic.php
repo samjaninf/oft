@@ -65,6 +65,7 @@
 			// Verhinder het toevoegen van verboden producten én laat de koopknop verdwijnen + zwier reeds toegevoegde producten uit het winkelmandje
 			add_filter( 'woocommerce_add_to_cart_validation', array( $this, 'disallow_products_not_in_assortment' ), 10, 2 );
 			add_filter( 'woocommerce_is_purchasable', array( $this, 'disable_products_not_in_assortment' ), 10, 2 );
+			add_filter( 'woocommerce_is_visible', array( $this, 'show_private_products_to_customers' ), 10, 2 );
 
 			// Maak de detailpagina van verboden producten volledig onbereikbaar
 			add_action( 'template_redirect', array( $this, 'prevent_access_to_product_page' ) );
@@ -533,6 +534,23 @@
 
 		public function disable_products_not_in_assortment( $purchasable, $product ) {
 			return apply_filters( 'oxfam_product_is_available', $product->get_id(), $this->get_client_type(), $purchasable );
+		}
+
+		public function show_private_products_to_customers( $visible, $product_id ) {
+			if ( $visible === false and is_user_logged_in() ) {
+				$user = wp_get_current_user();
+				if ( in_array( 'customer', (array) $user->roles ) ) {
+					$product = wc_get_product($product_id);
+					if ( $product !== false ) {
+						if ( $product->get_status() === 'private' ) {
+							// Overrule de zichtbaarheid van private producten voor ingelogde klanten zonder 'edit_posts'-rechten
+							// Indien het product niet in het assortiment van de klant zit, is het reeds eerder weggefilterd uit de query
+							$visible = true;
+						}
+					}
+				}
+			}
+			return $visible;
 		}
 
 		public function prevent_access_to_product_page() {
