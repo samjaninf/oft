@@ -27,10 +27,9 @@
                     </div>
                 <?php } ?>
                 <div class="woo_amc_item_price_wrap">
-                    <div class="woo_amc_item_price_label"><?php _e( 'Prijs per ompak', 'oft' ); ?></div>
                     <?php
-                        // GEWIJZIGD: Haal de prijs op via get_price(), zodat alle prijsfilters doorlopen worden
-                        echo wc_price( $_product->get_price() );
+                        // GEWIJZIGD: Label verwijderen
+                        echo $_product->get_price_html() . ' ' . __( 'per ompak', 'oft' );
                     ?>
                 </div>
                 <div class="woo_amc_item_quanity_wrap">

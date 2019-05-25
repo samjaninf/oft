@@ -238,8 +238,9 @@
 		}
 
 		public function get_price_for_current_client( $price, $product, $user_id = false, $regular = false ) {
-			// Filter wordt ook doorlopen in back-end, prijs daar nooit manipuleren!
-			if ( ! is_admin() ) {
+			// Prijs nooit manipuleren in back-end
+			// AJAX-callbacks gebeuren ook 'in de back-end', voorzie hiervoor een uitzondering 
+			if ( ! is_admin() or ( defined('DOING_AJAX') and DOING_AJAX ) ) {
 				// Huidige prijs expliciet doorgeven aan functie want anders infinite loop!
 				$price = $this->get_price_by_client_type( $product, $this->get_client_type( $user_id ), $price, $regular );
 			}
