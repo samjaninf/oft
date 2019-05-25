@@ -67,6 +67,41 @@
 			add_filter( 'woocommerce_add_to_cart_validation', array( $this, 'disallow_products_not_in_assortment' ), 10, 2 );
 			add_filter( 'woocommerce_is_purchasable', array( $this, 'disable_products_not_in_assortment' ), 10, 2 );
 			add_filter( 'woocommerce_product_is_visible', array( $this, 'enable_private_products_for_customers' ), 10, 2 );
+
+			// Tweaks aan WooCommerce Product Table
+			add_filter( 'wc_product_table_use_numeric_skus', '__return_true' );
+			add_filter( 'wc_product_table_open_products_in_new_tab', '__return_true' );
+			add_filter( 'wc_product_table_column_searchable_price', '__return_false' );
+			add_filter( 'wc_product_table_column_searchable_add_to_cart', '__return_false' );
+			add_filter( 'wc_product_table_reset_button', function( $label ) {
+				return __( 'Begin opnieuw', 'oft' );
+			} );
+			add_filter( 'wc_product_table_column_heading_name', function( $label ) {
+				return __( 'Omschrijving', 'oft' );
+			} );
+			add_filter( 'wc_product_table_data_name', function( $title, $product ) {
+				return $this->add_consumer_units_per_order_unit( $title, $product );
+			}, 10, 2 );
+			add_filter( 'wc_product_table_column_heading_price', function( $label ) {
+				return __( 'Prijs per ompak', 'oft' );
+			} );
+			add_filter( 'wc_product_table_column_heading_add-to-cart', function( $label ) {
+				return __( 'Bestellen?', 'oft' );
+			} );
+			add_filter( 'wc_product_table_data_add_to_cart', function( $html, $product ) {
+				return $html . ' STUKS VERMELDEN';
+			}, 10, 2 );
+
+			// Zorg ervoor dat de logica uit de product loop ook toegepast wordt in de tabel
+			add_filter( 'wc_product_table_query_args', array( $this, 'add_custom_product_query_args' ), 10, 2 );
+			add_filter( 'wc_product_table_search_filter_get_terms_args', function( $term_args, $taxonomy, $product_table_args ) {
+				if ( $taxonomy === 'pa_merk' ) {
+					$term_args['hide_empty'] = false;
+					// var_dump_pre($product_table_args);
+					var_dump_pre($term_args);
+				}
+				return $term_args;
+			}, 10, 3 );
 			
 			// Synchroniseer de publicatiestatus vanuit de hoofdtaal naar anderstalige producten (zoals bij trashen reeds automatisch door WPML gebeurt)
 			// Neem een hoge prioriteit, zodat de functie pas doorlopen wordt na de 1ste 'save_post' die de zichtbaarheid regelt
@@ -105,9 +140,15 @@
 				add_filter( 'woocommerce_product_get_regular_price', array( $this, 'get_regular_price_for_current_client' ), 100, 2 );
 
 				// Voeg ompakinfo toe
-				add_filter( 'woocommerce_product_title', array( $this, 'add_consumer_units_per_order_unit' ), 1000, 2 );
+				add_filter( 'woocommerce_product_title', array( $this, 'add_consumer_units_per_order_unit' ), 100, 2 );
 				add_filter( 'woocommerce_cart_item_name', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
 				add_filter( 'woocommerce_order_item_name', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
+			}
+		}
+
+		public function check_product_table_query( $query ) {
+			if ( ! is_admin() and $query->post_type === 'product' ) {
+				write_log( serialize($query) );
 			}
 		}
 
@@ -163,14 +204,14 @@
 									'name' => 'client_type',
 									'taxonomy' => 'product_client_type',
 									'hide_empty' => false,
-									'show_option_none' => __( 'selecteer', 'oft' ),
+									'show_option_none' => __( '(selecteer)', 'oft' ),
 									'option_none_value' => '',
 									'value_field' => 'name',
 									'selected' => get_the_author_meta( 'client_type', $user->ID ),
 								);
 								wp_dropdown_categories($args);
 							?>
-							<p class="description"><?php _e( 'Deze instelling bepaalt welk assortiment zichtbaar én bestelbaar is voor deze klant. De taalkeuze is vrij maar kan gelimiteerd worden indien niet alle producten in alle talen beschikbaar zouden zijn (bv. servicemateriaal).', 'oft' ); ?></p>
+							<p class="description"><?php _e( 'Deze instelling bepaalt welk assortiment zichtbaar én bestelbaar is voor deze klant. De taalkeuze is vrij maar kan nog gelimiteerd worden, bv. indien niet alle producten in elke taal beschikbaar zouden zijn (bv. servicemateriaal).', 'oft' ); ?></p>
 						</td>
 					</tr>
 				</table>
@@ -200,7 +241,7 @@
 			// Filter wordt ook doorlopen in back-end, prijs daar nooit manipuleren!
 			if ( ! is_admin() ) {
 				// Huidige prijs expliciet doorgeven aan functie want anders infinite loop!
-				$price = $this->get_price_by_client_type( $product, $this->get_client_type($user_id), $price, $regular );
+				$price = $this->get_price_by_client_type( $product, $this->get_client_type( $user_id ), $price, $regular );
 			}
 			return $price;
 		}
@@ -212,9 +253,9 @@
 
 		public function get_price_by_client_type( $product, $client_type, $price = false, $regular = false ) {
 			if ( $client_type !== '' ) {
-				if ( $product->meta_exists( '_price_for_client_type_' . strtolower($client_type) ) ) {
+				if ( $product->meta_exists( '_price_for_client_type_' . strtolower( $client_type ) ) ) {
 					// BTW WORDT NADIEN NOG AFGETROKKEN WANT CP'S GEVEN WE IN INCL BTW ...
-					$price = floatval( $product->get_meta( '_price_for_client_type_' . strtolower($client_type) ) );
+					$price = floatval( $product->get_meta( '_price_for_client_type_' . strtolower( $client_type ) ) );
 				} else {
 					// TIJDELIJKE FIX, ODISY ZAL OMPAKPRIJZEN DOORGEVEN
 					if ( intval( $product->get_meta('_multiple') ) > 1 ) {
@@ -236,18 +277,17 @@
 		}
 
 		public function add_consumer_units_per_order_unit( $title, $product ) {
-			if ( $product instanceof WC_Product_Simple ) {
-				return $title . ' X '.$product->get_meta('_multiple');
-			} else {
-				return $title . ' X '.$product['data']->get_meta('_multiple');
+			if ( ! $product instanceof WC_Product_Simple ) {
+				$product = $product['data'];
 			}
+			return $title . ' x ' . $product->get_meta('_multiple') . ' ' . __( 'stuks', 'oft' );
 		}
 
 		
 
 		public function modify_my_account_menu_items( $items ) {
-			// unset($items['dashboard']);
-			unset($items['downloads']);
+			// unset( $items['dashboard'] );
+			unset( $items['downloads'] );
 			return $items;
 		}
 
@@ -567,19 +607,29 @@
 			}
 		}
 
+		public function add_custom_product_query_args( $wp_query_args, $product_table_query ) {
+			// Quick order is enkel beschikbaar op pagina die afgeschermd is voor gewone bezoekers, dus extra check op gebruikersrechten is niet nodig
+			$wp_query_args['post_status'] = array( 'publish', 'private' );
+			$wp_query_args['tax_query'] = $this->limit_assortment_for_client_type_shortcodes( $wp_query_args['tax_query'] );
+			// var_dump_pre($wp_query_args);
+			return $wp_query_args;
+		}
+
 		public function sync_product_status( $post ) {
 			$post_lang = apply_filters( 'wpml_post_language_details', NULL, $post->ID );
-			write_log( serialize($post_lang) );
 			$default_lang_code = apply_filters( 'wpml_default_language', NULL );
-			write_log( serialize($default_lang_code) );
 
+			// Werkt enkel indien we in de hoofdtaal bezig zijn!
+			// write_log( serialize($post_lang) );
 			if ( $post->post_type === 'product' and $post_lang['language_code'] === $default_lang_code ) {
 				$main_product = wc_get_product( $post->ID );
 				if ( $main_product !== false ) {
 					$languages = apply_filters( 'wpml_active_languages', NULL );
+					unset( $languages[ $default_lang_code ] );
 					foreach ( $languages as $lang_code => $language ) {
 						$product = wc_get_product( apply_filters( 'wpml_object_id', $post->ID, 'product', false, $lang_code ) );
 						if ( $product !== false ) {
+							write_log( "SYNCING ".strtoupper($default_lang_code)." PRODUCT STATUS TO ".strtoupper($lang_code)." VERSION" );
 							$product->set_status( $main_product->get_status() );
 							$product->save();
 						}
