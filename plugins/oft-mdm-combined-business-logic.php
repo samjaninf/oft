@@ -1,8 +1,8 @@
 <?php
 	/*
 	Plugin Name: OFT/OMDM Combined Business Logic
-	Description: Deze plug-in groepeert alle functies die gedeeld kunnen worden tussen fairtradecrafts.be en oxfamfairtrade.be.
-	Version:     0.2.0
+	Description: Deze plugin groepeert alle functies die gedeeld kunnen worden tussen fairtradecrafts.be en oxfamfairtrade.be.
+	Version:     0.2.1
 	Author:      Full Stack Ahead
 	Author URI:  https://www.fullstackahead.be
 	Text Domain: oft
@@ -58,6 +58,7 @@
 			// Limiteer productaanbod naar gelang klantentype (in cataloguspagina's, shortcodes en detailpagina's)
 			add_action( 'woocommerce_product_query', array( $this, 'limit_assortment_for_client_type_archives' ), 10, 1 );
 			add_filter( 'woocommerce_shortcode_products_query', array( $this, 'limit_assortment_for_client_type_shortcodes' ), 10, 1 );
+			add_action( 'template_redirect', array( $this, 'prevent_access_to_product_page' ) );
 			
 			// Definieer een eigen filter met de assortimentsvoorwaarden, zodat we alles slechts één keer hoeven in te geven
 			add_filter( 'oxfam_product_is_available', array( $this, 'check_product_availability' ), 10, 3 );
@@ -65,10 +66,7 @@
 			// Verhinder het toevoegen van verboden producten én laat de koopknop verdwijnen + zwier reeds toegevoegde producten uit het winkelmandje
 			add_filter( 'woocommerce_add_to_cart_validation', array( $this, 'disallow_products_not_in_assortment' ), 10, 2 );
 			add_filter( 'woocommerce_is_purchasable', array( $this, 'disable_products_not_in_assortment' ), 10, 2 );
-			add_filter( 'woocommerce_is_visible', array( $this, 'show_private_products_to_customers' ), 10, 2 );
-
-			// Maak de detailpagina van verboden producten volledig onbereikbaar
-			add_action( 'template_redirect', array( $this, 'prevent_access_to_product_page' ) );
+			add_filter( 'woocommerce_product_is_visible', array( $this, 'enable_private_products_for_customers' ), 10, 2 );
 			
 			// Synchroniseer de publicatiestatus vanuit de hoofdtaal naar anderstalige producten (zoals bij trashen reeds automatisch door WPML gebeurt)
 			// Neem een hoge prioriteit, zodat de functie pas doorlopen wordt na de 1ste 'save_post' die de zichtbaarheid regelt
@@ -80,8 +78,8 @@
 
 		public function delay_actions_and_filters_till_load_completed() {
 			if ( ! is_user_logged_in() ) {
-				// Alle koopfuncties uitschakelen voor niet-ingelogde gebruikers
-				add_filter( 'woocommerce_is_purchasable', '__return_false' );
+				// Alle koopfuncties uitschakelen voor niet-ingelogde gebruikers (hoge prioriteit)
+				add_filter( 'woocommerce_is_purchasable', '__return_false', 100, 2 );
 
 				// Verberg alle niet-OFT-voedingsproducten NIET NODIG, GEEF CUSTOMERS GEWOON 'READ_PRIVATE_PRODUCTS'-RECHTEN M.B.V. ROLE EDITOR
 				// add_action( 'woocommerce_product_query', array( $this, 'hide_external_products' ) );
@@ -117,22 +115,22 @@
 			$taxonomy_name = 'product_client_type';
 			
 			$labels = array(
-				'name' => __( 'Klantengroepen', 'oftc' ),
-				'singular_name' => __( 'Klantengroep', 'oftc' ),
-				'all_items' => __( 'Alle klantengroepen', 'oftc' ),
-				'parent_item' => __( 'Klantengroep', 'oftc' ),
-				'parent_item_colon' => __( 'Klantengroep:', 'oftc' ),
-				'new_item_name' => __( 'Nieuwe klantengroep', 'oftc' ),
-				'add_new_item' => __( 'Voeg nieuwe klantengroep toe', 'oftc' ),
-				'view_item' => __( 'Klantengroep bekijken', 'oftc' ),
-				'edit_item' => __( 'Klantengroep bewerken', 'oftc' ),
-				'update_item' => __( 'Klantengroep bijwerken', 'oftc' ),
-				'search_items' => __( 'Klantengroepen doorzoeken', 'oftc' ),
+				'name' => __( 'Klantengroepen', 'oft' ),
+				'singular_name' => __( 'Klantengroep', 'oft' ),
+				'all_items' => __( 'Alle klantengroepen', 'oft' ),
+				'parent_item' => __( 'Klantengroep', 'oft' ),
+				'parent_item_colon' => __( 'Klantengroep:', 'oft' ),
+				'new_item_name' => __( 'Nieuwe klantengroep', 'oft' ),
+				'add_new_item' => __( 'Voeg nieuwe klantengroep toe', 'oft' ),
+				'view_item' => __( 'Klantengroep bekijken', 'oft' ),
+				'edit_item' => __( 'Klantengroep bewerken', 'oft' ),
+				'update_item' => __( 'Klantengroep bijwerken', 'oft' ),
+				'search_items' => __( 'Klantengroepen doorzoeken', 'oft' ),
 			);
 
 			$args = array(
 				'labels' => $labels,
-				'description' => __( 'Maak dit product exclusief beschikbaar voor deze klantengroep', 'oftc' ),
+				'description' => __( 'Maak dit product exclusief beschikbaar voor deze klantengroep', 'oft' ),
 				'public' => false,
 				'publicly_queryable' => false,
 				'hierarchical' => false,
@@ -155,7 +153,7 @@
 		public function show_extra_user_fields( $user ) {
 			if ( current_user_can('manage_woocommerce') ) { 
 				?>
-				<h3><?php _e( 'Klantengroep', 'oft' ); ?></h3>
+				<h3><?php _e( 'Extra instellingen', 'oft' ); ?></h3>
 				<table class="form-table">
 					<tr>
 						<th><label for="client_type"><?php _e( 'Klantengroep', 'oft' ); ?></label></th>
@@ -164,25 +162,15 @@
 								$args = array(
 									'name' => 'client_type',
 									'taxonomy' => 'product_client_type',
+									'hide_empty' => false,
 									'show_option_none' => __( 'selecteer', 'oft' ),
 									'option_none_value' => '',
 									'value_field' => 'name',
 									'selected' => get_the_author_meta( 'client_type', $user->ID ),
 								);
 								wp_dropdown_categories($args);
-								
-								// $key = 'client_type';
-								// echo '<select name="'.$key.'" id="'.$key.'">';
-								// 	$current_type = get_the_author_meta( $key, $user->ID );
-								// 	$selected = empty( $current_type ) ? ' selected' : '';
-								// 	echo '<option value=""'.$selected.'>('.__( 'selecteer', 'oft' ).')</option>';
-								// 	foreach ( get_option('oft_client_types') as $client_type ) {
-								// 		$selected = ( $client_type === $current_type ) ? ' selected' : '';
-								// 		echo '<option value="'.$client_type.'"'.$selected.'>'.$client_type.'</option>';
-								// 	}
-								// echo '</select>';
 							?>
-							<p class="description"><?php _e( 'De taalkeuze blijft vrij, alles is ontdubbeld.', 'oft' ); ?></p>
+							<p class="description"><?php _e( 'Deze instelling bepaalt welk assortiment zichtbaar én bestelbaar is voor deze klant. De taalkeuze is vrij maar kan gelimiteerd worden indien niet alle producten in alle talen beschikbaar zouden zijn (bv. servicemateriaal).', 'oft' ); ?></p>
 						</td>
 					</tr>
 				</table>
@@ -458,6 +446,10 @@
 
 		public function check_product_availability( $product_id, $client_type, $available ) {
 			if ( ! current_user_can('manage_woocommerce') ) {	
+				if ( $this->enable_private_products_for_customers( $available, $product_id ) ) {
+					$available = true;
+				}
+
 				if ( $client_type !== 'OWW' ) {
 					if ( has_term( 'OWW', 'product_client_type', $product_id ) ) {
 						$available = false;
@@ -471,6 +463,7 @@
 				}
 			}
 
+			// if ( $available ) write_log("PRODUCT IS ".$product_id." IS AVAILABLE");
 			return $available;
 		}
 
@@ -478,7 +471,7 @@
 			if ( ! current_user_can('manage_woocommerce') ) {
 				$tax_query = (array) $query->get('tax_query');
 
-				if ( global_get_client_type() !== 'OWW' ) {
+				if ( $this->get_client_type() !== 'OWW' ) {
 					$tax_query[] = array(
 						'taxonomy' => 'product_client_type',
 						'field' => 'name',
@@ -486,7 +479,7 @@
 						'operator' => 'NOT IN',
 					);
 				}
-				if ( global_get_client_type() !== 'MDM' ) {
+				if ( $this->get_client_type() !== 'MDM' ) {
 					$tax_query[] = array(
 						'taxonomy' => 'product_client_type',
 						'field' => 'name',
@@ -501,7 +494,7 @@
 	
 		public function limit_assortment_for_client_type_shortcodes( $query_args ) {
 			if ( ! current_user_can('manage_woocommerce') ) {
-				if ( get_client_type() !== 'OWW' ) {
+				if ( $this->get_client_type() !== 'OWW' ) {
 					$query_args['tax_query'][] = array(
 						'taxonomy' => 'product_client_type',
 						'field' => 'name',
@@ -509,7 +502,7 @@
 						'operator' => 'NOT IN',
 					);
 				}
-				if ( get_client_type() !== 'MDM' ) {
+				if ( $this->get_client_type() !== 'MDM' ) {
 					$query_args['tax_query'][] = array(
 						'taxonomy' => 'product_client_type',
 						'field' => 'name',
@@ -525,7 +518,7 @@
 			$passed_extra_conditions = apply_filters( 'oxfam_product_is_available', $product_id, $this->get_client_type(), $passed );
 
 			if ( $passed and ! $passed_extra_conditions ) {
-				$product = wc_get_product($product_id);
+				$product = wc_get_product( $product_id );
 				wc_add_notice( sprintf( __( 'Als %1$s-klant kun je %2$s niet bestellen.', 'oft' ), $this->get_client_type(), $product->get_name() ), 'error' );
 			}
 			
@@ -536,17 +529,15 @@
 			return apply_filters( 'oxfam_product_is_available', $product->get_id(), $this->get_client_type(), $purchasable );
 		}
 
-		public function show_private_products_to_customers( $visible, $product_id ) {
+		public function enable_private_products_for_customers( $visible, $product_id ) {
 			if ( $visible === false and is_user_logged_in() ) {
 				$user = wp_get_current_user();
-				if ( in_array( 'customer', (array) $user->roles ) ) {
-					$product = wc_get_product($product_id);
-					if ( $product !== false ) {
-						if ( $product->get_status() === 'private' ) {
-							// Overrule de zichtbaarheid van private producten voor ingelogde klanten zonder 'edit_posts'-rechten
-							// Indien het product niet in het assortiment van de klant zit, is het reeds eerder weggefilterd uit de query
-							$visible = true;
-						}
+				// Overrule de zichtbaarheid van private producten voor ingelogde klanten met 'read_private_products' maar zonder 'edit_posts'-rechten
+				// if ( in_array( 'customer', (array) $user->roles ) ) {
+				if ( current_user_can('read_private_products') ) {
+					if ( get_post_status( $product_id ) === 'private' ) {
+						// Indien het product niet in het assortiment van de klant zit, is het reeds eerder weggefilterd uit de query
+						$visible = true;
 					}
 				}
 			}
@@ -578,12 +569,12 @@
 
 		public function sync_product_status( $post ) {
 			$post_lang = apply_filters( 'wpml_post_language_details', NULL, $post->ID );
-			write_log(serialize($post_lang));
+			write_log( serialize($post_lang) );
 			$default_lang_code = apply_filters( 'wpml_default_language', NULL );
-			write_log(serialize($default_lang_code));
+			write_log( serialize($default_lang_code) );
 
 			if ( $post->post_type === 'product' and $post_lang['language_code'] === $default_lang_code ) {
-				$main_product = wc_get_product($post->ID);
+				$main_product = wc_get_product( $post->ID );
 				if ( $main_product !== false ) {
 					$languages = apply_filters( 'wpml_active_languages', NULL );
 					foreach ( $languages as $lang_code => $language ) {
