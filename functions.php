@@ -1544,9 +1544,9 @@
 
 		$brand = $product->get_attribute('pa_merk');
 		if ( $post->post_status !== 'draft' and $brand !== '' and $brand !== 'Oxfam Fair Trade' and $brand !== 'Maya' and get_option('oft_erp_import_active') !== 'yes' ) {
-			// NIET MEER DOEN, VERBERG M.B.V. WOOCOMMERCE_PRODUCT_QUERY
-			// $product->set_status('private');
-			// $product->save();
+			// OF VERBERG M.B.V. WOOCOMMERCE_PRODUCT_QUERY?
+			$product->set_status('private');
+			$product->save();
 		}
 
 		// Update de productfiches na een handmatige bewerking
@@ -1612,9 +1612,8 @@
 
 	function clarify_draft_private_products( $post_states, $post ) {
 		if ( 'product' === get_post_type($post) ) {
-			// Door Unyson Event Helper eerder weggefilterde statussen opnieuw toevoegen (of overrulen indien gedeactiveerd)
 			if ( 'private' === get_post_status($post) ) {
-				$post_states = array( 'private' => 'NIET ZICHTBAAR' );
+				$post_states = array( 'private' => 'ENKEL ZICHTBAAR VOOR INGELOGDE KLANTEN' );
 			} elseif ( 'draft' === get_post_status($post) ) {
 				$post_states = array( 'draft' => 'NOG NIET GEPUBLICEERD' );
 			}
@@ -1622,15 +1621,11 @@
 		return $post_states;
 	}
 
-	// Verduidelijk de titel van niet-OFT-producten in front-end
+	// Verwijder de prefixes in de front-end bij niet-OFT-producten (o.a. feeds)
 	add_filter( 'private_title_format', 'hide_private_on_title' );
 
 	function hide_private_on_title( $format ) {
-		if ( is_feed() ) {
-			return '%s';
-		} else {
-			return 'NIET ZICHTBAAR: %s';
-		}
+		return '%s';
 	}
 
 	// Voeg klasse toe indien recent product
@@ -4093,6 +4088,16 @@
 
 		$sitepress->switch_lang( $prev_lang, true );
 		return $has_category_slug;
+	}
+
+	// Voor mochten we problemen krijgen met de get_client_type() die in de Custom_Business_Logic-klasse zit
+	function global_get_client_type( $user_id = false ) {
+		if ( $user_id === false ) {
+			$user_id = get_current_user_id();
+		}
+
+		// Retourneert een lege string indien klantenrol niet ingesteld
+		return get_user_meta( $user_id, 'client_type', true );
 	}
 
 ?>

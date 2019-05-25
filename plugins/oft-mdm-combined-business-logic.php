@@ -2,7 +2,7 @@
 	/*
 	Plugin Name: OFT/OMDM Combined Business Logic
 	Description: Deze plug-in groepeert alle functies die gedeeld kunnen worden tussen fairtradecrafts.be en oxfamfairtrade.be.
-	Version:     0.1.1
+	Version:     0.2.0
 	Author:      Full Stack Ahead
 	Author URI:  https://www.fullstackahead.be
 	Text Domain: oft
@@ -18,6 +18,15 @@
 			
 			// Sommige WP-functies (o.a. is_user_logged_in) zijn pas beschikbaar na de 'init'-actie!
 			add_action( 'init', array( $this, 'delay_actions_and_filters_till_load_completed' ) );
+
+			// Creëer een custom taxonomie op producten om klantengroepen in op te slaan
+			add_action( 'init', array( $this, 'register_client_type_taxonomy' ) );
+
+			// Definieer een extra profielveld op gebruikers dat de klantengroep bevat
+			add_action( 'show_user_profile', array( $this, 'show_extra_user_fields' ) );
+			add_action( 'edit_user_profile', array( $this, 'show_extra_user_fields' ) );
+			add_action( 'personal_options_update', array( $this, 'save_extra_user_fields' ) );
+			add_action( 'edit_user_profile_update', array( $this, 'save_extra_user_fields' ) );
 
 			// Voeg verkoopseenheid én hoeveelheidsspinner toe aan template voor cataloguspagina's (die we ook laden op productdetailpagina's) */
 			add_filter( 'woocommerce_loop_add_to_cart_link', array( $this, 'add_quantity_inputs_to_add_to_cart_link' ), 10, 2 );
@@ -45,6 +54,27 @@
 
 			// Bereken belastingen ook bij afhalingen steeds volgens het factuuradres van de klant!
 			add_filter( 'woocommerce_apply_base_tax_for_local_pickup', '__return_false' );
+
+			// Limiteer productaanbod naar gelang klantentype (in cataloguspagina's, shortcodes en detailpagina's)
+			add_action( 'woocommerce_product_query', array( $this, 'limit_assortment_for_client_type_archives' ), 10, 1 );
+			add_filter( 'woocommerce_shortcode_products_query', array( $this, 'limit_assortment_for_client_type_shortcodes' ), 10, 1 );
+			
+			// Definieer een eigen filter met de assortimentsvoorwaarden, zodat we alles slechts één keer hoeven in te geven
+			add_filter( 'oxfam_product_is_available', array( $this, 'check_product_availability' ), 10, 3 );
+
+			// Verhinder het toevoegen van verboden producten én laat de koopknop verdwijnen + zwier reeds toegevoegde producten uit het winkelmandje
+			add_filter( 'woocommerce_add_to_cart_validation', array( $this, 'disallow_products_not_in_assortment' ), 10, 2 );
+			add_filter( 'woocommerce_is_purchasable', array( $this, 'disable_products_not_in_assortment' ), 10, 2 );
+
+			// Maak de detailpagina van verboden producten volledig onbereikbaar
+			add_action( 'template_redirect', array( $this, 'prevent_access_to_product_page' ) );
+			
+			// Synchroniseer de publicatiestatus vanuit de hoofdtaal naar anderstalige producten (zoals bij trashen reeds automatisch door WPML gebeurt)
+			// Neem een hoge prioriteit, zodat de functie pas doorlopen wordt na de 1ste 'save_post' die de zichtbaarheid regelt
+			add_action( 'draft_to_publish', array( $this, 'sync_product_status' ), 100, 1 );
+			add_action( 'draft_to_private', array( $this, 'sync_product_status' ), 100, 1 );
+			add_action( 'publish_to_draft', array( $this, 'sync_product_status' ), 100, 1 );
+			add_action( 'private_to_draft', array( $this, 'sync_product_status' ), 100, 1 );
 		}
 
 		public function delay_actions_and_filters_till_load_completed() {
@@ -52,8 +82,24 @@
 				// Alle koopfuncties uitschakelen voor niet-ingelogde gebruikers
 				add_filter( 'woocommerce_is_purchasable', '__return_false' );
 
-				// Verberg alle niet-OFT-voedingsproducten VERGT AANPASSING AAN 'PRIVATE'-SYSTEEM
-				add_action( 'woocommerce_product_query', array( $this, 'hide_external_products' ) );
+				// Verberg alle niet-OFT-voedingsproducten NIET NODIG, GEEF CUSTOMERS GEWOON 'READ_PRIVATE_PRODUCTS'-RECHTEN M.B.V. ROLE EDITOR
+				// add_action( 'woocommerce_product_query', array( $this, 'hide_external_products' ) );
+				// public function hide_external_products( $query ) {
+				// 	// Altijd alle producten zichtbaar voor beheerders
+				// 	if ( ! current_user_can('manage_woocommerce') ) {
+				// 		$meta_query = (array) $query->get('meta_query');
+
+				// 		if ( $this->get_client_type() !== 'OWW' ) {
+				// 			$meta_query[] = array(
+				// 				'key' => '_product_attributes',
+				// 				'value' => 'Oxfam Fair Trade',
+				// 				'compare' => 'LIKE',
+				// 			);
+				// 		}
+				// 		$query->set( 'meta_query', $meta_query );
+				// 		// var_dump_pre($query);	
+				// 	}
+				// }
 			} else {
 				// Pas verkoopprijzen aan volgens klantentype
 				add_filter( 'woocommerce_product_get_price', array( $this, 'get_price_for_current_client' ), 100, 2 );
@@ -66,21 +112,88 @@
 			}
 		}
 
-		public function hide_external_products( $query ) {
-			// Altijd alle producten zichtbaar voor beheerders
-			if ( ! current_user_can('manage_woocommerce') ) {
-				$meta_query = (array) $query->get('meta_query');
+		public function register_client_type_taxonomy() {
+			$taxonomy_name = 'product_client_type';
+			
+			$labels = array(
+				'name' => __( 'Klantengroepen', 'oftc' ),
+				'singular_name' => __( 'Klantengroep', 'oftc' ),
+				'all_items' => __( 'Alle klantengroepen', 'oftc' ),
+				'parent_item' => __( 'Klantengroep', 'oftc' ),
+				'parent_item_colon' => __( 'Klantengroep:', 'oftc' ),
+				'new_item_name' => __( 'Nieuwe klantengroep', 'oftc' ),
+				'add_new_item' => __( 'Voeg nieuwe klantengroep toe', 'oftc' ),
+				'view_item' => __( 'Klantengroep bekijken', 'oftc' ),
+				'edit_item' => __( 'Klantengroep bewerken', 'oftc' ),
+				'update_item' => __( 'Klantengroep bijwerken', 'oftc' ),
+				'search_items' => __( 'Klantengroepen doorzoeken', 'oftc' ),
+			);
 
-				if ( $this->get_client_type() !== 'OWW' ) {
-					$meta_query[] = array(
-						'key' => '_product_attributes',
-						'value' => 'Oxfam Fair Trade',
-						'compare' => 'LIKE',
-					);
-				}
-				$query->set( 'meta_query', $meta_query );
-				// var_dump_pre($query);	
+			$args = array(
+				'labels' => $labels,
+				'description' => __( 'Maak dit product exclusief beschikbaar voor deze klantengroep', 'oftc' ),
+				'public' => false,
+				'publicly_queryable' => false,
+				'hierarchical' => false,
+				'show_ui' => true,
+				'show_in_menu' => true,
+				'show_in_nav_menus' => false,
+				'show_in_rest' => true,
+				'show_tagcloud' => false,
+				'show_in_quick_edit' => false,
+				'show_admin_column' => true,
+				'query_var' => true,
+				'capabilities' => array( 'assign_terms' => 'manage_woocommerce', 'edit_terms' => 'update_core', 'manage_terms' => 'manage_woocommerce', 'delete_terms' => 'update_core' ),
+				'rewrite' => array( 'slug' => 'klantengroep', 'with_front' => false, 'hierarchical' => false ),
+			);
+
+			register_taxonomy( $taxonomy_name, 'product', $args );
+			register_taxonomy_for_object_type( $taxonomy_name, 'product' );
+		}
+
+		public function show_extra_user_fields( $user ) {
+			if ( current_user_can('manage_woocommerce') ) { 
+				?>
+				<h3><?php _e( 'Klantengroep', 'oft' ); ?></h3>
+				<table class="form-table">
+					<tr>
+						<th><label for="client_type"><?php _e( 'Klantengroep', 'oft' ); ?></label></th>
+						<td>
+							<?php
+								$args = array(
+									'name' => 'client_type',
+									'taxonomy' => 'product_client_type',
+									'show_option_none' => __( 'selecteer', 'oft' ),
+									'option_none_value' => '',
+									'value_field' => 'name',
+									'selected' => get_the_author_meta( 'client_type', $user->ID ),
+								);
+								wp_dropdown_categories($args);
+								
+								// $key = 'client_type';
+								// echo '<select name="'.$key.'" id="'.$key.'">';
+								// 	$current_type = get_the_author_meta( $key, $user->ID );
+								// 	$selected = empty( $current_type ) ? ' selected' : '';
+								// 	echo '<option value=""'.$selected.'>('.__( 'selecteer', 'oft' ).')</option>';
+								// 	foreach ( get_option('oft_client_types') as $client_type ) {
+								// 		$selected = ( $client_type === $current_type ) ? ' selected' : '';
+								// 		echo '<option value="'.$client_type.'"'.$selected.'>'.$client_type.'</option>';
+								// 	}
+								// echo '</select>';
+							?>
+							<p class="description"><?php _e( 'De taalkeuze blijft vrij, alles is ontdubbeld.', 'oft' ); ?></p>
+						</td>
+					</tr>
+				</table>
+				<?php
 			}
+		}
+
+		public function save_extra_user_fields( $user_id ) {
+			if ( ! current_user_can('manage_woocommerce') ) {
+				return false;
+			}
+			update_user_meta( $user_id, 'client_type', $_POST['client_type'] );
 		}
 
 		public function add_quantity_inputs_to_add_to_cart_link( $html, $product ) {
@@ -126,11 +239,10 @@
 
 		public function get_client_type( $user_id = false ) {
 			if ( $user_id === false ) {
-				// Levert 0 op indien niet ingelogd
 				$user_id = get_current_user_id();
 			}
 
-			// Retourneert ook een lege string indien klantenrol niet ingesteld
+			// Retourneert een lege string indien klantenrol niet ingesteld
 			return get_user_meta( $user_id, 'client_type', true );
 		}
 
@@ -269,9 +381,9 @@
 			$address_fields['billing_city']['priority'] = 41;
 			$address_fields['billing_country']['priority'] = 42;
 
-			// if ( get_client_type() === 'MDM' ) {
-			// 	unset($address_fields['billing_number_oft']);
-			// }
+			if ( $this->get_client_type() === 'MDM' ) {
+				unset($address_fields['billing_number_oft']);
+			}
 			
 			return $address_fields;
 		}
@@ -341,6 +453,130 @@
 			$states['DE'] = $routecodes_ext;
 			$states['FR'] = $routecodes_ext;
 			$states['ES'] = $routecodes_ext;
+		}
+
+		public function check_product_availability( $product_id, $client_type, $available ) {
+			if ( ! current_user_can('manage_woocommerce') ) {	
+				if ( $client_type !== 'OWW' ) {
+					if ( has_term( 'OWW', 'product_client_type', $product_id ) ) {
+						$available = false;
+					}
+				}
+				
+				if ( $client_type !== 'MDM' ) {
+					if ( has_term( 'MDM', 'product_client_type', $product_id ) ) {
+						$available = false;
+					}
+				}
+			}
+
+			return $available;
+		}
+
+		public function limit_assortment_for_client_type_archives( $query ) {
+			if ( ! current_user_can('manage_woocommerce') ) {
+				$tax_query = (array) $query->get('tax_query');
+
+				if ( global_get_client_type() !== 'OWW' ) {
+					$tax_query[] = array(
+						'taxonomy' => 'product_client_type',
+						'field' => 'name',
+						'terms' => array( 'OWW' ),
+						'operator' => 'NOT IN',
+					);
+				}
+				if ( global_get_client_type() !== 'MDM' ) {
+					$tax_query[] = array(
+						'taxonomy' => 'product_client_type',
+						'field' => 'name',
+						'terms' => array( 'MDM' ),
+						'operator' => 'NOT IN',
+					);
+				}
+				
+				$query->set( 'tax_query', $tax_query );	
+			}
+		}
+	
+		public function limit_assortment_for_client_type_shortcodes( $query_args ) {
+			if ( ! current_user_can('manage_woocommerce') ) {
+				if ( get_client_type() !== 'OWW' ) {
+					$query_args['tax_query'][] = array(
+						'taxonomy' => 'product_client_type',
+						'field' => 'name',
+						'terms' => array( 'OWW' ),
+						'operator' => 'NOT IN',
+					);
+				}
+				if ( get_client_type() !== 'MDM' ) {
+					$query_args['tax_query'][] = array(
+						'taxonomy' => 'product_client_type',
+						'field' => 'name',
+						'terms' => array( 'MDM' ),
+						'operator' => 'NOT IN',
+					);
+				}
+			}
+			return $query_args;
+		}
+
+		public function disallow_products_not_in_assortment( $passed, $product_id ) {
+			$passed_extra_conditions = apply_filters( 'oxfam_product_is_available', $product_id, $this->get_client_type(), $passed );
+
+			if ( $passed and ! $passed_extra_conditions ) {
+				$product = wc_get_product($product_id);
+				wc_add_notice( sprintf( __( 'Als %1$s-klant kun je %2$s niet bestellen.', 'oft' ), $this->get_client_type(), $product->get_name() ), 'error' );
+			}
+			
+			return $passed_extra_conditions;
+		}
+
+		public function disable_products_not_in_assortment( $purchasable, $product ) {
+			return apply_filters( 'oxfam_product_is_available', $product->get_id(), $this->get_client_type(), $purchasable );
+		}
+
+		public function prevent_access_to_product_page() {
+			if ( is_product() ) {
+				$available = apply_filters( 'oxfam_product_is_available', get_the_ID(), $this->get_client_type(), true );
+				
+				if ( ! $available ) {
+					// Als de klant nog niets in het winkelmandje zitten heeft, is er nog geen sessie om notices aan toe te voegen!
+					if ( ! WC()->session->has_session() ) {
+						WC()->session->set_customer_session_cookie(true);
+					}
+					wc_add_notice( sprintf( __( '%s is niet beschikbaar voor jou.', 'oft' ), get_the_title() ), 'error' );
+					
+					if ( wp_get_referer() ) {
+						// Keer terug naar de vorige pagina
+						wp_safe_redirect( wp_get_referer() );
+					} else {
+						// Ga naar de hoofdpagina van de winkel
+						wp_safe_redirect( get_permalink( wc_get_page_id('shop') ) );
+					}
+					exit;
+				}
+			}
+		}
+
+		public function sync_product_status( $post ) {
+			$post_lang = apply_filters( 'wpml_post_language_details', NULL, $post->ID );
+			write_log(serialize($post_lang));
+			$default_lang_code = apply_filters( 'wpml_default_language', NULL );
+			write_log(serialize($default_lang_code));
+
+			if ( $post->post_type === 'product' and $post_lang['language_code'] === $default_lang_code ) {
+				$main_product = wc_get_product($post->ID);
+				if ( $main_product !== false ) {
+					$languages = apply_filters( 'wpml_active_languages', NULL );
+					foreach ( $languages as $lang_code => $language ) {
+						$product = wc_get_product( apply_filters( 'wpml_object_id', $post->ID, 'product', false, $lang_code ) );
+						if ( $product !== false ) {
+							$product->set_status( $main_product->get_status() );
+							$product->save();
+						}
+					}
+				}
+			}
 		}
 	}
 
