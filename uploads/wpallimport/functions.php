@@ -113,9 +113,9 @@
 		// Logica toevoegen om titels van niet-voeding toch te updaten?
 	}
 
-	function set_non_oft_to_private( $brand, $main_category ) {
+	function set_non_oft_to_private( $raw_brand, $main_category ) {
 		// Verhinder dat OFT-servicemateriaal zichtbaar wordt voor niet-ingelogde bezoekers
-		if ( alter_brand($brand) === 'Oxfam Fair Trade' and $main_category === 'FOOD' ) {
+		if ( alter_brand($raw_brand) === 'Oxfam Fair Trade' and $main_category === 'FOOD' ) {
 			return 'publish';
 		} else {
 			return 'private';

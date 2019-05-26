@@ -1382,9 +1382,9 @@
 				$new_columns[$key] = __( 'Ompaknummer', 'oft-admin' );
 			} elseif ( $key === 'price' ) {
 				if ( get_option('woocommerce_tax_display_shop') === 'excl' ) {
-					$new_columns[$key] = __( 'Prijs (excl. BTW)', 'oft-admin' );
+					$new_columns[$key] = __( 'CP excl. BTW', 'oft' );
 				} else {
-					$new_columns[$key] = __( 'Prijs (incl. BTW)', 'oft-admin' );
+					$new_columns[$key] = __( 'CP incl. BTW', 'oft' );
 				}
 			} elseif ( $key === 'icl_translations' ) {
 				$new_columns[$key] = __( 'Talen', 'oft-admin' );
@@ -2653,8 +2653,11 @@
 	#  VARIA  #
 	###########
 
-	// Creëer een productfiche
 	function create_product_pdf( $product_id, $language ) {
+		if ( $_SERVER['SERVER_NAME'] !== 'www.oxfamfairtrade.be' ) {
+			return;
+		}
+
 		global $sitepress;
 		require_once WP_PLUGIN_DIR.'/html2pdf/autoload.php';
 		$templatelocatie = get_stylesheet_directory().'/assets/fiche-'.$language.'.html';
