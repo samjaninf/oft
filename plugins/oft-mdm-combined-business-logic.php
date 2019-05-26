@@ -36,6 +36,10 @@
 
 			// Voeg favorieten toe aan dashboard
 			add_action( 'woocommerce_account_dashboard', array( $this, 'show_favourite_products' ) );
+
+			// Verhinder het manueel aanmaken van producten / bestellingen
+			add_filter( 'woocommerce_register_post_type_product', array( $this, 'disable_post_creation' ) );
+			add_filter( 'woocommerce_register_post_type_shop_order', array( $this, 'disable_post_creation' ) );
 			
 			// Verhinder het permanent verwijderen van producten (maar na 1 jaar wel automatische clean-up door Wordpress, zie wp-config.php!)
 			add_action( 'before_delete_post', array( $this, 'disable_manual_product_removal' ), 10, 1 );
@@ -344,8 +348,15 @@
 			}
 		}
 
+		public function disable_post_creation( $fields ) {
+			if ( ! current_user_can('edit_products') ) {
+				$fields['capabilities'] = array( 'create_posts' => false );
+			}
+			return $fields;
+		}
+
 		public function disable_manual_product_removal( $post_id ) {
-			if ( get_post_type($post_id) == 'product' ) {
+			if ( 'product' === get_post_type( $post_id ) and $_SERVER['SERVER_NAME'] === 'www.oxfamfairtrade.be' ) {
 				wp_die( sprintf( __( 'Uit veiligheidsoverwegingen is het verwijderen van producten niet toegestaan, voor geen enkele gebruikersrol! Vraag &ndash; indien nodig &ndash; dat de hogere machten op %s deze beperking tijdelijk opheffen, zodat je je vuile zaakjes kunt opknappen.', 'oft' ), '<a href="mailto:'.get_option('admin_email').'">'.get_option('admin_email').'</a>' ) );
 			}
 		}

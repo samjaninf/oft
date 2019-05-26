@@ -91,15 +91,6 @@
 		}
 	}
 
-	// Verhinder het permanent verwijderen van producten (maar na 1 jaar wel automatische clean-up door Wordpress, zie wp-config.php!)
-	add_action( 'before_delete_post', 'disable_manual_product_removal', 10, 1 );
-	
-	function disable_manual_product_removal( $post_id ) {
-		if ( get_post_type($post_id) === 'product' and $_SERVER['SERVER_NAME'] === 'www.oxfamfairtrade.be' ) {
-			wp_die( sprintf( 'Uit veiligheidsoverwegingen is het verwijderen van producten niet toegestaan, voor geen enkele gebruikersrol! Deze vormen immers de centrale database met alle gegevens. Vraag &ndash; indien nodig &ndash; dat de hogere machten op %s deze beperking tijdelijk opheffen, zodat je je vuile zaakjes kunt opknappen.', '<a href="mailto:'.get_option('admin_email').'">'.get_option('admin_email').'</a>' ) );
-		}
-	}
-
 	// Voeg een menu toe met onze custom functies
 	add_action( 'admin_menu', 'register_oft_menus', 99 );
 
@@ -109,19 +100,6 @@
 		add_media_page( __( 'Bulkregistratie', 'oft-admin' ), __( 'Bulkregistratie', 'oft-admin' ), 'publish_products', 'oxfam-photos', 'oxfam_photos_callback' );
 		// Toon een expliciete link naar de featured producten (niet meer sorteerbaar sinds WC3+)
 		$submenu['edit.php?post_type=product'][] = array( __( 'Uitgelicht', 'oft-admin' ), 'edit_products', admin_url('edit.php').'?post_type=product&product_visibility=featured' );
-	}
-
-	// Verhinder het manueel aanmaken van producten / bestellingen
-	add_filter( 'woocommerce_register_post_type_product', 'disable_post_creation' );
-	add_filter( 'woocommerce_register_post_type_shop_order', 'disable_post_creation' );
-	
-	function disable_post_creation( $fields ) {
-		if ( ! current_user_can('edit_products') ) {
-			$fields['capabilities'] = array(
-				'create_posts' => false,
-			);
-		}
-		return $fields;
 	}
 
 	function oxfam_product_changelog_callback() {
@@ -3864,7 +3842,7 @@
 		if ( $points_a < 11 ) {
 			return $points_a - $points_c;
 		} else {
-			// Geen parameter die het fruit/groenten bijhoudt, ga voorlopig altijd uit van 0%
+			// Geen parameter die het percentage fruit/groenten bijhoudt, ga voorlopig altijd uit van 0%
 			$part_a = 0;
 			$part_b = min( floor( ( floatval( $product->get_meta('_fibtg') ) - 0.1 ) / 0.7 ), 5 );
 			return $points_a - ( $part_b + $part_a );
