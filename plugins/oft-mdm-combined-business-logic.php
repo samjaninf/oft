@@ -290,7 +290,12 @@
 				$product = $product['data'];
 			}
 			if ( intval( $product->get_meta('_multiple') ) > 1 ) {
-				$title .= ' x ' . $product->get_meta('_multiple') . ' ' . __( 'stuks', 'oft' );
+				$title .= ' x ' . $product->get_meta('_multiple') . ' ';
+				if ( $product->get_meta('_vkeh_uom') !== '' ) {
+					$title .= __( $product->get_meta('_vkeh_uom'), 'oft' );
+				} else {
+					$title .= __( 'stuks', 'oft' );
+				}
 			}
 			return $title;
 		}
