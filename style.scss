@@ -1403,6 +1403,18 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 
 
 
+/*******************/
+/*  NOT LOGGED IN  */
+/*******************/
+
+body:not(.logged-in) {
+	.woo_amc_open {
+		display: none !important;
+	}
+}
+
+
+
 /******************/
 /*  OLD PRODUCTS  */
 /******************/
