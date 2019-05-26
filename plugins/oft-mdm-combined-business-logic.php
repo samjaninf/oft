@@ -66,6 +66,7 @@
 			
 			// Definieer een eigen filter met de assortimentsvoorwaarden, zodat we alles slechts één keer hoeven in te geven
 			add_filter( 'oxfam_product_is_available', array( $this, 'check_product_availability' ), 10, 3 );
+			// add_action( 'pre_get_posts', array( $this, 'filter_allowed_products' ) );
 
 			// Verhinder het toevoegen van verboden producten én laat de koopknop verdwijnen + zwier reeds toegevoegde producten uit het winkelmandje
 			add_filter( 'woocommerce_add_to_cart_validation', array( $this, 'disallow_products_not_in_assortment' ), 10, 2 );
@@ -147,8 +148,9 @@
 			}
 		}
 
-		public function check_product_table_query( $query ) {
-			if ( ! is_admin() and $query->post_type === 'product' ) {
+		public function filter_allowed_products( $query ) {
+			if ( ! is_admin() and $query->query_vars['post_type'] === 'product' ) {
+				// Alternatieve manier om producten af te schermen?
 				write_log( serialize($query) );
 			}
 		}
@@ -500,21 +502,13 @@
 		}
 
 		public function check_product_availability( $product_id, $client_type, $available ) {
-			if ( ! current_user_can('manage_woocommerce') ) {	
+			if ( is_user_logged_in() and ! current_user_can('manage_woocommerce') ) {	
 				if ( $this->enable_private_products_for_customers( $available, $product_id ) ) {
 					$available = true;
 				}
 
-				if ( $client_type !== 'OWW' ) {
-					if ( has_term( 'OWW', 'product_client_type', $product_id ) ) {
-						$available = false;
-					}
-				}
-				
-				if ( $client_type !== 'MDM' ) {
-					if ( has_term( 'MDM', 'product_client_type', $product_id ) ) {
-						$available = false;
-					}
+				if ( ! has_term( $client_type, 'product_client_type', $product_id ) ) {
+					$available = false;
 				}
 			}
 
@@ -523,49 +517,35 @@
 		}
 
 		public function limit_assortment_for_client_type_archives( $query ) {
-			if ( ! current_user_can('manage_woocommerce') ) {
-				$tax_query = (array) $query->get('tax_query');
-
-				if ( $this->get_client_type() !== 'OWW' ) {
-					$tax_query[] = array(
-						'taxonomy' => 'product_client_type',
-						'field' => 'name',
-						'terms' => array( 'OWW' ),
-						'operator' => 'NOT IN',
-					);
-				}
-				if ( $this->get_client_type() !== 'MDM' ) {
-					$tax_query[] = array(
-						'taxonomy' => 'product_client_type',
-						'field' => 'name',
-						'terms' => array( 'MDM' ),
-						'operator' => 'NOT IN',
-					);
-				}
+			if ( is_user_logged_in() and ! current_user_can('manage_woocommerce') ) {
+				$assortments = array();
+				$assortments[] = $this->get_client_type();
 				
+				$tax_query = (array) $query->get('tax_query');
+				$tax_query[] = array(
+					'taxonomy' => 'product_client_type',
+					'field' => 'name',
+					'terms' => $assortments,
+					'operator' => 'IN',
+				);
+
 				$query->set( 'tax_query', $tax_query );	
 			}
 		}
 	
 		public function limit_assortment_for_client_type_shortcodes( $query_args ) {
-			if ( ! current_user_can('manage_woocommerce') ) {
-				if ( $this->get_client_type() !== 'OWW' ) {
-					$query_args['tax_query'][] = array(
-						'taxonomy' => 'product_client_type',
-						'field' => 'name',
-						'terms' => array( 'OWW' ),
-						'operator' => 'NOT IN',
-					);
-				}
-				if ( $this->get_client_type() !== 'MDM' ) {
-					$query_args['tax_query'][] = array(
-						'taxonomy' => 'product_client_type',
-						'field' => 'name',
-						'terms' => array( 'MDM' ),
-						'operator' => 'NOT IN',
-					);
-				}
+			if ( is_user_logged_in() and ! current_user_can('manage_woocommerce') ) {
+				$assortments = array();
+				$assortments[] = $this->get_client_type();
+				
+				$query_args['tax_query'][] = array(
+					'taxonomy' => 'product_client_type',
+					'field' => 'name',
+					'terms' => $assortments,
+					'operator' => 'IN',
+				);
 			}
+
 			return $query_args;
 		}
 
