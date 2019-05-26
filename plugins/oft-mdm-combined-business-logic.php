@@ -73,23 +73,18 @@
 			add_filter( 'wc_product_table_open_products_in_new_tab', '__return_true' );
 			add_filter( 'wc_product_table_column_searchable_price', '__return_false' );
 			add_filter( 'wc_product_table_column_searchable_add_to_cart', '__return_false' );
-			add_filter( 'wc_product_table_reset_button', function( $label ) {
-				return __( 'Begin opnieuw', 'oft' );
-			} );
+			add_filter( 'wc_product_table_data_name', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
 			add_filter( 'wc_product_table_column_heading_name', function( $label ) {
 				return __( 'Omschrijving', 'oft' );
 			} );
-			add_filter( 'wc_product_table_data_name', function( $title, $product ) {
-				return $this->add_consumer_units_per_order_unit( $title, $product );
-			}, 10, 2 );
 			add_filter( 'wc_product_table_column_heading_price', function( $label ) {
-				return __( 'Prijs per ompak', 'oft' );
+				return ucfirst( __( 'per ompak', 'oft' ) );
 			} );
 			add_filter( 'wc_product_table_column_heading_add-to-cart', function( $label ) {
 				return __( 'Bestellen?', 'oft' );
 			} );
 			add_filter( 'wc_product_table_data_add_to_cart', function( $html, $product ) {
-				return $html . ' STUKS VERMELDEN';
+				return $html . __( 'OMPAKINFO', 'oft' );
 			}, 10, 2 );
 
 			// Zorg ervoor dat de logica uit de product loop ook toegepast wordt in de tabel
@@ -98,17 +93,17 @@
 				if ( $taxonomy === 'pa_merk' ) {
 					$term_args['hide_empty'] = false;
 					// var_dump_pre($product_table_args);
-					var_dump_pre($term_args);
+					// var_dump_pre($term_args);
 				}
 				return $term_args;
 			}, 10, 3 );
 			
 			// Synchroniseer de publicatiestatus vanuit de hoofdtaal naar anderstalige producten (zoals bij trashen reeds automatisch door WPML gebeurt)
 			// Neem een hoge prioriteit, zodat de functie pas doorlopen wordt na de 1ste 'save_post' die de zichtbaarheid regelt
-			add_action( 'draft_to_publish', array( $this, 'sync_product_status' ), 100, 1 );
-			add_action( 'draft_to_private', array( $this, 'sync_product_status' ), 100, 1 );
-			add_action( 'publish_to_draft', array( $this, 'sync_product_status' ), 100, 1 );
-			add_action( 'private_to_draft', array( $this, 'sync_product_status' ), 100, 1 );
+			add_action( 'draft_to_publish', array( $this, 'sync_product_status' ), 100 );
+			add_action( 'draft_to_private', array( $this, 'sync_product_status' ), 100 );
+			add_action( 'publish_to_draft', array( $this, 'sync_product_status' ), 100 );
+			add_action( 'private_to_draft', array( $this, 'sync_product_status' ), 100 );
 		}
 
 		public function delay_actions_and_filters_till_load_completed() {
@@ -139,8 +134,10 @@
 				add_filter( 'woocommerce_product_get_price', array( $this, 'get_price_for_current_client' ), 100, 2 );
 				add_filter( 'woocommerce_product_get_regular_price', array( $this, 'get_regular_price_for_current_client' ), 100, 2 );
 
-				// Voeg ompakinfo toe
-				add_filter( 'woocommerce_product_title', array( $this, 'add_consumer_units_per_order_unit' ), 100, 2 );
+				// Voeg ompakinfo toe WERKT NIET IN LOOPS EN OP DETAILPAGINA'S
+				add_action( 'woocommerce_single_product_summary', array( $this, 'add_order_unit_info' ), 12 );
+				add_action( 'woocommerce_after_shop_loop_item_title', array( $this, 'add_order_unit_info' ), 12 );
+				add_filter( 'woocommerce_product_title', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
 				add_filter( 'woocommerce_cart_item_name', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
 				add_filter( 'woocommerce_order_item_name', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
 			}
@@ -277,14 +274,20 @@
 			return get_user_meta( $user_id, 'client_type', true );
 		}
 
+		public function add_order_unit_info() {
+			global $post;
+			_e( 'OMPAKINFO', 'oft' );
+		}
+				
 		public function add_consumer_units_per_order_unit( $title, $product ) {
 			if ( ! $product instanceof WC_Product_Simple ) {
 				$product = $product['data'];
 			}
-			return $title . ' x ' . $product->get_meta('_multiple') . ' ' . __( 'stuks', 'oft' );
+			if ( intval( $product->get_meta('_multiple') ) > 1 ) {
+				$title .= ' x ' . $product->get_meta('_multiple') . ' ' . __( 'stuks', 'oft' );
+			}
+			return $title;
 		}
-
-		
 
 		public function modify_my_account_menu_items( $items ) {
 			// unset( $items['dashboard'] );

@@ -634,6 +634,10 @@ body.search {
 			div.woocommerce-taxonomy-loop {
 				display: none;
 			}
+
+			div.quantity {
+				display: inline-block;
+			}
 		}
 
 		/* Dit werkt niet in op de cataloguspagina's met #bt-woo-content (door tussenliggende elementen) */
