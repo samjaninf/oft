@@ -32,7 +32,7 @@
 
 	add_filter( 'woocommerce_get_price_html', 'oft_show_free_if_zero', 100, 2 );
   
-	function bbloomer_price_free_zero_empty( $price, $product ) {
+	function oft_show_free_if_zero( $price, $product ) {
 		if ( 0 === $product->get_price() ) {
 			$price = '<span class="woocommerce-Price-amount amount">' . __( 'Gratis', 'oft' ) . '</span>';
 		} 
