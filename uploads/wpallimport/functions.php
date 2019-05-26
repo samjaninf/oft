@@ -6,6 +6,8 @@
 			$brand = 'Fairtrade Original';
 		} elseif ( $raw_brand === 'CTM Altromercato' ) {
 			$brand = 'Altromercato';
+		} elseif ( $raw_brand === 'Oxfam Wereldwinkels vzw' ) {
+			$brand = 'Oxfam-Wereldwinkels';
 		} else {
 			$brand = $raw_brand;
 		}
@@ -80,8 +82,9 @@
 		return $unit;
 	}
 
-	function translate_stock_status( $eshop, $purchasable, $stock ) {
-		if ( $eshop === 'aan' and $purchasable === 'ja' ) {
+	// Niet langer nodig, kan automatisch gaan o.b.v. stock en backorderstatus
+	function translate_stock_status( $eshop, $can_be_ordered, $stock ) {
+		if ( $eshop === 'yes' ) {
 			if ( intval($stock) > 0 ) {
 				return 'instock';
 			} else {
@@ -89,6 +92,77 @@
 			}
 		} else {
 			return 'outofstock';
+		}
+	}
+
+	function tweak_stock_quantity( $eshop, $can_be_ordered, $stock ) {
+		if ( $can_be_ordered === 'no' ) {
+			return 0;
+		} else {
+			return $stock;
+		}
+	}
+
+	function skip_creation_untill_forced( $title, $eshop, $can_be_ordered ) {
+		if ( $eshop === 'yes' and $can_be_ordered === 'yes' ) {
+			return $title;
+		} else {
+			// Een lege titel zorgt ervoor dat een onbestaand product niet automatisch aangemaakt wordt
+			return '';
+		}
+		// Logica toevoegen om titels van niet-voeding toch te updaten?
+	}
+
+	function set_non_oft_to_private( $brand, $main_category ) {
+		// Verhinder dat OFT-servicemateriaal zichtbaar wordt voor niet-ingelogde bezoekers
+		if ( alter_brand($brand) === 'Oxfam Fair Trade' and $main_category === 'FOOD' ) {
+			return 'publish';
+		} else {
+			return 'private';
+		}
+	}
+
+	function merge_categories( $main, $sub, $group3, $group4 ) {
+		$categories = array();
+		if ( $main !== 'FOOD' ) {
+			$categories[] = $main;
+		} else {
+			// Laat de catmans de categorie bepalen
+			return '';
+		}
+		if ( $sub !== '' ) {
+			$categories[] = $sub;
+		}
+		// Voorlopig beperken we ons tot de eerste niveaus
+		return implode( '>', $categories );
+	}
+
+	function merge_assortments( $oww, $mdm, $b2b_nl, $b2b_fr ) {
+		$assortments = array();
+		if ( $oww === 'yes' ) {
+			$assortments[] = 'OWW';
+		}
+		if ( $mdm === 'yes' ) {
+			$assortments[] = 'MDM';
+		}
+		if ( $b2b_nl === 'yes' ) {
+			$assortments[] = 'B2B-NL';
+		}
+		if ( $b2b_fr === 'yes' ) {
+			$assortments[] = 'B2B-FR';
+		}
+		if ( $oww === 'no' and $mdm === 'no' and $b2b_nl === 'no' and $b2b_fr === 'no' ) {
+			// Het product is voor iedereen verboden
+			// Keer huidige logica voor blanco's om (voor iedereen beschikbaar => voor niemand beschikbaar)
+		}
+		return implode( ',', $assortments );
+	}
+
+	function translate_yes_no( $value ) {
+		if ( $value === 'yes' ) {
+			return 'Ja';
+		} else {
+			return 'Nee';
 		}
 	}
 ?>

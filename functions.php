@@ -95,7 +95,7 @@
 	add_action( 'before_delete_post', 'disable_manual_product_removal', 10, 1 );
 	
 	function disable_manual_product_removal( $post_id ) {
-		if ( get_post_type($post_id) === 'product' ) {
+		if ( get_post_type($post_id) === 'product' and $_SERVER['SERVER_NAME'] === 'www.oxfamfairtrade.be' ) {
 			wp_die( sprintf( 'Uit veiligheidsoverwegingen is het verwijderen van producten niet toegestaan, voor geen enkele gebruikersrol! Deze vormen immers de centrale database met alle gegevens. Vraag &ndash; indien nodig &ndash; dat de hogere machten op %s deze beperking tijdelijk opheffen, zodat je je vuile zaakjes kunt opknappen.', '<a href="mailto:'.get_option('admin_email').'">'.get_option('admin_email').'</a>' ) );
 		}
 	}
@@ -3335,6 +3335,7 @@
 					$out_of_stocks->the_post();
 					$product = wc_get_product( get_the_ID() );
 					$product->set_stock_status('outofstock');
+					$product->set_backorders('no');
 					$product->save();
 				}
 				wp_reset_postdata();
@@ -3407,7 +3408,9 @@
 			$args = array(
 				'timeout' => 180,
 			);
-			$response = wp_remote_get( site_url( '/wp-cron.php?import_id=22&action=trigger&import_key='.IMPORT_KEY ), $args );
+			if ( $_SERVER['SERVER_NAME'] !== 'www.oxfamfairtrade.be' ) {
+				$response = wp_remote_get( site_url( '/wp-cron.php?import_id=22&action=trigger&import_key='.IMPORT_KEY ), $args );
+			}
 		}
 
 		if ( $import_id == 22 ) {
@@ -3415,7 +3418,9 @@
 			$args = array(
 				'timeout' => 180,
 			);
-			$response = wp_remote_get( site_url( '/wp-cron.php?import_id=33&action=trigger&import_key='.IMPORT_KEY ), $args );
+			if ( $_SERVER['SERVER_NAME'] !== 'www.oxfamfairtrade.be' ) {
+				$response = wp_remote_get( site_url( '/wp-cron.php?import_id=33&action=trigger&import_key='.IMPORT_KEY ), $args );
+			}
 		}
 
 		if ( $import_id == 33 ) {
