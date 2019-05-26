@@ -3309,15 +3309,17 @@
 			);
 
 			// Lijkt te lukken in één batch
-			$out_of_stocks = new WP_Query( $args );
+			$all_products = new WP_Query( $args );
 
-			if ( $out_of_stocks->have_posts() ) {
-				while ( $out_of_stocks->have_posts() ) {
-					$out_of_stocks->the_post();
+			if ( $all_products->have_posts() ) {
+				while ( $all_products->have_posts() ) {
+					$all_products->the_post();
 					$product = wc_get_product( get_the_ID() );
-					$product->set_stock_status('outofstock');
-					$product->set_backorders('no');
-					$product->save();
+					if ( $product !== false ) {
+						$product->set_stock_status('outofstock');
+						$product->set_backorders('no');
+						$product->save();
+					}
 				}
 				wp_reset_postdata();
 			}
@@ -3389,7 +3391,7 @@
 			$args = array(
 				'timeout' => 180,
 			);
-			if ( $_SERVER['SERVER_NAME'] !== 'www.oxfamfairtrade.be' ) {
+			if ( $_SERVER['SERVER_NAME'] === 'www.oxfamfairtrade.be' ) {
 				$response = wp_remote_get( site_url( '/wp-cron.php?import_id=22&action=trigger&import_key='.IMPORT_KEY ), $args );
 			}
 		}
@@ -3399,15 +3401,17 @@
 			$args = array(
 				'timeout' => 180,
 			);
-			if ( $_SERVER['SERVER_NAME'] !== 'www.oxfamfairtrade.be' ) {
+			if ( $_SERVER['SERVER_NAME'] === 'www.oxfamfairtrade.be' ) {
 				$response = wp_remote_get( site_url( '/wp-cron.php?import_id=33&action=trigger&import_key='.IMPORT_KEY ), $args );
 			}
 		}
 
 		if ( $import_id == 33 ) {
-			$old = WP_CONTENT_DIR."/B2CImport.csv";
-			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
-			rename( $old, $new );
+			if ( $_SERVER['SERVER_NAME'] === 'www.oxfamfairtrade.be' ) {
+				$old = WP_CONTENT_DIR."/B2CImport.csv";
+				$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
+				rename( $old, $new );
+			}
 		}
 	}
 

@@ -1,17 +1,19 @@
 <?php
 	function alter_brand( $raw_brand ) {
-		if ( $raw_brand === 'Oxfam Fairtrade' ) {
-			$brand = 'Oxfam Fair Trade';
-		} elseif ( $raw_brand === 'Fair Trade Original' ) {
-			$brand = 'Fairtrade Original';
-		} elseif ( $raw_brand === 'CTM Altromercato' ) {
-			$brand = 'Altromercato';
-		} elseif ( $raw_brand === 'Oxfam Wereldwinkels vzw' ) {
-			$brand = 'Oxfam-Wereldwinkels';
-		} else {
-			$brand = $raw_brand;
+		switch ( trim( $raw_brand ) ) {
+			case 'Oxfam Fairtrade':
+				return 'Oxfam Fair Trade';
+			case 'Oxfam Wereldwinkels vzw':
+				return 'Oxfam-Wereldwinkels';
+			case 'Fair Trade Original':
+				return 'Fairtrade Original';
+			case 'CTM Altromercato':
+				return 'Altromercato';
+			case 'Not applicable':
+				return '';
+			default:
+				return $raw_brand;
 		}
-		return $brand;
 	}
 
 	function only_last_term( $string ) {
@@ -103,35 +105,47 @@
 		}
 	}
 
-	function skip_creation_untill_forced( $title, $eshop, $can_be_ordered ) {
+	function skip_creation_untill_forced( $title, $eshop, $can_be_ordered, $main_cat ) {
 		if ( $eshop === 'yes' and $can_be_ordered === 'yes' ) {
-			return $title;
+			return ucfirst( trim( $title ) );
 		} else {
 			// Een lege titel zorgt ervoor dat een onbestaand product niet automatisch aangemaakt wordt
 			return '';
 		}
-		// Logica toevoegen om titels van niet-voeding toch te updaten?
+		// Logica toevoegen om titels van niet-voeding toch te updaten? Vergt product-ID!
 	}
 
-	function set_non_oft_to_private( $raw_brand, $main_category ) {
-		// Verhinder dat OFT-servicemateriaal zichtbaar wordt voor niet-ingelogde bezoekers
-		if ( alter_brand($raw_brand) === 'Oxfam Fair Trade' and $main_category === 'FOOD' ) {
-			return 'publish';
+	function set_non_oft_to_private( $raw_brand, $main_cat, $eshop, $sku ) {
+		// Probleem: statusupdate lokt ook datumwijziging uit (ook al blijft de status identiek)
+		if ( $eshop === 'yes' ) {
+			// Moet zichtbaar zijn, dus forceer status
+			if ( alter_brand($raw_brand) === 'Oxfam Fair Trade' and $main_cat === 'FOOD' ) {
+				// Verhinder dat nieuw OFT-servicemateriaal zichtbaar wordt voor niet-ingelogde bezoekers
+				return 'publish';
+			} else {
+				return 'private';
+			}
 		} else {
-			return 'private';
+			// Neem huidige status over
+			$product_id = wc_get_product_id_by_sku( $sku );
+			if ( $product_id !== false ) {
+				return get_post_status( $product_id );
+			} else {
+				return '';
+			}
 		}
 	}
 
-	function merge_categories( $main, $sub, $group3, $group4 ) {
+	function merge_categories( $main_cat, $sub_cat, $group3, $group4 ) {
 		$categories = array();
-		if ( $main !== 'FOOD' ) {
-			$categories[] = $main;
+		if ( $main_cat !== 'FOOD' ) {
+			$categories[] = $main_cat;
 		} else {
 			// Laat de catmans de categorie bepalen
 			return '';
 		}
-		if ( $sub !== '' ) {
-			$categories[] = $sub;
+		if ( $sub_cat !== '' ) {
+			$categories[] = $sub_cat;
 		}
 		// Voorlopig beperken we ons tot de eerste niveaus
 		return implode( '>', $categories );
@@ -164,5 +178,21 @@
 		} else {
 			return 'Nee';
 		}
+	}
+
+	function convert_to_array_of_product_ids( $sku ) {
+		$list = array();
+		if ( $sku !== '' ) {
+			$product_id = wc_get_product_id_by_sku( $sku );
+			if ( $product_id !== false ) {
+				$list[] = $product_id;
+			}
+		}
+		return serialize( $list );
+	}
+
+	function convert_price_to_float( $string ) {
+		$price = str_replace( ',', '.', str_replace( '.', '', $string ) );
+		return number_format( floatval( $price ), 2, '.', '' );
 	}
 ?>

@@ -292,7 +292,7 @@
 			if ( intval( $product->get_meta('_multiple') ) > 1 ) {
 				$title .= ' x ' . $product->get_meta('_multiple') . ' ';
 				if ( $product->get_meta('_vkeh_uom') !== '' ) {
-					$title .= __( $product->get_meta('_vkeh_uom'), 'oft' );
+					$title .= __( strtolower( $product->get_meta('_multiple_unit') ), 'oft' );
 				} else {
 					$title .= __( 'stuks', 'oft' );
 				}
