@@ -18,8 +18,8 @@
 		return $screen_ids;
 	}
 
-	// Corrigeer conversieprobleem bij Engelstalige kommagetallen met 1 decimaal
-	add_filter( 'woocommerce_product_get_price', 'fix_english_prices', 100, 2 );
+	// Corrigeer conversieprobleem bij Engelstalige kommagetallen met 1 decimaal OPGELOST?
+	// add_filter( 'woocommerce_product_get_price', 'fix_english_prices', 100, 2 );
 	
 	function fix_english_prices( $price, $product ) {
 		global $sitepress;
@@ -27,6 +27,15 @@
 			// var_dump_pre($price);
 			$price = str_replace( ',', '.', $price );
 		}
+		return $price;
+	}
+
+	add_filter( 'woocommerce_get_price_html', 'oft_show_free_if_zero', 100, 2 );
+  
+	function bbloomer_price_free_zero_empty( $price, $product ) {
+		if ( 0 === $product->get_price() ) {
+			$price = '<span class="woocommerce-Price-amount amount">' . __( 'Gratis', 'oft' ) . '</span>';
+		} 
 		return $price;
 	}
 	
