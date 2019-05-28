@@ -64,7 +64,8 @@
 
 	function oft_contact_representative_if_not_available_yet() {
 		global $product;
-		if ( has_term( 'sinterklaas', 'product_tag', $product->get_id() ) ) {
+		$main_product_id = apply_filters( 'wpml_object_id', $product->get_id(), 'product', false, 'nl' );
+		if ( has_term( 'sinterklaas', 'product_tag', $main_product_id ) ) {
 			echo '<p>'.sprintf( __( 'Interesse? Dit product is momenteel nog niet op voorraad. <a href="%s">Contacteer onze vertegenwoordigers &raquo;</a>', 'oft' ), home_url('/contact/').'#vertegenwoordigers' ).'</p>';
 		}
 	}
