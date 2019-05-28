@@ -2870,9 +2870,9 @@
 		$subtotal = $number_of_layers * $number_per_layer;
 		$total = $multiple * $subtotal;
 
-		$templatecontent = str_replace( "###BRAND###", $product->get_attribute('pa_merk'), $templatecontent );
 		// Soms blijven de termen uit de moedertaal plakken dus voor alle zekerheid ontdubbelen ...
 		$brands = explode( ', ', $product->get_attribute('pa_merk') );
+		$templatecontent = str_replace( "###BRAND###", $brands[0], $templatecontent );
 		$templatecontent = str_replace( "###LOGO###", sanitize_title( $brands[0], 'oxfam-fair-trade' ), $templatecontent );
 		$templatecontent = str_replace( "###PERMALINK###", $permalink, $templatecontent );
 		$templatecontent = str_replace( "###NAME###", $product->get_name(), $templatecontent );
@@ -2884,6 +2884,7 @@
 		if ( strlen($product_text) + strlen($ingredients_text) + 2*strlen($ingredients_legend) + strlen($origin_text) > 800 ) {
 			// Check of de korte beschrijving wel inhoud bevat
 			if ( strlen( $product->get_short_description() ) > 10 ) {
+				// Opgelet: meer en meer anderstalige producten hebben geen korte productbeschrijving ...
 				$product_text = $product->get_short_description();
 			}
 		}
