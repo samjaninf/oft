@@ -59,6 +59,16 @@
 		$allowedtags['a']['target'] = 1;
 	}
 
+	// Voeg automatisch tekstje toe aan sintproducten
+	add_action( 'woocommerce_single_product_summary', 'oft_contact_representative_if_not_available_yet', 25 );
+
+	function oft_contact_representative_if_not_available_yet() {
+		global $product;
+		if ( has_term( 'sinterklaas', 'product_tag', $product->get_id() ) ) {
+			echo '<p>'.sprintf( __( 'Interesse? <a href="%s">Contacteer onze vertegenwoordigers &raquo;</a>', 'oft' ), home_url('/contact/').'#vertegenwoordigers' ).'</p>';
+		}
+	}
+
 	// Geef waarschuwing wanneer een product naar de prullenmand verplaatst wordt dat nog gelinkt is in gepubliceerde posts
 	add_action( 'wp_trash_post', 'oft_coupled_posts_warning_on_delete', 10, 1 );
 	
