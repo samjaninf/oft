@@ -3540,24 +3540,15 @@
 		// wp_deregister_script('prettyphoto');
 	}
 
-	// Verhinder het lekken van gegevens via de WP API NIET DOEN, BLOKKEERT DE WERKING VAN CF7
+	// Verhinder het lekken van gegevens uit de API aan niet-ingelogde gebruikers NIET DOEN, BLOKKEERT DE WERKING VAN CF7
 	// add_filter( 'rest_authentication_errors', 'only_allow_administrator_rest_access' );
 
 	function only_allow_administrator_rest_access( $access ) {
-		if( ! is_user_logged_in() or ! current_user_can('update_core') ) {
+		if ( ! is_user_logged_in() or ! current_user_can('manage_options') ) {
 			return new WP_Error( 'rest_cannot_access', 'Access prohibited!', array( 'status' => rest_authorization_required_code() ) );
 		}
 		return $access;
 	}
-
-	// Voeg custom postmetadata toe aan de WP API door de metadata algemeen te registreren
-	$api_args = array(
-		'type' => 'integer',
-		'description' => 'Artikelnummer waarover het bericht gaat.',
-		'single' => true,
-		'show_in_rest' => true,
-	);
-	register_meta( 'post', 'oft_post_products', $api_args );
 
 	// Voeg custom producttaxonomieën toe aan de WC API
 	add_filter( 'woocommerce_rest_prepare_product_object', 'add_custom_taxonomies_to_response', 10, 3 );
