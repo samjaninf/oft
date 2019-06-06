@@ -10,18 +10,51 @@
 		// Initialiseer de WC-logger
 		$logger = wc_get_logger();
 		$context = array( 'source' => 'Order XML' );
+		$start = microtime(true);
 
-		if ( 1 === 1 or $_GET['import_key'] === IMPORT_KEY ) {
+		if ( $_GET['import_key'] === IMPORT_KEY ) {
 
 			// Lees het lokale XML-bestand
 			$order_data = simplexml_load_file( WP_CONTENT_DIR.'/odisy/export/orders.xml' );
+			
 			if ( $order_data !== false ) {
-				foreach ( $order_data->Orders->Order as $order ) {
-					var_dump_pre( $order->OrderHeader->OrderCreditRef );
+				// var_dump_pre( $order_data );
+				echo number_format( microtime(true)-$start, 4, ',', '.' )." s => XML LOADED<br/>";
+				
+				foreach ( $order_data->Order as $order ) {
+					$cnt++;
+					$header = $order->OrderHeader;
+					$lines = $order->OrderLines;
+					
+					// var_dump_pre($header->BestelwebRef);
+					if ( ! empty( $header->BestelwebRef ) ) {
+						// Zoek het order op
+						$args = array(
+							// Of staan we ook nog correcties toe na het sluiten van een order?
+							'status' => 'processing',
+							'type' => 'shop_order',
+							'_order_number_formatted' => $header->BestelwebRef,
+						);
+						$matched_orders = wc_get_orders($args);
+						var_dump_pre($matched_orders);
+
+						if ( count($matched_orders) === 1 ) {
+							$order = reset($matched_orders);
+							$order->update_meta_data( 'order_number_odisy', $header->OrderCreditRef );
+							$order->save();
+						}
+					}
+					
+					// Magic method __toString() niét nodig
+					if ( intval( $header->KlantNr ) === 2128 and intval( $header->LeverNr ) === 0 ) {
+						echo number_format( microtime(true)-$start, 4, ',', '.' )." s => ORDER ".$header->OrderCreditRef." LOADED<br/>";
+					}
 				}
 			} else {
-				echo "Er liep iets mis!";
+				echo "ERROR LOADING XML<br/>";
 			}
+
+			echo number_format( microtime(true)-$start, 4, ',', '.' )." s => ".$cnt." ORDERS LOOPED<br/>";
 
 		} else {
 			die("Access prohibited!");
