@@ -20,11 +20,19 @@
 			if ( $order_data !== false ) {
 				// var_dump_pre( $order_data );
 				echo number_format( microtime(true)-$start, 4, ',', '.' )." s => XML LOADED<br/>";
+
+				$statusses = array();
 				
 				foreach ( $order_data->Order as $order ) {
 					$cnt++;
 					$header = $order->OrderHeader;
 					$lines = $order->OrderLines;
+
+					if ( array_key_exists( $header->OrderCreditStatus, $statusses ) ) {
+						$statusses[$header->OrderCreditStatus]++;
+					} else {
+						$statusses[$header->OrderCreditStatus] = 0;
+					}
 					
 					// var_dump_pre($header->BestelwebRef);
 					if ( ! empty( $header->BestelwebRef ) ) {
@@ -40,16 +48,30 @@
 
 						if ( count($matched_orders) === 1 ) {
 							$order = reset($matched_orders);
-							$order->update_meta_data( 'order_number_odisy', $header->OrderCreditRef );
+							$parts = explode( ' ', $header->OrderCreditRef );
+							$order->update_meta_data( 'odisy_order_number', $parts[0] );
+							$order->update_meta_data( 'odisy_order_type', $parts[1] );
+							$order->update_meta_data( 'odisy_routecode', $header->Routecode );
 							$order->save();
+
+							if ( $header->OrderCreditStatus === 'verzonden' ) {
+								$order->update_status('completed');
+							} 
 						}
 					}
 					
 					// Magic method __toString() niét nodig
 					if ( intval( $header->KlantNr ) === 2128 and intval( $header->LeverNr ) === 0 ) {
 						echo number_format( microtime(true)-$start, 4, ',', '.' )." s => ORDER ".$header->OrderCreditRef." LOADED<br/>";
+						foreach ( $lines->Orderline as $line ) {
+							if ( $line->AantalBesteldTeCrediteren !== $line->AantalGeleverdGecrediteerd ) {
+								echo $line->Artikel.": ".$line->AantalBesteldTeCrediteren."x besteld, ".$line->AantalGeleverdGecrediteerd." geleverd<br/>";
+							}
+						}
 					}
 				}
+
+				var_dump_pre( $statusses );
 			} else {
 				echo "ERROR LOADING XML<br/>";
 			}
