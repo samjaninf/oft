@@ -11,6 +11,8 @@
 		$logger = wc_get_logger();
 		$context = array( 'source' => 'Order XML' );
 		$start = microtime(true);
+		$client_number = 2128;
+		$update = false;
 
 		if ( $_GET['import_key'] === IMPORT_KEY ) {
 
@@ -22,20 +24,39 @@
 				echo number_format( microtime(true)-$start, 4, ',', '.' )." s => XML LOADED<br/>";
 
 				$statusses = array();
+				$types = array();
+				if ( false === ( $oostende = get_transient('invoice_data_client_'.$client_number) ) ) {
+					$update = true;
+					$oostende = array();
+				}
 				
 				foreach ( $order_data->Order as $order ) {
 					$cnt++;
 					$header = $order->OrderHeader;
 					$lines = $order->OrderLines;
+					$parts = explode( ' ', $header->OrderCreditRef->__toString() );
+					$order_number = $parts[0];
+					$order_type = $parts[1];
 
-					if ( array_key_exists( $header->OrderCreditStatus, $statusses ) ) {
-						$statusses[$header->OrderCreditStatus]++;
+					// Magic method __toString() wel nodig in array keys!
+					// Opties: 'in behandeling', 'verzonden', 'gefactureerd', 'te crediteren' of 'gecrediteerd'
+					if ( array_key_exists( $header->OrderCreditStatus->__toString(), $statusses ) ) {
+						$statusses[$header->OrderCreditStatus->__toString()]++;
 					} else {
-						$statusses[$header->OrderCreditStatus] = 0;
+						$statusses[$header->OrderCreditStatus->__toString()] = 1;
+					}
+
+					// Opties: 'N', 'CH', 'B', 'RL' of '' (bij crediteringen?)
+					if ( array_key_exists( $order_type, $types ) ) {
+						$types[$order_type]++;
+					} else {
+						$types[$order_type] = 1;
 					}
 					
 					// var_dump_pre($header->BestelwebRef);
 					if ( ! empty( $header->BestelwebRef ) ) {
+						echo $header->BestelwebRef."<br/>";
+
 						// Zoek het order op
 						$args = array(
 							// Of staan we ook nog correcties toe na het sluiten van een order?
@@ -48,30 +69,53 @@
 
 						if ( count($matched_orders) === 1 ) {
 							$order = reset($matched_orders);
-							$parts = explode( ' ', $header->OrderCreditRef );
-							$order->update_meta_data( 'odisy_order_number', $parts[0] );
-							$order->update_meta_data( 'odisy_order_type', $parts[1] );
+							$order->update_meta_data( 'odisy_order_number', $order_number );
+							$order->update_meta_data( 'odisy_order_type', $order_number );
 							$order->update_meta_data( 'odisy_routecode', $header->Routecode );
 							$order->save();
 
-							if ( $header->OrderCreditStatus === 'verzonden' ) {
+							if ( $header->OrderCreditStatus->__toString() === 'verzonden' ) {
 								$order->update_status('completed');
-							} 
+							}
+							if ( $header->OrderCreditStatus->__toString() === 'gefactureerd' ) {
+								// Custom orderstatus nog te definiëren
+								$order->update_status('invoiced');
+							}
 						}
 					}
 					
-					// Magic method __toString() niét nodig
-					if ( intval( $header->KlantNr ) === 2128 and intval( $header->LeverNr ) === 0 ) {
-						echo number_format( microtime(true)-$start, 4, ',', '.' )." s => ORDER ".$header->OrderCreditRef." LOADED<br/>";
-						foreach ( $lines->Orderline as $line ) {
-							if ( $line->AantalBesteldTeCrediteren !== $line->AantalGeleverdGecrediteerd ) {
-								echo $line->Artikel.": ".$line->AantalBesteldTeCrediteren."x besteld, ".$line->AantalGeleverdGecrediteerd." geleverd<br/>";
+					if ( $header->OrderCreditStatus->__toString() === 'in behandeling' and ( $order_type === 'N' or $order_type === 'CH' ) ) {
+						echo "<br/>".number_format( microtime(true)-$start, 4, ',', '.' )." s => ORDER ".$header->OrderCreditRef." WITH STATUS ".$header->OrderCreditStatus." LOADED<br/>";
+						foreach ( $lines->OrderLine as $line ) {
+							// $line->AantalGeleverdGecrediteerd is in deze fase nog steeds nul!
+							echo $line->Artikel.": ".$line->AantalBesteldTeCrediteren."x ".$line->Eenheid." besteld à ".$line->BestelCreditBedrag." euro<br/>";
+						}
+					}
+
+					if ( intval( $header->KlantNr ) === $client_number and intval( $header->LeverNr ) === 0 and $update ) {
+						if ( $header->OrderCreditStatus->__toString() === 'gefactureerd' and ( $order_type === 'N' or $order_type === 'CH' ) ) {
+							foreach ( $lines->OrderLine as $line ) {
+								if ( $line->AantalBesteldTeCrediteren->__toString() !== $line->AantalGeleverdGecrediteerd->__toString() ) {
+									// Prijs uit de effectieve factuurlijn halen!
+									$oostende[$order_number][] = $line->Artikel.": ".$line->AantalBesteldTeCrediteren."x ".$line->Eenheid." besteld, ".$line->AantalGeleverdGecrediteerd."x ".$line->Eenheid." geleverd à ".$line->ShipnoteInvoiceLines->ShipnoteInvoiceLine->Factuurbedrag." euro";
+								} else {
+									$oostende[$order_number][] = $line->Artikel.": ".$line->AantalBesteldTeCrediteren."x ".$line->Eenheid." geleverd à ".$line->ShipnoteInvoiceLines->ShipnoteInvoiceLine->Factuurbedrag." euro";
+								}
 							}
 						}
 					}
 				}
 
+				if ( $update ) {
+					set_transient( 'invoice_data_client_'.$client_number, $oostende, HOUR_IN_SECONDS );
+				}
+				foreach ( $oostende as $order_number => $lines ) {
+					echo "<br/>".$order_number." => ".implode( ', ', $lines )."<br/>";
+				}
+
 				var_dump_pre( $statusses );
+				var_dump_pre( $types );
+
 			} else {
 				echo "ERROR LOADING XML<br/>";
 			}
