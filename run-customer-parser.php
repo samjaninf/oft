@@ -26,7 +26,7 @@
 				
 				foreach ( $customer_data->Customer as $customer ) {
 					$cnt++;
-					$client_number = $order->CustNum->__toString();
+					$client_number = $customer->CustNum->__toString();
 					$addresses = $customer->Leveradressen;
 					
 					// Opties: ???
@@ -76,7 +76,7 @@
 				echo "ERROR LOADING XML<br/>";
 			}
 
-			echo number_format( microtime(true)-$start, 4, ',', '.' )." s => ".$cnt." ORDERS LOOPED<br/>";
+			echo number_format( microtime(true)-$start, 4, ',', '.' )." s => ".$cnt." CUSTOMERS LOOPED<br/>";
 
 		} else {
 			die("Access prohibited!");
