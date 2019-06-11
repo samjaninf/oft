@@ -46,9 +46,9 @@
 
 					$fixed_day = "";
 					if ( intval( $customer->VasteLeverdag->__toString() ) > 0 ) {
-						$fixed_day = " op ".date_i18n( 'l', strtotime('Monday + '.$customer->VasteLeverdag->__toString().'days') );
+						$fixed_day = ", default op ".date_i18n( 'l', strtotime('Sunday + '.$customer->VasteLeverdag->__toString().'days') );
 					}
-					echo "<b>".$customer->Name.": (".$customer->Routecode.$fixed_day.")</b><br/>";
+					echo "<b>".$customer->Name.": (routecode ".$customer->Routecode.$fixed_day.")</b><br/>";
 					echo $billing_address->Lijn1." ".$billing_address->Huisnr.", ".$billing_address->Postcode." ".$billing_address->Gemeente." (".$billing_address->Land.")<br/>";
 					
 					$args = array(
@@ -69,13 +69,15 @@
 					if ( intval( $client_number ) === 2128 ) {
 						foreach ( $delivery_address->Leveradres as $address ) {
 							"echo OOSTENDE GEVONDEN";
-							$oostende[ $address->AdrNum->__toString() ] = array( 'name' => $address->Name, 'address_1' => $address->Lijn1." ".$address->Huisnr, 'zipcode' => $address->Postcode, 'city' => $address->Gemeente, 'country' => $address->Land );
+							$oostende[ $address->AdrNum->__toString() ] = array( 'name' => $address->Name->__toString(), 'address_1' => $address->Lijn1->__toString()." ".$address->Huisnr->__toString(), 'zipcode' => $address->Postcode->__toString(), 'city' => $address->Gemeente->__toString(), 'country' => $address->Land->__toString() );
 						}
 					}
 				}
 
 				var_dump_pre( $oostende );
+				ksort($routecodes);
 				var_dump_pre( $routecodes );
+				ksort($types);
 				var_dump_pre( $types );
 
 			} else {
