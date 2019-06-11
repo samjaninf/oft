@@ -27,24 +27,29 @@
 				foreach ( $customer_data->Customer as $customer ) {
 					$cnt++;
 					$client_number = $customer->CustNum->__toString();
-					$addresses = $customer->Leveradressen;
+					$billing_address = $customer->Adres;
+					$delivery_address = $customer->Leveradressen;
 					
 					// Opties: ???
 					if ( array_key_exists( $customer->Routecode->__toString(), $routecodes ) ) {
-						$routecodes[$customer->Routecode->__toString()]++;
+						$routecodes[ $customer->Routecode->__toString() ]++;
 					} else {
-						$routecodes[$customer->Routecode->__toString()] = 1;
+						$routecodes[ $customer->Routecode->__toString() ] = 1;
 					}
 
 					// Opties: ???
 					if ( array_key_exists( $customer->Type->__toString(), $types ) ) {
-						$types[$customer->Type->__toString()]++;
+						$types[ $customer->Type->__toString() ]++;
 					} else {
-						$types[$customer->Type->__toString()] = 1;
+						$types[ $customer->Type->__toString() ] = 1;
 					}
 
-					echo "<b>".$customer->Name.":</b><br/>";
-					echo $customer->Lijn1." ".$customer->Huisnr.", ".$customer->Postcode." ".$customer->Gemeente." (".$customer->Land.")<br/>";
+					$fixed_day = "";
+					if ( intval( $customer->VasteLeverdag->__toString() ) > 0 ) {
+						$fixed_day = " op ".date_i18n( 'l', strtotime('Monday + '.$customer->VasteLeverdag->__toString().'days') );
+					}
+					echo "<b>".$customer->Name.": (".$customer->Routecode.$fixed_day.")</b><br/>";
+					echo $billing_address->Lijn1." ".$billing_address->Huisnr.", ".$billing_address->Postcode." ".$billing_address->Gemeente." (".$billing_address->Land.")<br/>";
 					
 					$args = array(
 						'role' => 'customer',
@@ -53,7 +58,7 @@
 					);
 					$user_query = new WP_User_Query($args);
 					$matched_users = $user_query->get_results();
-					var_dump_pre($matched_users);
+					// var_dump_pre($matched_users);
 
 					if ( count( $matched_users ) > 0 ) {
 						foreach ( $matched_users as $user ) {
@@ -62,8 +67,9 @@
 					}
 					
 					if ( intval( $client_number ) === 2128 ) {
-						foreach ( $addresses->Leveradres as $address ) {
-							$oostende[$address->AdrNum] = array( 'name' => $address->Name, 'address_1' => $address->Lijn1." ".$address->Huisnr, 'zipcode' => $address->Postcode, 'city' => $address->Gemeente, 'country' => $address->Land );
+						foreach ( $delivery_address->Leveradres as $address ) {
+							"echo OOSTENDE GEVONDEN";
+							$oostende[ $address->AdrNum->__toString() ] = array( 'name' => $address->Name, 'address_1' => $address->Lijn1." ".$address->Huisnr, 'zipcode' => $address->Postcode, 'city' => $address->Gemeente, 'country' => $address->Land );
 						}
 					}
 				}
