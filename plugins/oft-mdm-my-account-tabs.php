@@ -1,6 +1,6 @@
 <?php
 	/*
-	Plugin Name: OFT/OMDM My Account Tabs
+	Plugin Name: OFT My Account Tabs
 	Description: Voeg extra tabbladen toe om orders / facturen / crediteringen te raadplegen die niet via BestelWeb verliepen.
 	Version:     1.2.0
 	Author:      Full Stack Ahead
@@ -19,84 +19,84 @@
 	new My_Account_Endpoint_View_Invoice( __( 'factuur', 'oft' ) );
 	
 	class My_Account_Endpoint_Others extends Custom_My_Account_Endpoint {
-		public function add_menu_items( $items ) {
+		function add_menu_items( $items ) {
 			$new_items = array();
 			foreach ( $items as $slug => $title ) {
 				$new_items[$slug] = $title;
 				if ( $slug === 'orders' ) {
 					// Voeg menuknop toe net na 'Bestellingen'
-					$new_items[ $this->$endpoint ] = $this->endpoint_title();
+					$new_items[ $this->slug ] = $this->endpoint_title();
 				}
 			}
 			return $new_items;
 		}
 
-		public function endpoint_title() {
+		function endpoint_title() {
 			return __( 'Overige bestellingen', 'oft' );
 		}
 
-		public function get_endpoint_statuses() {
+		function get_endpoint_statuses() {
 			return array( 'in behandeling', 'verzonden' );
 		}
 	}
 
 	class My_Account_Endpoint_Invoices extends Custom_My_Account_Endpoint {
-		public function add_menu_items( $items ) {
+		function add_menu_items( $items ) {
 			$new_items = array();
 			foreach ( $items as $slug => $title ) {
 				$new_items[$slug] = $title;
 				if ( $slug === 'orders' ) {
 					// Voeg menuknop toe net na 'Bestellingen'
-					$new_items[ $this->$endpoint ] = $this->endpoint_title();
+					$new_items[ $this->slug ] = $this->endpoint_title();
 				}
 			}
 			return $new_items;
 		}
 
-		public function endpoint_title() {
+		function endpoint_title() {
 			return __( 'Facturen', 'oft' );
 		}
 
-		public function get_endpoint_statuses() {
+		function get_endpoint_statuses() {
 			return array( 'gefactureerd' );
 		}
 	}
 
 	class My_Account_Endpoint_Credits extends Custom_My_Account_Endpoint {
-		public function add_menu_items( $items ) {
+		function add_menu_items( $items ) {
 			$new_items = array();
 			foreach ( $items as $slug => $title ) {
 				$new_items[$slug] = $title;
 				if ( $slug === 'orders' ) {
 					// Voeg menuknop toe net na 'Bestellingen'
-					$new_items[ $this->$endpoint ] = $this->endpoint_title();
+					$new_items[ $this->slug ] = $this->endpoint_title();
 				}
 			}
 			return $new_items;
 		}
 
-		public function endpoint_title() {
+		function endpoint_title() {
 			return __( 'Crediteringen', 'oft' );
 		}
 
-		public function get_endpoint_statuses() {
+		function get_endpoint_statuses() {
 			return array( 'te crediteren', 'gecrediteerd' );
 		}
 	}
 
 	class My_Account_Endpoint_View_Invoice extends Custom_My_Account_Endpoint {
-		public function endpoint_title() {
+		function endpoint_title() {
 			return __( 'Factuur', 'oft' );
 		}
 
-		public function endpoint_content() {
+		function endpoint_content() {
 			$invoice = $this->get_invoice_by_number( get_query_var('factuur') );
 			var_dump_pre( $invoice );
 
 			// TO DO: Security deftig toevoegen m.b.v. add_filter( 'user_has_cap', 'wc_customer_has_capability', 10, 3 ); 
 			if ( $invoice->OrderHeader->KlantNr !== get_user_meta( get_current_user_id(), 'billing_number_oft', true ) ) {
-				echo '<div class="woocommerce-error">' . esc_html__( 'Invalid order.', 'woocommerce' ) . ' <a href="' . esc_url( wc_get_page_permalink( 'myaccount' ) ) . '" class="wc-forward">' . esc_html__( 'My account', 'woocommerce' ) . '</a></div>';
-				return;
+				// echo '<div class="woocommerce-error">' . esc_html__( 'Invalid order.', 'woocommerce' ) . ' <a href="' . esc_url( wc_get_page_permalink( 'myaccount' ) ) . '" class="wc-forward">' . esc_html__( 'My account', 'woocommerce' ) . '</a></div>';
+				// return;
 			}
 
 			wc_get_template(
@@ -108,7 +108,7 @@
 			);
 		}
 
-		public function get_invoice_by_number( $invoice_number ) {
+		function get_invoice_by_number( $invoice_number ) {
 			$order_data = simplexml_load_file( WP_CONTENT_DIR.'/odisy/export/orders.xml' );
 			
 			if ( $order_data !== false ) {
@@ -128,23 +128,24 @@
 	}
 
 	class Custom_My_Account_Endpoint {
-		protected $endpoint;
+		protected $slug;
 
-		public function __construct( $param ) {
-			$this->$endpoint = $param;
+		function __construct( $param ) {
+			$this->slug = $param;
+			error_log($this->slug);
 			add_filter( 'woocommerce_get_query_vars', array( $this, 'add_query_vars' ) );
 			add_filter( 'woocommerce_account_menu_items', array( $this, 'disable_menu_items' ), 10 );
 			add_filter( 'woocommerce_account_menu_items', array( $this, 'add_menu_items' ), 20 );
-			add_filter( 'woocommerce_endpoint_'.$this->$endpoint.'_title', array( $this, 'endpoint_title' ) );
-			add_action( 'woocommerce_account_'.$this->$endpoint.'_endpoint', array( $this, 'endpoint_content' ) );
+			add_filter( 'woocommerce_endpoint_'.$this->slug.'_title', array( $this, 'endpoint_title' ) );
+			add_action( 'woocommerce_account_'.$this->slug.'_endpoint', array( $this, 'endpoint_content' ) );
 		}
 
-		public function add_query_vars( $vars ) {
-			$vars[ $this->$endpoint ] = $this->$endpoint;
+		function add_query_vars( $vars ) {
+			$vars[ $this->slug ] = $this->slug;
 			return $vars;
 		}
 
-		public function disable_menu_items( $items ) {
+		function disable_menu_items( $items ) {
 			$new_items = array();
 			foreach ( $items as $slug => $title ) {
 				// Schakel bepaalde knoppen uit
@@ -155,24 +156,24 @@
 			return $new_items;
 		}
 
-		public function add_menu_items( $items ) {
+		function add_menu_items( $items ) {
 			return $items;
 		}
 
-		public function endpoint_title() {
+		function endpoint_title() {
 			return __( 'Facturen', 'oft' );
 		}
 
-		public function endpoint_content() {
+		function endpoint_content() {
 			// Mogelijkheden: 'in behandeling', 'verzonden', 'gefactureerd', 'te crediteren' of 'gecrediteerd'
 			return $this->get_endpoint_content( $this->get_endpoint_statuses() );
 		}
 
-		public function get_endpoint_statuses() {
+		function get_endpoint_statuses() {
 			return array( 'gefactureerd' );
 		}
 
-		public function get_endpoint_content( $statuses ) {
+		function get_endpoint_content( $statuses ) {
 			$my_orders_columns = array( 'order-number' => __( 'Odisy', 'oft' ), 'order-reference' => __( 'Referentie', 'oft' ), 'order-date' => __( 'Datum', 'oft' ), 'order-status' => __( 'Status', 'oft' ), 'order-total' => __( 'Totaal', 'oft' ) );
 			
 			$customer_orders = array();
@@ -192,7 +193,8 @@
 					}
 					
 					// Te vervangen door de parameters van de ingelogde klant!
-					if ( intval( $header->KlantNr ) === 2128 ) {
+					// if ( intval( $header->KlantNr ) === intval( get_user_meta( get_current_user_id(), 'billing_number_oft', true ) ) ) {
+					if ( intval( $header->KlantNr ) === 1189 ) {
 						if ( in_array( $header->OrderCreditStatus->__toString(), $statuses ) ) {
 							if ( in_array( 'gefactureerd', $statuses ) and ( $order_type === 'RL' or $order_type === 'B' ) ) {
 								// Crediteringen skippen en naar dat tabblad verhuizen?
@@ -271,12 +273,12 @@
 			<?php
 		}
 
-		public static function install() {
-			add_rewrite_endpoint( $this->$endpoint, EP_ROOT | EP_PAGES );
+		protected static function install() {
+			add_rewrite_endpoint( $this->slug, EP_ROOT | EP_PAGES );
 			flush_rewrite_rules();
 		}
 
-		public static function uninstall() {
+		protected static function uninstall() {
 			flush_rewrite_rules();
 		}
 	}

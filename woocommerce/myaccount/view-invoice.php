@@ -44,14 +44,12 @@ $date = wc_string_to_datetime( str_replace( '/', '-', $invoice->OrderHeader->Ord
 		</thead>
 
 		<tbody>
-			<?php
-				foreach ( $invoice->OrderLines->OrderLine as $line ) {
-					?>
+			<?php foreach ( $invoice->OrderLines->OrderLine as $line ) : ?>
+				<tr>
 					<td><?php echo $line->Artikel->__toString(); ?></td>
 					<td><?php echo $line->BestelCreditBedrag->__toString(); ?></td>
-					<?php
-				}
-			?>
+				</tr>
+			<?php endif; ?>
 		</tbody>
 
 		<tfoot>
