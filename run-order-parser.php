@@ -54,7 +54,7 @@
 					}
 					
 					// var_dump_pre($header->BestelwebRef);
-					if ( ! empty( $header->BestelwebRef ) ) {
+					if ( $header->BestelwebRef->__toString() !== 'N/A' ) {
 						echo $header->BestelwebRef."<br/>";
 
 						// Zoek het order op
