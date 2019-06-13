@@ -38,13 +38,18 @@
 		}
 
 		public function new_menu_items( $items ) {
-			// Want uitlogknop staat al bovenaan
-			unset( $items['customer-logout'] );
-			// Schakel ondertussen ook dashboard en downloads uit
-			unset( $items['dashboard'] );
-			unset( $items['downloads'] );
-			$items['nieuwsbrief'] = 'Digizine';
-			return $items;
+			$new_items = array();
+			foreach ( $items as $slug => $title ) {
+				// Schakel bepaalde knoppen uit
+				if ( $slug !== 'dashboard' and $slug !== 'downloads' ) {
+					$new_items[$slug] = $title;
+				}
+				if ( $slug === 'orders' ) {
+					// Voeg menuknop toe net na 'Bestellingen'
+					$new_items[ self::$endpoint ] = __( 'Facturen', 'oft' );
+				}
+			}
+			return $new_items;
 		}
 
 		public function endpoint_title( $title ) {
