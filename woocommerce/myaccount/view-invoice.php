@@ -47,8 +47,8 @@ $date = wc_string_to_datetime( str_replace( '/', '-', $invoice->OrderHeader->Ord
 			<?php
 				foreach ( $invoice->OrderLines->OrderLine as $line ) {
 					?>
-					<td><?php $line->Artikel->__toString(); ?></td>
-					<td><?php $line->BestelCreditBedrag->__toString(); ?></td>
+					<td><?php echo $line->Artikel->__toString(); ?></td>
+					<td><?php echo $line->BestelCreditBedrag->__toString(); ?></td>
 					<?php
 				}
 			?>
@@ -58,6 +58,10 @@ $date = wc_string_to_datetime( str_replace( '/', '-', $invoice->OrderHeader->Ord
 			<tr>
 				<th scope="row"><?php _e( 'Klantnummer', 'oft' ); ?></th>
 				<td><?php echo $invoice->OrderHeader->KlantNr->__toString() ?></td>
+			</tr>
+			<tr>
+				<th scope="row"><?php _e( 'Levernummer', 'oft' ); ?></th>
+				<td><?php echo $invoice->OrderHeader->LeverNr->__toString() ?></td>
 			</tr>
 		</tfoot>
 	</table>
