@@ -1407,10 +1407,22 @@ a.vc_general.vc_btn3.vc_btn3-shape-rounded.vc_btn3-style-flat.vc_btn3-color-blue
 /*  NOT LOGGED IN  */
 /*******************/
 
+/* Verberg de AJAX cart indien niet ingelogd */
 body:not(.logged-in) {
 	.woo_amc_open {
 		display: none !important;
 	}
+}
+
+
+
+/***********/
+/*  FIXES  */
+/***********/
+
+/* Zorg ervoor dat het bolletje met het aantl items in het winkelmandje zeker niet afgekapt wordt */
+.woo_amc_open_image > svg {
+	overflow: visible !important;
 }
 
 
