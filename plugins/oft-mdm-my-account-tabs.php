@@ -16,6 +16,7 @@
 	new My_Account_Endpoint_Invoices( __( 'facturen', 'oft' ) );
 	new My_Account_Endpoint_Credits( __( 'crediteringen', 'oft' ) );
 	new My_Account_Endpoint_Others( __( 'overige', 'oft' ) );
+	new My_Account_Endpoint_View_Invoice( __( 'factuur', 'oft' ) );
 	
 	class My_Account_Endpoint_Others extends Custom_My_Account_Endpoint {
 		public function add_menu_items( $items ) {
@@ -83,6 +84,49 @@
 		}
 	}
 
+	class My_Account_Endpoint_View_Invoice extends Custom_My_Account_Endpoint {
+		public function endpoint_title() {
+			return __( 'Factuur', 'oft' );
+		}
+
+		public function endpoint_content() {
+			$invoice = $this->get_invoice_by_number( get_query_var('factuur') );
+			var_dump_pre( $invoice );
+
+			// TO DO: Security deftig toevoegen m.b.v. add_filter( 'user_has_cap', 'wc_customer_has_capability', 10, 3 ); 
+			if ( $invoice->OrderHeader->KlantNr !== get_user_meta( get_current_user_id(), 'billing_number_oft', true ) ) {
+				echo '<div class="woocommerce-error">' . esc_html__( 'Invalid order.', 'woocommerce' ) . ' <a href="' . esc_url( wc_get_page_permalink( 'myaccount' ) ) . '" class="wc-forward">' . esc_html__( 'My account', 'woocommerce' ) . '</a></div>';
+				return;
+			}
+
+			wc_get_template(
+				'myaccount/view-invoice.php',
+				array(
+					'invoice' => $invoice,
+					'invoice_number' => $invoice_number,
+				)
+			);
+		}
+
+		public function get_invoice_by_number( $invoice_number ) {
+			$order_data = simplexml_load_file( WP_CONTENT_DIR.'/odisy/export/orders.xml' );
+			
+			if ( $order_data !== false ) {
+				foreach ( $order_data->Order as $order ) {
+					$header = $order->OrderHeader;
+					$lines = $order->OrderLines;
+					$parts = explode( ' ', $header->OrderCreditRef->__toString() );
+					$order_number = $parts[0];
+					if ( $order_number == $invoice_number ) {
+						return $order;
+					}
+				}
+			}
+
+			return false;
+		}
+	}
+
 	class Custom_My_Account_Endpoint {
 		protected $endpoint;
 
@@ -129,7 +173,7 @@
 		}
 
 		public function get_endpoint_content( $statuses ) {
-			$my_orders_columns = array( 'order-number' => __( 'Odisy-referentie', 'oft' ), 'order-date' => __( 'Datum', 'oft' ), 'order-status' => __( 'Status', 'oft' ), 'order-total' => __( 'Totaal', 'oft' ) );
+			$my_orders_columns = array( 'order-number' => __( 'Odisy', 'oft' ), 'order-reference' => __( 'Referentie', 'oft' ), 'order-date' => __( 'Datum', 'oft' ), 'order-status' => __( 'Status', 'oft' ), 'order-total' => __( 'Totaal', 'oft' ) );
 			
 			$customer_orders = array();
 			$order_data = simplexml_load_file( WP_CONTENT_DIR.'/odisy/export/orders.xml' );
@@ -150,11 +194,17 @@
 					// Te vervangen door de parameters van de ingelogde klant!
 					if ( intval( $header->KlantNr ) === 2128 ) {
 						if ( in_array( $header->OrderCreditStatus->__toString(), $statuses ) ) {
-							// if ( ( $order_type === 'N' or $order_type === 'CH' ) )
-							// Haal enkel orders op die niet via BestelWeb liepen
-							if ( $header->BestelwebRef->__toString() === 'N/A' ) {
-								$customer_orders[$order_number] = $order;
+							if ( in_array( 'gefactureerd', $statuses ) and ( $order_type === 'RL' or $order_type === 'B' ) ) {
+								// Crediteringen skippen en naar dat tabblad verhuizen?
+								// continue;
 							}
+							
+							if ( $header->BestelwebRef->__toString() !== 'N/A' ) {
+								// Skip orders die via BestelWeb liepen
+								continue;
+							}
+
+							$customer_orders[$order_number] = $order;
 						}
 					}
 				}
@@ -189,6 +239,9 @@
 											<a href="<?php echo esc_url( wc_get_account_endpoint_url( __( 'factuur', 'oft' ) ).$customer_order_number.'/' ) ; ?>">
 												<?php echo $customer_order_number; ?>
 											</a>
+
+										<?php elseif ( 'order-reference' === $column_id ) : ?>
+											<?php echo ucfirst( __( $customer_order->OrderHeader->ExterneReferentie->__toString(), 'oft' ) ); ?>
 
 										<?php elseif ( 'order-date' === $column_id ) : ?>
 											<time datetime="<?php echo esc_attr( $date->date('c') ); ?>"><?php echo esc_html( wc_format_datetime( $date ) ); ?></time>
