@@ -49,7 +49,7 @@ $date = wc_string_to_datetime( str_replace( '/', '-', $invoice->OrderHeader->Ord
 					<td><?php echo $line->Artikel->__toString(); ?></td>
 					<td><?php echo $line->BestelCreditBedrag->__toString(); ?></td>
 				</tr>
-			<?php endif; ?>
+			<?php endforeach; ?>
 		</tbody>
 
 		<tfoot>

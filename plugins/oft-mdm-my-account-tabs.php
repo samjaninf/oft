@@ -90,11 +90,12 @@
 		}
 
 		function endpoint_content() {
-			$invoice = $this->get_invoice_by_number( get_query_var('factuur') );
-			var_dump_pre( $invoice );
+			$invoice_number = get_query_var( $this->slug );
+			$invoice = $this->get_invoice_by_number( $invoice_number );
+			// var_dump_pre( $invoice );
 
 			// TO DO: Security deftig toevoegen m.b.v. add_filter( 'user_has_cap', 'wc_customer_has_capability', 10, 3 ); 
-			if ( $invoice->OrderHeader->KlantNr !== get_user_meta( get_current_user_id(), 'billing_number_oft', true ) ) {
+			if ( $invoice->OrderHeader->KlantNr != get_user_meta( get_current_user_id(), 'billing_number_oft', true ) ) {
 				// echo '<div class="woocommerce-error">' . esc_html__( 'Invalid order.', 'woocommerce' ) . ' <a href="' . esc_url( wc_get_page_permalink( 'myaccount' ) ) . '" class="wc-forward">' . esc_html__( 'My account', 'woocommerce' ) . '</a></div>';
 				// return;
 			}
@@ -132,7 +133,6 @@
 
 		function __construct( $param ) {
 			$this->slug = $param;
-			error_log($this->slug);
 			add_filter( 'woocommerce_get_query_vars', array( $this, 'add_query_vars' ) );
 			add_filter( 'woocommerce_account_menu_items', array( $this, 'disable_menu_items' ), 10 );
 			add_filter( 'woocommerce_account_menu_items', array( $this, 'add_menu_items' ), 20 );
@@ -151,6 +151,10 @@
 				// Schakel bepaalde knoppen uit
 				if ( $slug !== 'dashboard' and $slug !== 'downloads' ) {
 					$new_items[$slug] = $title;
+				}
+				// Herbenoem bepaalde knoppen
+				if ( $slug === 'orders' ) {
+					$new_items[$slug] = __( 'Online bestellingen', 'oft' );
 				}
 			}
 			return $new_items;
@@ -194,7 +198,7 @@
 					
 					// Te vervangen door de parameters van de ingelogde klant!
 					// if ( intval( $header->KlantNr ) === intval( get_user_meta( get_current_user_id(), 'billing_number_oft', true ) ) ) {
-					if ( intval( $header->KlantNr ) === 1189 ) {
+					if ( intval( $header->KlantNr ) === 2128 ) {
 						if ( in_array( $header->OrderCreditStatus->__toString(), $statuses ) ) {
 							if ( in_array( 'gefactureerd', $statuses ) and ( $order_type === 'RL' or $order_type === 'B' ) ) {
 								// Crediteringen skippen en naar dat tabblad verhuizen?
