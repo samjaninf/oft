@@ -2,7 +2,7 @@
 	/*
 	Plugin Name: OFT/OMDM Combined Business Logic
 	Description: Deze plugin groepeert alle functies die gedeeld kunnen worden tussen fairtradecrafts.be en oxfamfairtrade.be.
-	Version:     0.2.1
+	Version:     0.2.2
 	Author:      Full Stack Ahead
 	Author URI:  https://www.fullstackahead.be
 	Text Domain: oft
@@ -11,7 +11,7 @@
 	defined('ABSPATH') or die('Access prohibited!');
 
 	class Custom_Business_Logic {
-		public static $company, $endpoint;
+		public static $company;
 
 		public function __construct( $param = 'oft' ) {
 			self::$company = $param;
@@ -338,8 +338,9 @@
 			$address_fields[$billing_number_key]['required'] = true;
 			$address_fields[$billing_number_key]['custom_attributes'] = array( 'readonly' => 'readonly' );
 
-			$address_fields['country']['class'] = array('hidden');
-			$address_fields['state']['class'] = array('hidden');
+			// $address_fields['country']['class'] = array('hidden');
+			// $address_fields['state']['class'] = array('hidden');
+			unset( $address_fields['state'] );
 			
 			return $address_fields;
 		}
@@ -371,7 +372,7 @@
 			$address_fields['billing_city']['priority'] = 41;
 			$address_fields['billing_country']['priority'] = 42;
 
-			if ( $this->get_client_type() === 'MDM' ) {
+			if ( self::$company === 'mdm' and $this->get_client_type() === 'MDM' ) {
 				unset($address_fields['billing_number_oft']);
 			}
 			
@@ -383,8 +384,8 @@
 			$address_fields['shipping_company']['required'] = true;
 			$address_fields['shipping_number_oft']['label'] = __( 'Levernummer OFT', 'oft' );
 			$address_fields['shipping_number_oft']['placeholder'] = '';
-			// Niet algemeen verplichten maar indien WOBAL op het einde wel checken via custom code in 'woocommerce_after_checkout_validation'
-			$address_fields['shipping_number_oft']['required'] = false;
+			// Hier nu wel algemeen verplichten i.p.v. pas checken in 'woocommerce_after_checkout_validation'-filter (maar veld verwijderen indien onnodig, zie verder)
+			$address_fields['shipping_number_oft']['required'] = true;
 			$address_fields['shipping_number_oft']['custom_attributes'] = array( 'readonly' => 'readonly' );
 
 			unset($address_fields['shipping_first_name']);
@@ -396,6 +397,17 @@
 			$address_fields['shipping_city']['priority'] = 41;
 			$address_fields['shipping_country']['priority'] = 42;
 			
+			if ( self::$company === 'mdm' and $this->get_client_type() === 'MDM' ) {
+				unset($address_fields['shipping_number_oft']);
+			}
+
+			if ( array_key_exists( 'shipping_first_name', $address_fields ) ) {
+				unset($address_fields['shipping_first_name']);
+			}
+			if ( array_key_exists( 'shipping_last_name', $address_fields ) ) {
+				unset($address_fields['shipping_last_name']);
+			}
+
 			return $address_fields;
 		}
 

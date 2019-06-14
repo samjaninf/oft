@@ -2,7 +2,7 @@
 	/*
 	Plugin Name: OFT My Account Tabs
 	Description: Voeg extra tabbladen toe om orders / facturen / crediteringen te raadplegen die niet via BestelWeb verliepen.
-	Version:     1.2.0
+	Version:     1.3.1
 	Author:      Full Stack Ahead
 	Author URI:  https://www.fullstackahead.be
 	Text Domain: oft
@@ -13,15 +13,18 @@
 	register_activation_hook( __FILE__, array( 'Custom_My_Account_Endpoint', 'install' ) );
 	register_deactivation_hook( __FILE__, array( 'Custom_My_Account_Endpoint', 'uninstall' ) );
 
+	// Wijzig de tekst boven de adressenlijst op de profielpagina van de klant (en overschrijf zo ook de WCMCA-plugin)
+	add_filter( 'woocommerce_my_account_my_address_description', array( 'Custom_My_Account_Endpoint', 'change_my_addresses_list_description' ), 100, 1 );
+
 	// Verschijnen in omgekeerde volgorde in het menu, zie add_menu_items()
 	new My_Account_Endpoint_Invoices( __( 'facturen', 'oft' ) );
 	new My_Account_Endpoint_Credits( __( 'crediteringen', 'oft' ) );
 	new My_Account_Endpoint_Favourites( __( 'favorieten', 'oft' ) );
 	new My_Account_Endpoint_Others( __( 'overige-bestellingen', 'oft' ) );
 
-	// Detailpagina voor facturen
+	// Detailpagina voor individuele facturen
 	new My_Account_Endpoint_View_Invoice( __( 'factuur', 'oft' ) );
-	
+
 	class My_Account_Endpoint_Others extends Custom_My_Account_Endpoint {
 		function endpoint_title() {
 			return __( 'Overige bestellingen', 'oft' );
@@ -311,6 +314,10 @@
 				</tbody>
 			</table>
 			<?php
+		}
+
+		static function change_my_addresses_list_description( $default_text ) {
+			return sprintf( __( 'Deze adressen worden standaard ingevuld bij het afronden. Je kunt ze zelf niet aanpassen. Zie je een foutje staan of wil je een nieuw adres toevoegen? <a href="mailto:%s?subject=Aanvraag correctie adresgegevens">Contacteer onze Klantendienst</a> om de gegevens te corrigeren in al onze systemen.', 'oft' ), 'klantendienst@oft.be' );
 		}
 
 		protected static function install() {
