@@ -10,10 +10,12 @@
 
 	defined('ABSPATH') or die('Access prohibited!');
 
+	new Custom_Business_Logic('oft');
+
 	class Custom_Business_Logic {
 		public static $company;
 
-		public function __construct( $param = 'oft' ) {
+		function __construct( $param = 'oft' ) {
 			self::$company = $param;
 			
 			// Sommige WP-functies (o.a. is_user_logged_in) zijn pas beschikbaar na de 'init'-actie!
@@ -47,9 +49,21 @@
 			// Label, orden en layout de verzendgegevens (maar filter wordt niet doorlopen via AJAX of indien je van winkelmandje naar afrekenen gaat met een verborgen adres!)
 			add_filter( 'woocommerce_shipping_fields', array( $this, 'format_checkout_shipping' ), 1000, 1 );
 
-			// Zorg ervoor dat het 'shipping_state'-veld ook in onze Belgische shop verwerkt wordt (maar wel verborgen door 'hidden'-klasse!)
-			add_filter( 'woocommerce_states', array( $this, 'define_woocommerce_routecodes' ) );
+			// Zorg ervoor dat het 'shipping_state'-veld ook in onze Belgische shop verwerkt wordt STOP IN NIEUW CUSTOM VELD, TE VEEL GEFOEFEL
+			// add_filter( 'woocommerce_states', array( $this, 'define_woocommerce_routecodes' ) );
 
+			// Voeg klant- en levernemers toe aan lijst placeholders voor adressen
+			add_filter( 'woocommerce_formatted_address_replacements', array( $this, 'add_address_replacements' ), 10, 2 );
+
+			// Laad de extra adresdata in
+			add_filter( 'woocommerce_my_account_my_address_formatted_address', array( $this, 'load_custom_address_data' ), 10, 3 );
+
+			// Wijzig de algemene adresformaten per land
+			add_filter( 'woocommerce_localisation_address_formats', array( $this, 'change_address_formats' ), 10, 1 );
+			
+			// Verduidelijk de adresvelden in de back-end
+			add_filter( 'woocommerce_customer_meta_fields', array( $this, 'modify_user_admin_fields' ), 10, 1 );
+			
 			// Bereken belastingen ook bij afhalingen steeds volgens het factuuradres van de klant!
 			add_filter( 'woocommerce_apply_base_tax_for_local_pickup', '__return_false' );
 
@@ -105,14 +119,14 @@
 			add_action( 'private_to_draft', array( $this, 'sync_product_status' ), 100 );
 		}
 
-		public function delay_actions_and_filters_till_load_completed() {
+		function delay_actions_and_filters_till_load_completed() {
 			if ( ! is_user_logged_in() ) {
 				// Alle koopfuncties uitschakelen voor niet-ingelogde gebruikers (hoge prioriteit)
 				add_filter( 'woocommerce_is_purchasable', '__return_false', 100, 2 );
 
 				// Verberg alle niet-OFT-voedingsproducten NIET NODIG, GEEF CUSTOMERS GEWOON 'READ_PRIVATE_PRODUCTS'-RECHTEN M.B.V. ROLE EDITOR
 				// add_action( 'woocommerce_product_query', array( $this, 'hide_external_products' ) );
-				// public function hide_external_products( $query ) {
+				// function hide_external_products( $query ) {
 				// 	// Altijd alle producten zichtbaar voor beheerders
 				// 	if ( ! current_user_can('manage_woocommerce') ) {
 				// 		$meta_query = (array) $query->get('meta_query');
@@ -142,14 +156,14 @@
 			}
 		}
 
-		public function filter_allowed_products( $query ) {
+		function filter_allowed_products( $query ) {
 			if ( ! is_admin() and $query->query_vars['post_type'] === 'product' ) {
 				// Alternatieve manier om producten af te schermen?
 				write_log( serialize($query) );
 			}
 		}
 
-		public function register_client_type_taxonomy() {
+		function register_client_type_taxonomy() {
 			$taxonomy_name = 'product_client_type';
 			
 			$labels = array(
@@ -188,7 +202,7 @@
 			register_taxonomy_for_object_type( $taxonomy_name, 'product' );
 		}
 
-		public function show_extra_user_fields( $user ) {
+		function show_extra_user_fields( $user ) {
 			if ( current_user_can('manage_woocommerce') ) { 
 				?>
 				<h3><?php _e( 'Extra instellingen', 'oft' ); ?></h3>
@@ -216,14 +230,14 @@
 			}
 		}
 
-		public function save_extra_user_fields( $user_id ) {
+		function save_extra_user_fields( $user_id ) {
 			if ( ! current_user_can('manage_woocommerce') ) {
 				return false;
 			}
 			update_user_meta( $user_id, 'client_type', $_POST['client_type'] );
 		}
 
-		public function add_quantity_inputs_to_add_to_cart_link( $html, $product ) {
+		function add_quantity_inputs_to_add_to_cart_link( $html, $product ) {
 			if ( $product->is_type('simple') and $product->is_purchasable() and $product->is_in_stock() and ! $product->is_sold_individually() ) {
 				$html = woocommerce_quantity_input( array(
 					'min_value'   => apply_filters( 'woocommerce_quantity_input_min', $product->get_min_purchase_quantity(), $product ),
@@ -234,7 +248,7 @@
 			return $html;
 		}
 
-		public function get_price_for_current_client( $price, $product, $user_id = false, $regular = false ) {
+		function get_price_for_current_client( $price, $product, $user_id = false, $regular = false ) {
 			// Prijs nooit manipuleren in back-end
 			// AJAX-callbacks gebeuren ook 'in de back-end', voorzie hiervoor een uitzondering 
 			if ( ! is_admin() or ( defined('DOING_AJAX') and DOING_AJAX ) ) {
@@ -245,11 +259,11 @@
 		}
 
 		// Wrapperfunctie om $regular === true door te geven aan universele get_price_for_current_client()
-		public function get_regular_price_for_current_client( $price, $product, $user_id = false ) {
+		function get_regular_price_for_current_client( $price, $product, $user_id = false ) {
 			return $this->get_price_for_current_client( $price, $product, $user_id, true );
 		}
 
-		public function get_price_by_client_type( $product, $client_type, $price = false, $regular = false ) {
+		function get_price_by_client_type( $product, $client_type, $price = false, $regular = false ) {
 			if ( $client_type !== '' ) {
 				if ( $product->meta_exists( '_price_for_client_type_' . strtolower( $client_type ) ) ) {
 					// BTW WORDT NADIEN NOG AFGETROKKEN WANT CP'S GEVEN WE IN INCL BTW ...
@@ -265,7 +279,7 @@
 			return $price;
 		}
 
-		public function get_client_type( $user_id = false ) {
+		function get_client_type( $user_id = false ) {
 			if ( $user_id === false ) {
 				$user_id = get_current_user_id();
 			}
@@ -274,12 +288,12 @@
 			return get_user_meta( $user_id, 'client_type', true );
 		}
 
-		public function add_order_unit_info() {
+		function add_order_unit_info() {
 			global $post;
 			_e( 'OMPAKINFO', 'oft' );
 		}
 				
-		public function add_consumer_units_per_order_unit( $title, $product ) {
+		function add_consumer_units_per_order_unit( $title, $product ) {
 			if ( ! $product instanceof WC_Product_Simple ) {
 				$product = $product['data'];
 			}
@@ -294,20 +308,20 @@
 			return $title;
 		}
 
-		public function disable_post_creation( $fields ) {
+		function disable_post_creation( $fields ) {
 			if ( ! current_user_can('edit_products') ) {
 				$fields['capabilities'] = array( 'create_posts' => false );
 			}
 			return $fields;
 		}
 
-		public function disable_manual_product_removal( $post_id ) {
+		function disable_manual_product_removal( $post_id ) {
 			if ( 'product' === get_post_type( $post_id ) and $_SERVER['SERVER_NAME'] === 'www.oxfamfairtrade.be' ) {
 				wp_die( sprintf( __( 'Uit veiligheidsoverwegingen is het verwijderen van producten niet toegestaan, voor geen enkele gebruikersrol! Vraag &ndash; indien nodig &ndash; dat de hogere machten op %s deze beperking tijdelijk opheffen, zodat je je vuile zaakjes kunt opknappen.', 'oft' ), '<a href="mailto:'.get_option('admin_email').'">'.get_option('admin_email').'</a>' ) );
 			}
 		}
 
-		public function make_addresses_readonly( $address_fields ) {
+		function make_addresses_readonly( $address_fields ) {
 			$address_fields['company']['custom_attributes'] = array( 'readonly' => 'readonly' );
 			
 			$address_fields['address_1']['label'] = __( 'Straat en nummer', 'oft' );
@@ -349,7 +363,7 @@
 			return $address_fields;
 		}
 
-		public function format_checkout_billing( $address_fields ) {
+		function format_checkout_billing( $address_fields ) {
 			$address_fields['billing_first_name']['label'] = __( 'Voornaam', 'oft' );
 			$address_fields['billing_first_name']['description'] = __( 'Gelieve je eigen naam in te vullen!', 'oft' );
 			$address_fields['billing_first_name']['placeholder'] = "Charles";
@@ -383,7 +397,7 @@
 			return $address_fields;
 		}
 
-		public function format_checkout_shipping( $address_fields ) {
+		function format_checkout_shipping( $address_fields ) {
 			$address_fields['shipping_company']['label'] = __( 'Te beleveren winkel', 'oft' );
 			$address_fields['shipping_company']['required'] = true;
 			$address_fields['shipping_number_oft']['label'] = __( 'Levernummer OFT', 'oft' );
@@ -417,7 +431,7 @@
 			return $address_fields;
 		}
 
-		public function define_woocommerce_routecodes( $states ) {
+		function define_woocommerce_routecodes( $states ) {
 			$routecodes_oft = array(
 				'1' => __( 'West-Vlaanderen', 'oft' ),
 				'2' => __( 'Oost-Vlaanderen', 'oft' ),
@@ -463,7 +477,126 @@
 			$states['ES'] = $routecodes_ext;
 		}
 
-		public function check_product_availability( $product_id, $client_type, $available ) {
+		function load_custom_address_data( $args, $customer_id, $address_type ) {
+			$value = get_user_meta( $customer_id, $address_type . '_number_' . self::$company, true );
+			$args['client_number'] = $value;
+			// Hoe veralgemenen we dit naar adressen die niet rechtstreeks op het gebruikersprofiel opgeslagen zijn?
+			write_log($value);
+			return $args;
+		}
+
+		function add_address_replacements( $placeholders, $args ) {
+			$placeholders['{client_number}'] = $args['client_number'];
+			return $placeholders;
+		}
+
+		function change_address_formats( $formats ) {
+			$formats['BE'] = "{client_number}\n{company}\n{address_1}\n{postcode} {city}";
+			$formats['ES'] = "{client_number}\n{company}\n{address_1}\n{postcode} {city}\n{country_upper}";
+			$formats['LU'] = "{client_number}\n{company}\n{address_1}\n{postcode} {city}\n{country_upper}";
+			$formats['NL'] = "{client_number}\n{company}\n{address_1}\n{postcode} {city}\n{country_upper}";
+			return $formats;
+		}
+
+		function modify_user_admin_fields( $profile_fields ) {
+			global $user_id;
+			// global $routecodes_oft, $routecodes_omdm, $routecodes_ext;
+			
+			$blocking_warning = __( 'Kan niet gewijzigd worden door klant (verplicht veld)', 'oft' );
+			$profile_fields['billing']['fields']['billing_first_name']['label'] = __( 'Voornaam besteller', 'oft' );
+			$profile_fields['billing']['fields']['billing_first_name']['description'] = __( 'Bevat gegevens van de laatste bestelling', 'oft' );
+			$profile_fields['billing']['fields']['billing_last_name']['label'] = __( 'Familienaam besteller', 'oft' );
+			$profile_fields['billing']['fields']['billing_last_name']['description'] = __( 'Bevat gegevens van de laatste bestelling', 'oft' );
+			$profile_fields['billing']['fields']['billing_company']['label'] = __( 'Te factureren entiteit', 'oft' );
+			$profile_fields['billing']['fields']['billing_company']['description'] = $blocking_warning;
+			$profile_fields['billing']['fields']['billing_address_1']['label'] = __( 'Straat en nummer', 'oft' );
+			$profile_fields['billing']['fields']['billing_address_1']['description'] = $blocking_warning;
+			$profile_fields['billing']['fields']['billing_city']['label'] = __( 'Gemeente', 'oft' );
+			$profile_fields['billing']['fields']['billing_city']['description'] = $blocking_warning;
+			$profile_fields['billing']['fields']['billing_postcode']['label'] = __( 'Postcode', 'oft' );
+			$profile_fields['billing']['fields']['billing_postcode']['description'] = $blocking_warning;
+			$profile_fields['billing']['fields']['billing_phone']['label'] = __( 'Telefoonnummer besteller', 'oft' );
+			$profile_fields['billing']['fields']['billing_phone']['description'] = __( 'Bevat gegevens van de laatste bestelling', 'oft' );
+			$profile_fields['billing']['fields']['billing_email']['label'] = __( 'Mailadres voor orderbevestigingen', 'oft' );
+			$profile_fields['billing']['fields']['billing_email']['description'] = __( 'Bevat gegevens van de laatste bestelling', 'oft' );
+			$profile_fields['billing']['fields']['billing_number_oft']['label'] = __( 'Klantnummer OFT', 'oft' );
+			$profile_fields['billing']['fields']['billing_number_oft']['description'] = $blocking_warning;
+			
+			$profile_fields['shipping']['fields']['shipping_company']['label'] = __( 'Te beleveren winkel', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_company']['description'] = $blocking_warning;
+			$profile_fields['shipping']['fields']['shipping_address_1']['label'] = __( 'Straat en nummer', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_address_1']['description'] = $blocking_warning;
+			$profile_fields['shipping']['fields']['shipping_city']['label'] = __( 'Gemeente', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_city']['description'] = $blocking_warning;
+			$profile_fields['shipping']['fields']['shipping_postcode']['label'] = __( 'Postcode', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_postcode']['description'] = $blocking_warning;
+			$profile_fields['shipping']['fields']['shipping_routecode']['label'] = __( 'Routecode', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_routecode']['description'] = __( 'Beperkt de beschikbare levermethodes (voor externe klanten) en bepaalt de besteldeadlines (voor interne klanten)', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_routecode']['type'] = 'select';
+			// CSS NOG TOE TE VOEGEN AAN ADMIN.SCSS INDIEN WE VELD WILLEN DISABLEN (MAAR PROBLEEM MET OPSLAAN?)
+			$profile_fields['shipping']['fields']['shipping_number_oft']['class'] = array( 'readonly' );
+			
+			// Toon de juiste routecodes, naar gelang het kanaal van de GERAADPLEEGDE user (dus niet get_current_user_id() gebruiken!)
+			$client_type = $this->get_client_type( $user_id );
+			$empty = array( 'EMPTY' => __( '(selecteer)', 'oftc' ) );
+			if ( $client_type === 'MDM' ) {
+				// $routecodes_ext verwijderen?
+				$available_codes = $empty;
+			} elseif ( $client_type === 'OWW' ) {
+				// Géén array_merge() gebruiken want de numerieke OWW-keys worden dan hernummerd vanaf 0!
+				$available_codes = $empty;
+			} else {
+				// Externe B2B-klanten
+				$available_codes = $empty;
+			}
+			$profile_fields['shipping']['fields']['shipping_routecode']['options'] = $available_codes;
+			$profile_fields['shipping']['fields']['shipping_number_oft']['label'] = __( 'Levernummer OFT', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_number_oft']['description'] = $blocking_warning;
+
+			// Herorden de factuurvelden en laat 'billing_address_2' en 'billing_state' weg
+			$bill_order = array(
+				'billing_first_name',
+				'billing_last_name',
+				'billing_phone',
+				'billing_email',
+				'billing_number_oft',
+				'billing_company',
+				'billing_address_1',
+				'billing_postcode',
+				'billing_city',
+				'billing_country',
+			);
+
+			foreach ( $bill_order as $field ) {
+				$ordered_billing_fields[$field] = $profile_fields['billing']['fields'][$field];
+			}
+
+			// Herorden de verzendvelden en laat 'shipping_first_name', 'shipping_last_name' en 'shipping_address_2' weg
+			$ship_order = array(
+				'shipping_number_oft',
+				'shipping_routecode',
+				'shipping_company',
+				'shipping_address_1',
+				'shipping_postcode',
+				'shipping_city',
+				'shipping_country',
+			);
+
+			foreach ( $ship_order as $field ) {
+				$ordered_shipping_fields[$field] = $profile_fields['shipping']['fields'][$field];
+			}
+
+			$profile_fields['billing']['fields'] = $ordered_billing_fields;
+			$profile_fields['shipping']['fields'] = $ordered_shipping_fields;
+
+			if ( $client_type !== 'OWW' ) {
+				// Klantnummer OFT niet nodig voor B2B/MDM-klanten!
+			}
+
+			return $profile_fields;
+		}
+
+		function check_product_availability( $product_id, $client_type, $available ) {
 			if ( is_user_logged_in() and ! current_user_can('manage_woocommerce') ) {	
 				if ( $this->enable_private_products_for_customers( $available, $product_id ) ) {
 					$available = true;
@@ -478,7 +611,7 @@
 			return $available;
 		}
 
-		public function limit_assortment_for_client_type_archives( $query ) {
+		function limit_assortment_for_client_type_archives( $query ) {
 			if ( is_user_logged_in() and ! current_user_can('manage_woocommerce') ) {
 				$assortments = array();
 				$assortments[] = $this->get_client_type();
@@ -495,7 +628,7 @@
 			}
 		}
 	
-		public function limit_assortment_for_client_type_shortcodes( $query_args ) {
+		function limit_assortment_for_client_type_shortcodes( $query_args ) {
 			if ( is_user_logged_in() and ! current_user_can('manage_woocommerce') ) {
 				$assortments = array();
 				$assortments[] = $this->get_client_type();
@@ -511,7 +644,7 @@
 			return $query_args;
 		}
 
-		public function disallow_products_not_in_assortment( $passed, $product_id ) {
+		function disallow_products_not_in_assortment( $passed, $product_id ) {
 			$passed_extra_conditions = apply_filters( 'oxfam_product_is_available', $product_id, $this->get_client_type(), $passed );
 
 			if ( $passed and ! $passed_extra_conditions ) {
@@ -522,11 +655,11 @@
 			return $passed_extra_conditions;
 		}
 
-		public function disable_products_not_in_assortment( $purchasable, $product ) {
+		function disable_products_not_in_assortment( $purchasable, $product ) {
 			return apply_filters( 'oxfam_product_is_available', $product->get_id(), $this->get_client_type(), $purchasable );
 		}
 
-		public function enable_private_products_for_customers( $visible, $product_id ) {
+		function enable_private_products_for_customers( $visible, $product_id ) {
 			if ( $visible === false and is_user_logged_in() ) {
 				$user = wp_get_current_user();
 				// Overrule de zichtbaarheid van private producten voor ingelogde klanten met 'read_private_products' maar zonder 'edit_posts'-rechten
@@ -541,7 +674,7 @@
 			return $visible;
 		}
 
-		public function prevent_access_to_product_page() {
+		function prevent_access_to_product_page() {
 			if ( is_product() ) {
 				$available = apply_filters( 'oxfam_product_is_available', get_the_ID(), $this->get_client_type(), true );
 				
@@ -564,7 +697,7 @@
 			}
 		}
 
-		public function add_custom_product_query_args( $wp_query_args, $product_table_query ) {
+		function add_custom_product_query_args( $wp_query_args, $product_table_query ) {
 			// Quick order is enkel beschikbaar op pagina die afgeschermd is voor gewone bezoekers, dus extra check op gebruikersrechten is niet nodig
 			$wp_query_args['post_status'] = array( 'publish', 'private' );
 			$wp_query_args['tax_query'] = $this->limit_assortment_for_client_type_shortcodes( $wp_query_args['tax_query'] );
@@ -572,7 +705,7 @@
 			return $wp_query_args;
 		}
 
-		public function sync_product_status( $post ) {
+		function sync_product_status( $post ) {
 			$post_lang = apply_filters( 'wpml_post_language_details', NULL, $post->ID );
 			$default_lang_code = apply_filters( 'wpml_default_language', NULL );
 
@@ -595,9 +728,4 @@
 			}
 		}
 	}
-
-	new Custom_Business_Logic('oft');
-	
-	// register_activation_hook( __FILE__, array( 'Custom_Business_Logic', 'install' ) );
-	// register_deactivation_hook( __FILE__, array( 'Custom_Business_Logic', 'install' ) );
 ?>
