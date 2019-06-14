@@ -109,6 +109,10 @@
 	}
 
 	class My_Account_Endpoint_View_Invoice extends Custom_My_Account_Endpoint {
+		function add_menu_items( $items ) {
+			return $items;
+		}
+
 		function endpoint_title() {
 			return __( 'Factuur', 'oft' );
 		}
