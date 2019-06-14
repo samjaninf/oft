@@ -13,24 +13,16 @@
 	register_activation_hook( __FILE__, array( 'Custom_My_Account_Endpoint', 'install' ) );
 	register_deactivation_hook( __FILE__, array( 'Custom_My_Account_Endpoint', 'uninstall' ) );
 
+	// Verschijnen in omgekeerde volgorde in het menu, zie add_menu_items()
 	new My_Account_Endpoint_Invoices( __( 'facturen', 'oft' ) );
 	new My_Account_Endpoint_Credits( __( 'crediteringen', 'oft' ) );
-	new My_Account_Endpoint_Others( __( 'overige', 'oft' ) );
+	new My_Account_Endpoint_Favourites( __( 'favorieten', 'oft' ) );
+	new My_Account_Endpoint_Others( __( 'overige-bestellingen', 'oft' ) );
+
+	// Detailpagina voor facturen
 	new My_Account_Endpoint_View_Invoice( __( 'factuur', 'oft' ) );
 	
 	class My_Account_Endpoint_Others extends Custom_My_Account_Endpoint {
-		function add_menu_items( $items ) {
-			$new_items = array();
-			foreach ( $items as $slug => $title ) {
-				$new_items[$slug] = $title;
-				if ( $slug === 'orders' ) {
-					// Voeg menuknop toe net na 'Bestellingen'
-					$new_items[ $this->slug ] = $this->endpoint_title();
-				}
-			}
-			return $new_items;
-		}
-
 		function endpoint_title() {
 			return __( 'Overige bestellingen', 'oft' );
 		}
@@ -41,18 +33,6 @@
 	}
 
 	class My_Account_Endpoint_Invoices extends Custom_My_Account_Endpoint {
-		function add_menu_items( $items ) {
-			$new_items = array();
-			foreach ( $items as $slug => $title ) {
-				$new_items[$slug] = $title;
-				if ( $slug === 'orders' ) {
-					// Voeg menuknop toe net na 'Bestellingen'
-					$new_items[ $this->slug ] = $this->endpoint_title();
-				}
-			}
-			return $new_items;
-		}
-
 		function endpoint_title() {
 			return __( 'Facturen', 'oft' );
 		}
@@ -63,24 +43,68 @@
 	}
 
 	class My_Account_Endpoint_Credits extends Custom_My_Account_Endpoint {
-		function add_menu_items( $items ) {
-			$new_items = array();
-			foreach ( $items as $slug => $title ) {
-				$new_items[$slug] = $title;
-				if ( $slug === 'orders' ) {
-					// Voeg menuknop toe net na 'Bestellingen'
-					$new_items[ $this->slug ] = $this->endpoint_title();
-				}
-			}
-			return $new_items;
-		}
-
 		function endpoint_title() {
 			return __( 'Crediteringen', 'oft' );
 		}
 
 		function get_endpoint_statuses() {
 			return array( 'te crediteren', 'gecrediteerd' );
+		}
+	}
+
+	class My_Account_Endpoint_Favourites extends Custom_My_Account_Endpoint {
+		function endpoint_title() {
+			return __( 'Favoriete producten', 'oft' );
+		}
+
+		function endpoint_content() {
+			if ( false === ( $favourite_skus = get_transient( 'products_purchased_by_frequency_user_'.get_current_user_id() ) ) ) {
+				$customer_orders = wc_get_orders(
+					array(
+						'limit' => -1,
+						'customer_id' => get_current_user_id(),
+						'type' => 'shop_order',
+						'status' => 'completed',
+						'date_created' => '>'.( time() - YEAR_IN_SECONDS ),
+					)
+				);
+
+				$favourite_skus = array();
+				foreach ( $customer_orders as $customer_order ) {
+					$items = $customer_order->get_items();
+					foreach ( $items as $item ) {
+						$product = $item->get_product();
+						if ( $product !== false and $product->is_visible() ) {
+							// Prefix want array_splice() houdt numerieke keys niet in stand
+							if ( ! array_key_exists( 'SKU'.$product->get_sku(), $favourite_skus ) ) {
+								$favourite_skus['SKU'.$product->get_sku()] = 0;
+							}
+							$favourite_skus['SKU'.$product->get_sku()] += $item->get_quantity();
+						}
+					}
+				}
+
+				// function is_above_treshold( $value ) {
+				// 	return ( $value > 100 );
+				// }
+				// $favourite_skus = array_filter( $favourite_skus, 'is_above_treshold' );
+				arsort($favourite_skus);
+				// Of slaan we dit op per klantnummer?
+				set_transient( 'products_purchased_by_frequency_user_'.get_current_user_id(), $favourite_skus, DAY_IN_SECONDS );
+			}
+
+			// var_dump_pre($favourite_skus);
+
+			// Limiteer tot 30 vaakst gekochte producten
+			$favourite_skus_top = array_splice( $favourite_skus, 0, 30 );
+
+			if ( count($favourite_skus_top) > 0 ) {
+				echo '<p class="woocommerce-Message woocommerce-Message--info woocommerce-info">'.sprintf( __( 'Dit zijn de %s producten die je de voorbije 12 maanden het vaakst bestelde:', 'oft' ), count($favourite_skus_top) ).'</p>';
+				// Kan helaas niet gesorteerd worden op custom parameter ...
+				echo do_shortcode('[products skus="'.str_replace( 'SKU', '', implode( ',', array_keys($favourite_skus_top) ) ).'" columns="5"]');
+			} else {
+				echo __( 'Nog geen producten gekocht.', 'oft' );
+			}
 		}
 	}
 
@@ -161,7 +185,15 @@
 		}
 
 		function add_menu_items( $items ) {
-			return $items;
+			$new_items = array();
+			foreach ( $items as $slug => $title ) {
+				$new_items[$slug] = $title;
+				if ( $slug === 'orders' ) {
+					// Voeg menuknop toe net na 'Bestellingen'
+					$new_items[ $this->slug ] = $this->endpoint_title();
+				}
+			}
+			return $new_items;
 		}
 
 		function endpoint_title() {

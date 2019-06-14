@@ -31,12 +31,6 @@
 			// Voeg verkoopseenheid én hoeveelheidsspinner toe aan template voor cataloguspagina's (die we ook laden op productdetailpagina's) */
 			add_filter( 'woocommerce_loop_add_to_cart_link', array( $this, 'add_quantity_inputs_to_add_to_cart_link' ), 10, 2 );
 
-			// Toon/verberg bepaalde tabbladen onder 'Mijn account'
-			add_filter( 'woocommerce_account_menu_items', array( $this, 'modify_my_account_menu_items' ), 10, 1 );
-
-			// Voeg favorieten toe aan dashboard
-			add_action( 'woocommerce_account_dashboard', array( $this, 'show_favourite_products' ) );
-
 			// Verhinder het manueel aanmaken van producten / bestellingen
 			add_filter( 'woocommerce_register_post_type_product', array( $this, 'disable_post_creation' ) );
 			add_filter( 'woocommerce_register_post_type_shop_order', array( $this, 'disable_post_creation' ) );
@@ -298,61 +292,6 @@
 				}
 			}
 			return $title;
-		}
-
-		public function modify_my_account_menu_items( $items ) {
-			// unset( $items['dashboard'] );
-			unset( $items['downloads'] );
-			return $items;
-		}
-
-		public function show_favourite_products() {
-			if ( false === ( $favourite_skus = get_transient( get_current_user_id().'_purchased_products_by_frequency' ) ) ) {
-				$customer_orders = wc_get_orders(
-					array(
-						'limit' => -1,
-						'customer_id' => get_current_user_id(),
-						'type' => 'shop_order',
-						'status' => 'completed',
-						'date_created' => '>'.( time() - YEAR_IN_SECONDS ),
-					)
-				);
-
-				$favourite_skus = array();
-				foreach ( $customer_orders as $customer_order ) {
-					$items = $customer_order->get_items();
-					foreach ( $items as $item ) {
-						$product = $item->get_product();
-						if ( $product !== false and $product->is_visible() ) {
-							// Prefix want array_splice() houdt numerieke keys niet in stand
-							if ( ! array_key_exists( 'SKU'.$product->get_sku(), $favourite_skus ) ) {
-								$favourite_skus['SKU'.$product->get_sku()] = 0;
-							}
-							$favourite_skus['SKU'.$product->get_sku()] += $item->get_quantity();
-						}
-					}
-				}
-
-				// function is_above_treshold( $value ) {
-				// 	return ( $value > 100 );
-				// }
-				// $favourite_skus = array_filter( $favourite_skus, 'is_above_treshold' );
-				arsort($favourite_skus);
-				set_transient( get_current_user_id().'_purchased_products_by_frequency', $favourite_skus, DAY_IN_SECONDS );
-			}
-
-			// var_dump_pre($favourite_skus);
-
-			// Limiteer tot 20 vaakst gekochte producten
-			$favourite_skus_top = array_splice( $favourite_skus, 0, 20 );
-
-			if ( count($favourite_skus_top) > 0 ) {
-				echo '<p class="woocommerce-Message woocommerce-Message--info woocommerce-info">'.sprintf( __( 'Dit zijn de %s producten die je de voorbije 12 maanden het vaakst bestelde:', 'oft' ), count($favourite_skus_top) ).'</p>';
-				// Kan helaas niet gesorteerd worden op custom parameter ...
-				echo do_shortcode('[products skus="'.str_replace( 'SKU', '', implode( ',', array_keys($favourite_skus_top) ) ).'" columns="5"]');
-			} else {
-				echo __( 'Nog geen producten gekocht.', 'oft' );
-			}
 		}
 
 		public function disable_post_creation( $fields ) {

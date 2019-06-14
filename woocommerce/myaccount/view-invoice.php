@@ -47,7 +47,7 @@ $date = wc_string_to_datetime( str_replace( '/', '-', $invoice->OrderHeader->Ord
 			<?php foreach ( $invoice->OrderLines->OrderLine as $line ) : ?>
 				<tr>
 					<td><?php echo $line->Artikel->__toString(); ?></td>
-					<td><?php echo $line->BestelCreditBedrag->__toString(); ?></td>
+					<td><?php echo wc_price( floatval( $line->BestelCreditBedrag->__toString() ) ); ?></td>
 				</tr>
 			<?php endforeach; ?>
 		</tbody>
