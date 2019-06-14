@@ -82,6 +82,12 @@ blockquote {
 	border-left: none;
 }
 
+/* Geef onbewerkbare velden een andere look */
+input[readonly]:not(.hasDatepicker) {
+	background-color: #bcbcbc;
+	font-style: italic;
+}
+
 .bt-section-space {
 	padding-top: 10px;
 	padding-bottom: 25px;

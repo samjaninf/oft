@@ -39,13 +39,13 @@
 			add_action( 'before_delete_post', array( $this, 'disable_manual_product_removal' ), 10, 1 );
 
 			// Maak de adresvelden voor klanten onbewerkbaar en verduidelijk de labels en layout
-			add_filter( 'woocommerce_default_address_fields', array( $this, 'make_addresses_readonly' ), 10, 1 );
+			add_filter( 'woocommerce_default_address_fields', array( $this, 'make_addresses_readonly' ), 1000, 1 );
 
 			// Label, orden en layout de factuurgegevens
-			add_filter( 'woocommerce_billing_fields', array( $this, 'format_checkout_billing' ), 10, 1 );
+			add_filter( 'woocommerce_billing_fields', array( $this, 'format_checkout_billing' ), 1000, 1 );
 
 			// Label, orden en layout de verzendgegevens (maar filter wordt niet doorlopen via AJAX of indien je van winkelmandje naar afrekenen gaat met een verborgen adres!)
-			add_filter( 'woocommerce_shipping_fields', array( $this, 'format_checkout_shipping' ), 10, 1 );
+			add_filter( 'woocommerce_shipping_fields', array( $this, 'format_checkout_shipping' ), 1000, 1 );
 
 			// Zorg ervoor dat het 'shipping_state'-veld ook in onze Belgische shop verwerkt wordt (maar wel verborgen door 'hidden'-klasse!)
 			add_filter( 'woocommerce_states', array( $this, 'define_woocommerce_routecodes' ) );
@@ -320,12 +320,14 @@
 			$address_fields['postcode']['required'] = true;
 			$address_fields['postcode']['custom_attributes'] = array( 'readonly' => 'readonly' );
 			$address_fields['postcode']['clear'] = false;
+			$address_fields['postcode']['class'] = array('form-row-first');
 
 			$address_fields['city']['label'] = __( 'Gemeente', 'oft' );
 			$address_fields['city']['placeholder'] = '';
 			$address_fields['city']['required'] = true;
 			$address_fields['city']['custom_attributes'] = array( 'readonly' => 'readonly' );
 			$address_fields['city']['clear'] = true;
+			$address_fields['city']['class'] = array('form-row-last');
 
 			if ( self::$company === 'oft' ) {
 				$billing_number_key = 'number_oft';
@@ -337,9 +339,11 @@
 			$address_fields[$billing_number_key]['placeholder'] = '';
 			$address_fields[$billing_number_key]['required'] = true;
 			$address_fields[$billing_number_key]['custom_attributes'] = array( 'readonly' => 'readonly' );
+			$address_fields[$billing_number_key]['class'] = false;
 
-			// $address_fields['country']['class'] = array('hidden');
-			// $address_fields['state']['class'] = array('hidden');
+			// Land voorlopig nog verbergen
+			$address_fields['country']['class'] = array('hidden');
+			// Provincie volledig verwijderen
 			unset( $address_fields['state'] );
 			
 			return $address_fields;
@@ -373,7 +377,7 @@
 			$address_fields['billing_country']['priority'] = 42;
 
 			if ( self::$company === 'mdm' and $this->get_client_type() === 'MDM' ) {
-				unset($address_fields['billing_number_oft']);
+				unset( $address_fields['billing_number_oft'] );
 			}
 			
 			return $address_fields;
@@ -387,25 +391,27 @@
 			// Hier nu wel algemeen verplichten i.p.v. pas checken in 'woocommerce_after_checkout_validation'-filter (maar veld verwijderen indien onnodig, zie verder)
 			$address_fields['shipping_number_oft']['required'] = true;
 			$address_fields['shipping_number_oft']['custom_attributes'] = array( 'readonly' => 'readonly' );
+			$address_fields['shipping_number_oft']['class'] = array('form-row-first');
 
-			unset($address_fields['shipping_first_name']);
-			unset($address_fields['shipping_last_name']);
+			$address_fields['shipping_routecode']['label'] = __( 'Routecode', 'oft' );
+			$address_fields['shipping_routecode']['placeholder'] = '';
+			$address_fields['shipping_routecode']['required'] = true;
+			$address_fields['shipping_routecode']['custom_attributes'] = array( 'readonly' => 'readonly' );
+			$address_fields['shipping_routecode']['class'] = array('form-row-last');
+			
+			unset( $address_fields['shipping_first_name'] );
+			unset( $address_fields['shipping_last_name'] );
 			$address_fields['shipping_number_oft']['priority'] = 21;
-			$address_fields['shipping_company']['priority'] = 22;
+			$address_fields['shipping_routecode']['priority'] = 22;
+			$address_fields['shipping_company']['priority'] = 23;
 			$address_fields['shipping_address_1']['priority'] = 31;
 			$address_fields['shipping_postcode']['priority'] = 32;
 			$address_fields['shipping_city']['priority'] = 41;
 			$address_fields['shipping_country']['priority'] = 42;
-			
-			if ( self::$company === 'mdm' and $this->get_client_type() === 'MDM' ) {
-				unset($address_fields['shipping_number_oft']);
-			}
 
-			if ( array_key_exists( 'shipping_first_name', $address_fields ) ) {
-				unset($address_fields['shipping_first_name']);
-			}
-			if ( array_key_exists( 'shipping_last_name', $address_fields ) ) {
-				unset($address_fields['shipping_last_name']);
+			if ( $this->get_client_type() === 'MDM' ) {
+				unset( $address_fields['shipping_number_oft'] );
+				unset( $address_fields['shipping_routecode'] );
 			}
 
 			return $address_fields;
