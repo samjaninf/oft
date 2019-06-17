@@ -46,7 +46,7 @@
 						$statusses[$header->OrderCreditStatus->__toString()] = 1;
 					}
 
-					// Opties: 'N', 'CH', 'B', 'RL' of '' (bij crediteringen?)
+					// Opties: 'N', 'CH', 'B', 'RL' of EMPTY (bij crediteringen?)
 					if ( array_key_exists( $order_type, $types ) ) {
 						$types[$order_type]++;
 					} else {

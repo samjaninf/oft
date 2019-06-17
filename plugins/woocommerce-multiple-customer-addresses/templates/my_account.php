@@ -13,7 +13,7 @@
 				<header class="wcmcam_address_block_title">
 					<!-- Address name -->
 					<<?php echo $default_addresses_style['my_account_page_addresses_title_tag']; ?> class="wcmca_address_title" id="wcmca_field_name_<?php echo $address_id; ?>">
-						<?php echo __( 'Levernummer', 'oft' ).' '.$address_id; ?>
+						<?php echo __( 'Levernummer', 'oft' ).' '.$address['shipping_number_oft']; ?>
 					</<?php echo $default_addresses_style['my_account_page_addresses_title_tag']; ?>>
 					
 					<?php if ( ! isset( $type_to_show_in_order_edit_page ) ) : ?> 
@@ -42,9 +42,12 @@
 				<address class="wcmca_address_container" id="wcmca_address_details_<?php echo $address_id; ?>">
 					<span style="display: none;" class="wcmca_clear_right" id="wcmca_address_internal_name_<?php echo $address_id; ?>" data-name="<?php echo $address['type']; ?>_address_internal_name"><?php echo $address['address_internal_name']; ?></span>
 					<span style="display: none;" class="wcmca_clear_right" data-name="<?php echo $address['type']."_is_default_address"; ?>"><?php if ( isset( $address[$address['type']."_is_default_address"] ) ) echo 'yes'; else echo ''; ?></span>
-					<?php 
+					<?php
 						// According to the country, addresses fields are reloaded
 						$address_fields = isset($address[$type.'_country']) ? $wcmca_address_model->get_woocommerce_address_fields_by_type($type, $address[$type.'_country']) : array();
+						
+						// GEWIJZIGD: Default WooCommerce-formaat volgen?
+						// echo WC()->countries->get_formatted_address( $address_fields );
 						
 						foreach ( $address_fields as $field_name => $woocommerce_address_field ) { 
 							$woocommerce_address_field['type'] = ! isset( $woocommerce_address_field['type'] ) ? "text" : $woocommerce_address_field['type'];

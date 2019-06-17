@@ -13,10 +13,32 @@
 	new Custom_Business_Logic('oft');
 
 	class Custom_Business_Logic {
-		public static $company;
+		static $company, $routecodes_oww, $routecodes_daily, $routecodes_ext;
 
 		function __construct( $param = 'oft' ) {
 			self::$company = $param;
+			self::$routecodes_oww = array(
+				'A1A' => __( 'Deadline op donderdag', 'oft' )." ".__( '(wekelijks)', 'oft' ),
+				'A2A' => __( 'Deadline op donderdag', 'oft' )." ".__( '(tweewekelijks, even weken)', 'oft' ),
+				'A2B' => __( 'Deadline op donderdag', 'oft' )." ".__( '(tweewekelijks, oneven weken)', 'oft' ),
+				'A3A' => __( 'Deadline op donderdag', 'oft' )." ".__( '(driewekelijks)', 'oft' ),
+				'B1A' => __( 'Deadline op maandag', 'oft' )." ".__( '(wekelijks)', 'oft' ),
+				'B2A' => __( 'Deadline op maandag', 'oft' )." ".__( '(tweewekelijks, even weken)', 'oft' ),
+				'B2B' => __( 'Deadline op maandag', 'oft' )." ".__( '(tweewekelijks, oneven weken)', 'oft' ),
+				'B3A' => __( 'Deadline op maandag', 'oft' )." ".__( '(driewekelijks)', 'oft' ),
+			);
+			self::$routecodes_daily = array(
+				'1' => __( 'Maandag', 'oft' ),
+				'2' => __( 'Dinsdag', 'oft' ),
+				'3' => __( 'Woensdag', 'oft' ),
+				'4' => __( 'Donderdag', 'oft'),
+				'5' => __( 'Vrijdag', 'oft' ),
+			);
+			self::$routecodes_ext = array(
+				'T' => __( 'Externe klant', 'oft' ),
+				'TB' => __( 'Externe klant (B)', 'oft' ),
+				'MDM' => __( 'Magasins du Monde', 'oft' ),
+			);
 			
 			// Sommige WP-functies (o.a. is_user_logged_in) zijn pas beschikbaar na de 'init'-actie!
 			add_action( 'init', array( $this, 'delay_actions_and_filters_till_load_completed' ) );
@@ -322,24 +344,30 @@
 		}
 
 		function make_addresses_readonly( $address_fields ) {
-			$address_fields['company']['custom_attributes'] = array( 'readonly' => 'readonly' );
+			if ( is_admin() and current_user_can('update_core') ) {
+				$custom_attributes = array();
+			} else {
+				$custom_attributes = array( 'readonly' => 'readonly' );
+			}
+
+			$address_fields['company']['custom_attributes'] = $custom_attributes;
 			
 			$address_fields['address_1']['label'] = __( 'Straat en nummer', 'oft' );
 			$address_fields['address_1']['placeholder'] = '';
 			$address_fields['address_1']['required'] = true;
-			$address_fields['address_1']['custom_attributes'] = array( 'readonly' => 'readonly' );
+			$address_fields['address_1']['custom_attributes'] = $custom_attributes;
 			
 			$address_fields['postcode']['label'] = __( 'Postcode', 'oft' );
 			$address_fields['postcode']['placeholder'] = '';
 			$address_fields['postcode']['required'] = true;
-			$address_fields['postcode']['custom_attributes'] = array( 'readonly' => 'readonly' );
+			$address_fields['postcode']['custom_attributes'] = $custom_attributes;
 			$address_fields['postcode']['clear'] = false;
 			$address_fields['postcode']['class'] = array('form-row-first');
 
 			$address_fields['city']['label'] = __( 'Gemeente', 'oft' );
 			$address_fields['city']['placeholder'] = '';
 			$address_fields['city']['required'] = true;
-			$address_fields['city']['custom_attributes'] = array( 'readonly' => 'readonly' );
+			$address_fields['city']['custom_attributes'] = $custom_attributes;
 			$address_fields['city']['clear'] = true;
 			$address_fields['city']['class'] = array('form-row-last');
 
@@ -352,7 +380,7 @@
 			}
 			$address_fields[$billing_number_key]['placeholder'] = '';
 			$address_fields[$billing_number_key]['required'] = true;
-			$address_fields[$billing_number_key]['custom_attributes'] = array( 'readonly' => 'readonly' );
+			$address_fields[$billing_number_key]['custom_attributes'] = $custom_attributes;
 			$address_fields[$billing_number_key]['class'] = false;
 
 			// Land voorlopig nog verbergen
@@ -398,19 +426,26 @@
 		}
 
 		function format_checkout_shipping( $address_fields ) {
+			if ( is_admin() and current_user_can('update_core') ) {
+				$custom_attributes = array();
+			} else {
+				$custom_attributes = array( 'readonly' => 'readonly' );
+			}
+			
 			$address_fields['shipping_company']['label'] = __( 'Te beleveren winkel', 'oft' );
 			$address_fields['shipping_company']['required'] = true;
 			$address_fields['shipping_number_oft']['label'] = __( 'Levernummer OFT', 'oft' );
 			$address_fields['shipping_number_oft']['placeholder'] = '';
 			// Hier nu wel algemeen verplichten i.p.v. pas checken in 'woocommerce_after_checkout_validation'-filter (maar veld verwijderen indien onnodig, zie verder)
 			$address_fields['shipping_number_oft']['required'] = true;
-			$address_fields['shipping_number_oft']['custom_attributes'] = array( 'readonly' => 'readonly' );
+			$address_fields['shipping_number_oft']['custom_attributes'] = $custom_attributes;
 			$address_fields['shipping_number_oft']['class'] = array('form-row-first');
 
+			// Of toch state blijven manipuleren?
 			$address_fields['shipping_routecode']['label'] = __( 'Routecode', 'oft' );
 			$address_fields['shipping_routecode']['placeholder'] = '';
 			$address_fields['shipping_routecode']['required'] = true;
-			$address_fields['shipping_routecode']['custom_attributes'] = array( 'readonly' => 'readonly' );
+			$address_fields['shipping_routecode']['custom_attributes'] = $custom_attributes;
 			$address_fields['shipping_routecode']['class'] = array('form-row-last');
 			
 			unset( $address_fields['shipping_first_name'] );
@@ -426,28 +461,14 @@
 			if ( $this->get_client_type() === 'MDM' ) {
 				unset( $address_fields['shipping_number_oft'] );
 				unset( $address_fields['shipping_routecode'] );
+				unset( $address_fields['shipping_default_day'] );
 			}
 
 			return $address_fields;
 		}
 
 		function define_woocommerce_routecodes( $states ) {
-			$routecodes_oft = array(
-				'1' => __( 'West-Vlaanderen', 'oft' ),
-				'2' => __( 'Oost-Vlaanderen', 'oft' ),
-				'3' => __( 'Vlaams-Brabant', 'oft' ),
-				'4' => __( 'Antwerpen', 'oft'),
-				'5' => __( 'Limburg', 'oft' ),
-				// Opsplitsen in vaste leverdag (voor trema) en plandag- en leverschema (na trema)
-				// '1-A1A' => __( 'Maandag', 'oft' )." ".__( '(wekelijks)', 'oft' ),
-				// '1-A2A' => __( 'Maandag', 'oft' )." ".__( '(tweewekelijks, oneven)', 'oft' ),
-				// '1-A2B' => __( 'Maandag', 'oft' )." ".__( '(tweewekelijks, even)', 'oft' ),
-				// '1-A3A' => __( 'Maandag', 'oft' )." ".__( '(driewekelijks)', 'oft' ),
-				// '1-A3B' => __( 'Maandag', 'oft' )." ".__( '(driewekelijks)', 'oft' ),
-				// '1-A3C' => __( 'Maandag', 'oft' )." ".__( '(driewekelijks)', 'oft' ),
-			);
-
-			$routecodes_omdm = array(
+			$routecodes_mdm = array(
 				'1-AB' => __( 'Henegouwen', 'oft' ),
 				'1-A' => __( 'Henegouwen', 'oft' )." ".__( '(even weken)', 'oft' ),
 				'1-B' => __( 'Henegouwen', 'oft' )." ".__( '(oneven weken)', 'oft' ),
@@ -465,16 +486,12 @@
 				'5-B' => __( 'Brussel', 'oft' )." ".__( '(oneven weken)', 'oft' ),
 			);
 
-			$routecodes_ext = array(
-				'T' => __( 'Externe klant', 'oft' ),
-			);
-
-			$states['BE'] = $routecodes_oft + $routecodes_omdm + $routecodes_ext;
-			$states['NL'] = $routecodes_ext;
-			$states['LU'] = $routecodes_ext;
-			$states['DE'] = $routecodes_ext;
-			$states['FR'] = $routecodes_ext;
-			$states['ES'] = $routecodes_ext;
+			$states['BE'] = self::$routecodes_oww + $routecodes_mdm + self::$routecodes_ext;
+			$states['NL'] = self::$routecodes_ext;
+			$states['LU'] = self::$routecodes_ext;
+			$states['DE'] = self::$routecodes_ext;
+			$states['FR'] = self::$routecodes_ext;
+			$states['ES'] = self::$routecodes_ext;
 		}
 
 		function load_custom_address_data( $args, $customer_id, $address_type ) {
@@ -491,18 +508,20 @@
 		}
 
 		function change_address_formats( $formats ) {
-			$formats['BE'] = "{client_number}\n{company}\n{address_1}\n{postcode} {city}";
-			$formats['ES'] = "{client_number}\n{company}\n{address_1}\n{postcode} {city}\n{country_upper}";
-			$formats['LU'] = "{client_number}\n{company}\n{address_1}\n{postcode} {city}\n{country_upper}";
+			// Dubbele quotes zijn nodig voor correcte interpretatie van line breaks!
+			$formats['BE'] = __( 'Adresnummer', 'oft' )." {client_number}\n{company}\n{address_1}\n{postcode} {city}";
 			$formats['NL'] = "{client_number}\n{company}\n{address_1}\n{postcode} {city}\n{country_upper}";
+			$formats['LU'] = "{client_number}\n{company}\n{address_1}\n{postcode} {city}\n{country_upper}";
+			$formats['DE'] = "{client_number}\n{company}\n{address_1}\n{postcode} {city}\n{country_upper}";
+			$formats['FR'] = "{client_number}\n{company}\n{address_1}\n{postcode} {city}\n{country_upper}";
+			$formats['ES'] = "{client_number}\n{company}\n{address_1}\n{postcode} {city}\n{country_upper}";
 			return $formats;
 		}
 
 		function modify_user_admin_fields( $profile_fields ) {
 			global $user_id;
-			// global $routecodes_oft, $routecodes_omdm, $routecodes_ext;
-			
 			$blocking_warning = __( 'Kan niet gewijzigd worden door klant (verplicht veld)', 'oft' );
+			
 			$profile_fields['billing']['fields']['billing_first_name']['label'] = __( 'Voornaam besteller', 'oft' );
 			$profile_fields['billing']['fields']['billing_first_name']['description'] = __( 'Bevat gegevens van de laatste bestelling', 'oft' );
 			$profile_fields['billing']['fields']['billing_last_name']['label'] = __( 'Familienaam besteller', 'oft' );
@@ -531,25 +550,27 @@
 			$profile_fields['shipping']['fields']['shipping_postcode']['label'] = __( 'Postcode', 'oft' );
 			$profile_fields['shipping']['fields']['shipping_postcode']['description'] = $blocking_warning;
 			$profile_fields['shipping']['fields']['shipping_routecode']['label'] = __( 'Routecode', 'oft' );
-			$profile_fields['shipping']['fields']['shipping_routecode']['description'] = __( 'Beperkt de beschikbare levermethodes (voor externe klanten) en bepaalt de besteldeadlines (voor interne klanten)', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_routecode']['description'] = __( 'Bepaalt automatisch de besteldeadlines en eerstmogelijke leverdag', 'oft' );
 			$profile_fields['shipping']['fields']['shipping_routecode']['type'] = 'select';
-			// CSS NOG TOE TE VOEGEN AAN ADMIN.SCSS INDIEN WE VELD WILLEN DISABLEN (MAAR PROBLEEM MET OPSLAAN?)
-			$profile_fields['shipping']['fields']['shipping_number_oft']['class'] = array( 'readonly' );
-			
+			// CSS NOG TOE TE VOEGEN AAN ADMIN.SCSS INDIEN WE VELD WILLEN DISABLEN (MAAR MISSCHIEN PROBLEEM MET OPSLAAN, BETER VIA SAVE ACTION UITSCHAKELEN?)
+			// $profile_fields['shipping']['fields']['shipping_number_oft']['class'] = 'readonly';
+
 			// Toon de juiste routecodes, naar gelang het kanaal van de GERAADPLEEGDE user (dus niet get_current_user_id() gebruiken!)
 			$client_type = $this->get_client_type( $user_id );
 			$empty = array( 'EMPTY' => __( '(selecteer)', 'oftc' ) );
-			if ( $client_type === 'MDM' ) {
-				// $routecodes_ext verwijderen?
-				$available_codes = $empty;
-			} elseif ( $client_type === 'OWW' ) {
-				// Géén array_merge() gebruiken want de numerieke OWW-keys worden dan hernummerd vanaf 0!
-				$available_codes = $empty;
+
+			if ( $client_type === 'OWW' ) {
+				// Géén array_merge() gebruiken want numerieke keys worden dan hernummerd vanaf 0!
+				$available_codes = $empty + self::$routecodes_oww;
 			} else {
 				// Externe B2B-klanten
-				$available_codes = $empty;
+				$available_codes = $empty + self::$routecodes_daily + self::$routecodes_ext;
 			}
 			$profile_fields['shipping']['fields']['shipping_routecode']['options'] = $available_codes;
+			$profile_fields['shipping']['fields']['shipping_default_day']['label'] = __( 'Default leverdag', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_default_day']['description'] = __( 'Hier kan altijd nog van afgeweken worden', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_default_day']['type'] = 'select';
+			$profile_fields['shipping']['fields']['shipping_default_day']['options'] = $empty + self::$routecodes_daily;
 			$profile_fields['shipping']['fields']['shipping_number_oft']['label'] = __( 'Levernummer OFT', 'oft' );
 			$profile_fields['shipping']['fields']['shipping_number_oft']['description'] = $blocking_warning;
 
@@ -575,6 +596,7 @@
 			$ship_order = array(
 				'shipping_number_oft',
 				'shipping_routecode',
+				'shipping_default_day',
 				'shipping_company',
 				'shipping_address_1',
 				'shipping_postcode',
