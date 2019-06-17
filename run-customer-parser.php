@@ -28,7 +28,7 @@
 					$cnt++;
 					$client_number = $customer->CustNum->__toString();
 					$billing_address = $customer->Adres;
-					$delivery_address = $customer->Leveradressen;
+					$delivery_addresses = $customer->Leveradressen;
 					
 					// Opties: ???
 					if ( array_key_exists( $customer->Routecode->__toString(), $routecodes ) ) {
@@ -67,10 +67,15 @@
 					}
 					
 					if ( intval( $client_number ) === 2128 ) {
-						foreach ( $delivery_address->Leveradres as $address ) {
-							"echo OOSTENDE GEVONDEN";
-							$oostende[ $address->AdrNum->__toString() ] = array( 'name' => $address->Name->__toString(), 'address_1' => $address->Lijn1->__toString()." ".$address->Huisnr->__toString(), 'zipcode' => $address->Postcode->__toString(), 'city' => $address->Gemeente->__toString(), 'country' => $address->Land->__toString() );
+						echo "OOSTENDE GEVONDEN";
+						$user_id = 1;
+						var_dump_pre( get_user_meta( $user_id, '_wcmca_additional_addresses' ) );
+						$default_data = array( 'user_id' => $user_id );
+						foreach ( $delivery_addresses->Leveradres as $address ) {
+							$oostende[ $address->AdrNum->__toString() ] = $default_data + parse_address( $address, 'shipping' );
+
 						}
+						// update_user_meta( $user_id, '_wcmca_additional_addresses', $oostende );
 					}
 				}
 
@@ -88,6 +93,27 @@
 
 		} else {
 			die("Access prohibited!");
+		}
+
+		function parse_address( $xml_address, $type = 'shipping' ) {
+			return array(
+				'type' => $type,
+				'address_id' => trim( $address->AdrNum->__toString() ),
+				'address_internal_name' => trim_and_uppercase( $xml_address->Name->__toString() ),
+				// Ingesteld default adres vooraf capteren en achteraf weer instellen!
+				$type.'_is_default_address' => 0,
+				$type.'_number_oft' => trim( $xml_address->AdrNum->__toString() ),
+				$type.'_company' => trim_and_uppercase( $xml_address->Name->__toString() ),
+				$type.'_address_1' => trim_and_uppercase( $xml_address->Lijn1->__toString()." ".$xml_address->Huisnr->__toString() ),
+				$type.'_postcode' => trim( $xml_address->Postcode->__toString() ),
+				$type.'_city' => trim_and_uppercase( $xml_address->Gemeente->__toString() ),
+				$type.'_country' => strtoupper( trim( $xml_address->Land->__toString() ) ),
+				$type.'_routecode' => trim( $xml_address->Routecode->__toString() ),
+			);
+		}
+
+		function trim_and_uppercase( $value ) {
+			return str_replace( 'Oww ', 'OWW ', implode( '.', array_map( 'ucwords', explode( '.', implode( '(', array_map( 'ucwords', explode( '(', implode( '-', array_map( 'ucwords', explode( '-', mb_strtolower( trim($value) ) ) ) ) ) ) ) ) ) ) );
 		}
 	?>
 </body>
