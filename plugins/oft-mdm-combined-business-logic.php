@@ -5,39 +5,39 @@
 	Version:     0.2.2
 	Author:      Full Stack Ahead
 	Author URI:  https://www.fullstackahead.be
-	Text Domain: oft
+	Text Domain: oft-mdm
 	*/
 
 	defined('ABSPATH') or die('Access prohibited!');
 
-	new Custom_Business_Logic('oft');
+	new Oft_Mdm_Custom_Business_Logic('oft');
 
-	class Custom_Business_Logic {
+	class Oft_Mdm_Custom_Business_Logic {
 		static $company, $routecodes_oww, $routecodes_daily, $routecodes_ext;
 
 		function __construct( $param = 'oft' ) {
 			self::$company = $param;
 			self::$routecodes_oww = array(
-				'A1A' => __( 'Deadline op donderdag', 'oft' )." ".__( '(wekelijks)', 'oft' ),
-				'A2A' => __( 'Deadline op donderdag', 'oft' )." ".__( '(tweewekelijks, even weken)', 'oft' ),
-				'A2B' => __( 'Deadline op donderdag', 'oft' )." ".__( '(tweewekelijks, oneven weken)', 'oft' ),
-				'A3A' => __( 'Deadline op donderdag', 'oft' )." ".__( '(driewekelijks)', 'oft' ),
-				'B1A' => __( 'Deadline op maandag', 'oft' )." ".__( '(wekelijks)', 'oft' ),
-				'B2A' => __( 'Deadline op maandag', 'oft' )." ".__( '(tweewekelijks, even weken)', 'oft' ),
-				'B2B' => __( 'Deadline op maandag', 'oft' )." ".__( '(tweewekelijks, oneven weken)', 'oft' ),
-				'B3A' => __( 'Deadline op maandag', 'oft' )." ".__( '(driewekelijks)', 'oft' ),
+				'A1A' => __( 'Deadline op donderdag', 'oft-mdm' )." ".__( '(wekelijks)', 'oft-mdm' ),
+				'A2A' => __( 'Deadline op donderdag', 'oft-mdm' )." ".__( '(tweewekelijks, even weken)', 'oft-mdm' ),
+				'A2B' => __( 'Deadline op donderdag', 'oft-mdm' )." ".__( '(tweewekelijks, oneven weken)', 'oft-mdm' ),
+				'A3A' => __( 'Deadline op donderdag', 'oft-mdm' )." ".__( '(driewekelijks)', 'oft-mdm' ),
+				'B1A' => __( 'Deadline op maandag', 'oft-mdm' )." ".__( '(wekelijks)', 'oft-mdm' ),
+				'B2A' => __( 'Deadline op maandag', 'oft-mdm' )." ".__( '(tweewekelijks, even weken)', 'oft-mdm' ),
+				'B2B' => __( 'Deadline op maandag', 'oft-mdm' )." ".__( '(tweewekelijks, oneven weken)', 'oft-mdm' ),
+				'B3A' => __( 'Deadline op maandag', 'oft-mdm' )." ".__( '(driewekelijks)', 'oft-mdm' ),
 			);
 			self::$routecodes_daily = array(
-				'1' => __( 'Maandag', 'oft' ),
-				'2' => __( 'Dinsdag', 'oft' ),
-				'3' => __( 'Woensdag', 'oft' ),
+				'1' => __( 'Maandag', 'oft-mdm' ),
+				'2' => __( 'Dinsdag', 'oft-mdm' ),
+				'3' => __( 'Woensdag', 'oft-mdm' ),
 				'4' => __( 'Donderdag', 'oft'),
-				'5' => __( 'Vrijdag', 'oft' ),
+				'5' => __( 'Vrijdag', 'oft-mdm' ),
 			);
 			self::$routecodes_ext = array(
-				'T' => __( 'Externe klant', 'oft' ),
-				'TB' => __( 'Externe klant (B)', 'oft' ),
-				'MDM' => __( 'Magasins du Monde', 'oft' ),
+				'T' => __( 'Externe klant', 'oft-mdm' ),
+				'TB' => __( 'Externe klant (B)', 'oft-mdm' ),
+				'MDM' => __( 'Magasins du Monde', 'oft-mdm' ),
 			);
 			
 			// Sommige WP-functies (o.a. is_user_logged_in) zijn pas beschikbaar na de 'init'-actie!
@@ -110,16 +110,16 @@
 			add_filter( 'wc_product_table_column_searchable_add_to_cart', '__return_false' );
 			add_filter( 'wc_product_table_data_name', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
 			add_filter( 'wc_product_table_column_heading_name', function( $label ) {
-				return __( 'Omschrijving', 'oft' );
+				return __( 'Omschrijving', 'oft-mdm' );
 			} );
 			add_filter( 'wc_product_table_column_heading_price', function( $label ) {
-				return ucfirst( __( 'per ompak', 'oft' ) );
+				return ucfirst( __( 'per ompak', 'oft-mdm' ) );
 			} );
 			add_filter( 'wc_product_table_column_heading_add-to-cart', function( $label ) {
-				return __( 'Bestellen?', 'oft' );
+				return __( 'Bestellen?', 'oft-mdm' );
 			} );
 			add_filter( 'wc_product_table_data_add_to_cart', function( $html, $product ) {
-				return $html . __( 'OMPAKINFO', 'oft' );
+				return $html . __( 'OMPAKINFO', 'oft-mdm' );
 			}, 10, 2 );
 
 			// Zorg ervoor dat de logica uit de product loop ook toegepast wordt in de tabel
@@ -189,22 +189,22 @@
 			$taxonomy_name = 'product_client_type';
 			
 			$labels = array(
-				'name' => __( 'Klantengroepen', 'oft' ),
-				'singular_name' => __( 'Klantengroep', 'oft' ),
-				'all_items' => __( 'Alle klantengroepen', 'oft' ),
-				'parent_item' => __( 'Klantengroep', 'oft' ),
-				'parent_item_colon' => __( 'Klantengroep:', 'oft' ),
-				'new_item_name' => __( 'Nieuwe klantengroep', 'oft' ),
-				'add_new_item' => __( 'Voeg nieuwe klantengroep toe', 'oft' ),
-				'view_item' => __( 'Klantengroep bekijken', 'oft' ),
-				'edit_item' => __( 'Klantengroep bewerken', 'oft' ),
-				'update_item' => __( 'Klantengroep bijwerken', 'oft' ),
-				'search_items' => __( 'Klantengroepen doorzoeken', 'oft' ),
+				'name' => __( 'Klantengroepen', 'oft-mdm' ),
+				'singular_name' => __( 'Klantengroep', 'oft-mdm' ),
+				'all_items' => __( 'Alle klantengroepen', 'oft-mdm' ),
+				'parent_item' => __( 'Klantengroep', 'oft-mdm' ),
+				'parent_item_colon' => __( 'Klantengroep:', 'oft-mdm' ),
+				'new_item_name' => __( 'Nieuwe klantengroep', 'oft-mdm' ),
+				'add_new_item' => __( 'Voeg nieuwe klantengroep toe', 'oft-mdm' ),
+				'view_item' => __( 'Klantengroep bekijken', 'oft-mdm' ),
+				'edit_item' => __( 'Klantengroep bewerken', 'oft-mdm' ),
+				'update_item' => __( 'Klantengroep bijwerken', 'oft-mdm' ),
+				'search_items' => __( 'Klantengroepen doorzoeken', 'oft-mdm' ),
 			);
 
 			$args = array(
 				'labels' => $labels,
-				'description' => __( 'Maak dit product exclusief beschikbaar voor deze klantengroep', 'oft' ),
+				'description' => __( 'Maak dit product exclusief beschikbaar voor deze klantengroep', 'oft-mdm' ),
 				'public' => false,
 				'publicly_queryable' => false,
 				'hierarchical' => false,
@@ -227,24 +227,24 @@
 		function show_extra_user_fields( $user ) {
 			if ( current_user_can('manage_woocommerce') ) { 
 				?>
-				<h3><?php _e( 'Extra instellingen', 'oft' ); ?></h3>
+				<h3><?php _e( 'Extra instellingen', 'oft-mdm' ); ?></h3>
 				<table class="form-table">
 					<tr>
-						<th><label for="client_type"><?php _e( 'Klantengroep', 'oft' ); ?></label></th>
+						<th><label for="client_type"><?php _e( 'Klantengroep', 'oft-mdm' ); ?></label></th>
 						<td>
 							<?php
 								$args = array(
 									'name' => 'client_type',
 									'taxonomy' => 'product_client_type',
 									'hide_empty' => false,
-									'show_option_none' => __( '(selecteer)', 'oft' ),
+									'show_option_none' => __( '(selecteer)', 'oft-mdm' ),
 									'option_none_value' => '',
 									'value_field' => 'name',
 									'selected' => get_the_author_meta( 'client_type', $user->ID ),
 								);
 								wp_dropdown_categories($args);
 							?>
-							<p class="description"><?php _e( 'Deze instelling bepaalt welk assortiment zichtbaar én bestelbaar is voor deze klant. De taalkeuze is vrij maar kan nog gelimiteerd worden, bv. indien niet alle producten in elke taal beschikbaar zouden zijn (bv. servicemateriaal).', 'oft' ); ?></p>
+							<p class="description"><?php _e( 'Deze instelling bepaalt welk assortiment zichtbaar én bestelbaar is voor deze klant. De taalkeuze is vrij maar kan nog gelimiteerd worden, bv. indien niet alle producten in elke taal beschikbaar zouden zijn (bv. servicemateriaal).', 'oft-mdm' ); ?></p>
 						</td>
 					</tr>
 				</table>
@@ -312,7 +312,7 @@
 
 		function add_order_unit_info() {
 			global $post;
-			_e( 'OMPAKINFO', 'oft' );
+			_e( 'OMPAKINFO', 'oft-mdm' );
 		}
 				
 		function add_consumer_units_per_order_unit( $title, $product ) {
@@ -322,9 +322,9 @@
 			if ( intval( $product->get_meta('_multiple') ) > 1 ) {
 				$title .= ' x ' . $product->get_meta('_multiple') . ' ';
 				if ( $product->get_meta('_vkeh_uom') !== '' ) {
-					$title .= __( strtolower( $product->get_meta('_multiple_unit') ), 'oft' );
+					$title .= __( strtolower( $product->get_meta('_multiple_unit') ), 'oft-mdm' );
 				} else {
-					$title .= __( 'stuks', 'oft' );
+					$title .= __( 'stuks', 'oft-mdm' );
 				}
 			}
 			return $title;
@@ -339,7 +339,7 @@
 
 		function disable_manual_product_removal( $post_id ) {
 			if ( 'product' === get_post_type( $post_id ) and $_SERVER['SERVER_NAME'] === 'www.oxfamfairtrade.be' ) {
-				wp_die( sprintf( __( 'Uit veiligheidsoverwegingen is het verwijderen van producten niet toegestaan, voor geen enkele gebruikersrol! Vraag &ndash; indien nodig &ndash; dat de hogere machten op %s deze beperking tijdelijk opheffen, zodat je je vuile zaakjes kunt opknappen.', 'oft' ), '<a href="mailto:'.get_option('admin_email').'">'.get_option('admin_email').'</a>' ) );
+				wp_die( sprintf( __( 'Uit veiligheidsoverwegingen is het verwijderen van producten niet toegestaan, voor geen enkele gebruikersrol! Vraag &ndash; indien nodig &ndash; dat de hogere machten op %s deze beperking tijdelijk opheffen, zodat je je vuile zaakjes kunt opknappen.', 'oft-mdm' ), '<a href="mailto:'.get_option('admin_email').'">'.get_option('admin_email').'</a>' ) );
 			}
 		}
 
@@ -352,19 +352,19 @@
 
 			$address_fields['company']['custom_attributes'] = $custom_attributes;
 			
-			$address_fields['address_1']['label'] = __( 'Straat en nummer', 'oft' );
+			$address_fields['address_1']['label'] = __( 'Straat en nummer', 'oft-mdm' );
 			$address_fields['address_1']['placeholder'] = '';
 			$address_fields['address_1']['required'] = true;
 			$address_fields['address_1']['custom_attributes'] = $custom_attributes;
 			
-			$address_fields['postcode']['label'] = __( 'Postcode', 'oft' );
+			$address_fields['postcode']['label'] = __( 'Postcode', 'oft-mdm' );
 			$address_fields['postcode']['placeholder'] = '';
 			$address_fields['postcode']['required'] = true;
 			$address_fields['postcode']['custom_attributes'] = $custom_attributes;
 			$address_fields['postcode']['clear'] = false;
 			$address_fields['postcode']['class'] = array('form-row-first');
 
-			$address_fields['city']['label'] = __( 'Gemeente', 'oft' );
+			$address_fields['city']['label'] = __( 'Gemeente', 'oft-mdm' );
 			$address_fields['city']['placeholder'] = '';
 			$address_fields['city']['required'] = true;
 			$address_fields['city']['custom_attributes'] = $custom_attributes;
@@ -373,10 +373,10 @@
 
 			if ( self::$company === 'oft' ) {
 				$billing_number_key = 'number_oft';
-				$address_fields[$billing_number_key]['label'] = __( 'Klantnummer OFT', 'oft' );
+				$address_fields[$billing_number_key]['label'] = __( 'Klantnummer OFT', 'oft-mdm' );
 			} else {
 				$billing_number_key = 'number_omdm';
-				$address_fields[$billing_number_key]['label'] = __( 'Klantnummer OMDM', 'oft' );
+				$address_fields[$billing_number_key]['label'] = __( 'Klantnummer OMDM', 'oft-mdm' );
 			}
 			$address_fields[$billing_number_key]['placeholder'] = '';
 			$address_fields[$billing_number_key]['required'] = true;
@@ -392,19 +392,19 @@
 		}
 
 		function format_checkout_billing( $address_fields ) {
-			$address_fields['billing_first_name']['label'] = __( 'Voornaam', 'oft' );
-			$address_fields['billing_first_name']['description'] = __( 'Gelieve je eigen naam in te vullen!', 'oft' );
+			$address_fields['billing_first_name']['label'] = __( 'Voornaam', 'oft-mdm' );
+			$address_fields['billing_first_name']['description'] = __( 'Gelieve je eigen naam in te vullen!', 'oft-mdm' );
 			$address_fields['billing_first_name']['placeholder'] = "Charles";
-			$address_fields['billing_last_name']['description'] = __( 'Gelieve je eigen naam in te vullen!', 'oft' );
-			$address_fields['billing_last_name']['label'] = __( 'Familienaam', 'oft' );
+			$address_fields['billing_last_name']['description'] = __( 'Gelieve je eigen naam in te vullen!', 'oft-mdm' );
+			$address_fields['billing_last_name']['label'] = __( 'Familienaam', 'oft-mdm' );
 			$address_fields['billing_last_name']['placeholder'] = "Michel";
-			$address_fields['billing_phone']['label'] = __( 'Telefoonnummer', 'oft' );
+			$address_fields['billing_phone']['label'] = __( 'Telefoonnummer', 'oft-mdm' );
 			$address_fields['billing_phone']['placeholder'] = "02 501 02 11";
-			$address_fields['billing_phone']['description'] = __( 'Zo kunnen we je contacteren bij problemen.', 'oft' );
-			$address_fields['billing_email']['label'] = __( 'Mail orderbevestiging naar', 'oft' );
+			$address_fields['billing_phone']['description'] = __( 'Zo kunnen we je contacteren bij problemen.', 'oft-mdm' );
+			$address_fields['billing_email']['label'] = __( 'Mail orderbevestiging naar', 'oft-mdm' );
 			$address_fields['billing_email']['placeholder'] = "charles.michel@premier.fed.be";
-			$address_fields['billing_email']['description'] = __( 'Dit hoeft niet je eigen e-mailadres te zijn.', 'oft' );
-			$address_fields['billing_company']['label'] = __( 'Te factureren entiteit', 'oft' );
+			$address_fields['billing_email']['description'] = __( 'Dit hoeft niet je eigen e-mailadres te zijn.', 'oft-mdm' );
+			$address_fields['billing_company']['label'] = __( 'Te factureren entiteit', 'oft-mdm' );
 			$address_fields['billing_company']['required'] = true;
 			
 			$address_fields['billing_first_name']['priority'] = 1;
@@ -432,9 +432,9 @@
 				$custom_attributes = array( 'readonly' => 'readonly' );
 			}
 			
-			$address_fields['shipping_company']['label'] = __( 'Te beleveren winkel', 'oft' );
+			$address_fields['shipping_company']['label'] = __( 'Te beleveren winkel', 'oft-mdm' );
 			$address_fields['shipping_company']['required'] = true;
-			$address_fields['shipping_number_oft']['label'] = __( 'Levernummer OFT', 'oft' );
+			$address_fields['shipping_number_oft']['label'] = __( 'Levernummer OFT', 'oft-mdm' );
 			$address_fields['shipping_number_oft']['placeholder'] = '';
 			// Hier nu wel algemeen verplichten i.p.v. pas checken in 'woocommerce_after_checkout_validation'-filter (maar veld verwijderen indien onnodig, zie verder)
 			$address_fields['shipping_number_oft']['required'] = true;
@@ -442,7 +442,7 @@
 			$address_fields['shipping_number_oft']['class'] = array('form-row-first');
 
 			// Of toch state blijven manipuleren?
-			$address_fields['shipping_routecode']['label'] = __( 'Routecode', 'oft' );
+			$address_fields['shipping_routecode']['label'] = __( 'Routecode', 'oft-mdm' );
 			$address_fields['shipping_routecode']['placeholder'] = '';
 			$address_fields['shipping_routecode']['required'] = true;
 			$address_fields['shipping_routecode']['custom_attributes'] = $custom_attributes;
@@ -469,21 +469,21 @@
 
 		function define_woocommerce_routecodes( $states ) {
 			$routecodes_mdm = array(
-				'1-AB' => __( 'Henegouwen', 'oft' ),
-				'1-A' => __( 'Henegouwen', 'oft' )." ".__( '(even weken)', 'oft' ),
-				'1-B' => __( 'Henegouwen', 'oft' )." ".__( '(oneven weken)', 'oft' ),
-				'2-AB' => __( 'Namen', 'oft' ),
-				'2-A' => __( 'Namen', 'oft' )." ".__( '(even weken)', 'oft' ),
-				'2-B' => __( 'Namen', 'oft' )." ".__( '(oneven weken)', 'oft' ),
-				'3-AB' => __( 'Luik', 'oft' ),
-				'3-A' => __( 'Luik', 'oft' )." ".__( '(even weken)', 'oft' ),
-				'3-B' => __( 'Luik', 'oft' )." ".__( '(oneven weken)', 'oft' ),
-				'4-AB' => __( 'Luxemburg', 'oft' ),
-				'4-A' => __( 'Luxemburg', 'oft' )." ".__( '(even weken)', 'oft' ),
-				'4-B' => __( 'Luxemburg', 'oft' )." ".__( '(oneven weken)', 'oft' ),
-				'5-AB' => __( 'Brussel', 'oft' ),
-				'5-A' => __( 'Brussel', 'oft' )." ".__( '(even weken)', 'oft' ),
-				'5-B' => __( 'Brussel', 'oft' )." ".__( '(oneven weken)', 'oft' ),
+				'1-AB' => __( 'Henegouwen', 'oft-mdm' ),
+				'1-A' => __( 'Henegouwen', 'oft-mdm' )." ".__( '(even weken)', 'oft-mdm' ),
+				'1-B' => __( 'Henegouwen', 'oft-mdm' )." ".__( '(oneven weken)', 'oft-mdm' ),
+				'2-AB' => __( 'Namen', 'oft-mdm' ),
+				'2-A' => __( 'Namen', 'oft-mdm' )." ".__( '(even weken)', 'oft-mdm' ),
+				'2-B' => __( 'Namen', 'oft-mdm' )." ".__( '(oneven weken)', 'oft-mdm' ),
+				'3-AB' => __( 'Luik', 'oft-mdm' ),
+				'3-A' => __( 'Luik', 'oft-mdm' )." ".__( '(even weken)', 'oft-mdm' ),
+				'3-B' => __( 'Luik', 'oft-mdm' )." ".__( '(oneven weken)', 'oft-mdm' ),
+				'4-AB' => __( 'Luxemburg', 'oft-mdm' ),
+				'4-A' => __( 'Luxemburg', 'oft-mdm' )." ".__( '(even weken)', 'oft-mdm' ),
+				'4-B' => __( 'Luxemburg', 'oft-mdm' )." ".__( '(oneven weken)', 'oft-mdm' ),
+				'5-AB' => __( 'Brussel', 'oft-mdm' ),
+				'5-A' => __( 'Brussel', 'oft-mdm' )." ".__( '(even weken)', 'oft-mdm' ),
+				'5-B' => __( 'Brussel', 'oft-mdm' )." ".__( '(oneven weken)', 'oft-mdm' ),
 			);
 
 			$states['BE'] = self::$routecodes_oww + $routecodes_mdm + self::$routecodes_ext;
@@ -509,7 +509,7 @@
 
 		function change_address_formats( $formats ) {
 			// Dubbele quotes zijn nodig voor correcte interpretatie van line breaks!
-			$formats['BE'] = __( 'Adresnummer', 'oft' )." {client_number}\n{company}\n{address_1}\n{postcode} {city}";
+			$formats['BE'] = __( 'Adresnummer', 'oft-mdm' )." {client_number}\n{company}\n{address_1}\n{postcode} {city}";
 			$formats['NL'] = "{client_number}\n{company}\n{address_1}\n{postcode} {city}\n{country_upper}";
 			$formats['LU'] = "{client_number}\n{company}\n{address_1}\n{postcode} {city}\n{country_upper}";
 			$formats['DE'] = "{client_number}\n{company}\n{address_1}\n{postcode} {city}\n{country_upper}";
@@ -520,37 +520,37 @@
 
 		function modify_user_admin_fields( $profile_fields ) {
 			global $user_id;
-			$blocking_warning = __( 'Kan niet gewijzigd worden door klant (verplicht veld)', 'oft' );
+			$blocking_warning = __( 'Kan niet gewijzigd worden door klant (verplicht veld)', 'oft-mdm' );
 			
-			$profile_fields['billing']['fields']['billing_first_name']['label'] = __( 'Voornaam besteller', 'oft' );
-			$profile_fields['billing']['fields']['billing_first_name']['description'] = __( 'Bevat gegevens van de laatste bestelling', 'oft' );
-			$profile_fields['billing']['fields']['billing_last_name']['label'] = __( 'Familienaam besteller', 'oft' );
-			$profile_fields['billing']['fields']['billing_last_name']['description'] = __( 'Bevat gegevens van de laatste bestelling', 'oft' );
-			$profile_fields['billing']['fields']['billing_company']['label'] = __( 'Te factureren entiteit', 'oft' );
+			$profile_fields['billing']['fields']['billing_first_name']['label'] = __( 'Voornaam besteller', 'oft-mdm' );
+			$profile_fields['billing']['fields']['billing_first_name']['description'] = __( 'Bevat gegevens van de laatste bestelling', 'oft-mdm' );
+			$profile_fields['billing']['fields']['billing_last_name']['label'] = __( 'Familienaam besteller', 'oft-mdm' );
+			$profile_fields['billing']['fields']['billing_last_name']['description'] = __( 'Bevat gegevens van de laatste bestelling', 'oft-mdm' );
+			$profile_fields['billing']['fields']['billing_company']['label'] = __( 'Te factureren entiteit', 'oft-mdm' );
 			$profile_fields['billing']['fields']['billing_company']['description'] = $blocking_warning;
-			$profile_fields['billing']['fields']['billing_address_1']['label'] = __( 'Straat en nummer', 'oft' );
+			$profile_fields['billing']['fields']['billing_address_1']['label'] = __( 'Straat en nummer', 'oft-mdm' );
 			$profile_fields['billing']['fields']['billing_address_1']['description'] = $blocking_warning;
-			$profile_fields['billing']['fields']['billing_city']['label'] = __( 'Gemeente', 'oft' );
+			$profile_fields['billing']['fields']['billing_city']['label'] = __( 'Gemeente', 'oft-mdm' );
 			$profile_fields['billing']['fields']['billing_city']['description'] = $blocking_warning;
-			$profile_fields['billing']['fields']['billing_postcode']['label'] = __( 'Postcode', 'oft' );
+			$profile_fields['billing']['fields']['billing_postcode']['label'] = __( 'Postcode', 'oft-mdm' );
 			$profile_fields['billing']['fields']['billing_postcode']['description'] = $blocking_warning;
-			$profile_fields['billing']['fields']['billing_phone']['label'] = __( 'Telefoonnummer besteller', 'oft' );
-			$profile_fields['billing']['fields']['billing_phone']['description'] = __( 'Bevat gegevens van de laatste bestelling', 'oft' );
-			$profile_fields['billing']['fields']['billing_email']['label'] = __( 'Mailadres voor orderbevestigingen', 'oft' );
-			$profile_fields['billing']['fields']['billing_email']['description'] = __( 'Bevat gegevens van de laatste bestelling', 'oft' );
-			$profile_fields['billing']['fields']['billing_number_oft']['label'] = __( 'Klantnummer OFT', 'oft' );
+			$profile_fields['billing']['fields']['billing_phone']['label'] = __( 'Telefoonnummer besteller', 'oft-mdm' );
+			$profile_fields['billing']['fields']['billing_phone']['description'] = __( 'Bevat gegevens van de laatste bestelling', 'oft-mdm' );
+			$profile_fields['billing']['fields']['billing_email']['label'] = __( 'Mailadres voor orderbevestigingen', 'oft-mdm' );
+			$profile_fields['billing']['fields']['billing_email']['description'] = __( 'Bevat gegevens van de laatste bestelling', 'oft-mdm' );
+			$profile_fields['billing']['fields']['billing_number_oft']['label'] = __( 'Klantnummer OFT', 'oft-mdm' );
 			$profile_fields['billing']['fields']['billing_number_oft']['description'] = $blocking_warning;
 			
-			$profile_fields['shipping']['fields']['shipping_company']['label'] = __( 'Te beleveren winkel', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_company']['label'] = __( 'Te beleveren winkel', 'oft-mdm' );
 			$profile_fields['shipping']['fields']['shipping_company']['description'] = $blocking_warning;
-			$profile_fields['shipping']['fields']['shipping_address_1']['label'] = __( 'Straat en nummer', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_address_1']['label'] = __( 'Straat en nummer', 'oft-mdm' );
 			$profile_fields['shipping']['fields']['shipping_address_1']['description'] = $blocking_warning;
-			$profile_fields['shipping']['fields']['shipping_city']['label'] = __( 'Gemeente', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_city']['label'] = __( 'Gemeente', 'oft-mdm' );
 			$profile_fields['shipping']['fields']['shipping_city']['description'] = $blocking_warning;
-			$profile_fields['shipping']['fields']['shipping_postcode']['label'] = __( 'Postcode', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_postcode']['label'] = __( 'Postcode', 'oft-mdm' );
 			$profile_fields['shipping']['fields']['shipping_postcode']['description'] = $blocking_warning;
-			$profile_fields['shipping']['fields']['shipping_routecode']['label'] = __( 'Routecode', 'oft' );
-			$profile_fields['shipping']['fields']['shipping_routecode']['description'] = __( 'Bepaalt automatisch de besteldeadlines en eerstmogelijke leverdag', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_routecode']['label'] = __( 'Routecode', 'oft-mdm' );
+			$profile_fields['shipping']['fields']['shipping_routecode']['description'] = __( 'Bepaalt automatisch de besteldeadlines en eerstmogelijke leverdag', 'oft-mdm' );
 			$profile_fields['shipping']['fields']['shipping_routecode']['type'] = 'select';
 			// CSS NOG TOE TE VOEGEN AAN ADMIN.SCSS INDIEN WE VELD WILLEN DISABLEN (MAAR MISSCHIEN PROBLEEM MET OPSLAAN, BETER VIA SAVE ACTION UITSCHAKELEN?)
 			// $profile_fields['shipping']['fields']['shipping_number_oft']['class'] = 'readonly';
@@ -567,11 +567,11 @@
 				$available_codes = $empty + self::$routecodes_daily + self::$routecodes_ext;
 			}
 			$profile_fields['shipping']['fields']['shipping_routecode']['options'] = $available_codes;
-			$profile_fields['shipping']['fields']['shipping_default_day']['label'] = __( 'Default leverdag', 'oft' );
-			$profile_fields['shipping']['fields']['shipping_default_day']['description'] = __( 'Hier kan altijd nog van afgeweken worden', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_default_day']['label'] = __( 'Default leverdag', 'oft-mdm' );
+			$profile_fields['shipping']['fields']['shipping_default_day']['description'] = __( 'Hier kan altijd nog van afgeweken worden', 'oft-mdm' );
 			$profile_fields['shipping']['fields']['shipping_default_day']['type'] = 'select';
 			$profile_fields['shipping']['fields']['shipping_default_day']['options'] = $empty + self::$routecodes_daily;
-			$profile_fields['shipping']['fields']['shipping_number_oft']['label'] = __( 'Levernummer OFT', 'oft' );
+			$profile_fields['shipping']['fields']['shipping_number_oft']['label'] = __( 'Levernummer OFT', 'oft-mdm' );
 			$profile_fields['shipping']['fields']['shipping_number_oft']['description'] = $blocking_warning;
 
 			// Herorden de factuurvelden en laat 'billing_address_2' en 'billing_state' weg
@@ -671,7 +671,7 @@
 
 			if ( $passed and ! $passed_extra_conditions ) {
 				$product = wc_get_product( $product_id );
-				wc_add_notice( sprintf( __( 'Als %1$s-klant kun je %2$s niet bestellen.', 'oft' ), $this->get_client_type(), $product->get_name() ), 'error' );
+				wc_add_notice( sprintf( __( 'Als %1$s-klant kun je %2$s niet bestellen.', 'oft-mdm' ), $this->get_client_type(), $product->get_name() ), 'error' );
 			}
 			
 			return $passed_extra_conditions;
@@ -705,7 +705,7 @@
 					if ( ! WC()->session->has_session() ) {
 						WC()->session->set_customer_session_cookie(true);
 					}
-					wc_add_notice( sprintf( __( '%s is niet beschikbaar voor jou.', 'oft' ), get_the_title() ), 'error' );
+					wc_add_notice( sprintf( __( '%s is niet beschikbaar voor jou.', 'oft-mdm' ), get_the_title() ), 'error' );
 					
 					if ( wp_get_referer() ) {
 						// Keer terug naar de vorige pagina

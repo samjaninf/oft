@@ -1,6 +1,6 @@
 <?php
 	/*
-	Plugin Name: OFT My Account Tabs
+	Plugin Name: OFT/MDM My Account Tabs
 	Description: Voeg extra tabbladen toe om orders / facturen / crediteringen te raadplegen die niet via BestelWeb verliepen.
 	Version:     1.3.1
 	Author:      Full Stack Ahead

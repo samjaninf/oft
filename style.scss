@@ -1427,7 +1427,7 @@ body:not(.logged-in) {
 /***********/
 
 /* Zorg ervoor dat het bolletje met het aantl items in het winkelmandje zeker niet afgekapt wordt */
-.woo_amc_open_image > svg {
+.woo_amc_open_image > svg:not(:root) {
 	overflow: visible !important;
 }
 
