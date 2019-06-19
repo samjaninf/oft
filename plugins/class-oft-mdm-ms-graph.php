@@ -1,8 +1,8 @@
 <?php
-	use Microsoft\Graph;
+	use Microsoft\Graph\Graph;
+	use Microsoft\Graph\Model;
 
 	$start = microtime(true);
-
 	require_once '../../../../wp-load.php';
 	echo number_format( microtime(true)-$start, 4, ',', '.' )." s => WORDPRESS LOADED<br/>";
 
@@ -13,14 +13,14 @@
 		
 		const USER_NAME = 'klantendienst@oft.be';
 		const USER_ID = '3a4ec597-1540-4a6a-81d9-2d9ea893edb0';
-		const oww_scheme_id = 'AAMkADNlZGNlY2Q3LTU4NDctNDZlMi1hMjgyLWNjMTdhN2NiZTk0ZgBGAAAAAABuULMO0-qUSYSIyb2KIl9LBwAoJ3qpsWFSSpypVo542E_lAAAAAAEGAAAoJ3qpsWFSSpypVo542E_lAAAcuXwlAAA=';
-		const mdm_scheme_id = 'AAMkADNlZGNlY2Q3LTU4NDctNDZlMi1hMjgyLWNjMTdhN2NiZTk0ZgBGAAAAAABuULMO0-qUSYSIyb2KIl9LBwAoJ3qpsWFSSpypVo542E_lAAAAAAEGAAAoJ3qpsWFSSpypVo542E_lAAAcuXwmAAA=';
-		const shuttle_scheme_id = 'AAMkADNlZGNlY2Q3LTU4NDctNDZlMi1hMjgyLWNjMTdhN2NiZTk0ZgBGAAAAAABuULMO0-qUSYSIyb2KIl9LBwAoJ3qpsWFSSpypVo542E_lAAAAAAEGAAAoJ3qpsWFSSpypVo542E_lAAAcuXwnAAA=';
+		const OWW_SCHEME_ID = 'AAMkADNlZGNlY2Q3LTU4NDctNDZlMi1hMjgyLWNjMTdhN2NiZTk0ZgBGAAAAAABuULMO0-qUSYSIyb2KIl9LBwAoJ3qpsWFSSpypVo542E_lAAAAAAEGAAAoJ3qpsWFSSpypVo542E_lAAAcuXwlAAA=';
+		const MDM_SCHEME_ID = 'AAMkADNlZGNlY2Q3LTU4NDctNDZlMi1hMjgyLWNjMTdhN2NiZTk0ZgBGAAAAAABuULMO0-qUSYSIyb2KIl9LBwAoJ3qpsWFSSpypVo542E_lAAAAAAEGAAAoJ3qpsWFSSpypVo542E_lAAAcuXwmAAA=';
+		const SHUTTLE_SCHEME_ID = 'AAMkADNlZGNlY2Q3LTU4NDctNDZlMi1hMjgyLWNjMTdhN2NiZTk0ZgBGAAAAAABuULMO0-qUSYSIyb2KIl9LBwAoJ3qpsWFSSpypVo542E_lAAAAAAEGAAAoJ3qpsWFSSpypVo542E_lAAAcuXwnAAA=';
 
 		function __construct() {
 			global $start;
 			require_once WP_CONTENT_DIR.'/plugins/microsoft-graph/autoload.php';
-			echo number_format( microtime(true)-$start, 4, ',', '.' )." s => MS GRAPH API LOADED<br/>";
+			echo number_format( microtime(true)-$start, 4, ',', '.' )." s => MICROSOFT GRAPH API LOADED<br/>";
 			
 			$guzzle = new \GuzzleHttp\Client();
 			$token = json_decode( $guzzle->post(
@@ -46,7 +46,7 @@
 			// $calendars = $this->graph
 			// 	->createRequest( 'GET', '/users/'.$user_name_app.'/calendars' )
 			// 	->addHeaders( array( 'Content-Type' => 'application/json', 'Prefer' => 'outlook.timezone="Europe/Paris"' ) )
-			// 	->setReturnType(Microsoft\Graph\Model\Event::class)
+			// 	->setReturnType(Model\Event::class)
 			// 	->setTimeout(10000)
 			// 	->execute();
 			// var_dump_pre($calendars);
@@ -59,21 +59,37 @@
 				} else {
 					$routecode = NULL;
 				}
-				$event_a1a = $this->get_calendar_event_by_routecode( $routecode );
+
+				$event = $this->get_calendar_event_by_routecode( $routecode );
 				echo number_format( microtime(true)-$start, 4, ',', '.' )." s => EVENT REQUEST EXECUTED<br/>";
 
-				$instances = $this->get_instances_for_calendar_event( $event_a1a->getId() );
+				$instances = $this->get_instances_for_calendar_event( $event->getId() );
 				echo number_format( microtime(true)-$start, 4, ',', '.' )." s => INSTANCE REQUEST EXECUTED<br/>";
-				echo "<br/>".count($instances)." INSTANCES<br/>";
-
-				$instances = $this->get_calendar_view_by_subject( $routecode, 50 );
-				echo "<br/>".count($instances)." INSTANCES<br/>";
-
+				
+				echo "<ol>";
 				foreach ( $instances as $event ) {
-					echo '<br/><b>'.$event->getSubject().'</b><br/>';
+					echo '<li><b>'.$event->getSubject().'</b><br/>';
 					// Bevat respectievelijk Microsoft\Graph\Model\DateTimeTimeZone / array van strings / Microsoft\Graph\Model\Recipient
-					echo $event->getStart()->getDateTime().' &mdash; '.str_replace( 'Z', '', implode( ', ', $event->getCategories() ) ).' &mdash; '.$event->getOrganizer()->getEmailAddress()->getAddress().'<br/>';
+					echo $event->getStart()->getDateTime().' &mdash; '.str_replace( 'Z', '', implode( ', ', $event->getCategories() ) ).' &mdash; '.$event->getOrganizer()->getEmailAddress()->getAddress().'</li>';
 				}
+				echo "</ol>";
+
+				if ( isset( $_GET['subject'] ) and ! empty( $_GET['subject'] ) ) {
+					$subject = $_GET['subject'];
+				} else {
+					$subject = NULL;
+				}
+				
+				$instances = $this->get_calendar_view_by_subject( $subject, 50 );
+				echo number_format( microtime(true)-$start, 4, ',', '.' )." s => CALENDER VIEW REQUEST EXECUTED<br/>";
+				
+				echo "<ol>";
+				foreach ( $instances as $event ) {
+					echo '<li><b>'.$event->getSubject().'</b><br/>';
+					// Bevat respectievelijk Microsoft\Graph\Model\DateTimeTimeZone / array van strings / Microsoft\Graph\Model\Recipient
+					echo $event->getStart()->getDateTime().' &mdash; '.str_replace( 'Z', '', implode( ', ', $event->getCategories() ) ).' &mdash; '.$event->getOrganizer()->getEmailAddress()->getAddress().'</li>';
+				}
+				echo "</ol>";
 				
 			} catch ( Exception $e ) {
 				exit( $e->getMessage() );
@@ -95,11 +111,11 @@
 					return $events[0];
 				} elseif ( count( $events ) > 1 ) {
 					$msg = 'MULTIPLE EVENTS FOUND';
-					$logger->$warning( $msg, $this->context );
+					$logger->warning( $msg, $this->context );
 					return $msg;
 				}
 			} else {
-				$logger->$warning( 'Fatal error', $this->context );
+				$logger->warning( 'Fatal error', $this->context );
 			}
 
 			return false;
@@ -110,8 +126,7 @@
 			$start_date = date_i18n( 'Y-m-d\TH:i:s' );
 			// Dit houdt geen rekening met de lokale tijd ...
 			$end_date = date_i18n( 'Y-m-d\TH:i:s', strtotime('+2 months') );
-			var_dump_pre($start_date);
-			var_dump_pre($end_date);
+			// var_dump_pre($end_date);
 
 			$instances = $this->graph->createRequest( 'GET', '/users/'.self::USER_NAME.'/calendars/'.self::OWW_SCHEME_ID.'/events/'.$event_id.'/instances?startDateTime='.$start_date.'&endDateTime='.$end_date.'&$orderby=start/dateTime asc&$top='.$limit )
 				->addHeaders( array( 'Content-Type' => 'application/json', 'Prefer' => 'outlook.timezone="Europe/Paris"' ) )
@@ -124,11 +139,11 @@
 					return $instances;
 				} else {
 					$msg = 'NO INSTANCES FOUND';
-					$logger->$warning( $msg, $this->context );
+					$logger->warning( $msg, $this->context );
 					return $msg;
 				}
 			} else {
-				$logger->$warning( 'Fatal error', $this->context );
+				$logger->warning( 'Fatal error', $this->context );
 			}
 
 			return false;
@@ -139,15 +154,14 @@
 			$start_date = date_i18n( 'Y-m-d\TH:i:s' );
 			// Dit houdt geen rekening met de lokale tijd ...
 			$end_date = date_i18n( 'Y-m-d\TH:i:s', strtotime('+2 months') );
-			var_dump_pre($start_date);
-			var_dump_pre($end_date);
+			// var_dump_pre($end_date);
 
 			// Opgelet: startswith() is hier case sensitive!
 			// Filteren op categorie resulteert in Error 500
 			$instances_in_view = $this->graph->createRequest( 'GET', '/users/'.self::USER_NAME.'/calendars/'.self::OWW_SCHEME_ID.'/calendarView?startDateTime='.$start_date.'&endDateTime='.$end_date.'&$orderby=start/dateTime asc&$filter=startswith(subject,\''.$type.'\')&$top='.$limit )
 				->addHeaders( array( 'Content-Type' => 'application/json', 'Prefer' => 'outlook.timezone="Europe/Paris"' ) )
 				->setReturnType(Model\Event::class)
-				->setTimeout(100000)
+				->setTimeout(10000)
 				->execute();
 			
 			if ( is_array( $instances_in_view ) ) {
@@ -155,11 +169,11 @@
 					return $instances_in_view;
 				} else {
 					$msg = 'NO INSTANCES IN VIEW';
-					$logger->$warning( $msg, $this->context );
+					$logger->warning( $msg, $this->context );
 					return $msg;
 				}
 			} else {
-				$logger->$warning( 'Fatal error', $this->context );
+				$logger->warning( 'Fatal error', $this->context );
 			}
 
 			return false;
