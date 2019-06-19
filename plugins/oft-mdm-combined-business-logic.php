@@ -13,6 +13,12 @@
 	new Oft_Mdm_Custom_Business_Logic('oft');
 
 	class Oft_Mdm_Custom_Business_Logic {
+		// const WOBAL_METHOD = 'free_shipping:1';
+		const WOBAL_METHOD = 'flat_rate:5';
+		const TOURNEE_METHOD = 'free_shipping:4';
+		const OFTL_PIKCUP_METHOD = 'local_pickup:2';
+		const MDM_PIKCUP_METHOD = 'local_pickup:3';
+
 		static $company, $routecodes_oww, $routecodes_daily, $routecodes_ext;
 
 		function __construct( $param = 'oft' ) {
@@ -61,6 +67,9 @@
 			
 			// Verhinder het permanent verwijderen van producten (maar na 1 jaar wel automatische clean-up door Wordpress, zie wp-config.php!)
 			add_action( 'before_delete_post', array( $this, 'disable_manual_product_removal' ), 10, 1 );
+
+			// Verberg de verzendopties die niet van toepassing zijn
+			add_filter( 'woocommerce_package_rates', array( $this, 'hide_invalid_shipping_methods' ), 10, 2 );
 
 			// Maak de adresvelden voor klanten onbewerkbaar en verduidelijk de labels en layout
 			add_filter( 'woocommerce_default_address_fields', array( $this, 'make_addresses_readonly' ), 1000, 1 );
@@ -341,6 +350,81 @@
 			if ( 'product' === get_post_type( $post_id ) and $_SERVER['SERVER_NAME'] === 'www.oxfamfairtrade.be' ) {
 				wp_die( sprintf( __( 'Uit veiligheidsoverwegingen is het verwijderen van producten niet toegestaan, voor geen enkele gebruikersrol! Vraag &ndash; indien nodig &ndash; dat de hogere machten op %s deze beperking tijdelijk opheffen, zodat je je vuile zaakjes kunt opknappen.', 'oft-mdm' ), '<a href="mailto:'.get_option('admin_email').'">'.get_option('admin_email').'</a>' ) );
 			}
+		}
+
+		function get_routecode( $user_id = false ) {
+			if ( $user_id === false ) $user_id = get_current_user_id();
+			// MOET UIT HUIDIG GESELECTEERDE VERZENDADRES KOMEN, NIET UIT USER PROFIEL
+			$helper = explode( '-', get_user_meta( $user_id, 'shipping_routecode', true ) );
+			// AANPASSEN AAN DRIEWEKELIJKS SYSTEEM
+			if ( is_numeric($helper[0]) ) {
+				$routecode = intval($helper[0]);
+			} else {
+				$routecode = $helper[0];
+			}
+			return $routecode;
+		}
+
+		function customer_still_has_open_orders( $status = 'processing', $user_id = false, $delivery_date = false ) {
+			if ( $user_id === false ) {
+				$user_id = get_current_user_id();
+			}
+
+			// TO DO: Filter op specifieke leverdatum toevoegen
+			$args = array(
+				'status' => $status,
+				'type' => 'shop_order',
+				'customer_id' => $user_id,
+				'limit' => -1,
+				'return' => 'objects',
+			);
+			// Zoek alle orders van de klant met deze status op
+			$open_orders = wc_get_orders($args);
+
+			if ( count( $open_orders ) > 0 ) {
+				return $open_orders;
+			} else {
+				return false;
+			}
+		}
+
+		function oftc_hide_invalid_shipping_methods( $rates, $package ) {
+			if ( $this->get_client_type() !== 'OWW' ) {
+				// WOBAL-levering uitschakelen
+				unset( $rates[ self::WOBAL_METHOD ] );
+				// Afhaling in Waver uitschakelen
+				unset( $rates[ self::MDM_PIKCUP_METHOD ] );
+			} else {
+				// TO DO: Leeggoed uit alle subtotalen weglaten
+				$current_subtotal = WC()->cart->get_subtotal();
+				
+				// Subtotalen optellen en checken of we samen met de huidige inhoud al boven FRC/FRCG zitten
+				if ( $orders = $this->customer_still_has_open_orders() ) {
+					foreach ( $orders as $$order ) {
+						$current_subtotal += $order->get_subtotal();
+					}
+				}
+
+				if ( $current_subtotal > 1000 ) {
+					// Onmiddellijke gratis WOBAL-levering vanaf 1000 euro = FRCG
+					// TO DO: Check of de huidige datum toevallig een default leverdag is, of dat we dynamisch van routecode moeten switchen
+					// Misschien beter een aparte levermethode aanmaken voor deadline hoppers? Handig voor rapportering!
+					$rates[ self::WOBAL_METHOD ]->set_cost(0);
+				} elseif ( $current_subtotal > 500 ) {
+					// Reguliere gratis WOBAL-levering vanaf 500 euro = FRC
+					$rates[ self::WOBAL_METHOD ]->set_cost(0);
+					// unset( $rates[ self::EXPRESS_METHOD ] );
+				} else {
+					// Betalende WOBAL-levering
+				}
+			}
+
+			if ( $this->get_client_type() !== 'MDM' ) {
+				// TOURNEE-levering uitschakelen
+				unset( $rates[ self::TOURNEE_METHOD ] );
+			}
+
+			return $rates;
 		}
 
 		function make_addresses_readonly( $address_fields ) {
