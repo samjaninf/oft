@@ -2,20 +2,17 @@
 	use Microsoft\Graph\Graph;
 	use Microsoft\Graph\Model;
 
-	$start = microtime(true);
-	require_once '../../../../wp-load.php';
-	echo number_format( microtime(true)-$start, 4, ',', '.' )." s => WORDPRESS LOADED<br/>";
-
 	if ( isset( $_GET['routecode'] ) and ! empty( $_GET['routecode'] ) ) {
+		$start = microtime(true);
 		$routecode = $_GET['routecode'];
 
 		$graph_api = new Oft_Mdm_Microsoft_Graph();
 
-		$events = $graph_api->get_calendar_events_by_routecode( $routecode );
+		$events = $graph_api->get_events_by_routecode( $routecode );
 		echo number_format( microtime(true)-$start, 4, ',', '.' )." s => EVENT REQUEST EXECUTED<br/>";
 		var_dump_pre($events);
 
-		$instances = $graph_api->get_instances_for_calendar_event( $events[0]->getId() );
+		$instances = $graph_api->get_first_instances_of_event( $events[0]->getId() );
 		echo number_format( microtime(true)-$start, 4, ',', '.' )." s => INSTANCE REQUEST EXECUTED<br/>";
 		
 		echo "<ol>";
@@ -45,7 +42,7 @@
 	}
 
 	class Oft_Mdm_Microsoft_Graph {
-		protected $graph_api, $context;
+		protected $graph_api, $context, $timer;
 		
 		const USER_NAME = 'klantendienst@oft.be';
 		const USER_ID = '3a4ec597-1540-4a6a-81d9-2d9ea893edb0';
@@ -54,9 +51,9 @@
 		const SHUTTLE_SCHEME_ID = 'AAMkADNlZGNlY2Q3LTU4NDctNDZlMi1hMjgyLWNjMTdhN2NiZTk0ZgBGAAAAAABuULMO0-qUSYSIyb2KIl9LBwAoJ3qpsWFSSpypVo542E_lAAAAAAEGAAAoJ3qpsWFSSpypVo542E_lAAAcuXwnAAA=';
 
 		function __construct() {
-			global $start;
+			$this->timer = microtime(true);
 			require_once WP_PLUGIN_DIR.'/microsoft-graph/autoload.php';
-			echo number_format( microtime(true)-$start, 4, ',', '.' )." s => MICROSOFT GRAPH API LOADED<br/>";
+			echo number_format( microtime(true) - $this->timer, 4, ',', '.' )." s => MICROSOFT GRAPH API LOADED<br/>";
 			
 			$guzzle = new \GuzzleHttp\Client();
 			$token = json_decode( $guzzle->post(
@@ -70,7 +67,7 @@
 					)
 				)
 			)->getBody()->getContents() );
-			echo number_format( microtime(true)-$start, 4, ',', '.' )." s => ACCESS TOKEN RECEIVED<br/>";
+			echo number_format( microtime(true) - $this->timer, 4, ',', '.' )." s => ACCESS TOKEN RECEIVED<br/>";
 
 			$this->graph_api = new Graph();
 			$this->graph_api->setBaseUrl('https://graph.microsoft.com')->setApiVersion('v1.0')->setAccessToken( $token->access_token );
@@ -88,7 +85,7 @@
 			// var_dump_pre($calendars);
 		}
 
-		function get_calendar_events_by_routecode( $routecode, $type = 'deadline' ) {
+		function get_events_by_routecode( $routecode, $type = 'deadline' ) {
 			// Single quotes gebruiken zodat dollartekens niet als variabelen geïnterpreteerd worden
 			$events = $this->graph_api->createRequest( 'GET', '/users/'.self::USER_NAME.'/calendars/'.self::OWW_SCHEME_ID.'/events?$orderby=start/dateTime asc&$filter=categories/any(a:a eq \'Z'.$routecode.'\') and startswith(subject,\''.$type.'\')' )
 				->addHeaders( array( 'Content-Type' => 'application/json', 'Prefer' => 'outlook.timezone="Europe/Paris"' ) )
@@ -99,7 +96,7 @@
 			return $this->check_api_response( $events, 'NO EVENTS FOUND' );
 		}
 
-		function get_instances_for_calendar_event( $event_id, $limit = 20 ) {
+		function get_first_instances_of_event( $event_id, $limit = 20 ) {
 			$start_date = date_i18n( 'Y-m-d\TH:i:s' );
 			$end_date = date_i18n( 'Y-m-d\TH:i:s', strtotime('+2 months') );
 			// Dit houdt geen rekening met de lokale tijd ...
@@ -142,11 +139,10 @@
 					return $response;
 				} else {
 					$logger->warning( $error_message, $this->context );
-					return $error_message;
 				}
 			}
 
-			return false;
+			throw new Exception( $error_message );
 		}
 	}
 

@@ -1135,23 +1135,25 @@
 			// TO DO: Logica via Microsoft Graph API toevoegen
 			require_once WP_PLUGIN_DIR.'/oft-mdm/class-oft-mdm-ms-graph.php';
 			$graph_api = new Oft_Mdm_Microsoft_Graph();
+			$deadline = strtotime('1 January 2020');
 
 			try {
 
-				$events = $graph_api->get_calendar_event_by_routecode( $routecode );
-				var_dump_pre($events);
-
-				$instances = $graph_api->get_instances_for_calendar_event( $events[0]->getId() );
+				$events = $graph_api->get_events_by_routecode( $routecode );
+				// var_dump_pre( $events );
+				$instances = $graph_api->get_first_instances_of_event( $events[0]->getId() );
+				// Meest nabije komt altijd als eerste!
 				$event = $instances[0];
 				echo $event->getSubject().' &mdash; '.$event->getStart()->getDateTime().' &mdash; '.str_replace( 'Z', '', implode( ', ', $event->getCategories() ) );
-				
-			} catch ( Exception $e ) {
+				$deadline = strtotime( $event->getStart()->getDateTime() );
+
+			} catch( Exception $e ) {
 
 				exit( $e->getMessage() );
-				
+
 			}
 
-			return $from;
+			return $deadline;
 		}
 
 		function calculate_delivery_day( $shipping_method_id, $routecode = 'A', $from = false ) {
