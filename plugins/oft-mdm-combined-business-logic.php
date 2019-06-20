@@ -362,7 +362,10 @@
 		function add_consumer_units_per_order_unit( $title, $product ) {
 			if ( ! $product instanceof WC_Product_Simple ) {
 				$product = $product['data'];
-				if ( empty( $product ) ) write_log( $product['data'] );
+				if ( empty( $product ) ) {
+					write_log("CHECK CONTENTS OF $PRODUCT IN ADD_CONSUMER_UNITS_PER_ORDER_UNIT()");
+					write_log( $product['data'] );
+				}
 			}
 
 			if ( $product instanceof WC_Product_Simple and intval( $product->get_meta('_multiple') ) > 1 ) {
@@ -906,6 +909,7 @@
 			
 			// Laad het bestelsjabloon in de juiste taal
 			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			// TO DO: Verhuizen naar plugin, mag niet afhangen van het geselecteerde thema
 			$spreadsheet = $reader->load( get_stylesheet_directory().'/assets/order-template.xlsx' );
 			
 			// Selecteer het eerste werkblad
@@ -1076,6 +1080,52 @@
 			return false;
 		}
 
+		// TO DO: Optionele parameter $shipping_method_id van de vorm 'method_id:instance_id' verwerken om lookup in order overbodig te maken
+		function is_wobal_delivery( $order, $shipping_method_id = false ) {
+			$shipping_method = $this->get_shipping_method( $order );
+
+			if ( $shipping_method !== false ) {
+				if ( $shipping_method->get_method_id() === 'free_shipping' and $shipping_method->get_instance_id() == '1' ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		function is_tournee_delivery( $order ) {
+			$shipping_method = $this->get_shipping_method( $order );
+
+			if ( $shipping_method !== false ) {
+				if ( $shipping_method->get_method_id() === 'free_shipping' and ( $shipping_method->get_instance_id() == '10' or $shipping_method->get_instance_id() == '1' ) ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		function is_local_pickup( $order, $location = false ) {
+			$shipping_method = $this->get_shipping_method( $order );
+
+			if ( $shipping_method !== false ) {
+				if ( $shipping_method->get_method_id() === 'local_pickup' ) {
+					if ( $location === false ) {
+						// Elke vorm van afhaling
+						return true;
+					} elseif ( $location === 'mdm' and ( $shipping_method->get_instance_id() == '2' or $shipping_method->get_instance_id() == '9' ) ) {
+						// Afhaling in Waver
+						return true;
+					} elseif ( $location === 'oft' and $shipping_method->get_instance_id() == '7' ) {
+						// Afhaling in Wondelgem
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
 		function get_first_deadline( $routecode, $from = false ) {
 			if ( $from === false ) {
 				// Neem de huidige tijd als vertrekpunt
@@ -1083,6 +1133,24 @@
 			}
 
 			// TO DO: Logica via Microsoft Graph API toevoegen
+			require_once WP_PLUGIN_DIR.'/oft-mdm/class-oft-mdm-ms-graph.php';
+			$graph_api = new Oft_Mdm_Microsoft_Graph();
+
+			try {
+
+				$events = $graph_api->get_calendar_event_by_routecode( $routecode );
+				var_dump_pre($events);
+
+				$instances = $graph_api->get_instances_for_calendar_event( $events[0]->getId() );
+				$event = $instances[0];
+				echo $event->getSubject().' &mdash; '.$event->getStart()->getDateTime().' &mdash; '.str_replace( 'Z', '', implode( ', ', $event->getCategories() ) );
+				
+			} catch ( Exception $e ) {
+
+				exit( $e->getMessage() );
+				
+			}
+
 			return $from;
 		}
 
