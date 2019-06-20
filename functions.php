@@ -1512,8 +1512,8 @@
 		}
 	}
 
-	// Verberg niet-OFT-producten door automatisch 'private'-status toe te kennen bij het publiceren
-	add_action( 'save_post', 'change_external_product_status', 10, 3 );
+	// Verberg niet-OFT-producten door automatisch 'private'-status toe te kennen bij het publiceren TIJDELIJK UITSCHAKELEN!
+	// add_action( 'save_post', 'change_external_product_status', 10, 3 );
 
 	function change_external_product_status( $post_id, $post, $update ) {
 		if ( defined('DOING_AUTOSAVE') and DOING_AUTOSAVE ) {
@@ -1558,38 +1558,6 @@
 					'post_date_gmt' => current_time( 'mysql', 1 ),
 				)
 			);
-		}
-	}
-
-	// Synchroniseer de publicatiestatus van/naar draft naar de anderstalige producten (gebeurt bij trashen reeds automatisch door WPML)
-	// Neem een erg hoge prioriteit, zodat de hook pas doorlopen wordt na de 1ste 'save_post', die de zichtbaarheid regelt
-	add_action( 'draft_to_publish', 'sync_product_status', 100, 1 );
-	add_action( 'draft_to_private', 'sync_product_status', 100, 1 );
-	add_action( 'publish_to_draft', 'sync_product_status', 100, 1 );
-	add_action( 'private_to_draft', 'sync_product_status', 100, 1 );
-
-	function sync_product_status( $post ) {
-		// Frans en Engels publiceren van zodra Nederlands product online komt!
-		$lang = apply_filters( 'wpml_post_language_details', NULL, $post->ID );
-		if ( $post->post_type === 'product' and $lang['language_code'] === 'nl' ) {
-			$nl_product = wc_get_product($post->ID);
-			if ( $nl_product !== false ) {
-				$status = $nl_product->get_status();
-
-				$fr_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'fr' );
-				$fr_product = wc_get_product($fr_product_id);
-				if ( $fr_product !== false ) {
-					$fr_product->set_status($status);
-					$fr_product->save();
-				}
-
-				$en_product_id = apply_filters( 'wpml_object_id', $post->ID, 'product', false, 'en' );
-				$en_product = wc_get_product($en_product_id);
-				if ( $en_product !== false ) {
-					$en_product->set_status($status);
-					$en_product->save();
-				}
-			}
 		}
 	}
 

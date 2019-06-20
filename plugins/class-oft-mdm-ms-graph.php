@@ -19,7 +19,7 @@
 
 		function __construct() {
 			global $start;
-			require_once WP_CONTENT_DIR.'/plugins/microsoft-graph/autoload.php';
+			require_once WP_PLUGIN_DIR.'/microsoft-graph/autoload.php';
 			echo number_format( microtime(true)-$start, 4, ',', '.' )." s => MICROSOFT GRAPH API LOADED<br/>";
 			
 			$guzzle = new \GuzzleHttp\Client();

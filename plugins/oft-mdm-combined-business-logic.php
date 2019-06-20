@@ -16,13 +16,14 @@
 		// const WOBAL_METHOD = 'free_shipping:1';
 		const WOBAL_METHOD = 'flat_rate:5';
 		const TOURNEE_METHOD = 'free_shipping:4';
-		const OFTL_PIKCUP_METHOD = 'local_pickup:2';
-		const MDM_PIKCUP_METHOD = 'local_pickup:3';
+		const OFTL_PICKUP_METHOD = 'local_pickup:2';
+		const MDM_PICKUP_METHOD = 'local_pickup:3';
 
-		static $company, $routecodes_oww, $routecodes_daily, $routecodes_ext;
+		static $company, $empties, $routecodes_oww, $routecodes_daily, $routecodes_ext, $routecodes_mdm;
 
 		function __construct( $param = 'oft' ) {
 			self::$company = $param;
+			self::$empties = array( '29900', '29902', '29906', '29916' );
 			self::$routecodes_oww = array(
 				'A1A' => __( 'Deadline op donderdag', 'oft-mdm' )." ".__( '(wekelijks)', 'oft-mdm' ),
 				'A2A' => __( 'Deadline op donderdag', 'oft-mdm' )." ".__( '(tweewekelijks, even weken)', 'oft-mdm' ),
@@ -37,13 +38,30 @@
 				'1' => __( 'Maandag', 'oft-mdm' ),
 				'2' => __( 'Dinsdag', 'oft-mdm' ),
 				'3' => __( 'Woensdag', 'oft-mdm' ),
-				'4' => __( 'Donderdag', 'oft'),
+				'4' => __( 'Donderdag', 'oft-mdm' ),
 				'5' => __( 'Vrijdag', 'oft-mdm' ),
 			);
 			self::$routecodes_ext = array(
 				'T' => __( 'Externe klant', 'oft-mdm' ),
 				'TB' => __( 'Externe klant (B)', 'oft-mdm' ),
 				'MDM' => __( 'Magasins du Monde', 'oft-mdm' ),
+			);
+			self::$routecodes_mdm = array(
+				'1-AB' => __( 'Henegouwen', 'oft-mdm' ),
+				'1-A' => __( 'Henegouwen', 'oft-mdm' )." ".__( '(even weken)', 'oft-mdm' ),
+				'1-B' => __( 'Henegouwen', 'oft-mdm' )." ".__( '(oneven weken)', 'oft-mdm' ),
+				'2-AB' => __( 'Namen', 'oft-mdm' ),
+				'2-A' => __( 'Namen', 'oft-mdm' )." ".__( '(even weken)', 'oft-mdm' ),
+				'2-B' => __( 'Namen', 'oft-mdm' )." ".__( '(oneven weken)', 'oft-mdm' ),
+				'3-AB' => __( 'Luik', 'oft-mdm' ),
+				'3-A' => __( 'Luik', 'oft-mdm' )." ".__( '(even weken)', 'oft-mdm' ),
+				'3-B' => __( 'Luik', 'oft-mdm' )." ".__( '(oneven weken)', 'oft-mdm' ),
+				'4-AB' => __( 'Luxemburg', 'oft-mdm' ),
+				'4-A' => __( 'Luxemburg', 'oft-mdm' )." ".__( '(even weken)', 'oft-mdm' ),
+				'4-B' => __( 'Luxemburg', 'oft-mdm' )." ".__( '(oneven weken)', 'oft-mdm' ),
+				'5-AB' => __( 'Brussel', 'oft-mdm' ),
+				'5-A' => __( 'Brussel', 'oft-mdm' )." ".__( '(even weken)', 'oft-mdm' ),
+				'5-B' => __( 'Brussel', 'oft-mdm' )." ".__( '(oneven weken)', 'oft-mdm' ),
 			);
 			
 			// Sommige WP-functies (o.a. is_user_logged_in) zijn pas beschikbaar na de 'init'-actie!
@@ -80,9 +98,6 @@
 			// Label, orden en layout de verzendgegevens (maar filter wordt niet doorlopen via AJAX of indien je van winkelmandje naar afrekenen gaat met een verborgen adres!)
 			add_filter( 'woocommerce_shipping_fields', array( $this, 'format_checkout_shipping' ), 1000, 1 );
 
-			// Zorg ervoor dat het 'shipping_state'-veld ook in onze Belgische shop verwerkt wordt STOP IN NIEUW CUSTOM VELD, TE VEEL GEFOEFEL
-			// add_filter( 'woocommerce_states', array( $this, 'define_woocommerce_routecodes' ) );
-
 			// Voeg klant- en levernemers toe aan lijst placeholders voor adressen
 			add_filter( 'woocommerce_formatted_address_replacements', array( $this, 'add_address_replacements' ), 10, 2 );
 
@@ -104,7 +119,7 @@
 			add_action( 'template_redirect', array( $this, 'prevent_access_to_product_page' ) );
 			
 			// Definieer een eigen filter met de assortimentsvoorwaarden, zodat we alles slechts één keer hoeven in te geven
-			add_filter( 'oxfam_product_is_available', array( $this, 'check_product_availability' ), 10, 3 );
+			add_filter( 'oft_mdm_product_is_available', array( $this, 'check_product_availability' ), 10, 3 );
 			// add_action( 'pre_get_posts', array( $this, 'filter_allowed_products' ) );
 
 			// Verhinder het toevoegen van verboden producten én laat de koopknop verdwijnen + zwier reeds toegevoegde producten uit het winkelmandje
@@ -128,7 +143,7 @@
 				return __( 'Bestellen?', 'oft-mdm' );
 			} );
 			add_filter( 'wc_product_table_data_add_to_cart', function( $html, $product ) {
-				return $html . __( 'OMPAKINFO', 'oft-mdm' );
+				return $html . $product->get_meta('_vkeh_uom');
 			}, 10, 2 );
 
 			// Zorg ervoor dat de logica uit de product loop ook toegepast wordt in de tabel
@@ -144,10 +159,22 @@
 			
 			// Synchroniseer de publicatiestatus vanuit de hoofdtaal naar anderstalige producten (zoals bij trashen reeds automatisch door WPML gebeurt)
 			// Neem een hoge prioriteit, zodat de functie pas doorlopen wordt na de 1ste 'save_post' die de zichtbaarheid regelt
-			add_action( 'draft_to_publish', array( $this, 'sync_product_status' ), 100 );
-			add_action( 'draft_to_private', array( $this, 'sync_product_status' ), 100 );
-			add_action( 'publish_to_draft', array( $this, 'sync_product_status' ), 100 );
-			add_action( 'private_to_draft', array( $this, 'sync_product_status' ), 100 );
+			add_action( 'draft_to_publish', array( $this, 'sync_product_status' ), 100, 1 );
+			add_action( 'draft_to_private', array( $this, 'sync_product_status' ), 100, 1 );
+			add_action( 'publish_to_draft', array( $this, 'sync_product_status' ), 100, 1 );
+			add_action( 'private_to_draft', array( $this, 'sync_product_status' ), 100, 1 );
+
+			// Sla de geschatte lever- en shuttledatum op
+			add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'save_delivery_date' ), 100, 2 );
+
+			// Maak de Excel voor het ERP-systeem aan, onafhankelijk van het versturen van de bevestigingsmail
+			add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'process_order_excel' ), 1000, 1 );
+
+			// Vraag het ordernummer mét prefix op
+			add_filter( 'woocommerce_order_number', array( $this, 'add_order_number_prefix' ), 1000, 2 );
+
+			// Voeg JavaScript-functies toe aan front-end
+			add_action( 'wp_footer', array( $this, 'add_front_end_scripts' ) );
 		}
 
 		function delay_actions_and_filters_till_load_completed() {
@@ -279,6 +306,14 @@
 			return $html;
 		}
 
+		function get_consumer_price( $product ) {
+			// Vraag de consumentenprijs op door de prijsfilter tijdelijk te verwijderen
+			remove_filter( 'woocommerce_product_get_regular_price', array( $this, 'get_regular_price_for_current_client' ), 100 );
+			$cp = floatval( $product->get_regular_price() );
+			add_filter( 'woocommerce_product_get_regular_price', array( $this, 'get_regular_price_for_current_client' ), 100, 3 );
+			return $cp;
+		}
+
 		function get_price_for_current_client( $price, $product, $user_id = false, $regular = false ) {
 			// Prijs nooit manipuleren in back-end
 			// AJAX-callbacks gebeuren ook 'in de back-end', voorzie hiervoor een uitzondering 
@@ -327,8 +362,10 @@
 		function add_consumer_units_per_order_unit( $title, $product ) {
 			if ( ! $product instanceof WC_Product_Simple ) {
 				$product = $product['data'];
+				if ( empty( $product ) ) write_log( $product['data'] );
 			}
-			if ( intval( $product->get_meta('_multiple') ) > 1 ) {
+
+			if ( $product instanceof WC_Product_Simple and intval( $product->get_meta('_multiple') ) > 1 ) {
 				$title .= ' x ' . $product->get_meta('_multiple') . ' ';
 				if ( $product->get_meta('_vkeh_uom') !== '' ) {
 					$title .= __( strtolower( $product->get_meta('_multiple_unit') ), 'oft-mdm' );
@@ -336,6 +373,7 @@
 					$title .= __( 'stuks', 'oft-mdm' );
 				}
 			}
+
 			return $title;
 		}
 
@@ -352,7 +390,7 @@
 			}
 		}
 
-		function get_routecode( $user_id = false ) {
+		function get_routecode( $user_id = false, $shipping_number_oft = 0 ) {
 			if ( $user_id === false ) $user_id = get_current_user_id();
 			// MOET UIT HUIDIG GESELECTEERDE VERZENDADRES KOMEN, NIET UIT USER PROFIEL
 			$helper = explode( '-', get_user_meta( $user_id, 'shipping_routecode', true ) );
@@ -388,12 +426,10 @@
 			}
 		}
 
-		function oftc_hide_invalid_shipping_methods( $rates, $package ) {
+		function hide_invalid_shipping_methods( $rates, $package ) {
 			if ( $this->get_client_type() !== 'OWW' ) {
 				// WOBAL-levering uitschakelen
 				unset( $rates[ self::WOBAL_METHOD ] );
-				// Afhaling in Waver uitschakelen
-				unset( $rates[ self::MDM_PIKCUP_METHOD ] );
 			} else {
 				// TO DO: Leeggoed uit alle subtotalen weglaten
 				$current_subtotal = WC()->cart->get_subtotal();
@@ -409,11 +445,12 @@
 					// Onmiddellijke gratis WOBAL-levering vanaf 1000 euro = FRCG
 					// TO DO: Check of de huidige datum toevallig een default leverdag is, of dat we dynamisch van routecode moeten switchen
 					// Misschien beter een aparte levermethode aanmaken voor deadline hoppers? Handig voor rapportering!
-					$rates[ self::WOBAL_METHOD ]->set_cost(0);
-				} elseif ( $current_subtotal > 500 ) {
+					$rates[ self::WOBAL_METHOD ]->set_cost('0');
+				}
+
+				if ( $current_subtotal > 500 ) {
 					// Reguliere gratis WOBAL-levering vanaf 500 euro = FRC
-					$rates[ self::WOBAL_METHOD ]->set_cost(0);
-					// unset( $rates[ self::EXPRESS_METHOD ] );
+					$rates[ self::WOBAL_METHOD ]->set_cost('0');
 				} else {
 					// Betalende WOBAL-levering
 				}
@@ -422,6 +459,8 @@
 			if ( $this->get_client_type() !== 'MDM' ) {
 				// TOURNEE-levering uitschakelen
 				unset( $rates[ self::TOURNEE_METHOD ] );
+				// Afhaling in Waver uitschakelen
+				unset( $rates[ self::MDM_PICKUP_METHOD ] );
 			}
 
 			return $rates;
@@ -551,33 +590,6 @@
 			return $address_fields;
 		}
 
-		function define_woocommerce_routecodes( $states ) {
-			$routecodes_mdm = array(
-				'1-AB' => __( 'Henegouwen', 'oft-mdm' ),
-				'1-A' => __( 'Henegouwen', 'oft-mdm' )." ".__( '(even weken)', 'oft-mdm' ),
-				'1-B' => __( 'Henegouwen', 'oft-mdm' )." ".__( '(oneven weken)', 'oft-mdm' ),
-				'2-AB' => __( 'Namen', 'oft-mdm' ),
-				'2-A' => __( 'Namen', 'oft-mdm' )." ".__( '(even weken)', 'oft-mdm' ),
-				'2-B' => __( 'Namen', 'oft-mdm' )." ".__( '(oneven weken)', 'oft-mdm' ),
-				'3-AB' => __( 'Luik', 'oft-mdm' ),
-				'3-A' => __( 'Luik', 'oft-mdm' )." ".__( '(even weken)', 'oft-mdm' ),
-				'3-B' => __( 'Luik', 'oft-mdm' )." ".__( '(oneven weken)', 'oft-mdm' ),
-				'4-AB' => __( 'Luxemburg', 'oft-mdm' ),
-				'4-A' => __( 'Luxemburg', 'oft-mdm' )." ".__( '(even weken)', 'oft-mdm' ),
-				'4-B' => __( 'Luxemburg', 'oft-mdm' )." ".__( '(oneven weken)', 'oft-mdm' ),
-				'5-AB' => __( 'Brussel', 'oft-mdm' ),
-				'5-A' => __( 'Brussel', 'oft-mdm' )." ".__( '(even weken)', 'oft-mdm' ),
-				'5-B' => __( 'Brussel', 'oft-mdm' )." ".__( '(oneven weken)', 'oft-mdm' ),
-			);
-
-			$states['BE'] = self::$routecodes_oww + $routecodes_mdm + self::$routecodes_ext;
-			$states['NL'] = self::$routecodes_ext;
-			$states['LU'] = self::$routecodes_ext;
-			$states['DE'] = self::$routecodes_ext;
-			$states['FR'] = self::$routecodes_ext;
-			$states['ES'] = self::$routecodes_ext;
-		}
-
 		function load_custom_address_data( $args, $customer_id, $address_type ) {
 			$value = get_user_meta( $customer_id, $address_type . '_number_' . self::$company, true );
 			$args['client_number'] = $value;
@@ -641,7 +653,7 @@
 
 			// Toon de juiste routecodes, naar gelang het kanaal van de GERAADPLEEGDE user (dus niet get_current_user_id() gebruiken!)
 			$client_type = $this->get_client_type( $user_id );
-			$empty = array( 'EMPTY' => __( '(selecteer)', 'oftc' ) );
+			$empty = array( 'EMPTY' => __( '(selecteer)', 'oft-mdm' ) );
 
 			if ( $client_type === 'OWW' ) {
 				// Géén array_merge() gebruiken want numerieke keys worden dan hernummerd vanaf 0!
@@ -711,9 +723,15 @@
 				if ( ! has_term( $client_type, 'product_client_type', $product_id ) ) {
 					$available = false;
 				}
+
+				// Leeggoed altijd beschikbaar maken om problemen te voorkomen
+				$product = wc_get_product( $product_id );
+				if ( $product !== false and in_array( $product->get_sku(), self::$empties ) ) {
+					$available = true;
+					write_log("EMPTIES PRODUCT SKU ".$product->get_sku()." SET TO AVAILABLE");
+				}
 			}
 
-			// if ( $available ) write_log("PRODUCT IS ".$product_id." IS AVAILABLE");
 			return $available;
 		}
 
@@ -751,7 +769,7 @@
 		}
 
 		function disallow_products_not_in_assortment( $passed, $product_id ) {
-			$passed_extra_conditions = apply_filters( 'oxfam_product_is_available', $product_id, $this->get_client_type(), $passed );
+			$passed_extra_conditions = apply_filters( 'oft_mdm_product_is_available', $product_id, $this->get_client_type(), $passed );
 
 			if ( $passed and ! $passed_extra_conditions ) {
 				$product = wc_get_product( $product_id );
@@ -762,7 +780,7 @@
 		}
 
 		function disable_products_not_in_assortment( $purchasable, $product ) {
-			return apply_filters( 'oxfam_product_is_available', $product->get_id(), $this->get_client_type(), $purchasable );
+			return apply_filters( 'oft_mdm_product_is_available', $product->get_id(), $this->get_client_type(), $purchasable );
 		}
 
 		function enable_private_products_for_customers( $visible, $product_id ) {
@@ -782,7 +800,7 @@
 
 		function prevent_access_to_product_page() {
 			if ( is_product() ) {
-				$available = apply_filters( 'oxfam_product_is_available', get_the_ID(), $this->get_client_type(), true );
+				$available = apply_filters( 'oft_mdm_product_is_available', get_the_ID(), $this->get_client_type(), true );
 				
 				if ( ! $available ) {
 					// Als de klant nog niets in het winkelmandje zitten heeft, is er nog geen sessie om notices aan toe te voegen!
@@ -832,6 +850,356 @@
 					}
 				}
 			}
+		}
+
+		function save_delivery_date( $order_id, $data ) {
+			$order = wc_get_order( $order_id );
+			$shipping_method = $this->get_shipping_method( $order );
+			$shipping_method_id = $shipping_method->get_method_id().':'.$shipping_method->get_instance_id();
+
+			// Stel de default datum in TE VERVANGEN DOOR ROUTECODE VAN LEVERADRES
+			$shipping_number_oft = 2128;
+			$delivery_timestamp = $this->calculate_delivery_day( $shipping_method_id, $this->get_routecode( NULL, $shipping_number_oft ) );
+
+			// We moeten blijkbaar niet saven om data in de volgende stap te kunnen opvragen
+			$order->update_meta_data( '_orddd_lite_timestamp', $delivery_timestamp );
+			
+			// if ( $this->is_wobal_delivery( $order ) or $this->is_local_pickup( $order, 'oft' ) ) {
+			// 	$shuttle_timestamp = get_shuttle_from_delivery_estimate( $order );
+			// 	if ( $shuttle_timestamp !== false ) {
+			// 		$order->update_meta_data( '_orddd_shuttle_timestamp', $shuttle_timestamp );
+			// 	}
+			// }
+
+			// Sla het kanaaltype op bij het order, zodat we later eventueel makkelijk kunnen filteren in de rapporten (zonder JOIN op users)
+			$order->update_meta_data( 'client_type', $this->get_client_type( $order->get_customer_id() ) );
+			// Sla geformatteerde orderreferentie op (opeenvolgende nummers worden automatisch voorzien door gratis plugin)
+			$order->update_meta_data( '_order_number_formatted', $order->get_order_number() );
+			$order->save();
+
+			// Verwijder de transient met de meest gekochte producten van de klant
+			delete_transient( 'products_purchased_by_frequency_user_'.$order->get_customer_id() );
+		}
+
+		function process_order_excel( $order_id ) {
+			$start = microtime(true);
+			// Creëer de Excel in de taal van het order
+			$local_file_path = $this->create_order_excel( wc_get_order( $order_id ) );
+			write_log( number_format( microtime(true)-$start, 4, ',', '.' )." s EXCEL CREATED" );
+
+			if ( $local_file_path !== false ) {
+				copy( $local_file_path, WP_CONTENT_DIR.'/odisy/import/test.xlsx' );
+			}
+		}
+
+		function create_order_excel( $order ) {
+			global $sitepress;
+			require_once WP_PLUGIN_DIR.'/phpspreadsheet/autoload.php';
+			
+			$logger = wc_get_logger();
+			$context = array( 'source' => 'PhpSpreadsheet' );
+			
+			// Bewaar huidige taal en switch naar de taal van het order
+			$previous_lang = apply_filters( 'wpml_current_language', NULL );
+			$lang = $order->get_meta('wpml_language');
+			$sitepress->switch_lang( $lang, true );
+			
+			// Laad het bestelsjabloon in de juiste taal
+			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			$spreadsheet = $reader->load( get_stylesheet_directory().'/assets/order-template.xlsx' );
+			
+			// Selecteer het eerste werkblad
+			$spreadsheet->setActiveSheetIndex(0);
+			$order_sheet = $spreadsheet->getActiveSheet();
+
+			// Bepaal enkele infovelden voor de Excel die nog overschreven kunnen worden
+			$billing_number_oft = $order->get_meta('_billing_number_oft');
+			// Zal 'false' opleveren bij MDM-klanten
+			$shipping_number_oft = $order->get_meta('_shipping_number_oft');
+
+			$shipping_method = $this->get_shipping_method( $order );
+			$shipping_method_id = $shipping_method->get_method_id().':'.$shipping_method->get_instance_id();
+			
+			// Haal de voorziene leverdag op
+			$timestamp = $order->get_meta('_orddd_lite_timestamp');
+			if ( strlen( $timestamp ) !== 10 ) {
+				$timestamp = $this->calculate_delivery_day( $shipping_method_id, $this->get_routecode( NULL, $shipping_number_oft ), $order->get_date_created()->getTimestamp() );
+			}
+			
+			switch ( $shipping_method_id ) {
+				case self::OFTL_PICKUP_METHOD:
+					$order_sheet->setCellValue( 'D6', strtoupper( __( 'Zelf afhalen in:', 'oft-mdm' ) ) );
+					$shipping_company = 'Oxfam Fair Trade Logistics Wondelgem';
+					$shipping_number_oft = 0;
+					break;
+				case self::MDM_PICKUP_METHOD:
+					$order_sheet->setCellValue( 'D6', strtoupper( __( 'Zelf afhalen in:', 'oft-mdm' ) ) );
+					$shipping_company = 'Oxfam Magasins du Monde Wavre';
+					$shipping_number_oft = 2388;
+					break;
+				case self::TOURNEE_METHOD:
+					$order_sheet->setCellValue( 'D6', strtoupper( __( 'Levering in MDM:', 'oft-mdm' ) ) );
+					$shipping_number_oft = 2388;
+					break;
+				default:
+					// Zet levernummer op 0 indien het gelijk is aan het klantnummer
+					if ( intval( $billing_number_oft ) === intval( $shipping_number_oft ) ) {
+						$shipping_number_oft = 0;
+					}
+			}
+
+			// Formatteer leverdag expliciet als een Excel-datum
+			// Alle tijden in UST, zie https://phpspreadsheet.readthedocs.io/en/develop/topics/recipes/#write-a-date-or-time-into-a-cell
+			$order_sheet->getStyle('B4')->getNumberFormat()->setFormatCode( \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_DMYSLASH );
+			
+			$order_number = $order->get_order_number();
+			// Vul de headervelden in
+			// B5 = maximum 116 tekens!
+			// TO DO: MDM-routecode ophalen
+			$tourneecode = '';
+			$order_sheet->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name().' - '.$order->get_billing_email().' - '.$order->get_billing_phone() )
+				->setCellValue( 'B2', $order_number )
+				->setCellValue( 'B3', $billing_number_oft )
+				->setCellValue( 'B4', \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel( $timestamp ) )
+				->setCellValue( 'B5', $tourneecode.'|'.get_user_meta( $order->get_customer_id(), 'customer_reference', true ).'|'.$order_number.'|WK'.date_i18n( 'W d/m/Y H:i', $order->get_date_created()->getTimestamp() ) )
+				->setCellValue( 'B8', $shipping_number_oft )
+				->setCellValue( 'B9', $order->get_customer_note() )
+				->setCellValue( 'C4', $order->get_customer_note() )
+				->setCellValue( 'D6', $order->get_billing_company().' '.$order->get_billing_address_1().', '.$order->get_billing_postcode().' '.$order->get_billing_city() )
+				->setCellValue( 'D8', $order->get_shipping_company().' '.$order->get_shipping_address_1().', '.$order->get_shipping_postcode().' '.$order->get_shipping_city() )
+				->setCellValue( 'E5', get_option('woocommerce_store_address').', '.get_option('woocommerce_store_postcode').' '.get_option('woocommerce_store_city').' | '.get_option('woocommerce_store_address_2') );
+
+			// Check of we het ordertype moeten wijzigen
+			if ( $order->get_meta('_order_has_cheques') === 'yes' ) {
+				// NIET NODIG, MACRO DOET HET WERK
+				// $order_sheet->setCellValue( 'B6', 'CH' );
+			}
+			
+			// Vul extra specifieke parameters voor MDM's in
+			if ( $order->get_meta('client_type') === 'MDM' ) {
+				// TOURNEE-code?
+			}
+			
+			$i = 11;
+			// Vul de artikeldata item per item in vanaf rij 11
+			foreach ( $order->get_items() as $order_item_id => $order_item ) {
+				// Doorgaans zal de creatie meteen gebeuren maar eigenlijk kunnen we niet 100% zeker zijn dat het product nog bestaat ...
+				$product = $order_item->get_product();
+
+				if ( in_array( $product->get_sku(), self::$empties ) ) {
+					// Skip leeggoedartikels, worden automatisch toegevoegd door Odisy!
+					continue;
+				}
+
+				$tax_class = $order_item->get_tax_class();
+				if ( $tax_class === 'zero-rate' ) {
+					$tariff = '0.00';
+				} elseif ( $tax_class === 'reduced-rate' ) {
+					$tariff = '0.06';
+				} else {
+					$tariff = '0.21';
+				}
+				// Stukprijs niét ophalen via wc_get_price_to_display() want:
+				// - het product kan theoretisch inmiddels een andere prijs hebben (vb. door wachtperiode tot in behandeling nemen van rollijst)
+				// - de Excel kan handmatig opnieuw gecreëerd worden vanuit de back-end door ingelogde gebruiker uit andere klantengroep
+				// Formattering van prijzen gebeurt in Excel-template!
+				// ->setCellValue( 'A'.$i, $order_item->get_total() / $order_item->get_quantity() )
+				$order_sheet->setCellValue( 'A'.$i, number_format( $this->get_consumer_price( $product ), 2, ',', '.' ).' '.__( 'euro', 'oft-mdm' ) )
+					->setCellValue( 'B'.$i, $product->get_sku() )
+					->setCellValue( 'C'.$i, $order_item->get_quantity() )
+					->setCellValue( 'D'.$i, $order_item->get_name() )
+					->setCellValue( 'E'.$i, $product->get_meta('_vkeh_uom') )
+					->setCellValue( 'F'.$i, $tariff )
+					->setCellValue( 'G'.$i, $order_item->get_total() + $order_item->get_total_tax() );
+				$i++;
+			}
+
+			// Bereken ordertotaal
+			$order_sheet->getCell('G8')->getCalculatedValue();
+
+			// Bepaal het weeknummer van de voorziene levering van de bestelling
+			$week = date_i18n( 'W', $timestamp );
+			// Haal de winkelnaam op uit user- i.p.v. orderdata en zet de spaties om
+			$filename = str_replace( 'Magasin-du-Monde-', 'MDM-', str_replace( 'Oxfam-Wereldwinkel-', 'OWW-', sanitize_file_name( get_user_meta( $order->get_customer_id(), 'shipping_company', true ) ) ) ).'-'.__( 'WK', 'oft-mdm' ).$week.'-'.$order->get_order_number().'.xlsx';
+			
+			$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+			// Check of we de Excel voor het eerst aanmaken
+			$saved_filename = $order->get_meta('_excel_file_name');
+			if ( $saved_filename === '' ) {
+				$folder = date_i18n('Y');
+				$saved_filename = '/odisy/'.$folder.'/'.$filename;
+				
+				// Check of de map al bestaat
+				if ( ! file_exists( WP_CONTENT_DIR.'/odisy/'.$folder.'/' ) ) {
+					mkdir( WP_CONTENT_DIR.'/odisy/'.$folder.'/', 0755, true );
+				}
+				
+				try {
+					// Bewaar de nieuwe file (Excel 2007+)
+					$writer->save( WP_CONTENT_DIR.$saved_filename );
+					$logger->info( $order->get_order_number().": Excel saved in year archive", $context );
+					
+					// Sla de locatie op als metadata
+					$order->add_meta_data( '_excel_file_name', $saved_filename, true );
+					$order->save_meta_data();
+				} catch ( InvalidArgumentException $e ) {
+					$logger->error( $order->get_order_number().": ".$e->getMessage(), $context );
+				}
+			} else {
+				if ( file_exists( WP_CONTENT_DIR.$saved_filename ) ) {
+					try {
+						// Overschrijf de bestaande file (Excel 2007+)
+						$writer->save( WP_CONTENT_DIR.$saved_filename );
+						$logger->info( $order->get_order_number().": Excel updated in year archive", $context );
+					} catch ( InvalidArgumentException $e ) {
+						$logger->error( $order->get_order_number().": ".$e->getMessage(), $context );
+					}	
+				} else {
+					$logger->warning( $order->get_order_number().": path ".$saved_filename." does not exist", $context );
+				}
+			}
+
+			// Switch taal voor alle zekerheid terug
+			$sitepress->switch_lang( $previous_lang, true );
+
+			return WP_CONTENT_DIR.$saved_filename;
+		}
+
+		function get_shipping_method( $order ) {
+			$shipping_methods = $order->get_shipping_methods();
+			$shipping_method = reset($shipping_methods);
+			
+			if ( $shipping_method instanceof WC_Order_Item_Shipping ) {
+				return $shipping_method;
+			}
+
+			return false;
+		}
+
+		function get_first_deadline( $routecode, $from = false ) {
+			if ( $from === false ) {
+				// Neem de huidige tijd als vertrekpunt
+				$from = current_time('timestamp');
+			}
+
+			// TO DO: Logica via Microsoft Graph API toevoegen
+			return $from;
+		}
+
+		function calculate_delivery_day( $shipping_method_id, $routecode = 'A', $from = false ) {
+			if ( $from === false ) {
+				// Neem de huidige tijd als vertrekpunt
+				$from = current_time('timestamp');
+			}
+
+			// Hier de werkdagen van OFTL in stoppen?
+			$holidays = array();
+			// Deadline ophalen per routecode uit kalender
+			$cut_off = 11;
+			
+			if ( $shipping_method_id === self::WOBAL_METHOD ) {
+				
+				// Bepaal de routedag in ENGELSE tekst (dus geen date_i18n() gebruiken!)
+				$weekday = date( 'l', strtotime( "Sunday +".$routecode." days", $from ) );
+
+				$deadlines_omdm = $this->get_first_deadline( $routecode, $from );
+				
+				// Bouw enkele dagen marge in bij OWW-bestellingen om problemen te vermijden indien er meer dan een week tussen deadline en uitlevering zit
+				$margin = 2.5 * DAY_IN_SECONDS;
+				
+				// Zoek de eerstvolgende routedag na de volgende deadline van deze routecode
+				if ( date( 'l', $from ) == $deadlines_omdm[$routecode-1] and date_i18n( 'G', $from ) < $cut_off ) {
+					// Correctie voor bestellingen op de dag van de deadline zelf
+					$timestamp = strtotime( "next ".$weekday, $from + $margin );
+				} else {
+					$timestamp = strtotime( "next ".$weekday, strtotime( "next ".$deadlines_omdm[$routecode-1], $from ) + $margin );
+				}
+
+				// MDM: Tel er een week bij indien het weeknummer van de eerstvolgende leverdag niet de juiste pariteit heeft
+				// if ( delivered_only_in_even_weeks( $customer_id ) and intval( date( 'W', $timestamp ) ) % 2 !== 0 ) {
+				// 	$timestamp += 7 * DAY_IN_SECONDS;
+				// } elseif ( delivered_only_in_odd_weeks( $customer_id ) and intval( date( 'W', $timestamp ) ) % 2 !== 1 ) {
+				// 	$timestamp += 7 * DAY_IN_SECONDS;
+				// }
+
+			} else {
+
+				$timestamp = $from;
+				// Negeer huidige dag als vertrekpunt indien we nog voor de deadline zitten maar het een dag is waarop het magazijn niet werkt
+				while ( date_i18n( 'G', $from ) < $cut_off and ( date_i18n( 'N', $timestamp ) > 5 or in_array( date_i18n( 'd/m/Y', $timestamp ), $holidays ) ) ) {
+					$timestamp = strtotime( '+1 weekday', $timestamp );
+				}
+				
+				// Zoek gewoon eerstvolgende leverdag na huidige deadline
+				$processing_days = 2;
+				// Na de deadline komt er nog een extra dagje bij!
+				if ( date_i18n( 'G', $from ) >= $cut_off ) {
+					$processing_days++;	
+				}
+
+				for ( $i = 1; $i <= $processing_days; $i++ ) {
+					$timestamp = strtotime( '+1 weekday', $timestamp );
+					// Tel er een werkdag bij tot we niet langer op een dag zitten waarop het magazijn niet werkt
+					while ( in_array( date_i18n( 'd/m/Y', $timestamp ), $holidays ) ) {
+						$timestamp = strtotime( '+1 weekday', $timestamp );
+					}
+				}
+
+			}
+
+			// Neem 12u 's middags van deze dag om tijdzoneproblemen te voorkomen
+			return strtotime( date_i18n( 'Y-m-d 12:00', $timestamp ) );
+		}
+
+		function add_order_number_prefix( $order_number, $order ) {
+			if ( $order->get_meta('_order_number_formatted') !== '' ) {
+				return $order->get_meta('_order_number_formatted');
+			} else {
+				return get_option('woocommerce_order_number_prefix') . $order_number;
+			}
+		}
+
+		function add_front_end_scripts() {
+			?>
+			<script type="text/javascript">
+				jQuery(document).ready( function() {
+					// Maak de hoeveelheidsknoppen overal functioneel
+					jQuery(document).on( 'change', '.quantity .qty', function() {
+						// jQuery plaatst de waardes van de attributen na $thisbutton.data() in woocommerce/assets/js/frontend/add-to-cart.js in de DOM-cache
+						// Indien de hoeveelheid daarna gewijzigd wordt, worden de attributen niet opnieuw expliciet uitgelezen, en wordt opnieuw de oude hoeveelheid toegevoegd
+						// In dit geval is het dus beter om expliciet de 'onzichtbare' data te manipuleren, zie o.a. https://stackoverflow.com/a/8708345
+						jQuery(this).parent('.quantity').next('.add_to_cart_button').data( 'quantity', jQuery(this).val() );
+					});
+
+					<?php if ( WC()->cart->get_cart_contents_count() > 0 ) : ?>
+						// Indien er nog iets in het winkelmandje zit: vraag bevestig vooraleer een bestelling opnieuw te plaatsen
+						jQuery('.order-again').find('a.button').on( 'click', function(e) {
+							if ( confirm("<?php _e( 'Opgelet: de huidige inhoud van je winkelmandje zal onmiddellijk vervangen worden door de beschikbare producten uit deze bestelling. Wil je verdergaan?', 'oft-mdm' ) ; ?>") == false ) {
+								alert("<?php _e( 'Begrepen, we doen niks!', 'oft-mdm' ) ; ?>");
+								e.preventDefault();
+							}
+						});
+					<?php endif; ?>
+					
+					// Verberg aantal reeds in winkelmandje meteen na aanklikken van deleteknop (ook al loopt er onderweg misschien nog iets mis) 
+					jQuery('#site-header-cart').on( 'click', '.remove_from_cart_button', function() {
+						jQuery( '.badge-for-product-id-'+jQuery(this).attr('data-product_id') ).addClass('hidden').text(0);
+					});
+
+					<?php if ( is_cart() ) : ?>
+						var wto;
+						// Herlaad winkelmandje automatisch na aanpassen hoeveelheid
+						jQuery('div.woocommerce').on( 'change', '.qty', function() {
+							clearTimeout(wto);
+							// Time-out net iets groter dan buffertijd zodat we bij ingedrukt houden van de spinner niet gewoon +1/-1 doen
+							wto = setTimeout( function() {
+								jQuery("[name='update_cart']").trigger('click');
+							}, 500 );
+						});
+					<?php endif; ?>
+				});
+			</script>
+			<?php
 		}
 	}
 ?>
