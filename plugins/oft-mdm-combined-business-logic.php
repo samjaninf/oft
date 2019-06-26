@@ -142,9 +142,23 @@
 			add_filter( 'wc_product_table_column_heading_add-to-cart', function( $label ) {
 				return __( 'Bestellen?', 'oft-mdm' );
 			} );
+
+			// WORDT OVERRULED DOOR STYLE-ATTRIBUUT?
 			add_filter( 'wc_product_table_data_add_to_cart', function( $html, $product ) {
 				return $html . $product->get_meta('_vkeh_uom');
 			}, 10, 2 );
+			add_filter( 'wc_product_table_column_width_sku', function( $width ) {
+				return '75px';
+			} );
+			add_filter( 'wc_product_table_column_width_image', function( $width ) {
+				return '75px';
+			} );
+			add_filter( 'wc_product_table_column_width_price', function( $width ) {
+				return '150px';
+			} );
+			add_filter( 'wc_product_table_column_width_add-to-cart', function( $width ) {
+				return '100px';
+			} );
 
 			// Zorg ervoor dat de logica uit de product loop ook toegepast wordt in de tabel
 			add_filter( 'wc_product_table_query_args', array( $this, 'add_custom_product_query_args' ), 10, 2 );
@@ -439,7 +453,7 @@
 				
 				// Subtotalen optellen en checken of we samen met de huidige inhoud al boven FRC/FRCG zitten
 				if ( $orders = $this->customer_still_has_open_orders() ) {
-					foreach ( $orders as $$order ) {
+					foreach ( $orders as $order ) {
 						$current_subtotal += $order->get_subtotal();
 					}
 				}
