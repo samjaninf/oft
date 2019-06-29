@@ -6,6 +6,21 @@
 	use Spipu\Html2Pdf\Exception\Html2PdfException;
 	use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 
+	add_action( 'login_enqueue_scripts', 'oft_custom_login_logo' );
+
+	function oft_custom_login_logo() {
+		?>
+		<style type="text/css"> 
+			body.login div#login h1 a {
+				background-image: url(<?php echo get_stylesheet_directory_uri().'/assets/oft-zwart.png'; ?>);
+				background-size: contain;
+				background-position: center bottom;
+				max-width: 150px;
+			}
+		</style>
+		<?php
+	}
+	
 	// Schakel de default compressie van 90% uit die WordPress toepast op JPG's
 	add_filter( 'jpeg_quality', function( $quality ) { return 95; } );
 
