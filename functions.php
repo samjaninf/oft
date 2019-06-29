@@ -6,16 +6,17 @@
 	use Spipu\Html2Pdf\Exception\Html2PdfException;
 	use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 
-	add_action( 'login_enqueue_scripts', 'oft_custom_login_logo' );
+	// Custom logo tonen bovenaan inlogpagina
+	add_action( 'login_head', 'oft_custom_login_logo' );
 
 	function oft_custom_login_logo() {
 		?>
 		<style type="text/css"> 
 			body.login div#login h1 a {
-				background-image: url(<?php echo get_stylesheet_directory_uri().'/assets/oft-zwart.png'; ?>);
+				background-image: url(<?php echo str_replace( 'demo.', 'www.', get_stylesheet_directory_uri().'/assets/oft-zwart.png' ); ?>);
 				background-size: contain;
 				background-position: center bottom;
-				max-width: 150px;
+				width: 150px;
 			}
 		</style>
 		<?php
