@@ -178,6 +178,9 @@
 			add_action( 'publish_to_draft', array( $this, 'sync_product_status' ), 100, 1 );
 			add_action( 'private_to_draft', array( $this, 'sync_product_status' ), 100, 1 );
 
+			// 
+			add_filter( 'woocommerce_cart_shipping_method_full_label', array( $this, 'print_estimated_delivery' ), 10, 2 );
+
 			// Sla de geschatte lever- en shuttledatum op
 			add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'save_delivery_date' ), 100, 2 );
 
@@ -869,6 +872,33 @@
 			}
 		}
 
+		function print_estimated_delivery( $title, $shipping_rate ) {
+			// Stel de default datum in TE VERVANGEN DOOR ROUTECODE VAN LEVERADRES
+			$shipping_number_oft = 2128;
+			// Methode get_id() uit klasse WC_Shipping_Rate retourneert string van de vorm method_id:instance_id
+			$timestamp = $this->calculate_delivery_day( $shipping_rate->get_id(), $this->get_routecode( false, $shipping_number_oft ) );
+
+			switch ( $shipping_rate->get_id() ) {
+				case self::WOBAL_METHOD:
+				case self::TOURNEE_METHOD:
+					/* TRANSLATORS: %s: geschatte leverdatum, inclusief weekdag (vb. maandag 16/10/2017) */
+					$date = sprintf( __( 'Ten vroegste op %s', 'oft-mdm' ), date_i18n( 'l d/m/Y', $timestamp ) );
+					break;
+				case self::OFTL_PICKUP_METHOD:
+				case self::MDM_PICKUP_METHOD:
+					$date = sprintf( __( 'Vanaf %s', 'oft-mdm' ), date_i18n( 'l d/m/Y \o\m G\u', $timestamp ) );
+					break;
+				case self::BPOST_METHOD:
+					/* TRANSLATORS: %s: geschatte leverdatum, inclusief weekdag (vb. maandag 16/10/2017) */
+					$date = sprintf( __( 'Ten laatste vanaf %s', 'oft-mdm' ), date_i18n( 'l d/m/Y', $timestamp ) );
+					break;
+				default:
+					$date = __( 'Geen schatting beschikbaar', 'oft-mdm' );
+			}
+			
+			return $title.'<br/><small class="delivery-estimate">'.$date.'</small>';
+		}
+
 		function save_delivery_date( $order_id, $data ) {
 			$order = wc_get_order( $order_id );
 			$shipping_method = $this->get_shipping_method( $order );
@@ -876,7 +906,7 @@
 
 			// Stel de default datum in TE VERVANGEN DOOR ROUTECODE VAN LEVERADRES
 			$shipping_number_oft = 2128;
-			$delivery_timestamp = $this->calculate_delivery_day( $shipping_method_id, $this->get_routecode( NULL, $shipping_number_oft ) );
+			$delivery_timestamp = $this->calculate_delivery_day( $shipping_method_id, $this->get_routecode( false, $shipping_number_oft ) );
 
 			// We moeten blijkbaar niet saven om data in de volgende stap te kunnen opvragen
 			$order->update_meta_data( '_orddd_lite_timestamp', $delivery_timestamp );
@@ -941,7 +971,7 @@
 			// Haal de voorziene leverdag op
 			$timestamp = $order->get_meta('_orddd_lite_timestamp');
 			if ( strlen( $timestamp ) !== 10 ) {
-				$timestamp = $this->calculate_delivery_day( $shipping_method_id, $this->get_routecode( NULL, $shipping_number_oft ), $order->get_date_created()->getTimestamp() );
+				$timestamp = $this->calculate_delivery_day( $shipping_method_id, $this->get_routecode( false, $shipping_number_oft ), $order->get_date_created()->getTimestamp() );
 			}
 			
 			switch ( $shipping_method_id ) {
@@ -1141,25 +1171,25 @@
 		}
 
 		function get_first_deadline( $routecode, $from = false ) {
+			write_log("GET FIRST DEADLINE FOR ROUTECODE ".$routecode." ...");
+
 			if ( $from === false ) {
 				// Neem de huidige tijd als vertrekpunt
 				$from = current_time('timestamp');
 			}
 
-			// TO DO: Logica via Microsoft Graph API toevoegen
 			require_once WP_PLUGIN_DIR.'/oft-mdm/class-oft-mdm-ms-graph.php';
 			$graph_api = new Oft_Mdm_Microsoft_Graph();
-			$deadline = strtotime('1 January 2020');
+			$deadline = '2020-01-01T10:00:00';
 
 			try {
 
-				$events = $graph_api->get_events_by_routecode( $routecode );
-				// var_dump_pre( $events );
+				$events = $graph_api->get_events_by_routecode( $routecode, 'deadline' );
 				$instances = $graph_api->get_first_instances_of_event( $events[0]->getId() );
 				// Meest nabije komt altijd als eerste!
 				$event = $instances[0];
-				echo $event->getSubject().' &mdash; '.$event->getStart()->getDateTime().' &mdash; '.str_replace( 'Z', '', implode( ', ', $event->getCategories() ) );
-				$deadline = strtotime( $event->getStart()->getDateTime() );
+				echo $event->getSubject().' &mdash; '.$event->getStart()->getDateTime().' &mdash; '.str_replace( 'Z', '', implode( ', ', $event->getCategories() ) ).'<br/>';
+				$deadline = $event->getStart()->getDateTime();
 
 			} catch( Exception $e ) {
 
@@ -1170,6 +1200,36 @@
 			return $deadline;
 		}
 
+		function get_first_delivery_day( $routecode, $deadline ) {
+			write_log("GET FIRST DELIVERY DAY FOR ROUTECODE ".$routecode." ...");
+
+			if ( $deadline === false ) {
+				// Neem de huidige tijd als vertrekpunt
+				$deadline = current_time('timestamp');
+			}
+
+			require_once WP_PLUGIN_DIR.'/oft-mdm/class-oft-mdm-ms-graph.php';
+			$graph_api = new Oft_Mdm_Microsoft_Graph();
+			$delivery_day = '2020-01-01T10:00:00';
+
+			try {
+
+				$events = $graph_api->get_events_by_routecode( $routecode, 'leverdag' );
+				$instances = $graph_api->get_first_instances_of_event( $events[0]->getId(), $deadline );
+				// Meest nabije komt altijd als eerste!
+				$event = $instances[0];
+				echo $event->getSubject().' &mdash; '.$event->getStart()->getDateTime().' &mdash; '.str_replace( 'Z', '', implode( ', ', $event->getCategories() ) ).'<br/>';
+				$delivery_day = $event->getStart()->getDateTime();
+
+			} catch( Exception $e ) {
+
+				exit( $e->getMessage() );
+
+			}
+
+			return $delivery_day;
+		}
+
 		function calculate_delivery_day( $shipping_method_id, $routecode = 'A', $from = false ) {
 			if ( $from === false ) {
 				// Neem de huidige tijd als vertrekpunt
@@ -1177,34 +1237,40 @@
 			}
 
 			// Hier de werkdagen van OFTL in stoppen?
-			$holidays = array();
-			// Deadline ophalen per routecode uit kalender
-			$cut_off = 11;
+			$holidays = array( '2019-07-22', '2019-07-23', '2019-07-24', '2019-07-25', '2019-07-26' );
 			
 			if ( $shipping_method_id === self::WOBAL_METHOD ) {
 				
-				// Bepaal de routedag in ENGELSE tekst (dus geen date_i18n() gebruiken!)
-				$weekday = date( 'l', strtotime( "Sunday +".$routecode." days", $from ) );
+				// Zoek de eerstvolgende deadline voor deze methode
+				$deadline = $this->get_first_deadline( $routecode, $from );
+				
+				// Zoek de eerstvolgende leverdag na die deadline
+				// TO DO: beem 12u 's middags van deze dag om tijdzoneproblemen te voorkomen!
+				$delivery = strtotime( $this->get_first_delivery_day( $routecode, $deadline ) );
 
-				$deadlines_omdm = $this->get_first_deadline( $routecode, $from );
-				
-				// Bouw enkele dagen marge in bij OWW-bestellingen om problemen te vermijden indien er meer dan een week tussen deadline en uitlevering zit
-				$margin = 2.5 * DAY_IN_SECONDS;
-				
-				// Zoek de eerstvolgende routedag na de volgende deadline van deze routecode
-				if ( date( 'l', $from ) == $deadlines_omdm[$routecode-1] and date_i18n( 'G', $from ) < $cut_off ) {
-					// Correctie voor bestellingen op de dag van de deadline zelf
-					$timestamp = strtotime( "next ".$weekday, $from + $margin );
+			} elseif ( $shipping_method_id === self::OFTL_PICKUP_METHOD ) {
+				// $today = new DateTime( $from );
+				// $deadline_10am = $today->setTime( 10, 0, 0 );
+				// $deadline_15am = $today->setTime( 15, 0, 0 );
+
+				if ( date( 'N', $from ) > 5 or ( date( 'N', $from ) == 5 and date( 'G', $from ) >= 15 ) ) {
+					// Ga naar eerstvolgende werkdag
+					$timestamp = strtotime( '+1 weekday', $from );
 				} else {
-					$timestamp = strtotime( "next ".$weekday, strtotime( "next ".$deadlines_omdm[$routecode-1], $from ) + $margin );
+					$timestamp = $from;
 				}
+				
+				write_log( date('Y-m-d H:i:s', $timestamp ) );
+				write_log( serialize( date( 'G', $timestamp ) ) );
 
-				// MDM: Tel er een week bij indien het weeknummer van de eerstvolgende leverdag niet de juiste pariteit heeft
-				// if ( delivered_only_in_even_weeks( $customer_id ) and intval( date( 'W', $timestamp ) ) % 2 !== 0 ) {
-				// 	$timestamp += 7 * DAY_IN_SECONDS;
-				// } elseif ( delivered_only_in_odd_weeks( $customer_id ) and intval( date( 'W', $timestamp ) ) % 2 !== 1 ) {
-				// 	$timestamp += 7 * DAY_IN_SECONDS;
-				// }
+				// Geen kalender gebruiken, gewoon werkdagen en uren checken
+				if ( date( 'G', $timestamp ) < 10 ) {
+					$delivery = strtotime( 'today 2pm', $timestamp );
+				} else {
+					$delivery = strtotime( '+1 weekday 9am', $timestamp );
+				}
+				
+				// UITZONDERLIJKE SLUITINGSDAGEN CHECKEN
 
 			} else {
 
@@ -1231,8 +1297,8 @@
 
 			}
 
-			// Neem 12u 's middags van deze dag om tijdzoneproblemen te voorkomen
-			return strtotime( date_i18n( 'Y-m-d 12:00', $timestamp ) );
+			write_log("CALCULATED: ".$delivery);
+			return $delivery;
 		}
 
 		function add_order_number_prefix( $order_number, $order ) {

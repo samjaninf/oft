@@ -53,7 +53,7 @@
 		function __construct() {
 			$this->timer = microtime(true);
 			require_once WP_PLUGIN_DIR.'/microsoft-graph/autoload.php';
-			echo number_format( microtime(true) - $this->timer, 4, ',', '.' )." s => MICROSOFT GRAPH API LOADED<br/>";
+			// echo number_format( microtime(true) - $this->timer, 4, ',', '.' )." s => MICROSOFT GRAPH API LOADED<br/>";
 			
 			$guzzle = new \GuzzleHttp\Client();
 			$token = json_decode( $guzzle->post(
@@ -67,7 +67,7 @@
 					)
 				)
 			)->getBody()->getContents() );
-			echo number_format( microtime(true) - $this->timer, 4, ',', '.' )." s => ACCESS TOKEN RECEIVED<br/>";
+			// echo number_format( microtime(true) - $this->timer, 4, ',', '.' )." s => ACCESS TOKEN RECEIVED<br/>";
 
 			$this->graph_api = new Graph();
 			$this->graph_api->setBaseUrl('https://graph.microsoft.com')->setApiVersion('v1.0')->setAccessToken( $token->access_token );
@@ -96,9 +96,11 @@
 			return $this->check_api_response( $events, 'NO EVENTS FOUND' );
 		}
 
-		function get_first_instances_of_event( $event_id, $limit = 20 ) {
-			$start_date = date_i18n( 'Y-m-d\TH:i:s' );
-			$end_date = date_i18n( 'Y-m-d\TH:i:s', strtotime('+2 months') );
+		function get_first_instances_of_event( $event_id, $start_date = false, $limit = 20 ) {
+			if ( $start_date === false ) {
+				$start_date = date_i18n('Y-m-d\TH:i:s');
+			}
+			$end_date = date_i18n( 'Y-m-d\TH:i:s', strtotime( '+2 months', strtotime( $start_date ) ) );
 			// Dit houdt geen rekening met de lokale tijd ...
 			// var_dump_pre($end_date);
 
@@ -133,6 +135,7 @@
 			
 			// Foutmelding retourneert één object met lege values i.p.v. een (lege) array van objecten
 			if ( $response instanceof Model\Event ) {
+				write_log( serialize( $response ) );
 				$logger->warning( 'Fatal error', $this->context );
 			} elseif ( is_array( $response ) ) {
 				if ( count( $response ) > 0 ) {
