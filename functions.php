@@ -1664,7 +1664,7 @@
 				$suffix .= '/kg';
 			}
 
-			if ( has_product_cat_slug( 'fruitsap', $product, false ) or has_product_cat_slug( 'bier', $product, false ) ) {
+			if ( has_product_cat_slug( 'fruitsap', $product, true ) or has_product_cat_slug( 'bier', $product, false ) ) {
 				woocommerce_wp_text_input(
 					array( 
 						'id' => '_empty_fee',
