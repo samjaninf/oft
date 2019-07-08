@@ -1160,13 +1160,13 @@
 		}
 	}
 
-	// Toon metaboxes voor wijninfo enkel voor producten onder de hoofdcategorie 'Wijn'
+	// Toon metaboxes voor voeding- en wijninfo enkel bij bepaalde productcategorieën
 	add_action( 'admin_init', 'hide_food_taxonomies' );
 
 	function hide_food_taxonomies() {
-		global $pagenow;
+		global $pagenow, $post;
 		if ( $pagenow === 'post.php' or $pagenow === 'post-new.php' ) {
-			if ( get_post_type() === 'product' ) {
+			if ( get_post_type( $post->ID ) === 'product' ) {
 				if ( ! has_product_cat_slug('wijn') ) {
 					remove_meta_box( 'product_grapediv', 'product', 'normal' );
 					remove_meta_box( 'product_recipediv', 'product', 'normal' );
