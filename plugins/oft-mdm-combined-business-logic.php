@@ -178,7 +178,7 @@
 			add_action( 'publish_to_draft', array( $this, 'sync_product_status' ), 100, 1 );
 			add_action( 'private_to_draft', array( $this, 'sync_product_status' ), 100, 1 );
 
-			// 
+			// Toon de eerst mogelijke leverdag onder elke verzendmethode
 			add_filter( 'woocommerce_cart_shipping_method_full_label', array( $this, 'print_estimated_delivery' ), 10, 2 );
 
 			// Sla de geschatte lever- en shuttledatum op
@@ -873,9 +873,19 @@
 		}
 
 		function print_estimated_delivery( $title, $shipping_rate ) {
-			// Stel de default datum in TE VERVANGEN DOOR ROUTECODE VAN LEVERADRES
-			$shipping_number_oft = 2128;
-			// Methode get_id() uit klasse WC_Shipping_Rate retourneert string van de vorm method_id:instance_id
+			// Haal het levernummer op
+			if ( WC()->session->has_session() ) {
+				$shipping_address_1 = WC()->session->get('shipping_address_1');
+				$shipping_number_oft = WC()->session->get('shipping_number_oft');
+				write_log( "SHIPPING NUMBER OF SELECTED ADDRESS: ".$shipping_address_1 );
+			} else {
+				// Fallback voor klanten zonder winkelmandje / leveradres (bv. bij afhaling)
+				// Ophalen uit metadata klant?
+				$shipping_number_oft = get_user_meta( get_current_user_id(), 'shipping_number_oft', true );
+				$shipping_number_oft = 2128;
+			}
+
+			// Methode get_id() uit klasse WC_Shipping_Rate retourneert string van de vorm method_id:instance_id REKENT MET ROUTECODE VAN GESELECTEERD LEVERADRES
 			$timestamp = $this->calculate_delivery_day( $shipping_rate->get_id(), $this->get_routecode( false, $shipping_number_oft ) );
 
 			switch ( $shipping_rate->get_id() ) {
@@ -904,7 +914,7 @@
 			$shipping_method = $this->get_shipping_method( $order );
 			$shipping_method_id = $shipping_method->get_method_id().':'.$shipping_method->get_instance_id();
 
-			// Stel de default datum in TE VERVANGEN DOOR ROUTECODE VAN LEVERADRES
+			// Stel de default datum in LOGICA VOOR ROUTECODE VERHUIZEN NAAR CALCULATE_DELIVERY_DAY()?
 			$shipping_number_oft = 2128;
 			$delivery_timestamp = $this->calculate_delivery_day( $shipping_method_id, $this->get_routecode( false, $shipping_number_oft ) );
 
@@ -971,6 +981,7 @@
 			// Haal de voorziene leverdag op
 			$timestamp = $order->get_meta('_orddd_lite_timestamp');
 			if ( strlen( $timestamp ) !== 10 ) {
+				// Fallback indien niet ingesteld VERWIJDEREN?
 				$timestamp = $this->calculate_delivery_day( $shipping_method_id, $this->get_routecode( false, $shipping_number_oft ), $order->get_date_created()->getTimestamp() );
 			}
 			
@@ -1245,7 +1256,7 @@
 				$deadline = $this->get_first_deadline( $routecode, $from );
 				
 				// Zoek de eerstvolgende leverdag na die deadline
-				// TO DO: beem 12u 's middags van deze dag om tijdzoneproblemen te voorkomen!
+				// TO DO: neem 12u 's middags van deze dag om tijdzoneproblemen te voorkomen!
 				$delivery = strtotime( $this->get_first_delivery_day( $routecode, $deadline ) );
 
 			} elseif ( $shipping_method_id === self::OFTL_PICKUP_METHOD ) {

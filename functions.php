@@ -1161,16 +1161,24 @@
 	}
 
 	// Toon metaboxes voor wijninfo enkel voor producten onder de hoofdcategorie 'Wijn'
-	add_action( 'admin_init', 'hide_wine_taxonomies' );
+	add_action( 'admin_init', 'hide_food_taxonomies' );
 
-	function hide_wine_taxonomies() {
+	function hide_food_taxonomies() {
 		global $pagenow;
 		if ( $pagenow === 'post.php' or $pagenow === 'post-new.php' ) {
 			if ( ! has_product_cat_slug('wijn') ) {
 				remove_meta_box( 'product_grapediv', 'product', 'normal' );
 				remove_meta_box( 'product_recipediv', 'product', 'normal' );
 				remove_meta_box( 'product_flavourdiv', 'product', 'normal' );
-			}	
+			}
+
+			if ( ! has_product_cat_slug( 'voeding', true ) ) {
+				remove_meta_box( 'product_packagingdiv', 'product', 'normal' );
+				remove_meta_box( 'product_storagediv', 'product', 'normal' );
+				remove_meta_box( 'product_dietdiv', 'product', 'normal' );
+				remove_meta_box( 'product_partnerdiv', 'product', 'normal' );
+				remove_meta_box( 'product_allergendiv', 'product', 'normal' );
+			}
 		}
 	}
 
