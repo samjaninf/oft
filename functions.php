@@ -15,11 +15,13 @@
 	}
 
 	// Defaultparameters van WooCommerce Product Table staat enkel 'publish' toe
-	add_filter( 'wc_product_table_query_args', 'oft_allow_private_products_in_table', 10, 1 );
+	// add_filter( 'wc_product_table_query_args', 'oft_allow_private_products_in_table', 10, 1 );
 
 	function oft_allow_private_products_in_table( $query_args ) {
-		write_log( var_dump( $query_args ) );
-		$query_args['post_status'] = array( 'publish', 'private' );
+		write_log("CHECK QUERY ARGS PRODUCT TABLE ...");
+		write_log( serialize( $query_args ) );
+		// IS AL IN ORDE, PROBLEEM ZIT BIJ CATEGORIE DROPDOWN
+		// $query_args['post_status'] = array( 'publish', 'private' );
 		// Zorg ervoor dat permissies gecheckt worden en private resultaten enkel zichtbaar zijn voor rechthebbenden!
 		$query_args['perm'] = 'readable';
 		return $query_args;
@@ -82,7 +84,7 @@
 
 	function load_child_theme() {
 		// Zorgt ervoor dat de stylesheet van het child theme ZEKER NA alone.css ingeladen wordt
-		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.29' );
+		wp_enqueue_style( 'oft', get_stylesheet_uri(), array(), '1.2.30' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'alone', get_stylesheet_directory().'/languages' );
 		load_child_theme_textdomain( 'oft', get_stylesheet_directory().'/languages' );

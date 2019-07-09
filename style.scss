@@ -5,7 +5,7 @@
 	Author URI:		https://www.fullstackahead.be
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.28
+	Version:		1.2.30
 	Text Domain:	oft
 */
 
@@ -890,6 +890,28 @@ a:hover > .diet-icon {
 .diet-icon-organic {
 	background-image: url('assets/icon-organic.png');
 	margin-right: -20px;
+}
+
+
+
+/*******************/
+/*  PRODUCT TABLE  */
+/*******************/
+
+table.wc-product-table {
+	th.col-sku,
+	th.col-image {
+		width: 75px;
+	}
+
+	th.col-name {
+		width: auto;
+	}
+
+	th.col-price,
+	th.col-add-to-cart {
+		width: 150px;
+	}
 }
 
 
