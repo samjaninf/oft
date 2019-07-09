@@ -132,33 +132,61 @@
 			add_filter( 'wc_product_table_open_products_in_new_tab', '__return_true' );
 			add_filter( 'wc_product_table_column_searchable_price', '__return_false' );
 			add_filter( 'wc_product_table_column_searchable_add_to_cart', '__return_false' );
-			add_filter( 'wc_product_table_data_name', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
+			add_filter( 'wc_product_table_column_heading_sku', function( $label ) {
+				return __( 'Artikel', 'oft-mdm' );
+			} );
+			add_filter( 'wc_product_table_column_heading_image', function( $label ) {
+				return __( 'Foto', 'oft-mdm' );
+			} );
 			add_filter( 'wc_product_table_column_heading_name', function( $label ) {
 				return __( 'Omschrijving', 'oft-mdm' );
 			} );
 			add_filter( 'wc_product_table_column_heading_price', function( $label ) {
-				return ucfirst( __( 'per ompak', 'oft-mdm' ) );
+				return __( 'Aankoopprijs', 'oft-mdm' );
 			} );
 			add_filter( 'wc_product_table_column_heading_add-to-cart', function( $label ) {
 				return __( 'Bestellen?', 'oft-mdm' );
 			} );
 
-			// WORDT OVERRULED DOOR STYLE-ATTRIBUUT?
-			add_filter( 'wc_product_table_data_add_to_cart', function( $html, $product ) {
-				return $html . $product->get_meta('_vkeh_uom');
-			}, 10, 2 );
+			// Wordt overruled door style-attribuut indien parameter auto_width niet expliciet op false staat
 			add_filter( 'wc_product_table_column_width_sku', function( $width ) {
-				return '75px';
+				return '70px';
 			} );
 			add_filter( 'wc_product_table_column_width_image', function( $width ) {
-				return '75px';
+				return '70px';
 			} );
 			add_filter( 'wc_product_table_column_width_price', function( $width ) {
-				return '150px';
+				return '140px';
 			} );
 			add_filter( 'wc_product_table_column_width_add-to-cart', function( $width ) {
-				return '100px';
+				return '105px';
 			} );
+
+			add_filter( 'wc_product_table_data_name', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
+			add_filter( 'wc_product_table_data_price', function( $html, $product ) {
+				switch ( $product->get_meta('_vkeh_uom') ) {
+					case 'ST':
+						$unit = __( 'stuk', 'oft-mdm' );
+						break;
+					
+					default:
+						$unit = strtolower( $product->get_meta('_vkeh_uom') );
+				}
+				return $html . '<br/>' . sprintf( __( 'per %s', 'oft-mdm' ), $unit );
+			}, 10, 2 );
+			add_filter( 'wc_product_table_data_add_to_cart', function( $html, $product ) {
+				$suffix = '';
+
+				if ( ! $product->is_in_stock() ) {
+					return __( 'Tijdelijk onbeschikbaar', 'oft-mdm' );
+				}
+				
+				if ( $product->get_meta('_vkeh_uom') === 'OMPAK' ) {
+					$suffix .= 'of <span class="consumer-units-count" data-product_id="'.$product->get_id().'">' . $product->get_meta('_multiple') . '</span> stuks';
+				}
+
+				return $html . $suffix;
+			}, 10, 2 );
 
 			// Zorg ervoor dat de logica uit de product loop ook toegepast wordt in de tabel
 			add_filter( 'wc_product_table_query_args', array( $this, 'add_custom_product_query_args' ), 10, 2 );
@@ -377,6 +405,8 @@
 		}
 				
 		function add_consumer_units_per_order_unit( $title, $product ) {
+			$suffix = '';
+
 			if ( ! $product instanceof WC_Product_Simple ) {
 				$product = $product['data'];
 				if ( empty( $product ) ) {
@@ -386,15 +416,20 @@
 			}
 
 			if ( $product instanceof WC_Product_Simple and intval( $product->get_meta('_multiple') ) > 1 ) {
-				$title .= ' x ' . $product->get_meta('_multiple') . ' ';
-				if ( $product->get_meta('_vkeh_uom') !== '' ) {
-					$title .= __( strtolower( $product->get_meta('_multiple_unit') ), 'oft-mdm' );
-				} else {
-					$title .= __( 'stuks', 'oft-mdm' );
+				$suffix .= 'x ';
+				switch ( $product->get_meta('_vkeh_uom') ) {
+					case 'ZAK':
+						$suffix .= sprintf( __( '%s kilogram', 'oft-mdm' ), $product->get_meta('_multiple') );
+						break;
+
+					// 'ST' dienen we niet te beschouwen want voor die producten geldt per definitie: $product->get_meta('_multiple') === 1
+
+					default:
+						$suffix .= sprintf( _n( '%d stuk', '%d stuks', intval( $product->get_meta('_multiple') ), 'oft-mdm' ), intval( $product->get_meta('_multiple') ) );
 				}
 			}
 
-			return $title;
+			return $title . '<span class="oft-consumer-units">' . $suffix . '</span>';
 		}
 
 		function disable_post_creation( $fields ) {
@@ -842,10 +877,13 @@
 		}
 
 		function add_custom_product_query_args( $wp_query_args, $product_table_query ) {
-			// Quick order is enkel beschikbaar op pagina die afgeschermd is voor gewone bezoekers, dus extra check op gebruikersrechten is niet nodig
+			// Quick order is enkel beschikbaar op pagina die afgeschermd is voor gewone bezoekers, dus extra check op gebruikersrechten is in principe niet nodig
 			$wp_query_args['post_status'] = array( 'publish', 'private' );
 			$wp_query_args['tax_query'] = $this->limit_assortment_for_client_type_shortcodes( $wp_query_args['tax_query'] );
-			// var_dump_pre($wp_query_args);
+			// Zorg ervoor dat permissies gecheckt worden en private resultaten enkel zichtbaar worden voor rechthebbenden!
+			$wp_query_args['perm'] = 'readable';
+			write_log("CHECK QUERY ARGS PRODUCT TABLE ...");
+			write_log( serialize( $wp_query_args ) );
 			return $wp_query_args;
 		}
 
@@ -1330,6 +1368,8 @@
 						// Indien de hoeveelheid daarna gewijzigd wordt, worden de attributen niet opnieuw expliciet uitgelezen, en wordt opnieuw de oude hoeveelheid toegevoegd
 						// In dit geval is het dus beter om expliciet de 'onzichtbare' data te manipuleren, zie o.a. https://stackoverflow.com/a/8708345
 						jQuery(this).parent('.quantity').next('.add_to_cart_button').data( 'quantity', jQuery(this).val() );
+						// Aantal consumenteneenheden ook onmiddellijk aanpassen
+						jQuery(this).parent('.col-add-to-cart').find('.consumer-units-count').html( jQuery(this).val() );
 					});
 
 					<?php if ( WC()->cart->get_cart_contents_count() > 0 ) : ?>

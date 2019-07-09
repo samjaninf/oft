@@ -178,6 +178,11 @@ p.demo_store {
 	bottom: 0;
 }
 
+.oft-consumer-units {
+	margin: 0 0.5em;
+	color: green;
+}
+
 
 
 /************/
@@ -898,19 +903,28 @@ a:hover > .diet-icon {
 /*  PRODUCT TABLE  */
 /*******************/
 
-table.wc-product-table {
-	th.col-sku,
-	th.col-image {
-		width: 75px;
+div.wc-product-table-above {
+
+}
+
+table.dataTable.wc-product-table {
+	thead th {
+		padding: 10px;
+		text-align: center;
+		vertical-align: bottom;
 	}
 
-	th.col-name {
-		width: auto;
+	tbody td {
+		padding: 10px;
+		vertical-align: middle;
 	}
+}
 
-	th.col-price,
-	th.col-add-to-cart {
-		width: 150px;
+div.wc-product-table-below {
+	input[type=submit] {
+		position: fixed;
+		bottom: 2em;
+		right: 2em;
 	}
 }
 

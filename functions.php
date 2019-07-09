@@ -14,19 +14,6 @@
 		return home_url('/nl/producten/quick-order/');
 	}
 
-	// Defaultparameters van WooCommerce Product Table staat enkel 'publish' toe
-	// add_filter( 'wc_product_table_query_args', 'oft_allow_private_products_in_table', 10, 1 );
-
-	function oft_allow_private_products_in_table( $query_args ) {
-		write_log("CHECK QUERY ARGS PRODUCT TABLE ...");
-		write_log( serialize( $query_args ) );
-		// IS AL IN ORDE, PROBLEEM ZIT BIJ CATEGORIE DROPDOWN
-		// $query_args['post_status'] = array( 'publish', 'private' );
-		// Zorg ervoor dat permissies gecheckt worden en private resultaten enkel zichtbaar zijn voor rechthebbenden!
-		$query_args['perm'] = 'readable';
-		return $query_args;
-	}
-
 	// Custom logo tonen bovenaan inlogpagina
 	add_action( 'login_head', 'oft_custom_login_logo' );
 
@@ -3539,7 +3526,10 @@
 	// add_action( 'wp_enqueue_scripts', 'load_extra_scripts', 9999 );
 
 	function load_extra_scripts() {
-		wp_enqueue_script('wp-api');
+		// Eventueel activeren om resetten van sortering (naar recentste bovenaan) te realiseren
+		// Dit script verwacht dat jQuery gelinkt is aan het dollarteken ...
+		wp_enqueue_script( 'datatables.order.neutral', 'https://cdn.datatables.net/plug-ins/1.10.19/api/order.neutral().js' );
+		// wp_enqueue_script('wp-api');
 		// wp_enqueue_script('prettyphoto');
 		// wp_deregister_script('prettyphoto');
 	}
