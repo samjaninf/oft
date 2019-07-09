@@ -159,7 +159,7 @@
 				return '150px';
 			} );
 			add_filter( 'wc_product_table_column_width_add_to_cart', function( $width ) {
-				return '100px';
+				return '150px';
 			} );
 
 			add_filter( 'wc_product_table_data_name', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
@@ -1376,9 +1376,9 @@
 						// jQuery plaatst de waardes van de attributen na $thisbutton.data() in woocommerce/assets/js/frontend/add-to-cart.js in de DOM-cache
 						// Indien de hoeveelheid daarna gewijzigd wordt, worden de attributen niet opnieuw expliciet uitgelezen, en wordt opnieuw de oude hoeveelheid toegevoegd
 						// In dit geval is het dus beter om expliciet de 'onzichtbare' data te manipuleren, zie o.a. https://stackoverflow.com/a/8708345
-						jQuery(this).parent('.quantity').next('.add_to_cart_button').data( 'quantity', jQuery(this).val() );
+						jQuery(this).closest('.quantity').next('.add_to_cart_button').data( 'quantity', jQuery(this).val() );
 						// Aantal consumenteneenheden ook onmiddellijk aanpassen
-						jQuery(this).parent('.col-add-to-cart').find('.consumer-units-count').text( jQuery(this).val() );
+						jQuery(this).closest('.col-add-to-cart').find('.consumer-units-count').text( jQuery(this).val() );
 					});
 
 					<?php if ( WC()->cart->get_cart_contents_count() > 0 ) : ?>
