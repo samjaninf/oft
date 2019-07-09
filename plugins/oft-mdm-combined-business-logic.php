@@ -218,6 +218,9 @@
 			// Vraag het ordernummer mét prefix op
 			add_filter( 'woocommerce_order_number', array( $this, 'add_order_number_prefix' ), 1000, 2 );
 
+			// Geef wat uitleg waarom de gebruiker een loginscherm te zien krijgt
+			add_action( 'woocommerce_before_customer_login_form', array( $this, 'add_login_message' ) );
+
 			// Voeg JavaScript-functies toe aan front-end
 			add_action( 'wp_footer', array( $this, 'add_front_end_scripts' ) );
 		}
@@ -1358,18 +1361,24 @@
 			}
 		}
 
+		function add_login_message() {
+			/* TRANSLATORS: %1$s: naam van webshop
+			%2$s: e-mailadres van klantendienst */
+			echo "<p>".sprintf( __( 'Deze pagina is enkel toegankelijk voor geregistreerde gebruikers van %1$s.<br/>Contacteer <a href="mailto:%2$s?subject=Aanvraag account B2B-webshop">onze Klantendienst</a> indien je ook B2B-klant wenst te worden.', 'oft-mdm' ), get_bloginfo('name'), get_option('woocommerce_email_from_address') )."</p>";
+		}
+
 		function add_front_end_scripts() {
 			?>
 			<script type="text/javascript">
 				jQuery(document).ready( function() {
 					// Maak de hoeveelheidsknoppen overal functioneel
-					jQuery(document).on( 'change', '.quantity .qty', function() {
+					jQuery(document).on( 'change', 'input.qty', function() {
 						// jQuery plaatst de waardes van de attributen na $thisbutton.data() in woocommerce/assets/js/frontend/add-to-cart.js in de DOM-cache
 						// Indien de hoeveelheid daarna gewijzigd wordt, worden de attributen niet opnieuw expliciet uitgelezen, en wordt opnieuw de oude hoeveelheid toegevoegd
 						// In dit geval is het dus beter om expliciet de 'onzichtbare' data te manipuleren, zie o.a. https://stackoverflow.com/a/8708345
 						jQuery(this).parent('.quantity').next('.add_to_cart_button').data( 'quantity', jQuery(this).val() );
 						// Aantal consumenteneenheden ook onmiddellijk aanpassen
-						jQuery(this).parent('.col-add-to-cart').find('.consumer-units-count').html( jQuery(this).val() );
+						jQuery(this).parent('.col-add-to-cart').find('.consumer-units-count').text( jQuery(this).val() );
 					});
 
 					<?php if ( WC()->cart->get_cart_contents_count() > 0 ) : ?>

@@ -925,6 +925,11 @@ div.wc-product-table-below {
 		position: fixed;
 		bottom: 2em;
 		right: 2em;
+		z-index: 1000;
+
+		&:disabled {
+			color: lightgrey;
+		}
 	}
 }
 
