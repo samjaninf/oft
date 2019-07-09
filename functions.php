@@ -6,6 +6,25 @@
 	use Spipu\Html2Pdf\Exception\Html2PdfException;
 	use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 
+	// Leid klanten niet telkens terug naar de fancy winkelpagina maar naar de producttabel
+	add_filter( 'woocommerce_return_to_shop_redirect', 'oft_redirect_to_product_table', 10, 1 );
+
+	function oft_redirect_to_product_table( $shop_url ) {
+		// Of get_permalink(12373); gebruiken en WPML taal automatisch laten bepalen?
+		return home_url('/nl/producten/quick-order/');
+	}
+
+	// Defaultparameters van WooCommerce Product Table staat enkel 'publish' toe
+	add_filter( 'wc_product_table_query_args', 'oft_allow_private_products_in_table', 10, 1 );
+
+	function oft_allow_private_products_in_table( $query_args ) {
+		write_log( var_dump( $query_args ) );
+		$query_args['post_status'] = array( 'publish', 'private' );
+		// Zorg ervoor dat permissies gecheckt worden en private resultaten enkel zichtbaar zijn voor rechthebbenden!
+		$query_args['perm'] = 'readable';
+		return $query_args;
+	}
+
 	// Custom logo tonen bovenaan inlogpagina
 	add_action( 'login_head', 'oft_custom_login_logo' );
 
