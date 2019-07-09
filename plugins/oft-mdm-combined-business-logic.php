@@ -150,16 +150,16 @@
 
 			// Wordt overruled door style-attribuut indien parameter auto_width niet expliciet op false staat
 			add_filter( 'wc_product_table_column_width_sku', function( $width ) {
-				return '70px';
+				return '75px';
 			} );
 			add_filter( 'wc_product_table_column_width_image', function( $width ) {
-				return '70px';
+				return '75px';
 			} );
 			add_filter( 'wc_product_table_column_width_price', function( $width ) {
-				return '140px';
+				return '150px';
 			} );
-			add_filter( 'wc_product_table_column_width_add-to-cart', function( $width ) {
-				return '105px';
+			add_filter( 'wc_product_table_column_width_add_to_cart', function( $width ) {
+				return '100px';
 			} );
 
 			add_filter( 'wc_product_table_data_name', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
@@ -178,7 +178,7 @@
 				$suffix = '';
 
 				if ( ! $product->is_in_stock() ) {
-					return __( 'Tijdelijk onbeschikbaar', 'oft-mdm' );
+					return __( 'Onbeschikbaar', 'oft-mdm' );
 				}
 				
 				if ( $product->get_meta('_vkeh_uom') === 'OMPAK' ) {
