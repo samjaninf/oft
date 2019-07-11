@@ -2508,6 +2508,49 @@
 		return $atts['sku'].' '.$output;
 	}
 
+	// Verwijder lelijke kleurschema's en definieer enkele nieuwe opties
+	add_action( 'vc_after_init', 'oft_change_vc_button_colors' );
+ 
+	function oft_change_vc_button_colors() {
+		// Get current values stored in the color param in "Call to Action" element
+		$param = WPBMap::getParam( 'vc_btn', 'color' );
+		write_log( print_r( $param, true ) );
+		
+		// Add new colors to the 'value' array
+		// You can add your own style declarations to your stylesheet to style them the way you want
+		$param['value']['OFT Green'] = 'btn-oft-green';
+		$param['value']['OFT Yellow'] = 'btn-oft-yellow';
+		
+		// Remove any colors you don't want to use.
+		// unset($param['value']['Classic Grey']);
+		// unset($param['value']['Classic Blue']);
+		// unset($param['value']['Classic Turquoise']);
+		// unset($param['value']['Classic Green']);
+		// unset($param['value']['Classic Orange']);
+		// unset($param['value']['Classic Red']);
+		// unset($param['value']['Classic Black']);
+		// unset($param['value']['Blue']);
+		// unset($param['value']['Turquoise']);
+		// unset($param['value']['Pink']);
+		// unset($param['value']['Violet']);
+		// unset($param['value']['Peacoc']);
+		// unset($param['value']['Chino']);
+		// unset($param['value']['Mulled Wine']);
+		// unset($param['value']['Vista Blue']);
+		// unset($param['value']['Black']);
+		// unset($param['value']['Grey']);
+		// unset($param['value']['Orange']);
+		// unset($param['value']['Sky']);
+		// unset($param['value']['Green']);
+		// unset($param['value']['Juicy pink']);
+		// unset($param['value']['Sandy brown']);
+		// unset($param['value']['Purple']);
+		// unset($param['value']['White']);
+		
+		// Finally "update" with the new values
+		vc_update_shortcode_param( 'vc_btn', $param );
+	}
+
 	// Definieer extra element met post data voor grids
 	add_filter( 'vc_grid_item_shortcodes', 'add_grid_shortcodes_to_wpbakery' );
 	function add_grid_shortcodes_to_wpbakery( $shortcodes ) {
