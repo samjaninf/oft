@@ -163,6 +163,13 @@
 			} );
 
 			add_filter( 'wc_product_table_data_name', array( $this, 'add_consumer_units_per_order_unit' ), 10, 2 );
+			add_filter( 'wc_product_table_data_name', function( $html, $product ) {
+				if ( $this->get_client_type() === 'OWW' and $product->get_attribute('tht') !== '' ) {
+					$html .= '<br/>' . sprintf( __( 'min. THT: %s', 'oft-mdm' ), $product->get_attribute('tht') );
+					// $html .= '<br/>' . sprintf( __( 'Oogstjaar: %s', 'oft-mdm' ), $product->get_attribute('cuvee') );
+				}
+				return $html;
+			}, 10, 2 );
 			add_filter( 'wc_product_table_data_price', function( $html, $product ) {
 				switch ( $product->get_meta('_vkeh_uom') ) {
 					case 'ST':
@@ -182,7 +189,7 @@
 				}
 				
 				if ( $product->get_meta('_vkeh_uom') === 'OMPAK' ) {
-					$suffix .= 'of <span class="consumer-units-count" data-product_id="'.$product->get_id().'">' . $product->get_meta('_multiple') . '</span> stuks';
+					$suffix .= '= <span class="consumer-units-count" data-product_id="'.$product->get_id().'" data-multiple_step="'.$product->get_meta('_multiple').'">' . $product->get_meta('_multiple') . '</span> stuks';
 				}
 
 				return $html . $suffix;
@@ -1373,12 +1380,17 @@
 				jQuery(document).ready( function() {
 					// Maak de hoeveelheidsknoppen overal functioneel
 					jQuery(document).on( 'change', 'input.qty', function() {
+						var spinner = jQuery(this);
 						// jQuery plaatst de waardes van de attributen na $thisbutton.data() in woocommerce/assets/js/frontend/add-to-cart.js in de DOM-cache
 						// Indien de hoeveelheid daarna gewijzigd wordt, worden de attributen niet opnieuw expliciet uitgelezen, en wordt opnieuw de oude hoeveelheid toegevoegd
 						// In dit geval is het dus beter om expliciet de 'onzichtbare' data te manipuleren, zie o.a. https://stackoverflow.com/a/8708345
-						jQuery(this).closest('.quantity').next('.add_to_cart_button').data( 'quantity', jQuery(this).val() );
+						spinner.closest('.quantity').next('.add_to_cart_button').data( 'quantity', spinner.val() );
+						
 						// Aantal consumenteneenheden ook onmiddellijk aanpassen
-						jQuery(this).closest('.col-add-to-cart').find('.consumer-units-count').text( jQuery(this).val() );
+						var counter = spinner.closest('.col-add-to-cart').find('.consumer-units-count').first();
+						if ( parseInt( spinner.val() ) > 0 ) {
+							counter.text( parseInt( spinner.val() ) * parseInt( counter.data('multiple_step') ) );
+						}
 					});
 
 					<?php if ( WC()->cart->get_cart_contents_count() > 0 ) : ?>

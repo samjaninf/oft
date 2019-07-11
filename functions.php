@@ -14,6 +14,32 @@
 		return home_url('/nl/producten/quick-order/');
 	}
 
+	// Verhinder dat de 'Quick order' (weliswaar enkel met OFT-producten) voor iedereen zichtbaar is, zonder de pagina op 'private' te moeten zetten (en 'customers' vervolgens rechten te geven) of onder 'Mijn account' te moeten duwen
+	add_action( 'template_redirect', 'redirect_to_specific_page' );
+
+	function redirect_to_specific_page() {
+		if ( is_page('quick-order') && ! is_user_logged_in() ) {
+			wp_redirect( get_permalink( get_option('woocommerce_myaccount_page_id') ).'?go_to_page=12373', 301 );
+			exit;
+		}
+	}
+
+	// Stuur de klant na inloggen terug naar de verwijzende pagina
+	add_filter( 'woocommerce_login_redirect', 'oft_shop_login_redirect', 10, 2 );
+
+	function oft_shop_login_redirect( $redirect_to, $user ) {
+		// Taalkeuze zal vrij zijn, maar misschien toch checken voor testfase?
+
+		if ( isset( $_GET['go_to_page'] ) and $_GET['go_to_page'] !== '' ) {
+			$url = get_permalink( $_GET['go_to_page'] );
+			if ( $url !== false ) {
+				$redirect_to = $url;
+			}
+		}
+
+		return $redirect_to;
+	}
+
 	// Custom logo tonen bovenaan inlogpagina
 	add_action( 'login_head', 'oft_custom_login_logo' );
 
