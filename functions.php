@@ -2621,13 +2621,20 @@
 					
 					if ( strlen( term_description() ) > 10 ) {
 						remove_filter( 'term_description', 'wpautop' );
-						echo '<blockquote>&laquo; '.term_description().' &raquo;</blockquote>';
-						echo '<p style="text-align: right;">'.single_term_title( '', false ).' &mdash; '.$parent_term->name.', '.$grandparent_term->name.'</p>';
 						add_filter( 'term_description', 'wpautop' );
 						$image_id = get_term_meta( $term_id, 'partner_image_id', true );
-						if ( $image_id ) {
-							echo wp_get_attachment_image( $image_id, array(300,300), false, array( 'class' => 'partner-quote-icon' ) );
-						}
+						
+						echo '<div class="row">';
+							if ( $image_id ) {
+								echo '<div class="col-md-4">'.wp_get_attachment_image( $image_id, array( 800, 800 ), false, array( 'class' => 'partner-quote-icon' ) ).'</div>';
+								echo '<div class="col-md-8">';
+							} else {
+								echo '<div class="col-md-12">';
+							}
+							echo '<blockquote>&laquo; '.term_description().' &raquo;</blockquote>';
+							echo '<p style="text-align: right;">'.single_term_title( '', false ).' &mdash; '.$parent_term->name.', '.$grandparent_term->name.'</p>';
+							echo '</div>';
+						echo '</div>';
 					}
 
 					echo '<p style="margin: 2em 0;">';
