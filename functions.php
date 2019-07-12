@@ -6,6 +6,19 @@
 	use Spipu\Html2Pdf\Exception\Html2PdfException;
 	use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 
+
+
+	#####################
+	#  TEMPORARY TESTS  #
+	#####################
+
+	add_filter( 'woocommerce_shipping_method_title', 'oft_show_shop_name_in_shipping_method_title', 10, 2 );
+
+	function oft_show_shop_name_in_shipping_method_title( $title, $id ) {
+		write_log($title);
+		return str_replace( 'op locatie', 'in OWW Hupsakee', $title );
+	}
+
 	// Leid klanten niet telkens terug naar de fancy winkelpagina maar naar de producttabel
 	add_filter( 'woocommerce_return_to_shop_redirect', 'oft_redirect_to_product_table', 10, 1 );
 
@@ -88,6 +101,8 @@
 		} 
 		return $price;
 	}
+
+
 	
 	// Nonces niet checken in VC-grids, oplossing voor cachingprobleem?
 	add_filter( 'vc_grid_get_grid_data_access','__return_true' );

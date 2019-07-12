@@ -205,6 +205,14 @@
 				}
 				return $term_args;
 			}, 10, 3 );
+
+			// Toon leeggoed niet in cart en mini-cart (wordt wel meegeteld in subtotaal!)
+			// add_action( 'woocommerce_cart_loaded_from_session', array( $this, 'reorder_cart_items' ) );
+			add_filter( 'woocommerce_widget_cart_item_visible', array( $this, 'hide_empties_lines_in_cart' ), 10, 3 );
+			// Tel leeggoed niet mee bij aantal items in winkelmandje
+			add_filter( 'woocommerce_cart_contents_count', array( $this, 'exclude_empties_from_cart_count' ) );
+			// Toon het totaalbedrag van al het leeggoed onderaan
+			add_action( 'woocommerce_widget_shopping_cart_before_buttons', array( $this, 'show_empties_subtotal' ) );
 			
 			// Synchroniseer de publicatiestatus vanuit de hoofdtaal naar anderstalige producten (zoals bij trashen reeds automatisch door WPML gebeurt)
 			// Neem een hoge prioriteit, zodat de functie pas doorlopen wordt na de 1ste 'save_post' die de zichtbaarheid regelt
@@ -897,7 +905,73 @@
 			return $wp_query_args;
 		}
 
-		function sync_product_status( $post ) {
+		function reorder_cart_items( $cart ) {
+				// Niets doen bij leeg winkelmandje
+				if ( empty( $cart->cart_contents ) ) {
+					return;
+				}
+
+				$cart_sorted = $cart->cart_contents;
+				$glass_items = array();
+				$plastic_items = array();
+
+				foreach ( $cart->cart_contents as $cart_item_key => $cart_item ) {
+					if ( $cart_item['data']->get_sku() === 'GIFT' ) {
+						// Sla het item van de cadeauverpakking op en verwijder het
+						$gift_item = $cart_item;
+						unset($cart_sorted[$cart_item_key]);
+					}
+
+					if ( strpos( $cart_item['data']->get_sku(), 'WLF' ) === 0 or $cart_item['data']->get_sku() === 'W19916' ) {
+						$glass_items[$cart_item_key] = $cart_item;
+						unset($cart_sorted[$cart_item_key]);
+					}
+
+					if ( strpos( $cart_item['data']->get_sku(), 'WLB' ) === 0 or $cart_item['data']->get_sku() === 'W29917' ) {
+						$plastic_items[$cart_item_key] = $cart_item;
+						unset($cart_sorted[$cart_item_key]);
+					}
+				}
+
+				$cart_sorted = array_merge( $cart_sorted, $glass_items, $plastic_items );
+
+				if ( isset($gift_item) ) {
+					// Voeg de cadeauverpakking opnieuw toe helemaal achteraan (indien het voorkwam)
+					$cart_sorted[$cart_item_key] = $gift_item;
+				}
+
+				// Vervang de itemlijst door de nieuwe array
+				$cart->cart_contents = $cart_sorted;
+				// Vanaf WC 3.2+ gebruiken
+				// $cart->set_cart_contents($cart_sorted);
+			}
+
+			function hide_empties_lines_in_cart( $visible, $cart_item, $cart_item_key ) {
+				// Pas op: grondstoffen hebben ook niet-numerieke SKU's!
+				if ( ! is_numeric( $cart_item['data']->get_sku() ) ) {
+					$visible = false;
+				}
+				return $visible;
+			}
+
+			function exclude_empties_from_cart_count( $count ) {
+				$cart = WC()->cart->get_cart();
+				
+				$subtract = 0;
+				foreach ( $cart as $key => $value ) {
+					if ( isset( $value['forced_by'] ) ) {
+						$subtract += $value['quantity'];
+					}
+				}
+
+				return $count - $subtract;
+			}
+
+			function show_empties_subtotal() {
+				echo 'waarvan XX euro leeggoed';
+			}
+
+			function sync_product_status( $post ) {
 			$post_lang = apply_filters( 'wpml_post_language_details', NULL, $post->ID );
 			$default_lang_code = apply_filters( 'wpml_default_language', NULL );
 

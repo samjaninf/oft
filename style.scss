@@ -1463,11 +1463,23 @@ body:not(.logged-in) {
 
 
 
+/**********/
+/*  CART  */
+/**********/
+
+/* Minder witruimte in winkelmandje */
+.woocommerce .shop_table tbody td,
+.woocommerce .shop_table tfoot td {
+	padding: 0.5em;
+}
+
+
+
 /***********/
 /*  FIXES  */
 /***********/
 
-/* Zorg ervoor dat het bolletje met het aantl items in het winkelmandje zeker niet afgekapt wordt */
+/* Zorg ervoor dat het bolletje met het aantal items in het winkelmandje zeker niet afgekapt wordt WERKT NIET 100% */
 .woo_amc_open_image > svg:not(:root) {
 	overflow: visible !important;
 }
