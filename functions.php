@@ -2623,7 +2623,7 @@
 						echo '<div class="row">';
 							$image_id = get_term_meta( $term_id, 'partner_image_id', true );
 							if ( $image_id ) {
-								echo '<div class="col-md-4">'.wp_get_attachment_image( $image_id, array( 800, 800 ), false, array( 'class' => 'partner-quote-icon' ) ).'</div>';
+								echo '<div class="col-md-4">'.wp_get_attachment_image( $image_id, array( 400, 400 ), false, array( 'class' => 'partner-quote-icon' ) ).'</div>';
 								echo '<div class="col-md-8">';
 							} else {
 								echo '<div class="col-md-12">';
