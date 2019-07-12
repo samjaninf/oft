@@ -2512,16 +2512,16 @@
 	add_action( 'vc_after_init', 'oft_change_vc_button_colors' );
  
 	function oft_change_vc_button_colors() {
-		// Get current values stored in the color param in "Call to Action" element
 		$param = WPBMap::getParam( 'vc_btn', 'color' );
-		write_log( print_r( $param, true ) );
+		// write_log( print_r( $param, true ) );
 		
-		// Add new colors to the 'value' array
 		// You can add your own style declarations to your stylesheet to style them the way you want
 		$param['value']['OFT Green'] = 'btn-oft-green';
 		$param['value']['OFT Yellow'] = 'btn-oft-yellow';
 		
-		// Remove any colors you don't want to use.
+		// Stel de standaardkleur in
+		$param['std'] = 'green';
+		
 		// unset($param['value']['Classic Grey']);
 		// unset($param['value']['Classic Blue']);
 		// unset($param['value']['Classic Turquoise']);
@@ -2547,7 +2547,6 @@
 		// unset($param['value']['Purple']);
 		// unset($param['value']['White']);
 		
-		// Finally "update" with the new values
 		vc_update_shortcode_param( 'vc_btn', $param );
 	}
 
