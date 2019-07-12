@@ -35,7 +35,7 @@ $calculator_text          = '';
 					</li>
 				<?php endforeach; ?>
 			</ul>
-			<!-- GEWIJZIGD: Verwijder verwarrende .woocommerce-shipping-destination
+			<!-- GEWIJZIGD: Verwijder verwarrende .woocommerce-shipping-destination -->
 		<?php
 		elseif ( ! $has_calculated_shipping || ! $formatted_destination ) :
 			esc_html_e( 'Enter your address to view shipping options.', 'woocommerce' );
