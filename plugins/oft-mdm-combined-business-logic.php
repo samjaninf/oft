@@ -989,11 +989,12 @@
 		function process_order_excel( $order_id ) {
 			$start = microtime(true);
 			// Creëer de Excel in de taal van het order
-			$local_file_path = $this->create_order_excel( wc_get_order( $order_id ) );
+			$order = wc_get_order( $order_id );
+			$local_file_path = $this->create_order_excel( $order );
 			write_log( number_format( microtime(true)-$start, 4, ',', '.' )." s EXCEL CREATED" );
 
 			if ( $local_file_path !== false ) {
-				copy( $local_file_path, WP_CONTENT_DIR.'/odisy/import/test.xlsx' );
+				copy( $local_file_path, WP_CONTENT_DIR.'/odisy/import/'.$order->get_order_number().'.xlsx' );
 			}
 		}
 
@@ -1134,11 +1135,11 @@
 			$saved_filename = $order->get_meta('_excel_file_name');
 			if ( $saved_filename === '' ) {
 				$folder = date_i18n('Y');
-				$saved_filename = '/odisy/'.$folder.'/'.$filename;
+				$saved_filename = '/'.$folder.'/'.$filename;
 				
 				// Check of de map al bestaat
-				if ( ! file_exists( WP_CONTENT_DIR.'/odisy/'.$folder.'/' ) ) {
-					mkdir( WP_CONTENT_DIR.'/odisy/'.$folder.'/', 0755, true );
+				if ( ! file_exists( WP_CONTENT_DIR.'/'.$folder.'/' ) ) {
+					mkdir( WP_CONTENT_DIR.'/'.$folder.'/', 0755, true );
 				}
 				
 				try {
