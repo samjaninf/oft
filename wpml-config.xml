@@ -13,23 +13,47 @@
 		<custom-field action="copy">_fat</custom-field>
 		<custom-field action="copy">_fibtg</custom-field>
 		<custom-field action="copy">_intrastat</custom-field>
+		<custom-field action="translate">_ingredients</custom-field>
 		<custom-field action="copy">_multiple</custom-field>
+		<custom-field action="translate">_multiple_unit</custom-field>
 		<custom-field action="copy">_net_content</custom-field>
 		<custom-field action="copy">_net_unit</custom-field>
 		<custom-field action="copy">_pal_number_of_layers</custom-field>
 		<custom-field action="copy">_pal_number_per_layer</custom-field>
 		<custom-field action="copy">_polyl</custom-field>
+		<custom-field action="copy">_price_for_client_type_b2bfr</custom-field>
+		<custom-field action="copy">_price_for_client_type_b2bnl</custom-field>
+		<custom-field action="copy">_price_for_client_type_mdm</custom-field>
+		<custom-field action="copy">_price_for_client_type_oww</custom-field>
 		<custom-field action="copy">_pro</custom-field>
+		<custom-field action="translate">_promo_text</custom-field>
 		<custom-field action="copy">_salteq</custom-field>
 		<custom-field action="copy">_shelf_life</custom-field>
 		<custom-field action="copy">_shopplus_sku</custom-field>
 		<custom-field action="copy">_starch</custom-field>
-		<custom-field action="copy">_steh_ean</custom-field>
-		<custom-field action="copy">_steh_height</custom-field>
-		<custom-field action="copy">_steh_length</custom-field>
-		<custom-field action="copy">_steh_weight</custom-field>
-		<custom-field action="copy">_steh_width</custom-field>
+		<custom-field action="copy">_vkeh_ean</custom-field>
+		<custom-field action="copy">_vkeh_height</custom-field>
+		<custom-field action="copy">_vkeh_length</custom-field>
+		<custom-field action="copy">_vkeh_uom</custom-field>
+		<custom-field action="copy">_vkeh_weight</custom-field>
+		<custom-field action="copy">_vkeh_width</custom-field>
 		<custom-field action="copy">_sugar</custom-field>
 		<custom-field action="copy">_unit_price</custom-field>
 	</custom-fields>
+	<taxonomies>
+		<taxonomy translate="1">pa_bio</taxonomy>
+		<taxonomy translate="0">pa_cuvee</taxonomy>
+		<taxonomy translate="1">pa_fairtrade</taxonomy>
+		<taxonomy translate="1">pa_merk</taxonomy>
+		<taxonomy translate="0">pa_tht</taxonomy>
+		<taxonomy translate="1">product_allergen</taxonomy>
+		<taxonomy translate="0">product_client_type</taxonomy>
+		<taxonomy translate="1">product_diet</taxonomy>
+		<taxonomy translate="1">product_packaging</taxonomy>
+		<taxonomy translate="1">product_partner</taxonomy>
+		<taxonomy translate="1">product_storage</taxonomy>
+		<taxonomy translate="1">product_grape</taxonomy>
+		<taxonomy translate="1">product_recipe</taxonomy>
+		<taxonomy translate="1">product_flavour</taxonomy>
+	</taxonomies>
 </wpml-config>
