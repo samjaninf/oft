@@ -1925,4 +1925,5 @@ function cpt_bears_team() {
 	register_post_type( "team", $args );
 }
 
-add_action( 'init', 'cpt_bears_team' );
+// GEWIJZIGD: Schakel 'Teams' uit
+// add_action( 'init', 'cpt_bears_team' );
