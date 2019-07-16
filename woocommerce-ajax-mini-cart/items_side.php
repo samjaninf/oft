@@ -1,7 +1,9 @@
-<?php foreach($items as $item => $values) {
-    $_product =  wc_get_product( $values['data']->get_id() );
-    $product_link = get_permalink( $values['data']->get_id() );
-    $variations = wc_get_formatted_cart_item_data($values,true);
+<?php
+    // GEWIJZIGD: Plaats het laatst toegevoegde product bovenaan door de te doorlopen array om te keren
+    foreach( array_reverse($items) as $item => $values ) {
+        $_product = wc_get_product( $values['data']->get_id() );
+        $product_link = get_permalink( $values['data']->get_id() );
+        $variations = wc_get_formatted_cart_item_data( $values, true );
     ?>
 
     <div class="woo_amc_item_wrap">
@@ -28,7 +30,7 @@
                 <?php } ?>
                 <div class="woo_amc_item_price_wrap">
                     <?php
-                        // GEWIJZIGD: Label verwijderen
+                        // GEWIJZIGD: 'Price'-label verwijderen, suffix toevoegen
                         echo $_product->get_price_html() . ' ' . __( 'per ompak', 'oft' );
                     ?>
                 </div>
