@@ -12,7 +12,8 @@
 	#  TEMPORARY TESTS  #
 	#####################
 
-	add_filter( 'woocommerce_shipping_method_title', 'oft_show_shop_name_in_shipping_method_title', 10, 2 );
+	// WERKT NIET
+	// add_filter( 'woocommerce_shipping_method_title', 'oft_show_shop_name_in_shipping_method_title', 10, 2 );
 
 	function oft_show_shop_name_in_shipping_method_title( $title, $id ) {
 		write_log($title);

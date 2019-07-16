@@ -166,7 +166,9 @@
 			add_filter( 'wc_product_table_data_name', function( $html, $product ) {
 				if ( $this->get_client_type() === 'OWW' and $product->get_attribute('tht') !== '' ) {
 					$html .= '<br/>' . sprintf( __( 'min. THT: %s', 'oft-mdm' ), $product->get_attribute('tht') );
-					// $html .= '<br/>' . sprintf( __( 'Oogstjaar: %s', 'oft-mdm' ), $product->get_attribute('cuvee') );
+				}
+				if ( $product->get_attribute('cuvee') !== '' ) {
+					$html .= '<br/>' . sprintf( __( 'oogstjaar: %s', 'oft-mdm' ), $product->get_attribute('cuvee') );
 				}
 				return $html;
 			}, 10, 2 );
@@ -238,6 +240,9 @@
 
 			// Voeg JavaScript-functies toe aan front-end
 			add_action( 'wp_footer', array( $this, 'add_front_end_scripts' ) );
+
+			// Schakel WooCommerce-reclame uit
+			add_filter( 'woocommerce_allow_marketplace_suggestions', '__return_false' );
 		}
 
 		function delay_actions_and_filters_till_load_completed() {
