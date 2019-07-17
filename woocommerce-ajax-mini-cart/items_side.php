@@ -31,7 +31,10 @@
                 <div class="woo_amc_item_price_wrap">
                     <?php
                         // GEWIJZIGD: 'Price'-label verwijderen, suffix toevoegen
-                        echo $_product->get_price_html() . ' ' . __( 'per ompak', 'oft' );
+                        echo $_product->get_price_html();
+                        if ( $_product->get_meta('_vkeh_uom') === 'OMPAK' ) {
+                            echo ' ' . __( 'per ompak', 'oft' );
+                        }
                     ?>
                 </div>
                 <div class="woo_amc_item_quanity_wrap">
