@@ -350,11 +350,11 @@ class WooAmcPublic {
         );
         if($key && $number>0 && wp_verify_nonce( $_POST['security'], 'woo-amc-security' )){
             WC()->cart->set_quantity( $key, $number );
-            $items = WC()->cart->get_cart();
+            $item = WC()->cart->get_cart_item($key);
             $cart = array();
-            $cart['count'] = WC()->cart->cart_contents_count;
-            $cart['total'] = WC()->cart->get_cart_total();
-            $cart['item_price'] = wc_price($items[$key]['line_total']);
+            $cart['count'] = WC()->cart->get_cart_contents_count();
+            $cart['total'] = WC()->cart->get_total();
+            $cart['item_price'] = wc_price($item['line_total']);
         }
         echo json_encode( $cart );
         wp_die();
