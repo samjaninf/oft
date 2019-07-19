@@ -5,7 +5,7 @@
 	Author URI:		https://www.fullstackahead.be
 	Description:	Tweaked theme based on Alone. Also includes all custom functions!
 	Template:		alone
-	Version:		1.2.28
+	Version:		1.2.29
 	Text Domain:	oft
 */
 
@@ -170,6 +170,13 @@ p.demo_store {
 	position: fixed;
 	top: initial !important;
 	bottom: 0;
+}
+
+/* Hoofdtekst in groene CTA-blokken wit maken */
+.vc_cta3-color-green {
+	.vc_cta3-content p {
+		color: white;
+	}
 }
 
 
