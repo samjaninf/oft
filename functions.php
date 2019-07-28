@@ -3335,33 +3335,42 @@
 	}
 
 	// Toon link naar de laatste B2B-nieuwsbrief
-	add_shortcode( 'latest_newsletter', 'get_latest_newsletter', 2 );
+	add_shortcode( 'latest_newsletter', 'get_latest_newsletter' );
 
 	function get_latest_newsletter() {
 		global $sitepress;
+		$lang = $sitepress->get_current_language();
 
-		$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
-		// Map met enkel de productnieuwsbrieven
-		$folder_id['nl'] = 'd302e08412';
-		$folder_id['fr'] = '2d4de81b52';
-		$folder_id['en'] = 'ae6dc6a74c';
+		if ( false === ( $latest_newsletter_url = get_transient( 'latest_newsletter_url_'.$lang ) ) ) {
+			$server = substr( MC_APIKEY, strpos( MC_APIKEY, '-' ) + 1 );
+			// Mappen met publieke nieuwsbrieven
+			$folder_id['nl'] = 'd302e08412';
+			$folder_id['fr'] = '2d4de81b52';
+			$folder_id['en'] = 'ae6dc6a74c';
 
-		$args = array(
-			'headers' => array(
-				'Authorization' => 'Basic ' .base64_encode('user:'.MC_APIKEY)
-			),
-		);
+			$args = array(
+				'headers' => array(
+					'Authorization' => 'Basic ' .base64_encode('user:'.MC_APIKEY),
+				),
+			);
 
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?status=sent&list_id='.MC_LIST_ID.'&folder_id='.$folder_id[$sitepress->get_current_language()].'&sort_field=send_time&sort_dir=DESC&count=1', $args );
-		
-		$mailing = '';
-		if ( ! is_wp_error($response) and $response['response']['code'] == 200 ) {
-			$body = json_decode($response['body']);
-			$campaign = reset($body->campaigns);
-			$mailing = sprintf( __( 'Bekijk <a href="%s" target="_blank">de recentste nieuwsbrief</a>.', 'oft' ), $campaign->long_archive_url );
-		}		
+			$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?status=sent&list_id='.MC_LIST_ID.'&folder_id='.$folder_id[$lang].'&sort_field=send_time&sort_dir=DESC&count=1', $args );
+			
+			if ( ! is_wp_error($response) and wp_remote_retrieve_response_code($response) == 200 ) {
+				$body = json_decode( wp_remote_retrieve_body($response) );
+				$campaign = reset( $body->campaigns );
+				$latest_newsletter_url = $campaign->long_archive_url;
+				set_transient( 'latest_newsletter_url_'.$lang, $latest_newsletter_url, DAY_IN_SECONDS );
+			}
+		}
 
-		return $mailing;
+		if ( esc_url($latest_newsletter_url) !== '' ) {
+			$output = sprintf( __( 'Bekijk <a href="%s" target="_blank">de recentste nieuwsbrief</a>.', 'oft' ), esc_url($latest_newsletter_url) );
+		} else {
+			$output = '';
+		}
+
+		return $output;
 	}
 
 
