@@ -170,7 +170,7 @@
 
 	// Behouden voor backwards compatibility in talrijke catalogusexports
 	function split_after_300_characters( $text ) {
-		return split_after_x_characters( $text, 300 );
+		return split_after_x_characters( $text, 250 );
 	}
 	
 	function split_after_x_characters( $text, $limit = 100 ) {

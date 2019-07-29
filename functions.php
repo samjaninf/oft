@@ -911,7 +911,7 @@
 	add_action( 'admin_footer', 'disable_custom_checkboxes' );
 
 	function disable_custom_checkboxes() {
-		global $pagenow, $post_type;
+		global $pagenow, $post_type, $sitepress;
 
 		// 'Vertaalinterface' en 'Stringvertaling' verbergen in het menu voor niet-beheerders
 		if ( ! current_user_can('update_core') ) {
@@ -989,7 +989,7 @@
 		}
 
 		// Functies die we niet op bulkbewerkingen willen toepassen
-		if ( ( $pagenow === 'post.php' or $pagenow === 'post-new.php' ) and $post_type === 'product' ) {
+		if ( ( $pagenow === 'post.php' or $pagenow === 'post-new.php' ) and $post_type === 'product' and $sitepress->get_current_language() === 'nl' ) {
 			$args = array(
 				'fields' => 'ids',
 				'hide_empty' => false,
@@ -1015,10 +1015,10 @@
 					jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', true );
 					jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', true );
 					jQuery( '#general_product_data' ).find( 'select#_net_unit' ).prop( 'disabled', true );
-					jQuery( '#inventory_product_data' ).find( 'input#_manage_stock' ).prop( 'readonly', false );
-					jQuery( '#inventory_product_data' ).find( 'input#_stock' ).prop( 'readonly', false );
+					jQuery( '#inventory_product_data' ).find( 'input#_manage_stock' ).prop( 'disabled', true );
+					jQuery( '#inventory_product_data' ).find( 'input#_stock' ).prop( 'readonly', true );
 					jQuery( '#inventory_product_data' ).find( 'select#_stock_status' ).prop( 'disabled', true );
-					jQuery( '#inventory_product_data' ).find( 'select#_backorders' ).prop( 'disabled', false );
+					jQuery( '#inventory_product_data' ).find( 'select#_backorders' ).prop( 'disabled', true );
 					jQuery( '#inventory_product_data' ).find( 'input[name=_sold_individually]' ).prop( 'disabled', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_weight]' ).prop( 'readonly', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_length]' ).prop( 'readonly', true );
@@ -1087,48 +1087,71 @@
 						jQuery( '#in-product_grape-<?php echo $id; ?>' ).prop( 'disabled', true ).css( 'display', 'none' );
 					<?php endforeach; ?>
 					
-					/* Vereis dat er één productcategorie en minstens één partner/land aangevinkt is voor het opslaan */
-					jQuery( 'input[type=submit]#publish, input[type=submit]#save-post' ).click( function() {
+					/* Controleer of bepaalde cruciale data wel ingevuld is bij opslaan */
+					jQuery( 'input[type=submit]#save-post' ).click( function() {
+						var response = check_product_fields();
+						if ( response[0] == false ) {
+							alert( response[1] );
+						}
+
+						/* Alle disabled dropdowns/checkboxes weer activeren, anders geen waarde doorgestuurd */
+						enable_product_fields();
+
+						return true;
+					});
+
+					/* Dwing af dat bepaalde cruciale data eerst ingevuld wordt bij publiceren! */
+					jQuery( 'input[type=submit]#publish' ).click( function() {
+						var response = check_product_fields();
+						if ( response[0] == false ) {
+							alert( response[1]+'\nDe wijzigingen zullen niet opgeslagen worden.\n' );
+						} else {
+							/* Velden enkel reactiveren indien we de post effectief zullen opslaan */
+							enable_product_fields();
+						}
+						
+						return response[0];
+					});
+
+					function check_product_fields() { 
 						var pass = true;
-						var msg = 'Hold your horses, er zijn enkele issues:\n';
-						if ( jQuery( '#postcontent_ifr' ).find( 'body' ).text().length > 300 ) {
-							pass = false;
-							msg += '* Je lange productbeschrijving is ' + ( 300 - jQuery( '#postcontent_ifr' ).find( 'body' ).text().length ) + ' tekens te lang!\n';
+						var msg = '';
+						
+						/* De iframes moeten reeds ingeladen zijn, op het moment van opslaan in principe altijd in orde! */
+						var content = jQuery( '#postdivrich' ).find( 'iframe#content_ifr' ).contents().find( 'body#tinymce' ).text();
+						var excerpt = jQuery( '#postexcerpt' ).find( 'iframe#excerpt_ifr' ).contents().find( 'body#tinymce' ).text();
+						if ( content.length == 0 && excerpt.length == 0 ) {
+							msg += '* Je hebt nog geen enkele omschrijving ingevuld!\n';
 						}
-						if ( jQuery( '#postexcerpt_ifr' ).find( 'body' ).text().length > 150 ) {
-							pass = false;
-							msg += '* Je korte productbeschrijving is ' + ( 150 - jQuery( '#postexcerpt_ifr' ).find( 'body' ).text().length ) + ' tekens te lang!\n';
+						if ( content.length > 1000 ) {
+							msg += '* Je lange productomschrijving is ' + ( content.length - 1000 ) + ' tekens te lang!\n';
 						}
-						if ( jQuery( '#product_partner-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
-							pass = false;
-							msg += '* Je moet de herkomst nog aanvinken!\n';
+						if ( excerpt.length > 150 ) {
+							msg += '* Je korte productomschrijving is ' + ( excerpt.length - 150 ) + ' tekens te lang!\n';
+						}
+						
+						if ( jQuery( '#general_product_data' ).find( 'input#_fairtrade_share' ).val() == '' && ! jQuery( '#general_product_data' ).find( 'input#_is_north_product' ).is(':checked') ) {
+							msg += '* Je moet het fairtradepercentage nog ingeven!\n';
 						}
 						if ( jQuery( '#product_cat-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
-							pass = false;
 							msg += '* Je moet de productcategorie nog aanvinken!\n';
 						}
-						if ( jQuery( '#general_product_data' ).find( 'input#_fairtrade_share' ).val() == '' && ! jQuery( '#general_product_data' ).find( 'input#_is_north_product' ).is(':checked') ) {
-							pass = false;
-							msg += '* Je moet het fairtradepercentage nog ingeven!\n';
+						if ( jQuery( '#product_partner-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
+							msg += '* Je moet de herkomst(en) nog aanvinken!\n';
 						}
 
 						<?php if ( ! has_product_cat_slug('wijn') ) : ?>
 							if ( jQuery( '#general_product_data' ).find( 'textarea#_ingredients' ).val() == '' ) {
-								pass = false;
 								msg += '* Je moet de ingrediëntenlijst nog ingeven!\n';
 							}
 						<?php else : ?>
-							/* Vereis dat minstens één druif, gerecht en smaak aangevinkt is voor het opslaan van wijntjes */
 							if ( jQuery( '#product_grape-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
-								// pass = false;
 								msg += '* Je moet de druivenrassen nog aanvinken!\n';
 							}
 							if ( jQuery( '#product_recipe-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
-								// pass = false;
 								msg += '* Je moet de gerechten nog aanvinken!\n';
 							}
 							if ( jQuery( '#product_flavour-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
-								// pass = false;
 								msg += '* Je moet de smaken nog aanvinken!\n';
 							}
 						<?php endif; ?>
@@ -1142,33 +1165,31 @@
 								sum += Number( jQuery(this).children( 'input' ).first().val() );
 							});
 							if ( sum > max + 0.1 ) {
-								pass = false;
 								msg += '* Som van secundaire waardes is groter dan primaire voedingswaarde ('+sum.toFixed(1)+' g > '+max.toFixed(1)+' g)!\n';
 							}
 						});
 
-						if ( pass == false ) {
-							alert(msg);
+						if ( msg.length > 0 ) {
+							pass = false;
+							msg = 'Hold your horses, er zijn enkele issues:\n'+msg;
 						}
-						
-						// ALLE DISABLED DROPDOWNS/CHECKBOXES WEER ACTIVEREN, ANDERS GEEN WAARDE DOORGESTUURD
-						// In ELSE-blok stoppen indien we de controle activeren, om te vermijden dat de data beschikbaar wordt indien er geen page reload plaatsvindt wegens blokkage
+
+						return [ pass, msg ];
+					}
+
+					function enable_product_fields() {
 						jQuery( '#woocommerce-product-data' ).find( 'select#product-type' ).prop( 'disabled', false );
 						jQuery( '#woocommerce-product-data' ).find( 'input#_virtual' ).prop( 'disabled', false );
 						jQuery( '#woocommerce-product-data' ).find( 'input#_downloadable' ).prop( 'disabled', false );
 						jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', false );
 						jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', false );
 						jQuery( '#general_product_data' ).find( 'select#_net_unit' ).prop( 'disabled', false );
+						jQuery( '#inventory_product_data' ).find( 'input#_manage_stock' ).prop( 'disabled', false );
 						jQuery( '#inventory_product_data' ).find( 'select#_stock_status' ).prop( 'disabled', false );
 						jQuery( '#inventory_product_data' ).find( 'select#_backorders' ).prop( 'disabled', false );
 						jQuery( '#inventory_product_data' ).find( 'input[name=_sold_individually]' ).prop( 'disabled', false );
 						jQuery( '#shipping_product_data' ).find( 'select#product_shipping_class' ).prop( 'disabled', false );
-
-						// Voorlopig niet afdwingen dat de fouten eerst opgelost moeten worden
-						// return pass;
-						return true;
-						
-					});
+					}
 				});
 			</script>
 			<?php
@@ -2616,10 +2637,10 @@
 		global $product;
 		echo '<div class="woocommerce-product-details__short-description">';
 			if ( has_product_cat_slug( 'wijn', $product ) or strlen( wp_strip_all_tags( $product->get_description(), true ) ) === 0 ) {
-				// Korte 'Lekker bij' tonen (of samenvatting indien lange productbeschrijving leeg is)
+				// Korte 'Lekker bij' tonen (of samenvatting indien lange productomschrijving leeg is)
 				the_excerpt();
 			} else {
-				// Lange productbeschrijving tonen
+				// Lange productomschrijving tonen
 				the_content();
 			}
 		echo '</div>';
@@ -2951,7 +2972,7 @@
 		if ( strlen($product_text) + strlen($ingredients_text) + 2*strlen($ingredients_legend) + strlen($origin_text) > 800 ) {
 			// Check of de korte beschrijving wel inhoud bevat
 			if ( strlen( $product->get_short_description() ) > 10 ) {
-				// Opgelet: meer en meer anderstalige producten hebben geen korte productbeschrijving ...
+				// Opgelet: meer en meer anderstalige producten hebben geen korte productomschrijving ...
 				$product_text = $product->get_short_description();
 			}
 		}
