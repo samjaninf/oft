@@ -1006,11 +1006,11 @@
 			?>
 			<script>
 				jQuery(document).ready( function() {
-					/* Disable enkele core WC-inputs én selects waarop het attribuut 'readonly' niet werkt */
-					/* Door opgeven van 'disabled'-attribuut in velddefinitie verdwijnt de waarde tijdens het opslaan, dus via jQuery oplossen */
+					/* Maak enkele core inputs van WooCommerce onbewerkbaar */
+					/* Door 'disabled'-attribuut verdwijnt de waarde tijdens het opslaan, dus net voor opslaan via jQuery weer activeren! */
 					jQuery( '#woocommerce-product-data' ).find( 'select#product-type' ).prop( 'disabled', true );
-					jQuery( '#woocommerce-product-data' ).find( 'input#_virtual' ).prop( 'readonly', true );
-					jQuery( '#woocommerce-product-data' ).find( 'input#_downloadable' ).prop( 'readonly', true );
+					jQuery( '#woocommerce-product-data' ).find( 'input#_virtual' ).prop( 'disabled', true );
+					jQuery( '#woocommerce-product-data' ).find( 'input#_downloadable' ).prop( 'disabled', true );
 					jQuery( '#general_product_data' ).find( 'input#_regular_price' ).prop( 'readonly', true );
 					jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', true );
 					jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', true );
@@ -1019,7 +1019,7 @@
 					jQuery( '#inventory_product_data' ).find( 'input#_stock' ).prop( 'readonly', false );
 					jQuery( '#inventory_product_data' ).find( 'select#_stock_status' ).prop( 'disabled', true );
 					jQuery( '#inventory_product_data' ).find( 'select#_backorders' ).prop( 'disabled', false );
-					jQuery( '#inventory_product_data' ).find( 'input[name=_sold_individually]' ).prop( 'readonly', true );
+					jQuery( '#inventory_product_data' ).find( 'input[name=_sold_individually]' ).prop( 'disabled', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_weight]' ).prop( 'readonly', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_length]' ).prop( 'readonly', true );
 					jQuery( '#shipping_product_data' ).find( 'input[name=_width]' ).prop( 'readonly', true );
@@ -1151,14 +1151,17 @@
 							alert(msg);
 						}
 						
-						// ALLE DISABLED DROPDOWNS WEER ACTIVEREN, ANDERS GEEN WAARDE DOORGESTUURD
+						// ALLE DISABLED DROPDOWNS/CHECKBOXES WEER ACTIVEREN, ANDERS GEEN WAARDE DOORGESTUURD
 						// In ELSE-blok stoppen indien we de controle activeren, om te vermijden dat de data beschikbaar wordt indien er geen page reload plaatsvindt wegens blokkage
 						jQuery( '#woocommerce-product-data' ).find( 'select#product-type' ).prop( 'disabled', false );
+						jQuery( '#woocommerce-product-data' ).find( 'input#_virtual' ).prop( 'disabled', false );
+						jQuery( '#woocommerce-product-data' ).find( 'input#_downloadable' ).prop( 'disabled', false );
 						jQuery( '#general_product_data' ).find( 'select#_tax_status' ).prop( 'disabled', false );
 						jQuery( '#general_product_data' ).find( 'select#_tax_class' ).prop( 'disabled', false );
 						jQuery( '#general_product_data' ).find( 'select#_net_unit' ).prop( 'disabled', false );
 						jQuery( '#inventory_product_data' ).find( 'select#_stock_status' ).prop( 'disabled', false );
 						jQuery( '#inventory_product_data' ).find( 'select#_backorders' ).prop( 'disabled', false );
+						jQuery( '#inventory_product_data' ).find( 'input[name=_sold_individually]' ).prop( 'disabled', false );
 						jQuery( '#shipping_product_data' ).find( 'select#product_shipping_class' ).prop( 'disabled', false );
 
 						// Voorlopig niet afdwingen dat de fouten eerst opgelost moeten worden
