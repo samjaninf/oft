@@ -1091,6 +1091,14 @@
 					jQuery( 'input[type=submit]#publish, input[type=submit]#save-post' ).click( function() {
 						var pass = true;
 						var msg = 'Hold your horses, er zijn enkele issues:\n';
+						if ( jQuery( '#postcontent_ifr' ).find( 'body' ).text().length > 300 ) {
+							pass = false;
+							msg += '* Je lange productbeschrijving is ' + ( 300 - jQuery( '#postcontent_ifr' ).find( 'body' ).text().length ) + ' tekens te lang!\n';
+						}
+						if ( jQuery( '#postexcerpt_ifr' ).find( 'body' ).text().length > 150 ) {
+							pass = false;
+							msg += '* Je korte productbeschrijving is ' + ( 150 - jQuery( '#postexcerpt_ifr' ).find( 'body' ).text().length ) + ' tekens te lang!\n';
+						}
 						if ( jQuery( '#product_partner-all' ).find( 'input[type=checkbox]:checked' ).length == 0 ) {
 							pass = false;
 							msg += '* Je moet de herkomst nog aanvinken!\n';
