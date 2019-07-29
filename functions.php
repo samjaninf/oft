@@ -618,7 +618,7 @@
 			$tabs['description']['title'] = __( 'Wijnbeschrijving', 'oft' );
 		} else {
 			// Schakel lange beschrijving uit (werd naar boven verplaatst)
-			unset($tabs['description']);
+			unset( $tabs['description'] );
 		}
 
 		// Voeg tabje met ingrediënten en allergenen toe
@@ -2597,8 +2597,8 @@
 	function output_full_product_description() {
 		global $product;
 		echo '<div class="woocommerce-product-details__short-description">';
-			if ( has_product_cat_slug( 'wijn', $product ) ) {
-				// Korte 'Lekker bij' tonen
+			if ( has_product_cat_slug( 'wijn', $product ) or strlen( wp_strip_all_tags( $product->get_description(), true ) ) === 0 ) {
+				// Korte 'Lekker bij' tonen (of samenvatting indien lange productbeschrijving leeg is)
 				the_excerpt();
 			} else {
 				// Lange productbeschrijving tonen

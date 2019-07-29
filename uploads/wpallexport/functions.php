@@ -168,12 +168,19 @@
 		return wp_strip_all_tags( $pieces[0] );
 	}
 
+	// Behouden voor backwards compatibility in talrijke catalogusexports
 	function split_after_300_characters( $text ) {
-		$ignored = substr( decode_html($text), 0, 300 );
-		if ( substr( $text, 300 ) ) {
-			$parts = explode( '.', substr( $text, 300 ) );
+		return split_after_x_characters( $text, 300 );
+	}
+	
+	function split_after_x_characters( $text, $limit = 100 ) {
+		$ignored = substr( decode_html($text), 0, $limit );
+		if ( substr( $text, $limit ) ) {
+			// Zoek het eerste einde van een zin na de minimumhoeveelheid
+			$parts = explode( '. ', substr( $text, $limit ) );
 			$chopped = $parts[0].'.';
 		} else {
+			// Tekst is korter dan de limiet, voeg niets meer toe 
 			$chopped = '';
 		}
 		// Verwijder alle line breaks m.b.v. 2de parameter
@@ -302,18 +309,23 @@
 	}
 
 	function price_tags_description( $product_id ) {
-		$terms = get_the_terms( $product_id, 'product_grape' );
+		$grape_terms = get_the_terms( $product_id, 'product_grape' );
 		
-		if ( is_array($terms) ) {
+		if ( is_array($grape_terms) ) {
 			$grapes = array();
-			foreach ( $terms as $term ) {
+			foreach ( $grape_terms as $term ) {
 				$grapes[$term->term_id] = $term->name;
 			}
 			asort($grapes);
 			return 'Druif: '.implode( ', ', $grapes );
 		} else {
 			$product = wc_get_product($product_id);
-			return split_by_paragraph( $product->get_short_description() );
+			if ( strlen( wp_strip_all_tags( $product->get_short_description(), true ) ) > 0 ) {
+				return split_by_paragraph( $product->get_short_description() );
+			} else {
+				// Val terug op de afgekapte lange beschrijving
+				return split_after_x_characters( $product->get_description() );
+			}
 		}
 	}
 
