@@ -1123,11 +1123,11 @@
 						if ( content.length == 0 && excerpt.length == 0 ) {
 							msg += '* Je hebt nog geen enkele omschrijving ingevuld!\n';
 						}
-						if ( content.length > 1000 ) {
-							msg += '* Je lange productomschrijving is ' + ( content.length - 1000 ) + ' tekens te lang!\n';
+						if ( content.length > 800 ) {
+							msg += '* Je lange productomschrijving is ' + ( content.length - 800 ) + ' tekens te lang!\n';
 						}
-						if ( excerpt.length > 150 ) {
-							msg += '* Je korte productomschrijving is ' + ( excerpt.length - 150 ) + ' tekens te lang!\n';
+						if ( excerpt.length > 180 ) {
+							msg += '* Je korte productomschrijving is ' + ( excerpt.length - 180 ) + ' tekens te lang!\n';
 						}
 						
 						if ( jQuery( '#general_product_data' ).find( 'input#_fairtrade_share' ).val() == '' && ! jQuery( '#general_product_data' ).find( 'input#_is_north_product' ).is(':checked') ) {
